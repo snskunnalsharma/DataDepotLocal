@@ -1,0 +1,69 @@
+﻿<!DOCTYPE html>
+<html>
+<head id="layouthead">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Depot - @ViewBag.Title</title>
+  
+    @Scripts.Render("~/bundles/modernizr")
+    @Html.Partial("_JsLayout")
+    @Html.Partial("_cssLayout")
+
+    <link rel="shortcut icon" href="~/images/logo_favicon.png" />
+
+
+</head>
+<body>
+
+    <section id="container">
+
+
+
+
+
+
+        @RenderBody()
+
+
+
+
+        <footer class="site-footer">
+            <ul class="footer_smalllogo">
+                <footer>
+                    @{
+                        var version = new GarronT.CMS.Model.DAL.VersionDAL().getVersionDetials();
+                    }
+                    @*<p style="color:#fff; float:left; width:32%; margin:8px 4px 4px 4px;"><a href="https://www.kaireesystems.com/" target="_blank" title="Kairee Systems" style="padding-top:5px;"><img class="slide" src="~/images/bottom_kairee.png" style="width:15px !important" /> </a></p>*@
+                    @*<p style=" color: #fff; float: right; width: 50%; margin: 4px; text-align: right;"><a id="lblVersionId" href="#" style="color:white">@version  </a>&copy; Copyright @DateTime.Now.Year <img class="slide" src="~/images/bottom_clientlogo.png" /></p>*@
+                    <p style=" color: #fff; float: right; width: 50%; margin: 4px; text-align: right;"><a id="lblVersionId" href="#" style="color:white">@version  </a><img class="slide" src="~/images/bottom_clientlogo.png" /></p>
+                </footer>
+            </ul>
+
+        </footer>
+
+
+    </section>
+
+
+    <script src="@Url.Content("~/Content/MSTS/admin/js/common-scripts.js")"></script>
+
+    @RenderSection("scripts", required: false)
+
+
+    <script>
+        jQuery(document).ready(function () {
+
+            var is_ios = /(iPad|iPhone|iPod)/g.test(navigator.userAgent);
+
+            if (is_ios) {
+                $("#layouthead").append('<link href="../Content/MSTS/admin/css/style-ios.css" rel="stylesheet" />')               
+            }
+        });
+    </script>
+
+
+
+
+   
+</body>
+</html>

@@ -1,0 +1,180 @@
+﻿@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+@Html.Hidden("urlGetCompleteVsPendingChartData", Url.Action("GetCompleteVsPendingChartData", "Dashboard"))
+@Html.Hidden("urlGetInstallationspermonth", Url.Action("GetInstallationspermonth", "Dashboard"))
+@Html.Hidden("urlGetPerformance", Url.Action("GetPerformance", "Dashboard"))
+@Html.Hidden("urlGetProjectInsatallation", Url.Action("GetProjectInsatallation", "Dashboard"))
+
+@Html.Hidden("urlGetProject", Url.Action("GetPoject", "Dashboard"))
+
+@Html.Hidden("urlGetInstallationPerInstaller", Url.Action("GetInstallationPerInstaller", "Dashboard"))
+
+@Html.Hidden("urlLoadProjectCompletionInPercentGraph", Url.Action("LoadProjectCompletionInPercentGraph", "Dashboard"))
+
+@Html.Hidden("urlLodDefualtProjectDetails", Url.Action("GetCurrentActiveProject", "Dashboard"))
+
+@Html.Hidden("urlLoadInstallationAuditChart", Url.Action("GetAuditProjectInfoDashBord", "Dashboard"))
+
+<style type='text/css'>
+    /* Style to hide Dates / Months */
+    .ui-datepicker-calendar, .ui-datepicker-month {
+        display: none;
+    }
+
+    .right {
+        text-align: right;
+    }
+    @@media only screen and (min-width:800px) and (max-width:840px) {
+        #main-content {
+            overflow: hidden;
+        }
+    }
+</style>
+
+<section id="main-content" class="main-content">
+    <section class="wrapper">
+        <!--state overview start-->
+        <div class="row state-overview">
+        </div>
+
+        <div class="row" style="padding-top:42px">
+
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <header class="panel-heading">
+                    <b>Dashboard</b>
+                </header>
+                <div class="form-group">
+
+                    <label class="col-lg-1 col-sm-2 dasprojsta-lab"><span class="month_font">Project Status</span></label>
+                    <div class="col-lg-2 col-sm-4 projsta-drp">
+                        <select id="ddlProjectStatus" class="form-control chosen-select">
+                            @*<option value="0"></option>*@
+                            <option value="1" selected="selected">Active</option>
+                            <option value="2">Completed</option>
+                        </select>
+                    </div>
+
+                    <label for="Month" class="col-lg-1 col-sm-2 dasutl-lab"><span class="month_font">Utility Type</span></label>
+                    <div class="col-lg-2 col-sm-4 utl-drp">
+                        <select id="ddlUtilityType" class="form-control chosen-select">
+                            @*<option value="0"></option>*@
+                            <option value="1">Electric</option>
+                            <option value="2">Gas</option>
+                            <option value="3">Water</option>
+                        </select>
+                    </div>
+                    <label for="Month" class="col-lg-1 col-sm-2 dasproj-lab"><span class="month_font">Project</span></label>
+                    <div class="col-lg-5 col-sm-10 proj-drp">
+                        <select id="ddlProjectComvsPending" class="form-control chosen-select"></select>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="row exp-btn-row" style="padding-top:42px">
+            <div class="col-lg-12 col-md-12 col-sm-12 btn-exppdf" style="text-align:right;">
+                <button id="btnExportCPChart" class="btn btn-warning" type="button">Export To PDF</button>
+            </div>
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <div class="custom-bar-chart">
+                    <div id="chartContainer" style="height:300px">
+
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+
+        <div class="row" style="padding-top:10px; display:none">
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <hr />
+                <div class=" form-group col-md-12 " style="text-align:right;">
+                    <button id="btnExportCPChart1" class="btn btn-warning " type="button">Export To PDF</button>
+                </div>
+                <div class=" form-group col-md-12 ">
+                    <br />
+                    <div class="custom-bar-chart">
+                        <div id="chartContainerInstallation" style="height:300px;width: 100%;">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="row" style="padding-top:10px">
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <hr />
+
+                <div class=" form-group col-md-12 " style="text-align:right;">
+                    <button id="btnExportCPChart2" class="btn btn-warning " type="button">Export To PDF</button>
+                </div>
+                <div class=" form-group col-md-12 ">
+                    <br />
+                    <div class="custom-bar-chart">
+                        <div id="chartContainerInstallationbyInstaller" style="height:300px;width: 100%;">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="row" style="padding-top:10px">
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <hr />
+
+                <div class=" form-group col-md-12 " style="text-align:right;">
+                    <button id="btnExportCPChart3" class="btn btn-warning  " type="button">Export To PDF</button>
+                </div>
+                <div class=" form-group col-md-12 ">
+                    <br />
+                    <div class="custom-bar-chart">
+                        <div id="chartProjectPercentage" style="height:350px;width: 100%;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row" style="padding-top:10px; ">
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <hr />
+
+                <div class="form-group col-md-12" style="text-align:right;">
+                    <button id="btnExportAuditChart1" class="btn btn-warning " type="button">Export To PDF</button>
+                </div>
+                <div class="form-group col-md-12">
+                    <br />
+                    <div class="custom-bar-chart">
+                        <div id="chartInstallerAuditChart" style="height:300px;width: 100%;">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+</section>
+
+<link href="~/Scripts/js/jquery-ui.css" rel="stylesheet" />
+<script src="~/Scripts/js/jquery-ui.js"></script>
+@*<script src="~/Scripts/jspdf.min.js"></script>*@
+<link href="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.css")" rel="stylesheet" />
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.jquery.min.js")"></script>
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.proto.min.js")"></script>
+
+
+@System.Web.Optimization.Scripts.RenderFormat(GarronT.CMS.UI.SiteKeys.ScriptVersion, "~/bundles/Dashboard_js")
+<script src='@Url.Content("~/Scripts/jquery.canvasjs.min.js")'></script>
+
+
+
+
+

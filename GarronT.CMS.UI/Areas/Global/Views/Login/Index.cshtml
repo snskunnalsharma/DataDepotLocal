@@ -1,0 +1,298 @@
+﻿@model GarronT.CMS.UI.Areas.Global.Models.LoginViewModel
+
+@{
+    ViewBag.Title = "Log in";
+    Layout = "~/Areas/Global/Views/Shared/_LayoutLogin.cshtml";
+    HtmlHelper.ClientValidationEnabled = true;
+
+}
+@Html.Hidden("urlForgotPassword", Url.Action("ForgotPassword", "Login"))
+<link href="~/Content/MSTS/admin/assets/toastr-master/toastr.css" rel="stylesheet" />
+<style type="text/css">
+    /* Styles for validation helpers*/
+    .field-validation-error {
+        color: #ff0000;
+    }
+
+    .field-validation-valid {
+        display: none;
+    }
+
+    .input-validation-error {
+        border: 1px solid #ff0000 !important;
+        background-color: #ffeeee !important;
+    }
+
+    .validation-summary-errors {
+        font-weight: bold !important;
+        color: #ff0000 !important;
+    }
+
+    .validation-summary-valid {
+        display: none;
+    }
+
+    .rem_log {
+        padding-right: 0px;
+        padding-left: 0px;
+    }
+
+    .login_form {
+        border: 3px solid #ccc;
+        margin-top: 20%;
+    }
+
+    .btn-login {
+        margin-left: 6%;
+    }
+    /* Change Autocomplete styles in Chrome*/
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus textarea:-webkit-autofill,
+    textarea:-webkit-autofill:hover textarea:-webkit-autofill:focus,
+    select:-webkit-autofill,
+    select:-webkit-autofill:focus {
+        border: 1px solid platinum;
+        -webkit-text-fill-color: platinum;
+        /*-webkit-box-shadow: 0 0 0px 1000px #000 inset;*/
+        transition: background-color 5000s ease-in-out 0s;
+    }
+</style>
+
+@{ Html.EnableClientValidation(true); }
+
+
+@using (Html.BeginForm("Index", "Login", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-signin", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="login_form" style="">
+        <div class="logobg ">
+
+            <div class="login_logo ">
+            </div>
+        </div>
+        <div>
+            <span id="StatusText" style="margin:20px;">
+                <p>
+
+                    Login Now <br />
+                    <span> Enter your username and password</span>
+
+                </p>
+
+
+                @Html.ValidationSummary(true)
+
+
+
+            </span>
+        </div>
+        <div class="login-wrap">
+            <div class="input-group">
+                <span class="input-group-addon ">Username</span>
+                @Html.HiddenFor(m => m.Return_Activation)
+                @Html.TextBoxFor(m => m.UserName, new { @class = " form-control" })
+
+                @Html.ValidationMessageFor(m => m.UserName)
+            </div>
+
+            <br />
+            <div class="input-group">
+                <span class="input-group-addon ">Password&nbsp;</span>
+
+                @Html.TextBoxFor(m => m.Password, new { @class = "form-control", @type = "password" })
+                @Html.ValidationMessageFor(m => m.Password)
+
+
+            </div>
+
+
+
+
+            <div class="row">
+                <div class="col-lg-12 col-sm-12 col-xs-12">
+                    <div class="col-lg-5 col-xs-5 col-sm-6 rem_log" style="">
+
+                        <label class="checkbox" style="color:#000">
+                            @Html.CheckBoxFor(m => m.RememberMe)@Html.LabelFor(m => m.RememberMe)
+
+                        </label>
+                    </div>
+
+                    <div class="col-lg-5 col-sm-6 col-xs-5 frgt_pswd" style="">
+                        <a data-toggle="modal" id="hrfForgotPassword" style="color:#000;font-weight: 400;"> Forgot Password?</a>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-5 col-sm-5 col-xs-5" style="padding-right:5px; padding-left:5px; text-align:center; margin-left:27%;">
+                    <input type="submit" value="Log in" class="btn btn-lg btn-login btn-block" />
+                </div>
+
+            </div>
+
+
+        </div>
+        <div class="clearfix"></div>
+
+
+
+    </div>
+
+}
+
+
+<div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" id="myModal" class="modal fade modal-dialog-center">
+    <div class="modal-dialog modal-sm">
+        <form id="forgotpassword" name="forgotpassword" style="margin-top:100px;">
+
+
+            <div class="modal-content" style="height: 308px;
+    width: 400px;">
+                <div class="modal-header" style="background: #94c7f5; color: #fff;">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" style="    font-size: 22px;
+    text-align: center;">
+                        Forgot Password ?
+                    </h4>
+                </div>
+                <div class="modal-body" style=" border: 1px solid #ccc; /* padding: 5px; */ padding: 43px 34px; margin: 11px; border-radius: 5px;">
+                    <p>Enter your User ID   below to reset your password.</p>
+                    <input type="text" id="email" autofocus name="email" required="required" placeholder="User ID" autocomplete="off" class="form-control placeholder-no-fix">
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" type="button" id="FPSubmit">Submit</button>
+                    <button data-dismiss="modal" name="btnCancel" id="btnCancel" class="btn btn-danger" type="button">Cancel</button>
+
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var spinner, opts, target;
+    $(document).ready(function () {
+
+
+   
+
+
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "progressBar": true,
+            "positionClass": "toast-top-center",
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        }
+
+        var validator = $('#forgotpassword').validate({
+            debug: true, onsubmit: false,
+            rules: {
+                email: {
+                    required: true
+
+                }
+            },
+            messages: {
+                email: {
+                    required: "User ID Required"
+
+                }
+            },
+
+            submitHandler: function (form) {
+
+                //EditRecord();
+                //$("#element_to_pop_up").dialog("close");
+                //return false;
+            },
+            invalidHandler: function () {
+
+            }
+        });
+
+        $("#FPSubmit").click(function () {
+
+            if ($("#forgotpassword").valid()) {
+               
+                urlForgotPassword = $("#urlForgotPassword").val();
+               
+                var User = $("#email").val();
+                $.ajax({
+                    url: urlForgotPassword,
+                    data: addRequestVerificationToken({ "userName": User }),
+                    type: 'POST',
+                    success: function (msg) {
+                        
+                        if (msg.success == true) {
+                            $("#myModal").modal('hide');
+                            $("#email").val('');
+                            var $toast = toastr["success"](msg.returnMessage, "Success Notification");
+                        }
+                        else {
+                            var $toast = toastr["error"](msg.returnMessage, "Notification");
+                        }
+                       
+                    },
+                    error: function () {
+                      
+                        var $toast = toastr["error"]("something seems wrong", "Error Notification");
+                    }
+
+                });
+            } else {
+                
+                $("#email").focus();
+            }
+        });
+        $("#hrfForgotPassword").click(function () {
+
+
+
+            $("#myModal").modal({
+                show: true,
+                backdrop: 'static',
+                keyboard: false
+            });
+
+            $("#email").val('');
+            //$("#email").focus();
+            //$("input[name='email']").focus();
+            //$("#email").val('').focus();
+            validator.resetForm();
+
+            // $("#txtCountryName").focus();
+            //$("#txtCountryName").attr("autofocus", "autofocus")
+            $('#email').trigger('blur');
+
+
+            $('.modal').on('shown.bs.modal', function () {
+                $(this).find('[autofocus]').focus();
+            });
+
+
+
+        })
+    });
+
+    function addRequestVerificationToken(data) {
+        data.__RequestVerificationToken = $('input[name=__RequestVerificationToken]').val();
+        return data;
+    };
+    function preventBack() { window.history.forward(); }
+    setTimeout("preventBack()", 0);
+    window.onunload = function () { null };
+</script>
+
+

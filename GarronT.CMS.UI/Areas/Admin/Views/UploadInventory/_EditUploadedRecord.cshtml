@@ -1,0 +1,99 @@
+﻿@model GarronT.CMS.Model.BO.UploadInventoryBO
+@using GarronT.CMS.UI.CustomHelpers;
+<div class="modal-dialog modal-md">
+    <div class="modal-content-wrap">
+        <div class="modal-content metrmke_dialog ">
+            <div class="modal-header">
+                <button type="button" class="close" id="btnclose" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Edit Record</h4>
+            </div>
+            <div class="modal-body">
+                <div class="panel-body">
+                    @using (Html.BeginForm("", "", FormMethod.Get, new { @class = "form-horizontal", @id = "formAddEdit", role = "form" }))
+                    {
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label">Utility Type<span style="color:red">*</span></label>
+                            <div class="col-lg-8 col-sm-8 col-xs-8">
+                                @Html.EditorFor(model => model.UtilityId, new { htmlAttributes = new { @class = "form-control utilityId", @type = "hidden" } })
+                                @Html.EditorFor(model => model.WarehouseId, new { htmlAttributes = new { @class = "form-control warehouseId", @type = "hidden" } })
+                                @Html.EditorFor(model => model.UniqueId, new { htmlAttributes = new { @class = "form-control", @type = "hidden" } })
+                                @Html.EditorFor(model => model.UtilityType, new { htmlAttributes = new { @class = "form-control", @maxlength = "250", @disabled="true" } })
+                                @Html.ValidationMessageFor(model => model.UtilityType, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label">Category Name<span style="color:red">*</span></label>
+                            <div class="col-lg-8 col-sm-8 col-xs-8">
+                                @Html.EditorFor(model => model.CategoryName, new { htmlAttributes = new { @class = "form-control", @maxlength = "250" } })
+                                @Html.ValidationMessageFor(model => model.CategoryName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label">Product Name<span style="color:red">*</span></label>
+                            <div class="col-lg-8 col-sm-8 col-xs-8">
+                                @Html.EditorFor(model => model.ProductName, new { htmlAttributes = new { @class = "form-control", @maxlength = "250" } })
+                                @Html.ValidationMessageFor(model => model.ProductName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label">Part Number<span style="color:red">*</span></label>
+                            <div class="col-lg-8 col-sm-8 col-xs-8">
+                                @Html.EditorFor(model => model.PartNumber, new { htmlAttributes = new { @class = "inputclass form-control  meter_txtbox", @maxlength = "250" } })
+                                @Html.ValidationMessageFor(model => model.PartNumber, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                            <div class="form-group ">
+                                <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label">UPC Code</label>
+                                <div class="col-lg-8 col-sm-8 col-xs-8">
+                                    @Html.EditorFor(model => model.UPCCode, new { htmlAttributes = new { @class = "inputclass form-control  meter_txtbox", @maxlength = "250" } })
+                                    @Html.ValidationMessageFor(model => model.UPCCode, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label">Make</label>
+                                <div class="col-lg-8 col-sm-8 col-xs-8">
+                                    @Html.EditorFor(model => model.Make, new { htmlAttributes = new { @class = "inputclass form-control  meter_txtbox", @maxlength = "250" } })
+                                    @Html.ValidationMessageFor(model => model.Make, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label">Type</label>
+                                <div class="col-lg-8 col-sm-8 col-xs-8">
+                                    @Html.EditorFor(model => model.Type, new { htmlAttributes = new { @class = "inputclass form-control  meter_txtbox", @maxlength = "250" } })
+                                    @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label">Size</label>
+                                <div class="col-lg-8 col-sm-8 col-xs-8">
+                                    @Html.EditorFor(model => model.Size, new { htmlAttributes = new { @class = "inputclass form-control  meter_txtbox", @maxlength = "10" } })
+                                    @Html.ValidationMessageFor(model => model.Size, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label">Serial Number</label>
+                                <div class="col-lg-8 col-sm-8 col-xs-8">
+                                    @Html.EditorFor(model => model.SerialNumber, new { htmlAttributes = new { @class = "inputclass form-control  meter_txtbox", @maxlength = "20" } })
+                                    @Html.ValidationMessageFor(model => model.SerialNumber, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group ">
+                                <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label">Quantity<span style="color:red">*</span></label>
+                                <div class="col-lg-8 col-sm-8 col-xs-8">
+                                    @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @class = "inputclass form-control  meter_txtbox", @maxlength = "4" } })
+                                    @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                    }
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnUpdate" class="btn btn-success" type="button">Update</button>
+                <button id="btnCancel" class="btn btn-danger" data-dismiss="modal" type="button">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+

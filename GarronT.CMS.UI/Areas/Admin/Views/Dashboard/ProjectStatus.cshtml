@@ -1,0 +1,195 @@
+﻿@{
+    ViewBag.Title = "Project Status";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@Html.Hidden("CountryListUrl", Url.Action("GetCountryList", "City"))
+
+@Html.Hidden("getRowPartial", Url.Action("getRowPartial", "Dashboard"))
+
+@Html.Hidden("urlGetAddressMap", Url.Action("GetAddressMap", "Dashboard"))
+
+@Html.Hidden("urlGetProject", Url.Action("GetPoject", "InstallerAllocation"))
+@Html.Hidden("urlGetInstallerList", Url.Action("getCurrentInstallerList", "Project"))
+
+
+<div id="loading">
+    <div id="loadingcontent">
+        <p id="loadingspinner">
+            Searching things...
+        </p>
+    </div>
+</div>
+<style>
+      .map_align {
+            margin-left: 184;
+            margin-top: -2em !important;
+        }
+
+      .projectmap_flow{
+              width: 102%;
+    bottom: 0px;
+    padding-left: 9px;
+    /* overflow-y: scroll; */
+    height: 41em;
+      }
+
+</style>
+
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC6v5-2uaq_wusHDktM9ILcqIrlPtnZgEk&sensor=false"> </script> <div id="loading"> <div id="loadingcontent"> <p id="loadingspinner"> Searching things... </p> </div> </div>
+
+<!-- page start-->
+
+
+@*<section id="main-content">
+        <section class="wrapper">
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <section class="panel">
+                        <header class="panel-heading">
+
+
+                        </header>
+                        <div class="panel-body">
+                            <div class="adv-table">
+                                <div class="row">
+                                    <div class="form-group" style="margin-left: -15px;">
+                                        <label for="Month" class="col-lg-1"><span class="month_font">Project</span></label>
+                                        <div class="col-lg-3">
+                                            <select id="ddlProject" data-placeholder="Select Project" class="form-control chosen-select"></select>
+                                        </div>
+
+                                        <label for="Month" class="col-lg-1"><span class="month_font">Installer</span></label>
+                                        <div class="col-lg-3">
+                                            <select id="ddlInstaller" data-placeholder="Select Project" class="form-control chosen-select"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </section>
+    </section>*@
+
+
+
+<section id="main-content">
+    <section class="wrapper">
+        <!-- page start-->
+        <div class="row">
+            <div class="col-sm-12" id="m">
+                @*<section class="panel" style="margin-bottom:-45px">*@
+                <section class="" style="height: 461px;">
+                    @*<header class="panel-heading">
+                            <b>Installer Allocation </b>
+
+                        </header>*@
+
+
+
+                    @*<div class="row" style="margin-top:20px;">*@
+                    <div class="row" style="">
+
+                        <div class="col-lg-12">
+                            <section class="panel">
+                                @*<header class="panel-heading" style="background: #80B2DF; color: #fff;">
+                                        Installer Allocation
+                                        <span class="tools pull-right">
+                                            <a id="haha" class="fa fa-chevron-down clickdive" href="javascript:;" style="color: #fff; padding-right:10px;"></a>
+
+                                        </span>
+                                    </header>*@
+
+                                @*<div class="panel-body" style="padding-top:20px;">
+
+
+                                    </div>*@
+                                <div class="container-fluid con_fluid_new">
+                                    <div class="row">
+                                       
+
+                                            <div class="col-lg-12 col-sm-10 col-xs-10 nopadding">
+                                                <div class="proj_stat_box">
+                                                   
+                                                    <div class="col-lg-6">
+                                                        <label for="Month" class="col-lg-2"><span class="month_font">Project</span></label>
+                                                        <div class="col-lg-6 col-sm-8 col-xs-12">                                                                                                                  
+                                                            <select id="ddlProject" data-placeholder="Select Project" class="form-control chosen-select"></select>
+                                                        </div>
+                                                    </div>
+                                                   
+                                                    <div class="col-lg-6 col-sm-6 col-xs-12 ">
+                                                        <label for="Month" class="col-lg-2"><span class="month_font">Installer</span></label>
+                                                       
+                                                        <div class=" col-lg-6 col-sm-3 col-xs-6 ">
+                                                            @*<label for=" name" class=" ">To Date</label>*@
+                                                            <select id="ddlInstaller" data-placeholder="Select Project" class="form-control chosen-select"></select>
+                                                            
+
+                                                        </div>
+                                                    </div>
+
+                                                    @*</div>*@
+
+                                                </div>
+
+                                            </div>
+                                        
+                                       
+                                    </div>
+                                </div>
+
+                        </div>
+
+                        <div class="clearfix"></div>
+
+                        @*<div class="form-group">
+
+                                <div class="col-lg-12" style="text-align:center">
+
+                                    <button id="btnShowMap" class="btn btn-success" type="button">Show Map</button>
+                                    <button id="btnSave" class="btn btn-success" type="button">Save</button>
+                                    <button class="btn btn-danger" id="btnCancel" type="button">Cancel</button>
+                                    <button class="btn btn-default" id="btnReset" type="button">Reset</button>
+                                </div>
+                                <br />
+                            </div>*@
+
+                    </div>
+                </section>
+            </div>
+
+        </div>
+    </section>
+
+
+</section>
+
+<section class="map_align_proj">
+    <div class="container-fluid">
+        <div class="row">
+
+            @*<div class="col-lg-12 map_flow" id="LoadRow" >*@
+            <div class="col-lg-12 map_flow" id="LoadRow">
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+
+
+
+
+
+
+<link href="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.css")" rel="stylesheet" />
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.jquery.min.js")"></script>
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.proto.min.js")"></script>
+<script src='@Url.Content("~/Scripts/Admin/ProjectStatus.js")'></script>

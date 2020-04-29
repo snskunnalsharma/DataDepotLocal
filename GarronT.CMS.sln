@@ -1,0 +1,114 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GarronT.CMS.Model", "GarronT.CMS.Model\GarronT.CMS.Model.csproj", "{31584002-7D1C-41AD-A9A9-0BC406F1CFD8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GarronT.CMS.UI", "GarronT.CMS.UI\GarronT.CMS.UI.csproj", "{AFDD279A-949E-4FF5-BE1B-5B5471C27D5F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CMSAuditThread", "CMSAuditThread\CMSAuditThread.csproj", "{F299E1A9-5DE2-4403-9368-2C5EFE7544E4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFormsApplication1", "WindowsFormsApplication1\WindowsFormsApplication1.csproj", "{8E8C5B7E-5099-4635-823A-6773C8FB149C}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "CMS Audit scheduler Project", "CMS Audit scheduler Project\CMS Audit scheduler Project.vdproj", "{7444EFC1-6C14-46FC-999D-8D25AEA3BE62}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CMSShedulerService", "CMSShedulerService\CMSShedulerService.csproj", "{71ECD67B-581B-4674-8DAF-19E449980C30}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{31584002-7D1C-41AD-A9A9-0BC406F1CFD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31584002-7D1C-41AD-A9A9-0BC406F1CFD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31584002-7D1C-41AD-A9A9-0BC406F1CFD8}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{31584002-7D1C-41AD-A9A9-0BC406F1CFD8}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{31584002-7D1C-41AD-A9A9-0BC406F1CFD8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{31584002-7D1C-41AD-A9A9-0BC406F1CFD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31584002-7D1C-41AD-A9A9-0BC406F1CFD8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31584002-7D1C-41AD-A9A9-0BC406F1CFD8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{31584002-7D1C-41AD-A9A9-0BC406F1CFD8}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{31584002-7D1C-41AD-A9A9-0BC406F1CFD8}.Release|x86.ActiveCfg = Release|Any CPU
+		{AFDD279A-949E-4FF5-BE1B-5B5471C27D5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFDD279A-949E-4FF5-BE1B-5B5471C27D5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFDD279A-949E-4FF5-BE1B-5B5471C27D5F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{AFDD279A-949E-4FF5-BE1B-5B5471C27D5F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{AFDD279A-949E-4FF5-BE1B-5B5471C27D5F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AFDD279A-949E-4FF5-BE1B-5B5471C27D5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFDD279A-949E-4FF5-BE1B-5B5471C27D5F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFDD279A-949E-4FF5-BE1B-5B5471C27D5F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{AFDD279A-949E-4FF5-BE1B-5B5471C27D5F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{AFDD279A-949E-4FF5-BE1B-5B5471C27D5F}.Release|x86.ActiveCfg = Release|Any CPU
+		{F299E1A9-5DE2-4403-9368-2C5EFE7544E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F299E1A9-5DE2-4403-9368-2C5EFE7544E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F299E1A9-5DE2-4403-9368-2C5EFE7544E4}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{F299E1A9-5DE2-4403-9368-2C5EFE7544E4}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{F299E1A9-5DE2-4403-9368-2C5EFE7544E4}.Debug|x86.ActiveCfg = Debug|x86
+		{F299E1A9-5DE2-4403-9368-2C5EFE7544E4}.Debug|x86.Build.0 = Debug|x86
+		{F299E1A9-5DE2-4403-9368-2C5EFE7544E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F299E1A9-5DE2-4403-9368-2C5EFE7544E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F299E1A9-5DE2-4403-9368-2C5EFE7544E4}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{F299E1A9-5DE2-4403-9368-2C5EFE7544E4}.Release|Mixed Platforms.Build.0 = Release|x86
+		{F299E1A9-5DE2-4403-9368-2C5EFE7544E4}.Release|x86.ActiveCfg = Release|x86
+		{F299E1A9-5DE2-4403-9368-2C5EFE7544E4}.Release|x86.Build.0 = Release|x86
+		{8E8C5B7E-5099-4635-823A-6773C8FB149C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E8C5B7E-5099-4635-823A-6773C8FB149C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E8C5B7E-5099-4635-823A-6773C8FB149C}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{8E8C5B7E-5099-4635-823A-6773C8FB149C}.Debug|x86.ActiveCfg = Debug|x86
+		{8E8C5B7E-5099-4635-823A-6773C8FB149C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E8C5B7E-5099-4635-823A-6773C8FB149C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E8C5B7E-5099-4635-823A-6773C8FB149C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{8E8C5B7E-5099-4635-823A-6773C8FB149C}.Release|x86.ActiveCfg = Release|Any CPU
+		{7444EFC1-6C14-46FC-999D-8D25AEA3BE62}.Debug|Any CPU.ActiveCfg = Debug
+		{7444EFC1-6C14-46FC-999D-8D25AEA3BE62}.Debug|Mixed Platforms.ActiveCfg = Debug
+		{7444EFC1-6C14-46FC-999D-8D25AEA3BE62}.Debug|Mixed Platforms.Build.0 = Debug
+		{7444EFC1-6C14-46FC-999D-8D25AEA3BE62}.Debug|x86.ActiveCfg = Debug
+		{7444EFC1-6C14-46FC-999D-8D25AEA3BE62}.Release|Any CPU.ActiveCfg = Release
+		{7444EFC1-6C14-46FC-999D-8D25AEA3BE62}.Release|Mixed Platforms.ActiveCfg = Release
+		{7444EFC1-6C14-46FC-999D-8D25AEA3BE62}.Release|Mixed Platforms.Build.0 = Release
+		{7444EFC1-6C14-46FC-999D-8D25AEA3BE62}.Release|x86.ActiveCfg = Release
+		{71ECD67B-581B-4674-8DAF-19E449980C30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71ECD67B-581B-4674-8DAF-19E449980C30}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71ECD67B-581B-4674-8DAF-19E449980C30}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{71ECD67B-581B-4674-8DAF-19E449980C30}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{71ECD67B-581B-4674-8DAF-19E449980C30}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{71ECD67B-581B-4674-8DAF-19E449980C30}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71ECD67B-581B-4674-8DAF-19E449980C30}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71ECD67B-581B-4674-8DAF-19E449980C30}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{71ECD67B-581B-4674-8DAF-19E449980C30}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{71ECD67B-581B-4674-8DAF-19E449980C30}.Release|x86.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 7
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://kairee.visualstudio.com/
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = GarronT.CMS.Model\\GarronT.CMS.Model.csproj
+		SccProjectName1 = GarronT.CMS.Model
+		SccLocalPath1 = GarronT.CMS.Model
+		SccProjectUniqueName2 = GarronT.CMS.UI\\GarronT.CMS.UI.csproj
+		SccProjectName2 = GarronT.CMS.UI
+		SccLocalPath2 = GarronT.CMS.UI
+		SccProjectUniqueName3 = CMSAuditThread\\CMSAuditThread.csproj
+		SccProjectName3 = CMSAuditThread
+		SccLocalPath3 = CMSAuditThread
+		SccProjectUniqueName4 = WindowsFormsApplication1\\WindowsFormsApplication1.csproj
+		SccProjectName4 = WindowsFormsApplication1
+		SccLocalPath4 = WindowsFormsApplication1
+		SccProjectUniqueName5 = CMS\u0020Audit\u0020scheduler\u0020Project\\CMS\u0020Audit\u0020scheduler\u0020Project.vdproj
+		SccProjectName5 = CMS\u0020Audit\u0020scheduler\u0020Project
+		SccLocalPath5 = CMS\u0020Audit\u0020scheduler\u0020Project
+		SccProjectUniqueName6 = CMSShedulerService\\CMSShedulerService.csproj
+		SccProjectName6 = CMSShedulerService
+		SccLocalPath6 = CMSShedulerService
+	EndGlobalSection
+EndGlobal

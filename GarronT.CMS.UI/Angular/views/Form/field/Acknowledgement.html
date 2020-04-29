@@ -1,0 +1,60 @@
+<div class="col-md-12 ">
+  
+    <div class="form-group">
+        <label for="name" class="col-lg-3"> <strong> Field Label: </strong> <span style="color:red">*</span></label>
+        <div class="col-lg-9">
+            <div><input type="text" class="form-control" maxlength="200" id="txtfieldtitle" ng-blur="FieldLabelCheck(field.field_FieldLabel)" ng-model="field.field_FieldLabel" value="{{field.field_FieldLabel}}"></div>
+        </div>
+    </div>
+
+
+
+    <div class="form-group">
+        <label for="name" class="col-lg-3" style="white-space: nowrap;"> <strong>Acknowledgment Text: </strong></label>
+        <div class="col-lg-9">
+            <div><textarea class="form-control" ng-model="field.field_AcknowlegementText" value="{{field.field_AcknowlegementText}}"></textarea></div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="name" class="col-lg-3"><strong>Acknowledgment Button Text:</strong></label>
+        <div class="col-lg-9">
+            <div><input type="text" maxlength="200" class="form-control" ng-model="field.field_AcknowlegementButtonText" value="{{field.field_AcknowlegementButtonText}}"></div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="name" class="col-lg-3"><strong>Acknowledgment Clicked Button Text:</strong></label>
+        <div class="col-lg-9">
+            <div><input type="text" maxlength="200" class="form-control" ng-model="field.field_AcknowlegementClickedButtonText" value="{{field.field_AcknowlegementClickedButtonText}}"></div>
+        </div>
+    </div>
+
+   
+    <div class="form-group">
+        <div class="checkbox col-md-5">
+            <label for="checkbox1" style=" padding-left: 0px;">
+                <span>Hide Field Label</span>
+            </label>
+            <input type="checkbox" class="col-lg-2 pull-right" ng-model="field.field_HideFieldLabel" value="{{field.field_HideFieldLabel}}" />
+        </div>
+
+    </div>
+    <div class="form-group">
+    
+        <div class="checkbox col-md-5">
+            <label for="checkbox1" style=" padding-left: 0px;">
+                <span>Capture Geolocation</span>
+            </label>
+            <input type="checkbox" id="checkbox1" class="col-lg-2 pull-right" ng-model="field.field_CaptureGeolocation" value="{{field.field_CaptureGeolocation}}" />
+        </div>
+
+        <div class="checkbox col-md-5" >
+            <label for="checkbox1" style=" padding-left: 0px;">
+                <span>Capture Timestamp</span>
+            </label>
+            <input type="checkbox" id="checkbox1" class="col-lg-2 pull-right" ng-model="field.field_CaptureTimestamp" value="{{field.field_CaptureTimestamp}}" />
+        </div>
+    </div>
+   
+
+</div>

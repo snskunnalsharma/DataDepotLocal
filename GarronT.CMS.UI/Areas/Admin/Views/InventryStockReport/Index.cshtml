@@ -1,0 +1,1650 @@
+﻿@{
+    ViewBag.Title = "Inventory Stock Report";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+@Html.Hidden("urlGetReportData", Url.Action("GetData", "InventryStockReport"))
+@Html.Hidden("urlDownloadExcelExport", Url.Action("DownloadExcelExport", "InventryStockReport"))
+
+@Html.Hidden("urlGetProductbyCategoryId", Url.Action("GetProductbyCategoryId", "InventryStockReport"))
+@Html.Hidden("urlGetInstallerByProjectId", Url.Action("GetInstallerByProjectId", "InventryStockReport"))
+
+@Html.Hidden("urlGetProject", Url.Action("GetProject", "InventryStockReport"))
+@Html.Hidden("urlGetProduct", Url.Action("GetProduct", "InventryStockReport"))
+
+<style>
+    .recinv-drp3 {
+        margin-bottom: 4px;
+    }
+
+    .recinv-drp4 {
+        margin-top: 8px;
+        margin-bottom: 8px;
+    }
+
+    .recinv-drp5 {
+        margin-top: 8px;
+        margin-bottom: 8px;
+    }
+    @@media only screen and (max-width:320px) {
+        .rep-box {
+            margin-left: 8%;
+        }
+
+        .for_btn {
+            margin-bottom: 3%;
+            margin-left: 7%;
+        }
+    }
+    @@media only screen and (min-width:321px) and (max-width: 359px) {
+        .rep-box {
+            margin-left: 8%;
+        }
+
+        .for_btn {
+            margin-bottom: 3%;
+            margin-left: 7%;
+        }
+    }
+    @@media only screen and (max-width: 430px) and (min-width: 360px) {
+        .rep-box {
+            margin-left: 8%;
+        }
+
+        .for_btn {
+            margin-bottom: 3%;
+        }
+    }
+
+    @@media only screen and (max-width:799px) and (min-width: 430px) {
+        .sm-bot2 {
+            margin-bottom: 2%;
+        }
+    }
+</style>
+<style>
+    /*************************************Bootstrap Css***********************************/
+    @@media (min-width:1200px) {
+        .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9 {
+            float: left;
+        }
+
+
+        .col-lg-12 {
+            width: 100%;
+        }
+
+        .col-lg-11 {
+            width: 91.66666667%;
+        }
+
+        .col-lg-10 {
+            width: 83.33333333%;
+        }
+
+        .col-lg-9 {
+            width: 75%;
+        }
+
+        .col-lg-8 {
+            width: 66.66666667%;
+        }
+
+        .col-lg-7 {
+            width: 58.33333333%;
+        }
+
+        .col-lg-6 {
+            width: 50% !important;
+        }
+
+        .col-lg-5 {
+            width: 41.66666667%;
+        }
+
+        .col-lg-4 {
+            width: 33.33333333%;
+        }
+
+        .col-lg-3 {
+            width: 25%;
+        }
+
+        .col-lg-2 {
+            width: 16.66666667%;
+        }
+
+        .col-lg-1 {
+            width: 8.33333333%;
+        }
+
+        .multiselect {
+            padding: 3px;
+        }
+
+        .lg-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .lg-nopaddingright {
+            padding-right: 0px;
+        }
+    }
+
+    @@media (min-width:992px) and (max-width:1199px) {
+        .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9 {
+            float: left;
+        }
+
+        .col-md-12 {
+            width: 100%;
+        }
+
+        .col-md-11 {
+            width: 91.66666667%;
+        }
+
+        .col-md-10 {
+            width: 83.33333333%;
+        }
+
+        .col-md-9 {
+            width: 75%;
+        }
+
+        .col-md-8 {
+            width: 66.66666667%;
+        }
+
+        .col-md-7 {
+            width: 58.33333333%;
+        }
+
+        .col-md-6 {
+            width: 50%;
+        }
+
+        .col-md-5 {
+            width: 41.66666667%;
+        }
+
+        .col-md-4 {
+            width: 33.33333333%;
+        }
+
+        .col-md-3 {
+            width: 25%;
+        }
+
+        .col-md-2 {
+            width: 16.66666667%;
+        }
+
+        .col-md-1 {
+            width: 8.33333333%;
+        }
+
+        .col-md-pull-12 {
+            right: 100%;
+        }
+
+        .col-md-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-md-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-md-pull-9 {
+            right: 75%;
+        }
+
+        .col-md-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-md-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-md-pull-6 {
+            right: 50%;
+        }
+
+        .col-md-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-md-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-md-pull-3 {
+            right: 25%;
+        }
+
+        .col-md-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-md-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-md-pull-0 {
+            right: auto;
+        }
+
+        .col-md-push-12 {
+            left: 100%;
+        }
+
+        .col-md-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-md-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-md-push-9 {
+            left: 75%;
+        }
+
+        .col-md-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-md-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-md-push-6 {
+            left: 50%;
+        }
+
+        .col-md-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-md-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-md-push-3 {
+            left: 25%;
+        }
+
+        .col-md-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-md-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-md-push-0 {
+            left: auto;
+        }
+
+        .col-md-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-md-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-md-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-md-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-md-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-md-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-md-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-md-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-md-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-md-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-md-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-md-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-md-offset-0 {
+            margin-left: 0;
+        }
+
+        .md-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .md-nopaddingright {
+            padding-right: 0px;
+        }
+
+        .md-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .md-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .md-clear {
+            clear: both;
+        }
+    }
+
+    @@media (min-width:768px) and (max-width:991px) {
+
+        /*.show_deactive {
+        padding-left: 40px;
+    }*/
+
+
+        .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9 {
+            float: left;
+        }
+
+        .col-sm-12 {
+            width: 100%;
+        }
+
+        .col-sm-11 {
+            width: 91.66666667%;
+        }
+
+        .col-sm-10 {
+            width: 83.33333333%;
+        }
+
+        .col-sm-9 {
+            width: 75%;
+        }
+
+        .col-sm-8 {
+            width: 66.66666667%;
+        }
+
+        .col-sm-7 {
+            width: 58.33333333%;
+        }
+
+        .col-sm-6 {
+            width: 50%;
+        }
+
+        .col-sm-5 {
+            width: 41.66666667%;
+        }
+
+        .col-sm-4 {
+            width: 33.33333333%;
+        }
+
+        .col-sm-3 {
+            width: 25%;
+        }
+
+        .col-sm-2 {
+            width: 16.66666667%;
+        }
+
+        .col-sm-1 {
+            width: 8.33333333%;
+        }
+
+        .col-sm-pull-12 {
+            right: 100%;
+        }
+
+        .col-sm-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-sm-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-sm-pull-9 {
+            right: 75%;
+        }
+
+        .col-sm-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-sm-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-sm-pull-6 {
+            right: 50%;
+        }
+
+        .col-sm-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-sm-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-sm-pull-3 {
+            right: 25%;
+        }
+
+        .col-sm-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-sm-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-sm-pull-0 {
+            right: auto;
+        }
+
+        .col-sm-push-12 {
+            left: 100%;
+        }
+
+        .col-sm-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-sm-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-sm-push-9 {
+            left: 75%;
+        }
+
+        .col-sm-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-sm-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-sm-push-6 {
+            left: 50%;
+        }
+
+        .col-sm-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-sm-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-sm-push-3 {
+            left: 25%;
+        }
+
+        .col-sm-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-sm-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-sm-push-0 {
+            left: auto;
+        }
+
+        .col-sm-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-sm-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-sm-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-sm-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-sm-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-sm-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-sm-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-sm-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-sm-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-sm-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-sm-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-sm-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-sm-offset-0 {
+            margin-left: 0;
+        }
+
+        .sm-clear {
+            clear: both;
+        }
+        .sm-center {
+            text-align:center;
+        }
+
+        .sm-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .sm-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .sm-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .sm-nopaddingright {
+            padding-right: 0px;
+        }
+    }
+
+    @@media (min-width:481px) and (max-width:767px) {
+        .xs-clear {
+            clear: both;
+        }
+
+        .col-xs-1, .col-xs-10, .col-xs-11, .col-xs-12, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9 {
+            float: left;
+        }
+
+        .col-xs-12 {
+            width: 100%;
+        }
+
+        .col-xs-11 {
+            width: 91.66666667%;
+        }
+
+        .col-xs-10 {
+            width: 83.33333333%;
+        }
+
+        .col-xs-9 {
+            width: 75%;
+        }
+
+        .col-xs-8 {
+            width: 66.66666667%;
+        }
+
+        .col-xs-7 {
+            width: 58.33333333%;
+        }
+
+        .col-xs-6 {
+            width: 50%;
+        }
+
+        .col-xs-5 {
+            width: 41.66666667%;
+        }
+
+        .col-xs-4 {
+            width: 33.33333333%;
+        }
+
+        .col-xs-3 {
+            width: 25%;
+        }
+
+        .col-xs-2 {
+            width: 16.66666667%;
+        }
+
+        .col-xs-1 {
+            width: 8.33333333%;
+        }
+
+        .col-xs-pull-12 {
+            right: 100%;
+        }
+
+        .col-xs-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-xs-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-xs-pull-9 {
+            right: 75%;
+        }
+
+        .col-xs-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-xs-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-xs-pull-6 {
+            right: 50%;
+        }
+
+        .col-xs-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-xs-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-xs-pull-3 {
+            right: 25%;
+        }
+
+        .col-xs-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-xs-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-xs-pull-0 {
+            right: auto;
+        }
+
+        .col-xs-push-12 {
+            left: 100%;
+        }
+
+        .col-xs-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-xs-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-xs-push-9 {
+            left: 75%;
+        }
+
+        .col-xs-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-xs-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-xs-push-6 {
+            left: 50%;
+        }
+
+        .col-xs-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-xs-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-xs-push-3 {
+            left: 25%;
+        }
+
+        .col-xs-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-xs-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-xs-push-0 {
+            left: auto;
+        }
+
+        .col-xs-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-xs-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-xs-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-xs-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-xs-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-xs-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-xs-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-xs-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-xs-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-xs-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-xs-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-xs-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-xs-offset-0 {
+            margin-left: 0;
+        }
+
+        .cre_uti_label {
+            margin-left: 0%;
+            text-align: right !important;
+        }
+
+        .create_label {
+            margin-right: 0px;
+        }
+
+        .xs-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .xs-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .xs-block {
+            display: block;
+        }
+
+        .xs-nopadding {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+
+        .xs-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .xs-nopaddingright {
+            padding-right: 0px;
+        }
+
+        .rep_panel {
+            margin-top: 2%;
+        }
+        .xs-center {
+            text-align:center;
+        }
+    }
+
+    @@media (max-width:480px) {
+        .xxs-clear {
+            clear: both;
+        }
+
+        .col-xxs-1, .col-xxs-10, .col-xxs-11, .col-xxs-12, .col-xxs-2, .col-xxs-3, .col-xxs-4, .col-xxs-5, .col-xxs-6, .col-xxs-7, .col-xxs-8, .col-xxs-9 {
+            float: left;
+        }
+
+        .col-xxs-12 {
+            width: 100%;
+        }
+
+        .col-xxs-11 {
+            width: 91.66666667%;
+        }
+
+        .col-xxs-10 {
+            width: 83.33333333%;
+        }
+
+        .col-xxs-9 {
+            width: 75%;
+        }
+
+        .col-xxs-8 {
+            width: 66.66666667%;
+        }
+
+        .col-xxs-7 {
+            width: 58.33333333%;
+        }
+
+        .col-xxs-6 {
+            width: 50%;
+        }
+
+        .col-xxs-5 {
+            width: 41.66666667%;
+        }
+
+        .col-xxs-4 {
+            width: 33.33333333%;
+        }
+
+        .col-xxs-3 {
+            width: 25%;
+        }
+
+        .col-xxs-2 {
+            width: 16.66666667%;
+        }
+
+        .col-xxs-1 {
+            width: 8.33333333%;
+        }
+
+        .col-xxs-pull-12 {
+            right: 100%;
+        }
+
+        .col-xxs-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-xxs-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-xxs-pull-9 {
+            right: 75%;
+        }
+
+        .col-xxs-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-xxs-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-xxs-pull-6 {
+            right: 50%;
+        }
+
+        .col-xxs-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-xxs-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-xxs-pull-3 {
+            right: 25%;
+        }
+
+        .col-xxs-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-xxs-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-xxs-pull-0 {
+            right: auto;
+        }
+
+        .col-xxs-push-12 {
+            left: 100%;
+        }
+
+        .col-xxs-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-xxs-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-xxs-push-9 {
+            left: 75%;
+        }
+
+        .col-xxs-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-xxs-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-xxs-push-6 {
+            left: 50%;
+        }
+
+        .col-xxs-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-xxs-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-xxs-push-3 {
+            left: 25%;
+        }
+
+        .col-xxs-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-xxs-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-xxs-push-0 {
+            left: auto;
+        }
+
+        .col-xxs-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-xxs-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-xxs-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-xxs-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-xxs-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-xxs-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-xxs-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-xxs-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-xxs-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-xxs-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-xxs-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-xxs-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-xxs-offset-0 {
+            margin-left: 0;
+        }
+
+        .create_label {
+            margin-left: 0%;
+            margin-right: 0px;
+        }
+
+        .xxs-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .xxs-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .xxs-mbot3 {
+            margin-bottom: 3%;
+        }
+
+        .xxs-block {
+            display: block;
+        }
+
+        .xxs-nopadding {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+
+        .xxs-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .xxs-nopaddingright {
+            padding-right: 0px;
+        }
+        .xxs-center {
+            text-align:center;
+        }
+    }
+</style>
+<div id="loading">
+
+    <div id="loadingcontent">
+        <p id="loadingspinner">
+            Searching things...
+        </p>
+    </div>
+</div>
+
+
+
+<section id="main-content">
+    <section class="wrapper">
+        @*<div class="row">
+            <div class="col-sm-12">*@
+                <!--progress bar start-->
+                <section class="panel rep_panel" >
+
+
+                    <header class="panel-heading rep_header" style="background: #80B2DF; color: #fff;">
+                        Inventory Stock Report
+                        <span class="tools pull-right">
+                            <a id="haha" class="fa fa-chevron-down clickdive" href="javascript:;" style="color: #fff; padding-right:10px;"></a>
+                        </span>
+                    </header>
+
+
+                    @*<div class="row" style="">
+                        <div class="col-lg-12">*@
+                  
+                    <div class="panel-body">
+                        @*<div class="row" style="margin-bottom: 5px;">
+                            <div class="col-lg-12 col-sm-12 col-xs-12 rep-box">*@
+                                <div class="row mbot05 sm-mbot1 xs-mbot1 xxs-mbot2">
+                                    @*<div class="col-lg-3 col-md-3 col-sm-6 col-xs-10 for_btn">*@
+                                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 col-xxs-12 mbot05 md-mbot1  sm-mbot1 xs-mbot1 xxs-mbot2 lg-nopaddingright md-nopaddingright">
+                                        @Html.DropDownList("UtilityId", (IEnumerable<SelectListItem>)ViewBag.UtilityListItem, new { @class = "form-control chosen-select" })
+                                    </div>
+                                    @*<div class="col-lg-3 col-md-3 col-sm-6 col-xs-10 for_btn">*@
+                                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 col-xxs-12 mbot05 md-mbot1  sm-mbot1 xs-mbot1 xxs-mbot2 lg-nopaddingright md-nopaddingright">
+                                        @Html.DropDownList("ProjectId", (IEnumerable<SelectListItem>)ViewBag.ProjectList, new { @class = "form-control chosen-select", @title = "Select Project" })
+                                    </div>
+                                    @*<div class="col-lg-3 col-md-3 col-sm-6 col-xs-10 nopadding box1 sm-bot2 for_btn">*@
+                                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 col-xxs-12 nopadding mbot05 md-mbot1 sm-mbot1 xs-mbot1 xxs-mbot2 ">
+                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 col-xxs-6 lg-nopaddingright md-nopaddingright">
+                                            <input type="text" readonly name="FromDate" placeholder="From Date" id="txtFromDate" class="inputclass form-control date_form_nw" value="" />
+                                        </div>
+                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 col-xxs-6 lg-nopaddingright md-nopaddingright">
+                                            <input type="text" readonly name="ToDate" placeholder="To Date" id="txtToDate" value="" class="inputclass form-control date_form_nw1" />
+                                        </div>
+                                    </div>
+                                    @*<div class="col-lg-3 col-md-3 col-sm-6 col-xs-10 for_btn">*@
+                                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 col-xxs-12 mbot05 md-mbot1  sm-mbot1 xs-mbot1 xxs-mbot2">
+                                        <select id="InstallerId" name="InstallerId" class="form-control chosen-select" title="Select Installer/Manager"></select>
+                                        @*@Html.DropDownList("InstallerId", (IEnumerable<SelectListItem>)ViewBag.installerList, new { @class = "form-control chosen-select", @title = "Select Installer/Manager" })*@
+                                    </div>
+                                    @*<div class="col-lg-3 col-sm-6 col-xs-10 for_btn">
+                                            @Html.DropDownList("CategoryId", (IEnumerable<SelectListItem>)ViewBag.categoryList, new { @class = "form-control chosen-select", @title = "Select Category" })
+                                        </div>*@
+                                @*</div>
+
+                                <div class="row" style="padding-top:8px;">*@
+
+
+                                    @*<div class="col-lg-3 col-sm-6 col-xs-10 for_btn sm-bot2 ">*@
+                                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 col-xxs-12 lg-nopaddingright md-nopaddingright sm-mbot1 xs-mbot1 xxs-mbot2">
+                                        @Html.DropDownList("ProductId", (IEnumerable<SelectListItem>)ViewBag.productList, new { @class = "form-control chosen-select", @title = "Select Product" })
+                                    </div>
+                                    @*<div class="col-lg-3 col-sm-6 col-xs-10 for_btn sm-bot2">*@
+                                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 col-xxs-12 lg-nopaddingright md-nopaddingright sm-mbot1 xs-mbot1 xxs-mbot2">
+                                        @Html.DropDownList("ReportType", (IEnumerable<SelectListItem>)ViewBag.ReportType, new { @class = "form-control chosen-select", @title = "Select Report Type" })
+                                    </div>
+                                    @*<div class="col-lg-6 col-md-6 col-sm-12 col-xs-10 for_btn">*@
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 col-xxs-12 sm-clear sm-center xs-clear xs-center xxs-center" >
+                                        <button id="btnSearch" class="btn btn-success" type="button">Search</button>
+                                        <button class="btn btn-danger" id="btnReset" type="button">Reset</button>
+                                        <button id="btnExport" class="btn btn-success" type="button">Export</button>
+
+                                    </div>
+
+                                </div>
+
+                            @*</div>*@
+                            @*<div class="col-lg-12 col-sm-12 col-xs-12 ">
+                                <div class="row">*@
+                                    <div class="table-responsive  rep_dyn_table">
+                                        <div id="divDetail" style="display:none">
+
+                                            <table id="dynamic-table" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Installer/Manager Name</th>
+                                                        <th>Category</th>
+                                                        <th>Product Name</th>
+                                                        <th>Serial Number</th>
+                                                        <th width="10%">Scanned Inventory</th>
+                                                        <th width="10%">Installed Inventory</th>
+                                                        <th width="10%">Transferred Inventory</th>
+                                                        <th width="10%">Returned Inventory</th>
+                                                        <th width="10%">Inventory InHand</th>
+                                                    </tr>
+                                                </thead>
+                                            </table>
+
+                                        </div>
+
+                                        <div id="divSummary">
+                                            <table id="dynamic-table-Summary" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Installer/Manager Name</th>
+                                                        <th>Category</th>
+                                                        <th>Product Name</th>
+                                                        <th width="10%">Opening Inventory</th>
+                                                        <th width="10%">Scanned Inventory</th>
+                                                        <th width="10%">Installed Inventory</th>
+                                                        <th width="10%">Transferred Inventory</th>
+                                                        <th width="10%">Returned Inventory</th>
+                                                        <th width="10%">Inventory InHand</th>
+                                                    </tr>
+                                                </thead>
+                                            </table>
+
+                                        </div>
+                                    </div>
+                                @*</div>
+
+
+                            </div>*@
+                        @*</div>*@
+                    </div>
+                </section>
+            @*</div>
+        </div>*@
+
+
+
+    </section>
+</section>
+
+<link href="~/jquery-confirm-master/css/jquery-confirm.css" rel="stylesheet" />
+<script src="~/jquery-confirm-master/js/jquery-confirm.js"></script>
+<link href="~/Scripts/js/style.css" rel="stylesheet" />
+<link href="~/Scripts/js/jquery-ui.css" rel="stylesheet" />
+<script src="~/Scripts/js/jquery-ui.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#InventoryReports").addClass('active');
+        $("#subReports").addClass('block');
+
+        $('.sub').find("*").removeClass('active');
+        $('#liInventoryStockReport').addClass("active");
+
+        $("#UtilityId").chosen({ placeholder_text_single: "Select Utility", no_results_text: "Oops, nothing found!" });
+        $('#UtilityId').trigger('chosen:updated');
+
+        $("#ProjectId").chosen({ placeholder_text_single: "Select Project", no_results_text: "Oops, nothing found!" });
+        $('#ProjectId').trigger('chosen:updated');
+
+        $("#InstallerId").chosen({ placeholder_text_single: "Select Installer/Manager", no_results_text: "Oops, nothing found!" });
+        $('#InstallerId').val("0").attr("selected", "selected").trigger('chosen:updated');
+
+        //$("#CategoryId").chosen({ placeholder_text_single: "Select Category", no_results_text: "Oops, nothing found!" });
+        //$('#CategoryId').trigger('chosen:updated');
+
+        $("#ProductId").chosen({ placeholder_text_single: "Select Product", no_results_text: "Oops, nothing found!" });
+        $('#ProductId').trigger('chosen:updated');
+
+        $("#ReportType").chosen();
+        $('#ReportType').val("0").attr("selected", "selected").trigger('chosen:updated');
+
+        $('#dynamic-table').DataTable({ "language": { "emptyTable": "No Data To Show" } });
+        $('#dynamic-table-Summary').DataTable({ "language": { "emptyTable": "No Data To Show" } });
+        $("#divDetail").hide();
+        $("#divSummary").show();
+
+        var todayDate = new Date();
+
+
+
+        $("#txtFromDate").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            //minDate: prjFromDate,
+            //maxDate: prjToDate,
+            onSelect: function () {
+                var date = $("#txtFromDate").val();
+                if ($.trim(date) != "") {
+                    var newDate1 = new Date(date);
+                    $("#txtToDate").datepicker('option', 'minDate', newDate1);
+                }
+
+            },
+            dateFormat: 'M-dd-yy',
+        }).datepicker("setDate", todayDate);
+
+
+        $("#txtToDate").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            //minDate: prjFromDate,
+            //maxDate: prjToDate,
+            onSelect: function () {
+                var date = $("#txtToDate").val();
+                if ($.trim(date) != "") {
+                    var newDate1 = new Date(date);
+                    $("#txtFromDate").datepicker('option', 'maxDate', newDate1);
+                }
+            },
+            dateFormat: 'M-dd-yy',
+        }).datepicker("setDate", todayDate);
+
+
+
+    });
+
+
+    $('#UtilityId').change(function () {
+
+        $('#ProjectId').empty().trigger('chosen:updated');
+        $('#ProductId').empty().trigger('chosen:updated');
+        $('#InstallerId').empty().trigger('chosen:updated');
+
+
+        var value = $("#UtilityId option:selected")
+
+        waitingDialog.show('Please Wait Loading Contacts...');
+        var urlGetProjectList = $('#urlGetProject').val();
+        $.ajax({
+            type: 'GET',
+            data: { "UtilityId": value.val() },
+            url: urlGetProjectList,
+            success: function (data) {
+
+                if (data != null) {
+                    $.each(data, function (index, item) {
+                        if (index == 0) { $('#ProjectId').append($('<option></option>').val('0').html("")); }
+                        $('#ProjectId').append($('<option></option>').val(item.ProjectId).html(item.ProjectName));
+                    });
+                }
+                $('#ProjectId').trigger('chosen:updated');
+
+
+                waitingDialog.hide();
+            },
+            error: function () {
+                var $toast = toastr["error"]("something seems wrong", "Error Notification");
+                waitingDialog.hide();
+            }
+        });
+
+    });
+
+
+    function LoadDatatable() {
+        debugger;
+        var ProjectId = $("#ProjectId").val();
+        var InstallerId = $("#InstallerId").val();
+        var CategoryId = $("#CategoryId").val();
+        var ProductId = $("#ProductId").val();
+        var txtFromDate = $("#txtFromDate").val();
+        var txtToDate = $("#txtToDate").val();
+        var ReportType = $("#ReportType").val();
+
+
+        if (ReportType == "0") {
+            $("#divDetail").hide();
+            $("#divSummary").show();
+        }
+        else {
+            $("#divDetail").show();
+            $("#divSummary").hide();
+        }
+
+        //if (InstallerId === '0' || InstallerId === '') {
+        //    var $toast = toastr["error"]("Please, select Installers/Managers", "Notification");
+        //    return;
+        //}
+
+        waitingDialog.show('Please Wait...');
+        var urlGetReportData = $("#urlGetReportData").val();
+        $.ajax({
+            type: 'GET',
+            data: { projectId: ProjectId, installerId: InstallerId, ProductId: ProductId, txtFromDate: txtFromDate, txtToDate: txtToDate, ReportType: ReportType },
+            async: true,
+            url: urlGetReportData,
+            success: function (data) {
+
+                waitingDialog.hide();
+
+                if (data.success == "false") {
+                    var $toast = toastr["error"](data.ErrorMessage, "Notification");
+                }
+                else {
+                    if (ReportType == "0") {
+                        BindDataToGridSummary(data.SummeryReportData)
+                    }
+                    else {
+                        BindDataToGrid(data.ReportData)
+                    }
+                }
+
+
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                waitingDialog.hide();
+                console.log("error " + textStatus);
+                console.log("incoming Text " + jqXHR.responseText);
+                var $toast = toastr["error"]("something seems wrong", "Notification");
+            }
+        });
+
+
+
+    }
+
+    function BindDataToGrid(varData) {
+        oTable = $('#dynamic-table').dataTable(
+            {
+
+                "bDestroy": true,
+                "bserverSide": true,
+                "bDeferRender": true,
+                "oLanguage": {
+                    "sLengthMenu": '_MENU_ Records per page'
+                },
+                "aaSorting": [],
+                "order": [],
+                "aaData": varData,
+                "aoColumns": [
+                    { "mData": "UserName" },
+                    { "mData": "CategoryName" },
+                    { "mData": "ProductName" },
+                    { "mData": "SerialNumber" },
+                    { "mData": "AllocatedQty" },
+                    { "mData": "InstalledQty" },
+                    { "mData": "TransferredQty" },
+                    { "mData": "ReturnedQty" },
+                    { "mData": "InHandQty" },
+
+
+                ],
+                "aoColumnDefs": [
+                    //{
+                    //    "mRender": function (data, type, full, row) {
+                    //        return '<a  id=' + full.Id + ' onclick="EditUploadedRecord(' + full.Id + ');" class="btn btn-primary btn-xs" role="button" alt="Edit" title="Edit"><i class="fa fa-pencil"></i></a>';
+                    //    },
+                    //    "aTargets": [11]
+                    //}
+                ],
+
+            }), $('.dataTables_filter input').attr('maxlength', 50);
+
+    }
+
+    function BindDataToGridSummary(varData) {
+        oTable = $('#dynamic-table-Summary').dataTable(
+            {
+
+                "bDestroy": true,
+                "bserverSide": true,
+                "bDeferRender": true,
+                "oLanguage": {
+                    "sLengthMenu": '_MENU_ Records per page'
+                },
+                "aaSorting": [],
+                "order": [],
+                "aaData": varData,
+                "aoColumns": [
+                    { "mData": "UserName" },
+                    { "mData": "CategoryName" },
+                    { "mData": "ProductName" },
+                    { "mData": "OpeningBalance" },
+                    { "mData": "TotalRelasedQty" },
+                    { "mData": "InstalledQty" },
+                    { "mData": "TransferredQty" },
+                    { "mData": "ReturnedQty" },
+                    { "mData": "InHandInventory" },
+
+
+                ],
+
+            }), $('.dataTables_filter input').attr('maxlength', 50);
+
+    }
+
+    //$("#CategoryId").change(function () {
+    //    var categoryId = $("#CategoryId").val();
+
+    //    waitingDialog.show('Please Wait...');
+    //    var urlGetProductbyCategoryId = $("#urlGetProductbyCategoryId").val();
+
+    //    $.ajax({
+    //        type: 'GET',
+    //        data: { categoryId: categoryId },
+    //        async: true,
+    //        url: urlGetProductbyCategoryId,
+    //        success: function (data) {
+    //            debugger;
+    //            waitingDialog.hide();
+    //            if (data.statusMessage.Success) {
+    //                $('#ProductId').empty();
+
+    //                var count = data.productList.length;
+    //                if (count > 0) {
+
+    //                    $.each(data.productList, function (index, item) {
+    //                        if (index == 0) {
+    //                            $('#ProductId').append(
+    //                                $('<option></option>').val('0').text("All Product"));
+    //                        }
+    //                        $('#ProductId').append(
+    //                            $('<option></option>').val(item.Id).html(item.ProductName)
+    //                        );
+
+    //                    });
+
+    //                }
+    //                $('.chosen-select').trigger('chosen:updated');
+
+    //            }
+    //            else {
+    //                var $toast = toastr["error"](data.ErrorMessage, "Notification !");
+    //            }
+    //        },
+    //        error: function (jqXHR, textStatus, errorThrown) {
+    //            waitingDialog.hide();
+    //            console.log("error " + textStatus);
+    //            console.log("incoming Text " + jqXHR.responseText);
+    //            var $toast = toastr["error"]("something seems wrong", "Notification");
+    //        }
+    //    });
+    //})
+
+    $("#ProjectId").change(function () {
+
+        $('#ProductId').empty().trigger('chosen:updated');
+        $('#InstallerId').empty().trigger('chosen:updated');
+
+        var ProjectId = $("#ProjectId").val();
+
+        waitingDialog.show('Please Wait...');
+        var urlGetInstallerByProjectId = $("#urlGetInstallerByProjectId").val();
+
+        $.ajax({
+            type: 'GET',
+            data: { ProjectId: ProjectId },
+            async: true,
+            url: urlGetInstallerByProjectId,
+            success: function (data) {
+                debugger;
+                waitingDialog.hide();
+                if (data.statusMessage.Success) {
+                    $('#InstallerId').empty();
+
+                    var count = data.installerList.length;
+                    if (count > 0) {
+
+                        $.each(data.installerList, function (index, item) {
+                            if (index == 0) {
+                                $('#InstallerId').append($('<option></option>').val('0').text("All Installers/Managers"));
+                            }
+                            $('#InstallerId').append($('<option></option>').val(item.UserId).html(item.UserName));
+                        });
+                    }
+
+                    $('#InstallerId').trigger('chosen:updated');
+
+                    if (data.ProductList != null) {
+                        $.each(data.ProductList, function (index, item) {
+                            if (index == 0) { $('#ProductId').append($('<option></option>').val('0').html("")); }
+
+                            $('#ProductId').append($('<option></option>').val(item.Id).html(item.FieldValue));
+                        });
+                    }
+                    $('#ProductId').trigger('chosen:updated');
+
+
+                }
+                else {
+                    var $toast = toastr["error"](data.Message, "Notification !");
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                waitingDialog.hide();
+                console.log("error " + textStatus);
+                console.log("incoming Text " + jqXHR.responseText);
+                var $toast = toastr["error"]("something seems wrong", "Notification");
+            }
+        });
+    })
+
+    $("#btnSearch").click(function () {
+        debugger;
+        LoadDatatable()
+    })
+    $("#btnExport").click(function () {
+        debugger;
+        var ProjectId = $("#ProjectId").val();
+        var InstallerId = $("#InstallerId").val();
+        //var CategoryId = $("#CategoryId").val();
+        var txtFromDate = $("#txtFromDate").val();
+        var txtToDate = $("#txtToDate").val();
+        var ProductId = $("#ProductId").val();
+        var ReportType = $("#ReportType").val();
+        //if (InstallerId === '0' || InstallerId === '') {
+        //    var $toast = toastr["error"]("Please, select Installers/Managers", "Notification");
+        //    return;
+        //}
+
+        LoadDatatable()
+        var DownloadExcelExport = $('#urlDownloadExcelExport').val();
+        location.href = DownloadExcelExport + "?projectId=" + ProjectId + "&installerId=" + InstallerId + "&ProductId=" + ProductId + "&txtFromDate=" + txtFromDate + "&txtToDate=" + txtToDate + "&ReportType=" + ReportType;;
+    })
+
+    $("#btnReset").click(function () {
+        debugger;
+        //$("#ProjectId").val('0').trigger("chosen:updated");
+        //$("#InstallerId").val('0').trigger("chosen:updated");
+        //$("#CategoryId").val('0').trigger("chosen:updated");
+
+
+        $("#UtilityId").val('0').trigger("chosen:updated");
+        $('#ProjectId').empty().trigger('chosen:updated');
+        $('#ProductId').empty().trigger('chosen:updated');
+        $('#InstallerId').empty().trigger('chosen:updated');
+
+        //$("#ProductId").val('0').trigger("chosen:updated");
+
+        //$("#CategoryId").trigger("change");
+
+        var todayDate = new Date();
+        $("#txtFromDate").datepicker("setDate", todayDate);
+        $("#txtToDate").datepicker("setDate", todayDate);
+
+        $('#dynamic-table').dataTable().fnClearTable();//clear the DataTable
+        $('#dynamic-table-Summary').dataTable().fnClearTable();//clear the DataTable
+        $("#divDetail").hide();
+        $("#divSummary").show();
+    })
+</script>

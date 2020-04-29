@@ -1,0 +1,265 @@
+﻿@{
+    ViewBag.Title = "Project";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+
+@Html.Hidden("urlActiveRecords", Url.Action("getActiveOrDeactiveProjectList", "Project"))
+@Html.Hidden("url_A_Or_D_Records", Url.Action("A_Or_D_Project", "Project"))
+@Html.Hidden("urlsetEditId", Url.Action("setEditId", "Project"))
+
+@Html.Hidden("urlChangeStatus", Url.Action("setProjectStatus", "Project"))
+
+@Html.Hidden("urleditProject", Url.Action("Edit", "Project"))
+@Html.Hidden("urlCloneProject", Url.Action("CloneProject", "Project"))
+
+@Html.Hidden("urlCreateProject", Url.Action("create", "Project"))
+
+@Html.Hidden("urlGetUploadedDatabyProjectID", Url.Action("GetUploadedDatabyProjectID", "Project"))
+
+@Html.Hidden("urlRedirectToEditUploadedData", Url.Action("EditUploadedData", "Project"))
+
+<style>
+    /******************Ihone 5s Portrait Start*******************/
+    @@media (max-width:320px) {
+        .iconic-input {
+            margin-left: 4% !important;
+            margin-right: -10% !important;
+        }
+
+        .dataTables_filter {
+            width: 62%;
+            margin-left: -25%;
+        }
+    }
+    /******************End Ihone 5s Portrait *******************/
+
+    /*****************************Ihone 5s landscape************************************/
+    @@media only screen and (min-width:501px)and (max-width:599px) {
+        .deactivated_records {
+            padding-left: 29% !important;
+        }
+    }
+
+    /****************************5S landscape end**********************************************/
+
+    /*************************IPHONE 6S PORTRAIT***********************************************/
+    @@media only screen and (min-width:360px) and (max-width:420px) {
+        .dataTables_length > label {
+            white-space: normal;
+        }
+
+        .adv-table .dataTables_length select {
+            width: 80% !important;
+        }
+
+        .iconic-input {
+            margin-left: 3% !important;
+            margin-right: -10% !important;
+        }
+    }
+    /*******************6s Portrait End*********************************************************/
+    /***************************** IPHONE 6S Landscape **********************************/
+    @@media only screen and (min-width:651px)and (max-width:767px) {
+
+        .deactivated_records {
+            padding-left: 34.6% !important;
+        }
+    }
+
+    /***************************** IPHONE 6S Landscape End **********************************/
+    @@media only screen and (min-width:321px)and (max-width:359px) {
+        .dataTables_length select {
+        }
+
+        .dataTables_length {
+            width: 36%;
+        }
+
+            .dataTables_length > label {
+                white-space: normal;
+            }
+
+        .adv-table .dataTables_length select {
+            width: 80% !important;
+        }
+
+        .dataTables_filter {
+            /*float: left;
+            text-align: center;
+            width: 61%;*/
+        }
+
+        .iconic-input {
+            margin-left: -1% !important;
+            margin-right: -5% !important;
+        }
+    }
+
+    @@media only screen and (min-width:421px)and (max-width:500px) {
+    }
+
+    @@media only screen and (min-width:600px)and (max-width:640px) {
+    }
+
+    @@media only screen and (min-width:768px)and (max-width:798px) {
+    }
+
+    @@media only screen and (min-width:799px) and (max-width:850px) {
+    }
+
+    @@media only screen and (min-width:851px) and (max-width:967px) {
+        .deactivated_records {
+            padding-left: 30.6% !important;
+        }
+    }
+
+    @@media only screen and (min-width:968px)and (max-width:1023px) {
+    }
+
+    @@media only screen and (min-width:1024px)and (max-width:1100px) {
+        .iconic-input {
+            margin-left: 5% !important;
+            margin-right: -7% !important;
+        }
+    }
+</style>
+
+
+<div id="loading">
+    <div id="loadingcontent">
+        <p id="loadingspinner">
+            Searching things...
+        </p>
+    </div>
+</div>
+
+
+<!-- page start-->
+
+
+<section id="main-content">
+    <section class="wrapper">
+        <!-- page start-->
+        <div class="row">
+            <div class="col-sm-12">
+                <section class="panel">
+                    <header class="panel-heading">
+                        <b>Project Management</b>
+
+                    </header>
+                    <div class="panel-body">
+                        <div class="adv-table">
+                            <div class="row">
+                                <div class="col-lg-4 col-md-4 col-xs-4 add_newbtn">
+                                    <a class="btn btn-success" id="btnNewProject" data-toggle="modal" data-backdrop="static" href="#">
+                                        Add New <i class="fa fa-plus"></i>
+                                    </a>
+                                </div>
+                                <div class="col-lg-8 col-md-8 col-xs-8 show_deactive deactivated_records">
+                                    <input type="checkbox" name="showDeactivate" id="chkShowDeactivate" />Show Deactivated Records
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table id="dynamic-table" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                                    <thead>
+                                        <tr>
+                                            <th width="20%">Project Name</th>
+                                            <th width="13%">Customer Name</th>
+                                            <th width="13%">City</th>
+                                            <th width="13%">LatLong Calculated</th>
+                                            <th width="10%">Start Date</th>
+                                            <th width="10%">End Date</th>
+                                            <th width="10%">Status</th>
+                                            <th width="11%">Action</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</section>
+
+<!-- modal -->
+<!-- Modal for deactivation -->
+<div class="modal fade modal-dialog-center" id="confirmDeactivatedialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content-wrap">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Default Modal Title</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="deactivationID" />
+                    <p>Are you sure to deactivate this record?</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnDeactivateYes" class="btn btn-success" type="button">Yes</button>
+                    <button class="btn btn-danger" id="btnDeactivatNo" type="button">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal -->
+<!-- Modal for confirmActivatedialog -->
+<div class="modal fade modal-dialog-center" id="confirmActivatedialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content-wrap">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Default Modal Title</h4>
+                </div>
+                <div class="modal-body">
+
+
+                    <input type="hidden" id="activationID" />
+                    <p>Are you sure to Activate this record ?</p>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button id="btnActivateYes" class="btn btn-success" type="button">Yes</button>
+                    <button class="btn btn-danger" id="btnActivatNo" type="button">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade modal-dialog-center" id="ChangeStatusdialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content-wrap">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Default Modal Title</h4>
+                </div>
+                <div class="modal-body">
+
+
+                    <input type="hidden" id="changeStatusID" />
+                    <p>Are you sure you want to change the status to Complete ?</p>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button id="btnChangeStatus" class="btn btn-success" type="button">Yes</button>
+                    <button class="btn btn-danger" id="btnCancelChange" type="button">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<link href="~/Content/MSTS/admin/css/bootstrap-multiselect.css" rel="stylesheet" />
+@System.Web.Optimization.Scripts.RenderFormat(GarronT.CMS.UI.SiteKeys.ScriptVersion, "~/bundles/bootstrap-multiselect")
+@System.Web.Optimization.Scripts.RenderFormat(GarronT.CMS.UI.SiteKeys.ScriptVersion, "~/bundles/Project")  

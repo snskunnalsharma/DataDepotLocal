@@ -1,0 +1,129 @@
+.viewer {
+    -ms-touch-action: none;
+}
+
+.iviewer_common {
+    position: absolute;
+    bottom: 10px;
+    border: 1px solid #000;
+    height: 28px;
+    z-index: 5000;
+}
+
+.iviewer_cursor {
+    cursor: url(img/hand.cur) 6 8, pointer;
+}
+
+.iviewer_drag_cursor {
+    cursor: url(img/grab.cur) 6 8, pointer;
+}
+
+.iviewer_button {
+    width: 28px;
+    cursor: pointer;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+.iviewer_zoom_in {
+    left: 10px;
+    /*background: url(img/iviewer.zoom_in.gif) center center no-repeat;*/
+    background-color: #f5f5f5;
+    color: #060606;
+}
+
+.iviewer_zoom_out {
+    left: 45px;
+    /*background: url(img/iviewer.zoom_out.gif) center center no-repeat;*/
+    background-color: #f5f5f5;
+    color: #060606;
+}
+
+.iviewer_zoom_zero {
+    left: 90px;
+    /*background: url(img/iviewer.zoom_zero.gif) center center no-repeat;*/
+    background-color: #f5f5f5;
+    color: #060606;
+}
+
+.iviewer_zoom_fit {
+    left: 125px;
+    /*background: url(img/iviewer.zoom_fit.gif) center center no-repeat;*/
+    background-color: #f5f5f5;
+    color: #060606;
+}
+
+.iviewer_zoom_status {
+    left: 80px;
+    font: 1em/28px Sans;
+    color: #000;
+    background-color: #fff;
+    text-align: center;
+    width: 60px;
+}
+.iviewer_zoom_status:hover{
+   background-color: #444;
+    color: white;
+}
+.iviewer_zoom_in:hover{
+   background-color: #444;
+    color: white;
+}
+.iviewer_zoom_out:hover{
+   background-color: #444;
+    color: white;
+}
+.iviewer_rotate_left {
+    left: 147px;
+    background-color: #f5f5f5;
+    color: #060606;
+    /*background: #fff url(img/iviewer.rotate_left.png) center center no-repeat;*/
+}
+.iviewer_rotate_left:hover {
+    background-color: #444;
+    color: white;
+}
+.iviewer_rotate_right {
+    left: 182px;
+    background-color: #f5f5f5;
+    color: #060606;
+    /*background: #fff url(img/iviewer.rotate_right.png) center center no-repeat;*/
+}
+
+.iviewer_rotate_right:hover{
+   background-color: #444;
+    color: white;
+}
+
+.iviewer_remove_image {
+    left: 217px;
+    background-color: #f5f5f5;
+    color: #060606;
+    /*background: #fff url(img/iviewer.rotate_right.png) center center no-repeat;*/
+}
+
+.iviewer_remove_image:hover{
+    background-color: #444;
+    color: white;
+}
+.iviewer_previous_image {
+    left: 290px;
+    background-color: #f5f5f5;
+    color: #060606;
+    /*background: #fff url(img/iviewer.rotate_right.png) center center no-repeat;*/
+}
+
+.iviewer_next_image {
+    left: 340px;
+    background-color: #f5f5f5;
+    color: #060606;
+    /*background: #fff url(img/iviewer.rotate_right.png) center center no-repeat;*/
+}
+.iviewer_previous_image:hover{
+    background-color: #444;
+    color: white;
+}
+.iviewer_next_image:hover{
+    background-color: #444;
+    color: white;
+}

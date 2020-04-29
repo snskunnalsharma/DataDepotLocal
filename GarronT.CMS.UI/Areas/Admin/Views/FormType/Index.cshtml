@@ -1,0 +1,1364 @@
+﻿@{
+    ViewBag.Title = "Form Type Master";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@Html.Hidden("UrlGetFormTypeList", Url.Action("GetFormTypeList", "FormType"))
+@Html.Hidden("urlEditData", Url.Action("Create", "FormType"))
+@Html.Hidden("urlActiveDeactiveData", Url.Action("ActivateOrDeactivate", "FormType"))
+@Html.Hidden("urlDeActiveRecords", Url.Action("GetDeActiveRecords", "FormType"))
+@Html.Hidden("urlGetData", Url.Action("Edit", "FormType"))
+@Html.Hidden("urlGetAddNew", Url.Action("AddNew", "FormType"))
+<style>
+    .toast-top-center {
+        margin-top: -50px;
+    }
+
+    .control-label {
+    }
+
+    .form-horizontal .control-label {
+        padding-top: 0px;
+    }
+
+    .desc-lab {
+        margin-left: -10px;
+        margin-right: 10px;
+    }
+
+    @@media (max-width:320px) {
+        .deact_mter {
+            margin-left: -35%;
+            width: 170%;
+        }
+    }
+
+    @@media only screen and (min-width:321px) and (max-width:359px) {
+        .deact_mter {
+            margin-left: 1%;
+        }
+    }
+
+    @@media only screen and (min-width:360px) and (max-width:410px) {
+        .deact_mter {
+            margin-left: -19%;
+            width: 136%;
+        }
+    }
+
+    @@media only screen and (min-width:411px) and (max-width:429px) {
+        .deact_mter {
+            margin-left: -10%;
+            width: 128%;
+        }
+
+        .deactivated_records {
+            padding-left: 9%;
+            -webkit-padding-start: 9%;
+            moz-padding-start: 9%;
+        }
+    }
+
+    @@media only screen and (min-width:480px)and (max-width:530px)and (orientation: portrait) {
+        .deact_mter {
+            margin-left: 5% !important;
+            width: 125%;
+        }
+    }
+
+    @@media only screen and (min-width:480px)and (max-width:530px)and (orientation: landscape) {
+        .deact_mter {
+            margin-left: 5% !important;
+            width: 125%;
+        }
+    }
+
+    @@media only screen and (min-width:600px) and (max-width:640px) and (orientation:portrait) {
+        .deact_mter {
+            margin-left: 14%;
+            width: 100%;
+        }
+    }
+
+    @@media only screen and (min-width:600px) and (max-width:640px) and (orientation:landscape) {
+        .deact_mter {
+            margin-left: 37%;
+            width: 100%;
+        }
+    }
+
+    @@media only screen and (min-width:641px)and (max-width:710px) {
+        .deact_mter {
+            margin-left: 10%;
+            width: 125%;
+        }
+    }
+
+    @@media only screen and (min-width:711px)and (max-width:767px) {
+        .serv_mod_cont {
+            margin-left: 32% !important;
+            width: 100%;
+            margin-bottom: 16%;
+        }
+
+        .deact_mter {
+            margin-left: 37%;
+            width: 100%;
+        }
+    }
+</style>
+
+<style>
+    /*************************************Bootstrap Css***********************************/
+    @@media (min-width:1200px) {
+        .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9 {
+            float: left;
+        }
+
+        .col-lg-12 {
+            width: 100%;
+        }
+
+        .col-lg-11 {
+            width: 91.66666667%;
+        }
+
+        .col-lg-10 {
+            width: 83.33333333%;
+        }
+
+        .col-lg-9 {
+            width: 75%;
+        }
+
+        .col-lg-8 {
+            width: 66.66666667%;
+        }
+
+        .col-lg-7 {
+            width: 58.33333333%;
+        }
+
+        .col-lg-6 {
+            width: 50% !important;
+        }
+
+        .col-lg-5 {
+            width: 41.66666667%;
+        }
+
+        .col-lg-4 {
+            width: 33.33333333%;
+        }
+
+        .col-lg-3 {
+            width: 25%;
+        }
+
+        .col-lg-2 {
+            width: 16.66666667%;
+        }
+
+        .col-lg-1 {
+            width: 8.33333333%;
+        }
+
+        .multiselect {
+            padding: 3px;
+        }
+
+        .lg-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .lg-nopaddingright {
+            padding-right: 0px;
+        }
+
+        .lg-nopadding {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+    }
+
+    @@media (min-width:992px) and (max-width:1199px) {
+        .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9 {
+            float: left;
+        }
+
+        .col-md-12 {
+            width: 100%;
+        }
+
+        .col-md-11 {
+            width: 91.66666667%;
+        }
+
+        .col-md-10 {
+            width: 83.33333333%;
+        }
+
+        .col-md-9 {
+            width: 75%;
+        }
+
+        .col-md-8 {
+            width: 66.66666667%;
+        }
+
+        .col-md-7 {
+            width: 58.33333333%;
+        }
+
+        .col-md-6 {
+            width: 50%;
+        }
+
+        .col-md-5 {
+            width: 41.66666667%;
+        }
+
+        .col-md-4 {
+            width: 33.33333333%;
+        }
+
+        .col-md-3 {
+            width: 25%;
+        }
+
+        .col-md-2 {
+            width: 16.66666667%;
+        }
+
+        .col-md-1 {
+            width: 8.33333333%;
+        }
+
+        .col-md-pull-12 {
+            right: 100%;
+        }
+
+        .col-md-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-md-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-md-pull-9 {
+            right: 75%;
+        }
+
+        .col-md-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-md-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-md-pull-6 {
+            right: 50%;
+        }
+
+        .col-md-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-md-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-md-pull-3 {
+            right: 25%;
+        }
+
+        .col-md-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-md-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-md-pull-0 {
+            right: auto;
+        }
+
+        .col-md-push-12 {
+            left: 100%;
+        }
+
+        .col-md-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-md-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-md-push-9 {
+            left: 75%;
+        }
+
+        .col-md-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-md-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-md-push-6 {
+            left: 50%;
+        }
+
+        .col-md-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-md-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-md-push-3 {
+            left: 25%;
+        }
+
+        .col-md-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-md-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-md-push-0 {
+            left: auto;
+        }
+
+        .col-md-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-md-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-md-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-md-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-md-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-md-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-md-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-md-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-md-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-md-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-md-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-md-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-md-offset-0 {
+            margin-left: 0;
+        }
+
+        .md-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .md-nopaddingright {
+            padding-right: 0px;
+        }
+
+        .md-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .md-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .md-clear {
+            clear: both;
+        }
+
+        .md-nopadding {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+
+        .Warehouse_label {
+            /*margin-left: -20px;
+                                        margin-right: 2px;*/
+        }
+    }
+
+    @@media (min-width:768px) and (max-width:991px) {
+
+        .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9 {
+            float: left;
+        }
+
+        .col-sm-12 {
+            width: 100%;
+        }
+
+        .col-sm-11 {
+            width: 91.66666667%;
+        }
+
+        .col-sm-10 {
+            width: 83.33333333%;
+        }
+
+        .col-sm-9 {
+            width: 75%;
+        }
+
+        .col-sm-8 {
+            width: 66.66666667%;
+        }
+
+        .col-sm-7 {
+            width: 58.33333333%;
+        }
+
+        .col-sm-6 {
+            width: 50%;
+        }
+
+        .col-sm-5 {
+            width: 41.66666667%;
+        }
+
+        .col-sm-4 {
+            width: 33.33333333%;
+        }
+
+        .col-sm-3 {
+            width: 25%;
+        }
+
+        .col-sm-2 {
+            width: 16.66666667%;
+        }
+
+        .col-sm-1 {
+            width: 8.33333333%;
+        }
+
+        .col-sm-pull-12 {
+            right: 100%;
+        }
+
+        .col-sm-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-sm-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-sm-pull-9 {
+            right: 75%;
+        }
+
+        .col-sm-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-sm-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-sm-pull-6 {
+            right: 50%;
+        }
+
+        .col-sm-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-sm-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-sm-pull-3 {
+            right: 25%;
+        }
+
+        .col-sm-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-sm-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-sm-pull-0 {
+            right: auto;
+        }
+
+        .col-sm-push-12 {
+            left: 100%;
+        }
+
+        .col-sm-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-sm-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-sm-push-9 {
+            left: 75%;
+        }
+
+        .col-sm-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-sm-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-sm-push-6 {
+            left: 50%;
+        }
+
+        .col-sm-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-sm-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-sm-push-3 {
+            left: 25%;
+        }
+
+        .col-sm-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-sm-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-sm-push-0 {
+            left: auto;
+        }
+
+        .col-sm-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-sm-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-sm-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-sm-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-sm-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-sm-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-sm-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-sm-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-sm-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-sm-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-sm-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-sm-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-sm-offset-0 {
+            margin-left: 0;
+        }
+
+        .sm-clear {
+            clear: both;
+        }
+
+        .sm-center {
+            text-align: center;
+        }
+
+        .sm-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .sm-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .sm-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .sm-nopaddingright {
+            padding-right: 0px;
+        }
+
+        .sm-no-padding {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+    }
+
+    @@media (min-width:481px) and (max-width:767px) {
+        .xs-clear {
+            clear: both;
+        }
+
+        .col-xs-1, .col-xs-10, .col-xs-11, .col-xs-12, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9 {
+            float: left;
+        }
+
+        .col-xs-12 {
+            width: 100%;
+        }
+
+        .col-xs-11 {
+            width: 91.66666667%;
+        }
+
+        .col-xs-10 {
+            width: 83.33333333%;
+        }
+
+        .col-xs-9 {
+            width: 75%;
+        }
+
+        .col-xs-8 {
+            width: 66.66666667%;
+        }
+
+        .col-xs-7 {
+            width: 58.33333333%;
+        }
+
+        .col-xs-6 {
+            width: 50%;
+        }
+
+        .col-xs-5 {
+            width: 41.66666667%;
+        }
+
+        .col-xs-4 {
+            width: 33.33333333%;
+        }
+
+        .col-xs-3 {
+            width: 25%;
+        }
+
+        .col-xs-2 {
+            width: 16.66666667%;
+        }
+
+        .col-xs-1 {
+            width: 8.33333333%;
+        }
+
+        .col-xs-pull-12 {
+            right: 100%;
+        }
+
+        .col-xs-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-xs-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-xs-pull-9 {
+            right: 75%;
+        }
+
+        .col-xs-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-xs-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-xs-pull-6 {
+            right: 50%;
+        }
+
+        .col-xs-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-xs-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-xs-pull-3 {
+            right: 25%;
+        }
+
+        .col-xs-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-xs-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-xs-pull-0 {
+            right: auto;
+        }
+
+        .col-xs-push-12 {
+            left: 100%;
+        }
+
+        .col-xs-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-xs-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-xs-push-9 {
+            left: 75%;
+        }
+
+        .col-xs-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-xs-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-xs-push-6 {
+            left: 50%;
+        }
+
+        .col-xs-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-xs-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-xs-push-3 {
+            left: 25%;
+        }
+
+        .col-xs-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-xs-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-xs-push-0 {
+            left: auto;
+        }
+
+        .col-xs-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-xs-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-xs-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-xs-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-xs-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-xs-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-xs-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-xs-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-xs-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-xs-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-xs-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-xs-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-xs-offset-0 {
+            margin-left: 0;
+        }
+
+
+        .xs-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .xs-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .xs-block {
+            display: block;
+        }
+
+        .xs-nopadding {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+
+        .xs-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .xs-nopaddingright {
+            padding-right: 0px;
+        }
+
+        .xs-center {
+            text-align: center;
+        }
+    }
+
+    @@media (max-width:480px) {
+        .xxs-clear {
+            clear: both;
+        }
+
+        .col-xxs-1, .col-xxs-10, .col-xxs-11, .col-xxs-12, .col-xxs-2, .col-xxs-3, .col-xxs-4, .col-xxs-5, .col-xxs-6, .col-xxs-7, .col-xxs-8, .col-xxs-9 {
+            float: left;
+        }
+
+        .col-xxs-12 {
+            width: 100%;
+        }
+
+        .col-xxs-11 {
+            width: 91.66666667%;
+        }
+
+        .col-xxs-10 {
+            width: 83.33333333%;
+        }
+
+        .col-xxs-9 {
+            width: 75%;
+        }
+
+        .col-xxs-8 {
+            width: 66.66666667%;
+        }
+
+        .col-xxs-7 {
+            width: 58.33333333%;
+        }
+
+        .col-xxs-6 {
+            width: 50%;
+        }
+
+        .col-xxs-5 {
+            width: 41.66666667%;
+        }
+
+        .col-xxs-4 {
+            width: 33.33333333%;
+        }
+
+        .col-xxs-3 {
+            width: 25%;
+        }
+
+        .col-xxs-2 {
+            width: 16.66666667%;
+        }
+
+        .col-xxs-1 {
+            width: 8.33333333%;
+        }
+
+        .col-xxs-pull-12 {
+            right: 100%;
+        }
+
+        .col-xxs-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-xxs-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-xxs-pull-9 {
+            right: 75%;
+        }
+
+        .col-xxs-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-xxs-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-xxs-pull-6 {
+            right: 50%;
+        }
+
+        .col-xxs-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-xxs-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-xxs-pull-3 {
+            right: 25%;
+        }
+
+        .col-xxs-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-xxs-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-xxs-pull-0 {
+            right: auto;
+        }
+
+        .col-xxs-push-12 {
+            left: 100%;
+        }
+
+        .col-xxs-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-xxs-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-xxs-push-9 {
+            left: 75%;
+        }
+
+        .col-xxs-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-xxs-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-xxs-push-6 {
+            left: 50%;
+        }
+
+        .col-xxs-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-xxs-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-xxs-push-3 {
+            left: 25%;
+        }
+
+        .col-xxs-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-xxs-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-xxs-push-0 {
+            left: auto;
+        }
+
+        .col-xxs-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-xxs-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-xxs-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-xxs-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-xxs-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-xxs-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-xxs-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-xxs-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-xxs-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-xxs-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-xxs-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-xxs-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-xxs-offset-0 {
+            margin-left: 0;
+        }
+        .xxs-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .xxs-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .xxs-mbot3 {
+            margin-bottom: 3%;
+        }
+
+        .xxs-block {
+            display: block;
+        }
+
+        .xxs-nopadding {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+
+        .xxs-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .xxs-nopaddingright {
+            padding-right: 0px;
+        }
+
+        .xxs-center {
+            text-align: center;
+        }
+
+        .modal-dialog {
+            margin: 10px 10px;
+        }
+        .control-label{
+            padding-left:10px;
+            padding-right:10px;
+        }
+    }
+
+    @@media (max-width: 320px) {
+        .fom_dialog {
+            margin-left: 0%;
+            margin-right: 0%;
+            -webkit-margin-start: 0%;
+            -webkit-margin-after: 0%;
+        }
+    }
+
+    @@media only screen and (max-width: 420px) and (min-width: 360px) {
+        .fom_dialog {
+            margin-left: 0% !important;
+            margin-right: 0% !important;
+        }
+    }
+
+    @@media only screen and (max-width: 479px) and (min-width: 431px) {
+        .fom_dialog {
+            margin-left: 0% !important;
+            margin-right: 0% !important;
+        }
+    }
+
+    @@media only screen and (max-width: 767px) and (min-width: 641px) {
+        /*.frmtyp-lab {
+                text-align: left !important;
+                padding-left: 3%;
+            }
+
+            .desc-lab {
+                margin-left: 0px;
+                margin-right: 0px;
+            }*/
+    }
+</style>
+<div id="loading">
+    <div id="loadingcontent">
+        <p id="loadingspinner">
+            Searching things...
+        </p>
+    </div>
+</div>
+
+
+
+<!-- page start-->
+
+
+<section id="main-content">
+    <section class="wrapper">
+        <!-- page start-->
+        <div class="row">
+            <div class="col-sm-12">
+                <section class="panel">
+                    <header class="panel-heading">
+                        <b>Form Type Master </b>
+
+                    </header>
+                    <div class="panel-body">
+
+                        <div class="row">
+                            <div class="col-lg-4 col-md-4 col-xs-4 add_newbtn">
+                                <a class="btn btn-success" id="btnAddFormType" data-backdrop="static">
+                                    Add New <i class="fa fa-plus"></i>
+                                </a>
+                            </div>
+                            <div class="col-lg-8 col-md-8 col-xs-8 show_deactive deactivated_records">
+                                <input type="checkbox" name="showDeactivate" id="chkShowDeactivate" />Show Deactivated Records
+                            </div>
+                        </div>
+                        <table id="dynamic-table" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                            <thead>
+                                <tr>
+                                    <th width="90%">Form Type</th>
+                                    <th width="10%" class="text-nowrap">Action</th>
+                                </tr>
+                            </thead>
+                        </table>
+
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</section>
+<!-- Modal for Add /Edit Dialog -->
+<div class="modal fade modal-dialog-center" id="myModal" role="dialog" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content-wrap">
+            <div class="modal-content fom_dialog">
+                <div class="modal-header">
+                    <button type="button" class="close" id="btnclose" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Add New Form Type</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="panel-body">
+                        <form id="form3" class="cmxform form-horizontal tasi-form">
+                            <div class="form-group ">
+
+                                @*<label for="name" class="col-lg-3">Meter Size<span style="color:red">*</span></label>*@
+
+                                <label for="name" class="col-lg-2 col-sm-3 col-xs-3 col-xxs-12 control-label frmtyp-lab">Form Type<span style="color:red">*</span></label>
+                                <div class="col-lg-8 col-sm-9 col-xs-9 col-xxs-12">
+                                    <input type="hidden" name="ID" id="txtFormTypeId" class="inputclass form-control" />
+                                    <input type="text" name="FormType" maxlength="50" id="txtFormType" class="inputclass form-control  " />
+
+
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                @*<label for="name" class="col-lg-3">Description </label>*@
+
+                                <label for="name" class="col-lg-2 col-sm-3 col-xs-3 col-xxs-12 control-label frmtyp-lab desc-lab">Description </label>
+                                <div class="col-lg-8 col-sm-9 col-xs-9 col-xxs-12">
+                                    <input type="text" name="Description" maxlength="500" id="txtFormTypeDescription" class="inputclass form-control " />
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-header-frm">
+                    <h4 style="background-color: #4584C1; color:white;">Dependant Forms On Reopen Operation </h4>
+                </div>
+
+                <div class="modal-body">
+                    <div class="panel-body">
+                        <form id="form3" class="cmxform form-horizontal tasi-form">
+
+                            @*<div style="background-color: #4584C1; color:white;">*@
+                            @*<h4 class="col-lg-12 col-sm-12 col-xs-12" style="background-color: #4584C1; color:white;">Dependant Forms On Reopen Operation </h4>*@
+                            @*</div>*@
+                            <div id="FormMapping">
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnSave" class="btn btn-success" type="button">Save</button>
+                    <button class="btn btn-danger" id="btnCancel" type="button">Cancel</button>
+                    <button class="btn btn-default" id="btnReset" type="button">Reset</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal -->
+<!-- Modal for deactivation -->
+<div class="modal fade modal-dialog-center" id="confirmDeactivatedialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content-wrap">
+            @*<div class="modal-content metrmke_dialog deact_mter">*@
+            <div class="modal-content deact_mter">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Default Modal Tittle</h4>
+                </div>
+                <div class="modal-body">
+
+                    <input type="hidden" id="deactivationID" />
+                    <p>Are you sure to deactivate this record ?</p>
+
+                </div>
+                <div class="modal-footer">
+                    <button id="btnDeactivateYes" class="btn btn-success" type="button">Yes</button>
+                    <button class="btn btn-danger" id="btnDeactivatNo" type="button">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal -->
+<!-- Modal for confirmActivatedialog -->
+<div class="modal fade modal-dialog-center" id="confirmActivatedialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content-wrap">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Default Modal Tittle</h4>
+                </div>
+                <div class="modal-body">
+
+
+                    <input type="hidden" id="activationID" />
+                    <p>Are you sure to Activate this record ?</p>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button id="btnActivateYes" class="btn btn-success" type="button">Yes</button>
+                    <button class="btn btn-danger" id="btnActivatNo" type="button">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src='@Url.Content("~/Scripts/Admin/FormTypeMaster.js")'></script>
+

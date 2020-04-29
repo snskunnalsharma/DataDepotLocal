@@ -1,0 +1,3324 @@
+﻿@{
+    ViewBag.Title = "User Master";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+@Html.Hidden("urlRoleList", Url.Action("GetRoleList", "Users"))
+@Html.Hidden("TmpListClearUrl", Url.Action("TmpListClear", "Users"))
+@Html.Hidden("TmpListRemoveUrl", Url.Action("TmpListRemove", "Users"))
+@Html.Hidden("urlEditData", Url.Action("Create1", "Users"))
+@Html.Hidden("UrlStateList", Url.Action("GetStateList", "Users"))
+@Html.Hidden("urlDeleteData", Url.Action("Delete", "Users"))
+
+@Html.Hidden("urlDeActiveRecords", Url.Action("GetDeActiveRecords", "Users"))
+@Html.Hidden("urlGetData", Url.Action("Edit", "Users"))
+
+@Html.Hidden("UrlUserList", Url.Action("GetUserList", "Users"))
+@Html.Hidden("urlGetManagerList", Url.Action("GetManagerList", "Users"))
+@Html.Hidden("urlGetSuperVisorList", Url.Action("GetSuperVisorList", "Users"))
+@*@Html.Hidden("urlEditData", Url.Action("Create", "Users"))*@
+@Html.Hidden("EditUserDetails", Url.Action("EditUserDetails", "Users"))
+
+@Html.Hidden("StateListUrl", Url.Action("GetStateList", "Customer"))
+@Html.Hidden("CityByStateIDListUrl", Url.Action("GetCityList", "Customer"))
+
+@Html.Hidden("ServicesListUrl", Url.Action("GetServicesList", "Services"))
+
+@Html.Hidden("EditUserID", (object)ViewBag.UserID)
+
+@Html.Hidden("UserForm", (object)ViewBag.Form)
+@Html.Hidden("urlGetFormTypeList", Url.Action("GetFormTypeList", "Users"))
+
+@Html.Hidden("urlCheckAssignedProjects", Url.Action("CheckAssignedProjects", "Users"))
+
+@Html.Hidden("urlLogoupload", Url.Action("Logoupload", "Users"))
+@Html.Hidden("WebURL", System.Configuration.ConfigurationManager.AppSettings["WebURL"])
+@Html.Hidden("urlLogouploadVehicle", Url.Action("LogouploadVehicle", "Users"))
+
+@Html.Hidden("urlIndexpage", Url.Action("Index", "Users"))
+
+@Html.Hidden("urlGetVehicleMakeList", Url.Action("GetVehicleMakeList", "Users"))
+@Html.Hidden("urlGetVehicleModelList", Url.Action("GetVehicleModelList", "Users"))
+
+
+@Html.Hidden("urlBindUserFormTypeByUserID", Url.Action("GetUserFormTypeList", "Users"))
+
+
+
+@Html.Hidden("urlGetCustomerList", Url.Action("GetCustomerList", "Users"))
+
+<!--Added by sominath-->
+@Html.Hidden("urlGetStateListURL", Url.Action("GetStateList", "Users"))
+@Html.Hidden("urlGetCityLisyByStateIdURL", Url.Action("GetCityListByID", "Users"))
+@Html.Hidden("urlGetImageNameListURL", Url.Action("GetImagenameListByCityID", "Users"))
+@Html.Hidden("urlGetClientLogoImagePath", Url.Action("GetClientLogoImagePath", "Users"))
+@Html.Hidden("urlSaveLogoMessage", Url.Action("SaveLogoMessage", "Users"))
+@Html.Hidden("urlGetLogoMessage", Url.Action("GetLogoMessage", "Users"))
+@Html.Hidden("urlRemoveProfileImg", Url.Action("RemoveProfileImage", "Users"))
+@Html.Hidden("urlRemoveVehicleImage", Url.Action("RemoveVehicleImage", "Users"))
+<style type="text/css">
+    .multiselect {
+        width: 167px !important;
+    }
+
+    .form-horizontal .control-label {
+        text-align: justify !important;
+        font-weight: unset;
+        font-size: 13px;
+    }
+
+    label.error {
+        padding-left: 0px;
+    }
+
+    .chosen-select {
+        width: 11%;
+    }
+    /*.pswd_txt  .error{
+         padding-top:5px;
+     }*/
+    .wrapper {
+        margin-bottom: 26px !important;
+        height: 14em;
+    }
+
+    .cre_citybox .chosen-drop {
+        max-height: 14em !important;
+    }
+
+    .chosen-container .chosen-results {
+        max-height: 8em !important;
+    }
+
+    .nm_txt {
+        width: 98%;
+    }
+
+    .mail_txt {
+        width: 98%;
+    }
+
+    .adddr_txt {
+        width: 98%;
+    }
+
+    .zip_txt {
+        width: 98%;
+    }
+
+    .phon_txt {
+        width: 98%;
+    }
+
+    .mob_txt {
+        width: 98%;
+    }
+
+    .log_txt {
+        width: 98%;
+    }
+
+    .pswd_txt {
+        width: 98%;
+    }
+
+    .repswd_txt {
+        width: 98%;
+    }
+
+    .job_txt {
+        width: 98%;
+    }
+
+    .yr_txt {
+        width: 98%;
+    }
+
+    .lic_txt {
+        width: 98%;
+        margin-top: 3%;
+    }
+
+    .col_txt {
+        width: 98%;
+        margin-top: 3%;
+    }
+
+    #cke_1_top {
+        display: none;
+    }
+
+    #cke_1_bottom {
+        display: none;
+    }
+
+    #cke_1_contents {
+        height: 6em !important;
+    }
+
+    .cke_chrome {
+        border: 2px solid #b6b6b6 !important;
+    }
+
+    .dialogbox {
+        width: 100px;
+        height: 100px;
+        background: grey;
+        display: none;
+    }
+
+    .client-mod-bdy {
+        height: 27em;
+    }
+
+    .fileupload-preview img {
+        height: 100%;
+        width: 100%;
+    }
+
+    .fileupload-preview {
+        line-height: 0 !important;
+    }
+
+    .fileupload-new img {
+        width: 100%;
+    }
+</style>
+<style type="text/css">
+    @@media only screen and (min-width:430px) and (max-width:767px) {
+
+
+
+        .control-label {
+            /*padding-left: 4%;*/
+            width: 16% !important;
+        }
+
+        .form-control {
+            margin-bottom: 2%;
+        }
+
+        .form_typ {
+            white-space: normal;
+        }
+
+        .form-control {
+            border-radius: 4px;
+            margin-bottom: 2%;
+            width: 98%;
+        }
+
+        .cre_genderbox > .chosen-container {
+            margin-bottom: 2%;
+        }
+
+        .cre_statebox > .chosen-container {
+            margin-bottom: 2%;
+        }
+
+        .cre_citybox > .chosen-container {
+            margin-bottom: 2%;
+        }
+
+        .chosen-select {
+            width: 20%;
+        }
+        /*.control-label-1 {
+            width: 100%;
+            margin-left: -5% !important;
+        }*/
+        .edt_job {
+            margin-top: 2%;
+        }
+
+        .job_txt {
+            margin-top: 2%;
+        }
+
+        .sel-make {
+            padding-top: 2%;
+            padding-bottom: 1%;
+        }
+        /*Label class name*/
+        /*.edt_nm {
+
+            }
+
+            .edt_log {
+
+            }
+            .edt_Gender{
+
+            }
+            .edt_pswd {
+
+            }
+
+            .edt_repswd {
+
+
+            }
+
+            .edt_addr {
+
+            }
+            .edt_State{
+
+            }
+            .edt_City{
+
+            }
+            .edt_email {
+
+
+            }
+            .edt_Zip{
+
+            }
+            .edt_mob {
+
+            }
+            .edt_HomePhone{
+
+            }
+            .edt_rle {
+
+            }
+            .edt_job{
+
+            }
+            .edt_frmtyp {
+
+            }
+            .edt_mklab{
+
+            }
+           .edt_modlab{
+
+            }
+             .edt-yr{
+
+             }
+             .edt-lic{
+
+             }
+              .edt-color{
+
+             }*/
+        .edt_job {
+            margin-top: 2%;
+        }
+
+        .job_txt {
+            margin-top: 2%;
+        }
+
+        .edt_modlab {
+            padding-top: 2%;
+            padding-bottom: 1%;
+        }
+
+        .sel-make {
+            padding-top: 2%;
+            padding-bottom: 1%;
+        }
+
+        .edt-lic {
+            margin-top: 1%;
+        }
+
+        .wrapper {
+            margin-bottom: 8%;
+            height: auto;
+        }
+
+        .cre_citybox .chosen-drop {
+            max-height: 14em !important;
+            margin-bottom: 18%;
+        }
+
+        .chosen-container .chosen-results {
+            max-height: 6em !important;
+        }
+
+        .edt-yr {
+            margin-top: 1%;
+        }
+
+        .yr_txt {
+            margin-bottom: 0%;
+            margin-top: 1%;
+        }
+
+        .lic_txt {
+            margin-top: 1%;
+        }
+
+        .col_txt {
+            margin-top: 0%;
+        }
+    }
+
+
+    /********************************** IPHONE 5S PORTRAIT***************/
+    @@media (max-width:320px) {
+        .iconic-input {
+            margin-left: 61%;
+            margin-top: -44%;
+        }
+
+        .edt_usr_modal {
+        }
+
+        .usr_header {
+        }
+
+        .usr_nm {
+        }
+
+        .usr_pswd {
+        }
+
+        .usr_addr {
+        }
+
+        .usr_mob {
+        }
+        /*Label class name*/
+        .edt_nm {
+            margin-left: 5% !important;
+        }
+
+        .edt_log {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_Gender {
+            margin-left: 5% !important;
+            padding-top: 3%;
+        }
+
+        .edt_pswd {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_repswd {
+            margin-left: 5%;
+            padding-top: 1%;
+            width: 10%;
+        }
+
+        .edt_addr {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_State {
+            margin-left: 5%;
+            padding-top: 2%;
+        }
+
+        .edt_City {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_email {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_Zip {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_mob {
+            padding-top: 1%;
+            margin-left: 5%;
+        }
+
+        .edt_HomePhone {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_rle {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_job {
+            margin-left: 5%;
+            padding-top: 2%;
+        }
+
+        .edt_frmtyp {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_mklab {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_modlab {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt-yr {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt-lic {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt-color {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .allocation_usr {
+            width: 76% !important;
+        }
+
+        .open > .dropdown-menu {
+        }
+
+        allocation_m > .dropdown-menu {
+            position: relative !important;
+        }
+        /*Search icon*/
+        .input-group-addon1 {
+            margin-left: 0% !important;
+        }
+        /*Deactivate pop up for user*/
+        .usr_deact_mter {
+            margin-left: -28%;
+            margin-right: -26%;
+        }
+
+        .wrapper {
+            margin-bottom: 8%;
+            overflow: auto;
+            height: auto;
+        }
+
+        .cre_citybox .chosen-drop {
+            /*max-height: 11em !important;*/
+            overflow-y: auto;
+            margin-bottom: 12% !important;
+            overflow-x: hidden;
+        }
+
+        .chosen-container .chosen-results {
+            /*max-height: 8em !important;*/
+            /*overflow:hidden !important;*/
+            margin-bottom: 1% !important;
+        }
+
+        .control-label-1 {
+            width: 100% !important;
+            margin-left: -5% !important;
+        }
+
+        .lic_txt {
+            margin-top: 0%;
+        }
+
+        .col_txt {
+            margin-top: 0%;
+        }
+    }
+
+    @@media only screen and (min-width:321px) and (max-width:359px) {
+        .adv-table .dataTables_length select {
+            width: 82% !important;
+        }
+
+        div.dataTables_length label {
+            white-space: normal !important;
+        }
+
+        .iconic-input {
+            margin-left: 3%;
+        }
+
+        .edt_usr_modal {
+        }
+
+        .usr_header {
+            position: static;
+            z-index: 9999999;
+            width: 100%;
+        }
+
+        .usr_modal_body {
+            /*height: 33em;
+                overflow-y: scroll;*/
+        }
+
+        .usr_nm {
+        }
+
+        .usr_pswd {
+        }
+
+        .usr_addr {
+        }
+
+        .usr_mob {
+        }
+        /*Label class name*/
+        .edt_nm {
+            margin-left: 5% !important;
+        }
+
+        .edt_log {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_Gender {
+            margin-left: 5% !important;
+            padding-top: 3%;
+        }
+
+        .edt_pswd {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_repswd {
+            margin-left: 5%;
+            padding-top: 1%;
+            width: 10%;
+        }
+
+        .edt_addr {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_State {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_City {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_email {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_Zip {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_mob {
+            padding-top: 1%;
+            margin-left: 5%;
+        }
+
+        .edt_HomePhone {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_rle {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_job {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_frmtyp {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_mklab {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_modlab {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt-yr {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt-lic {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt-color {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .allocation_usr {
+            width: 76% !important;
+        }
+
+        .open > .dropdown-menu {
+            width: 184% !important;
+        }
+
+        allocation_m > .dropdown-menu {
+            position: relative !important;
+        }
+        /*Search icon*/
+        .input-group-addon1 {
+            margin-left: -75% !important;
+        }
+        /*Deactivate pop up for user*/
+        .usr_deact_mter {
+        }
+
+        .cmxform .form-group label.error {
+        }
+
+        .wrapper {
+            margin-bottom: 8%;
+            overflow: auto;
+            height: auto;
+        }
+
+        .cre_citybox .chosen-drop {
+            max-height: 14em !important;
+        }
+
+        .chosen-container .chosen-results {
+            max-height: 8em !important;
+        }
+
+        .control-label-1 {
+            width: 100% !important;
+            margin-left: -5% !important;
+        }
+
+        .lic_txt {
+            margin-top: 0%;
+        }
+
+        .col_txt {
+            margin-top: 0%;
+        }
+    }
+    /*****************************************iphone 6s portrait*******************************/
+
+    @@media only screen and (min-width:360px) and (max-width:420px) {
+        .adv-table .dataTables_length select {
+            width: 82% !important;
+        }
+
+        .iconic-input {
+            margin-left: 3%;
+        }
+
+        div.dataTables_length label {
+            white-space: normal !important;
+        }
+
+        .edt_usr_modal {
+        }
+
+        .usr_header {
+            position: static;
+            z-index: 9999999;
+            width: 100%;
+        }
+
+        .usr_modal_body {
+            /*height: 33em;
+                overflow-y: scroll;*/
+        }
+
+        .usr_nm {
+        }
+
+        .usr_pswd {
+        }
+
+        .usr_addr {
+        }
+
+        .usr_mob {
+        }
+        /*Label class name*/
+        .edt_nm {
+            margin-left: 5% !important;
+        }
+
+        .edt_log {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_Gender {
+            margin-left: 5% !important;
+            padding-top: 3%;
+        }
+
+        .edt_pswd {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_repswd {
+            margin-left: 5%;
+            padding-top: 1%;
+            width: 10%;
+        }
+
+        .edt_addr {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_State {
+            margin-left: 5%;
+            padding-top: 2%;
+        }
+
+        .edt_City {
+            margin-left: 5%;
+            padding-top: 2%;
+        }
+
+        .edt_email {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_Zip {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_mob {
+            padding-top: 1%;
+            margin-left: 5%;
+        }
+
+        .edt_HomePhone {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_rle {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_job {
+            margin-left: 5%;
+            padding-top: 2%;
+        }
+
+        .edt_frmtyp {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_mklab {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_modlab {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt-yr {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt-lic {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt-color {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .allocation_usr {
+            width: 76% !important;
+        }
+
+        .open > .dropdown-menu {
+        }
+
+        allocation_m > .dropdown-menu {
+            position: relative !important;
+        }
+        /*Search icon*/
+        .input-group-addon1 {
+            margin-left: -75% !important;
+        }
+        /*Deactivate pop up for user*/
+        .usr_deact_mter {
+        }
+
+        .wrapper {
+            margin-bottom: 8%;
+            overflow: auto;
+            height: auto;
+        }
+
+        .cre_citybox .chosen-drop {
+            max-height: 14em !important;
+        }
+
+        .chosen-container .chosen-results {
+            max-height: 8em !important;
+        }
+
+        .control-label-1 {
+            width: 100% !important;
+            margin-left: -5% !important;
+        }
+
+        .lic_txt {
+            margin-top: 0%;
+        }
+
+        .col_txt {
+            margin-top: 0%;
+        }
+    }
+
+    @@media only screen and (min-width:421px) and (max-width:479px) {
+    }
+
+    @@media only screen and (min-width:480px) and (max-width:530px) {
+
+        .edt_usr_modal {
+            margin-left: -10%;
+            width: 118%;
+            margin-bottom: 18% !important;
+        }
+
+        .usr_nm {
+        }
+
+        .usr_pswd {
+        }
+
+        .usr_addr {
+        }
+
+        .usr_mob {
+        }
+        /****Fields class *****/
+        .nm_txt {
+        }
+
+        .log_txt {
+        }
+
+        .pswd_txt {
+        }
+
+        .repswd_txt {
+        }
+
+        .adddr_txt {
+        }
+
+        .mail_txt {
+        }
+
+        .mob_txt {
+        }
+
+        .rle_txt {
+        }
+        /*Label class name*/
+        /*Label class name*/
+        .edt_nm {
+        }
+
+        .edt_log {
+        }
+
+        .edt_Gender {
+            margin-left: -1%;
+            margin-right: 1%;
+        }
+
+        .edt_pswd {
+            margin-left: -1.4%;
+            margin-right: 1.4%;
+        }
+
+        .edt_repswd {
+            padding-left: 1%;
+        }
+
+        .edt_addr {
+            margin-left: -1%;
+            margin-right: 1%;
+        }
+
+        .edt_State {
+        }
+
+        .edt_City {
+        }
+
+        .edt_email {
+        }
+
+        .edt_Zip {
+            margin-left: -2%;
+            margin-right: 2%;
+        }
+
+        .edt_mob {
+            margin-left: -3%;
+            margin-right: 3%;
+        }
+
+        .edt_HomePhone {
+            margin-left: -2%;
+            margin-right: 2%;
+        }
+
+        .edt_rle {
+            padding-left: 5%;
+        }
+
+        .edt_job {
+        }
+
+        .edt_frmtyp {
+            margin-left: -3%;
+            margin-right: 3%;
+        }
+
+        .edt_mklab {
+        }
+
+        .edt_modlab {
+        }
+
+        .edt-yr {
+        }
+
+        .edt-lic {
+        }
+
+        .edt-color {
+        }
+
+        .allocation_usr {
+            width: 71%;
+        }
+
+        .open > .dropdown-menu {
+        }
+
+        allocation_m > .dropdown-menu {
+            position: relative !important;
+        }
+
+        .input-group-addon1 {
+            margin-left: -75% !important;
+        }
+        /*Deactivate pop up for user*/
+        .usr_deact_mter {
+        }
+
+        .cmxform .form-group label.error {
+            padding-left: 0;
+            white-space: normal;
+        }
+
+        .control-label-1 {
+            width: 100% !important;
+        }
+    }
+
+    /*****************************Ihone 5s landscape************************************/
+
+    @@media only screen and (min-width:531px)and (max-width:567px) {
+        .deactivated_records {
+            padding-left: 29% !important;
+        }
+        /*Modal background fade*/
+        .modal-backdrop {
+            height: 122% !important;
+        }
+
+            .modal-backdrop.in {
+                height: 174% !important;
+            }
+
+        .iconic-input {
+        }
+
+        .edt_usr_modal {
+            width: 100%;
+            margin-bottom: 12%;
+        }
+
+        .usr_header {
+        }
+
+        .usr_nm {
+        }
+
+        .usr_pswd {
+        }
+
+        .usr_addr {
+        }
+
+        .usr_mob {
+        }
+        /*Label class name*/
+        .edt_nm {
+        }
+
+        .edt_log {
+        }
+
+        .edt_Gender {
+            margin-left: -1%;
+            margin-right: 1%;
+        }
+
+        .edt_pswd {
+        }
+
+        .edt_repswd {
+        }
+
+        .edt_addr {
+            margin-left: -1%;
+            margin-right: 1%;
+        }
+
+        .edt_State {
+        }
+
+        .edt_City {
+        }
+
+        .edt_email {
+        }
+
+        .edt_Zip {
+            margin-left: -1%;
+            margin-right: 1%;
+        }
+
+        .edt_mob {
+            margin-left: -1%;
+            margin-right: 1%;
+        }
+
+        .edt_HomePhone {
+            margin-left: -1%;
+            margin-right: 1%;
+        }
+
+        .edt_rle {
+        }
+
+        .edt_job {
+            margin-left: -1%;
+            margin-right: 1%;
+        }
+
+        .edt_frmtyp {
+        }
+
+        .edt_mklab {
+        }
+
+        .edt_modlab {
+        }
+
+        .edt-yr {
+        }
+
+        .edt-lic {
+        }
+
+        .edt-color {
+        }
+
+        .allocation_usr {
+            width: 70% !important;
+        }
+
+        .open > .dropdown-menu {
+            width: 165% !important;
+        }
+
+        allocation_m > .dropdown-menu {
+            position: relative !important;
+        }
+        /*Search icon*/
+        .input-group-addon1 {
+            margin-left: 0% !important;
+        }
+        /*Deactivate pop up for user*/
+        .usr_deact_mter {
+            margin-left: 2%;
+        }
+
+        .control-label-1 {
+            width: 100% !important;
+        }
+    }
+
+    @@media only screen and (min-width:568px)and (max-width:599px) {
+        .deactivated_records {
+            padding-left: 29% !important;
+        }
+        /*Modal background fade*/
+        .modal-backdrop {
+            height: 122% !important;
+        }
+
+            .modal-backdrop.in {
+                height: 174% !important;
+            }
+
+        .iconic-input {
+        }
+
+        .edt_usr_modal {
+            width: 100%;
+            margin-bottom: 12%;
+        }
+
+        .usr_header {
+        }
+
+        .usr_nm {
+        }
+
+        .usr_pswd {
+        }
+
+        .usr_addr {
+        }
+
+        .usr_mob {
+        }
+        /*Label class name*/
+        .edt_nm {
+        }
+
+        .edt_log {
+        }
+
+        .edt_Gender {
+            margin-left: -1%;
+            margin-right: 1%;
+        }
+
+        .edt_pswd {
+        }
+
+        .edt_repswd {
+        }
+
+        .edt_addr {
+            margin-left: -1%;
+            margin-right: 1%;
+        }
+
+        .edt_State {
+        }
+
+        .edt_City {
+        }
+
+        .edt_email {
+        }
+
+        .edt_Zip {
+            margin-left: -1%;
+            margin-right: 1%;
+        }
+
+        .edt_mob {
+            margin-left: -1%;
+            margin-right: 1%;
+        }
+
+        .edt_HomePhone {
+            margin-left: -1%;
+            margin-right: 1%;
+        }
+
+        .edt_rle {
+        }
+
+        .edt_job {
+            margin-left: -1%;
+            margin-right: 1%;
+        }
+
+        .edt_frmtyp {
+        }
+
+        .edt_mklab {
+        }
+
+        .edt_modlab {
+        }
+
+        .edt-yr {
+        }
+
+        .edt-lic {
+        }
+
+        .edt-color {
+        }
+
+        .allocation_usr {
+            width: 70% !important;
+        }
+
+        .open > .dropdown-menu {
+            width: 165% !important;
+        }
+
+        allocation_m > .dropdown-menu {
+            position: relative !important;
+        }
+        /*Search icon*/
+        .input-group-addon1 {
+            margin-left: 0% !important;
+        }
+        /*Deactivate pop up for user*/
+        .usr_deact_mter {
+            margin-left: 2%;
+        }
+
+        .control-label-1 {
+            width: 100% !important;
+        }
+    }
+
+    @@media only screen and (min-width:600px) and (max-width:640px) and (orientation:portrait) {
+        .edt_usr_modal {
+            margin-left: -25px;
+            width: 112%;
+        }
+
+        .usr_nm {
+        }
+
+        .usr_pswd {
+        }
+
+        .usr_addr {
+        }
+
+        .usr_mob {
+        }
+        /*Label class name*/
+        .edt_nm {
+        }
+
+        .nm_txt {
+        }
+
+        .edt_log {
+        }
+
+        .log_txt {
+        }
+
+        .edt_pswd {
+        }
+
+        .pswd_txt {
+        }
+
+        .edt_repswd {
+        }
+
+        .repswd_txt {
+        }
+
+        .edt_addr {
+        }
+
+        .adddr_txt {
+        }
+
+        .edt_email {
+        }
+
+        .mail_txt {
+        }
+
+        .edt_mob {
+        }
+
+        .mob_txt {
+        }
+
+        .edt_rle {
+        }
+
+        .rle_txt {
+        }
+
+        .allocation_usr {
+            width: 82% !important;
+        }
+
+        .input-group-addon1 {
+            margin-left: -75% !important;
+        }
+        /*Deactivate pop up for user*/
+        .usr_deact_mter {
+            margin-left: 26%;
+            width: 79%;
+        }
+
+        .cmxform .form-group label.error {
+            padding-left: 0;
+            white-space: normal;
+        }
+    }
+
+    @@media only screen and (min-width:600px) and (max-width:640px) and (orientation:landscape) {
+        .edt_usr_modal {
+            margin-left: -25px;
+            width: 112%;
+        }
+
+        .usr_nm {
+        }
+
+        .usr_pswd {
+        }
+
+        .usr_addr {
+        }
+
+        .usr_mob {
+        }
+        /*Label class name*/
+        .edt_nm {
+        }
+
+        .nm_txt {
+        }
+
+        .edt_log {
+        }
+
+        .log_txt {
+        }
+
+        .edt_pswd {
+        }
+
+        .pswd_txt {
+        }
+
+        .edt_repswd {
+        }
+
+        .repswd_txt {
+        }
+
+        .edt_addr {
+        }
+
+        .adddr_txt {
+        }
+
+        .edt_email {
+        }
+
+        .mail_txt {
+        }
+
+        .edt_mob {
+        }
+
+        .mob_txt {
+        }
+
+        .edt_rle {
+        }
+
+        .rle_txt {
+        }
+
+        .allocation_usr {
+            width: 82% !important;
+        }
+
+        .input-group-addon1 {
+            margin-left: -75% !important;
+        }
+        /*Deactivate pop up for user*/
+        .usr_deact_mter {
+            margin-left: 26%;
+            width: 79%;
+        }
+
+        .cmxform .form-group label.error {
+            padding-left: 0;
+            white-space: normal;
+        }
+    }
+
+    /***************************** IPHONE 6S Landscape **********************************/
+    @@media only screen and (min-width:641px)and (max-width:719px) {
+        .deactivated_records {
+            padding-left: 34.5%;
+        }
+
+        .edt_usr_modal {
+            margin-left: -6%;
+            width: 100%;
+        }
+
+        .usr_nm {
+        }
+
+        .usr_pswd {
+        }
+
+        .usr_addr {
+        }
+
+        .usr_mob {
+        }
+        /*Label class name*/
+        .edt_nm {
+        }
+
+        .edt_log {
+        }
+
+        .edt_Gender {
+            margin-left: -1%;
+            margin-right: 1%;
+        }
+
+        .edt_pswd {
+        }
+
+        .edt_repswd {
+        }
+
+        .edt_addr {
+            margin-left: -1%;
+            margin-right: 1%;
+        }
+
+        .edt_State {
+        }
+
+        .edt_City {
+        }
+
+        .edt_email {
+        }
+
+        .edt_Zip {
+            margin-left: -1%;
+            margin-right: 1%;
+        }
+
+        .edt_mob {
+            margin-left: -1%;
+            margin-right: 1%;
+        }
+
+        .edt_HomePhone {
+            margin-left: -1%;
+            margin-right: 1%;
+        }
+
+        .edt_rle {
+        }
+
+        .edt_job {
+            margin-left: -1%;
+            margin-right: 1%;
+        }
+
+        .edt_frmtyp {
+        }
+
+        .edt_mklab {
+        }
+
+        .edt_modlab {
+        }
+
+        .edt-yr {
+        }
+
+        .edt-lic {
+        }
+
+        .edt-color {
+        }
+
+        .allocation_usr {
+            width: 82% !important;
+        }
+
+        .input-group-addon1 {
+            margin-left: 0% !important;
+        }
+
+        allocation_m > .dropdown-menu {
+            position: relative !important;
+        }
+        /*Deactivate pop up for user*/
+        .usr_deact_mter {
+            margin-left: 26%;
+            width: 79%;
+        }
+
+        .wrapper {
+            margin-bottom: -2% !important;
+            height: auto;
+        }
+    }
+
+    @@media only screen and (min-width:720px)and (max-width:767px) {
+        .deactivated_records {
+            padding-left: 34.5%;
+        }
+
+        .edt_usr_modal {
+            margin-left: -6%;
+            width: 100%;
+        }
+
+        .usr_nm {
+        }
+
+        .usr_pswd {
+        }
+
+        .usr_addr {
+        }
+
+        .usr_mob {
+        }
+        /*Label class name*/
+        .edt_nm {
+        }
+
+        .edt_log {
+        }
+
+        .edt_Gender {
+            margin-left: -1%;
+            margin-right: 1%;
+        }
+
+        .edt_pswd {
+        }
+
+        .edt_repswd {
+        }
+
+        .edt_addr {
+            margin-left: -1%;
+            margin-right: 1%;
+        }
+
+        .edt_State {
+        }
+
+        .edt_City {
+        }
+
+        .edt_email {
+        }
+
+        .edt_Zip {
+            margin-left: -1%;
+            margin-right: 1%;
+        }
+
+        .edt_mob {
+            margin-left: -1%;
+            margin-right: 1%;
+        }
+
+        .edt_HomePhone {
+            margin-left: -1%;
+            margin-right: 1%;
+        }
+
+        .edt_rle {
+        }
+
+        .edt_job {
+            margin-left: -1%;
+            margin-right: 1%;
+        }
+
+        .edt_frmtyp {
+        }
+
+        .edt_mklab {
+        }
+
+        .edt_modlab {
+        }
+
+        .edt-yr {
+        }
+
+        .edt-lic {
+        }
+
+        .edt-color {
+        }
+
+        .allocation_usr {
+            width: 82% !important;
+        }
+
+        .input-group-addon1 {
+            margin-left: 0% !important;
+        }
+
+        allocation_m > .dropdown-menu {
+            position: relative !important;
+        }
+        /*Deactivate pop up for user*/
+        .usr_deact_mter {
+            margin-left: 26%;
+            width: 79%;
+        }
+    }
+
+    @@media only screen and (min-width:768px) and (max-width:798px) {
+        .control-label {
+            /*padding-left: 8%;*/
+            width: 16% !important;
+        }
+        /****Fields class *****/
+        /****Fields class *****/
+        .nm_txt {
+            width: 60%;
+            margin-bottom: 2%;
+        }
+
+        .log_txt {
+            width: 60%;
+            margin-bottom: 2%;
+        }
+
+        .pswd_txt {
+            width: 60%;
+            margin-bottom: 2%;
+        }
+
+        .repswd_txt {
+            width: 60%;
+            margin-bottom: 2%;
+        }
+
+        .adddr_txt {
+            width: 60%;
+            margin-bottom: 2%;
+        }
+
+        .mail_txt {
+            width: 60%;
+            margin-bottom: 2%;
+        }
+
+        .mob_txt {
+            width: 60%;
+            margin-bottom: 2%;
+        }
+
+        .zip_txt {
+            width: 60%;
+            margin-bottom: 2%;
+        }
+
+        .phon_txt {
+            width: 60%;
+            margin-bottom: 2%;
+        }
+
+        .rle_txt {
+            margin-bottom: 2%;
+        }
+
+        .job_txt {
+            width: 60%;
+            margin-bottom: 2%;
+        }
+
+        .yr_txt {
+            width: 60%;
+            margin-bottom: 2%;
+        }
+
+        .lic_txt {
+            width: 60%;
+            margin-bottom: 2%;
+        }
+
+        .col_txt {
+            width: 60%;
+        }
+
+        .form_typ {
+            white-space: normal;
+        }
+        /*Label class name*/
+        .edt_nm {
+        }
+
+        .edt_log {
+        }
+
+        .edt_pswd {
+        }
+
+        .edt_repswd {
+        }
+
+        .edt_addr {
+        }
+
+        .edt_email {
+        }
+
+        .edt_mob {
+        }
+
+        .edt_rle {
+        }
+
+        .edt_mklab {
+        }
+
+        .edt_modlab {
+            margin-top: 2%;
+        }
+
+        .sel-make {
+            margin-top: 2%;
+            margin-bottom: 1%;
+        }
+
+        .edt-lic {
+        }
+
+        .edt-color {
+            margin-top: 1%;
+        }
+
+        .col_txt {
+            margin-top: 2%;
+        }
+
+        .allocation_usr {
+            margin-bottom: 2%;
+        }
+
+        .cre_genderbox > .chosen-container {
+            max-width: 60%;
+            margin-bottom: 2%;
+        }
+
+        .cre_statebox > .chosen-container {
+            max-width: 60%;
+            margin-bottom: 2%;
+        }
+
+        .cre_citybox > .chosen-container {
+            max-width: 60%;
+            margin-bottom: 2%;
+        }
+
+        .input-group-addon1 {
+            margin-left: -75% !important;
+        }
+        /*Deactivate pop up for user*/
+        .usr_deact_mter {
+        }
+
+        .serviceinput {
+            width: 30%;
+        }
+
+        .usrserv-2 {
+            margin-left: -23% !important;
+        }
+
+        .wrapper {
+            margin-bottom: 8%;
+            height: auto;
+        }
+
+        .cre_citybox .chosen-drop {
+            max-height: 14em !important;
+        }
+
+        .chosen-container .chosen-results {
+            max-height: 6em !important;
+        }
+    }
+
+    @@media only screen and (min-width:799px) and (max-width:840px) {
+        .edt_usr_modal {
+            margin-left: -64px;
+        }
+
+        .usr_nm {
+        }
+
+        .usr_pswd {
+        }
+
+        .usr_addr {
+        }
+
+        .usr_mob {
+        }
+        /****Fields class *****/
+        .nm_txt {
+        }
+
+        .log_txt {
+        }
+
+        .pswd_txt {
+        }
+
+        .repswd_txt {
+        }
+
+        .adddr_txt {
+        }
+
+        .mail_txt {
+        }
+
+        .mob_txt {
+        }
+
+        .rle_txt {
+        }
+        /*Label class name*/
+        .edt_nm {
+        }
+
+        .edt_log {
+        }
+
+        .edt_pswd {
+        }
+
+        .edt_repswd {
+        }
+
+        .edt_addr {
+        }
+
+        .edt_email {
+        }
+
+        .edt_mob {
+        }
+
+        .edt_rle {
+        }
+
+        .allocation_usr {
+            margin-left: 42%;
+            margin-top: -14%;
+            width: 55% !important;
+        }
+
+            .allocation_usr > .multiselect {
+                /*margin-left: 131px !important;
+                    margin-top: -38px !important;*/
+            }
+
+        .open > .dropdown-menu {
+        }
+
+        .input-group-addon1 {
+            margin-left: -75% !important;
+        }
+        /*Deactivate pop up for user*/
+        .usr_deact_mter {
+        }
+
+        .wrapper {
+            margin-bottom: 8%;
+            height: auto;
+        }
+
+        .cre_citybox .chosen-drop {
+            max-height: 14em !important;
+        }
+
+        .chosen-container .chosen-results {
+            max-height: 6em !important;
+        }
+    }
+
+    @@media only screen and (min-width:841px) and (max-width:919px) {
+        .wrapper {
+            margin-bottom: 8% !important;
+            height: auto;
+        }
+
+        .cre_citybox .chosen-drop {
+            max-height: 14em !important;
+        }
+
+        .chosen-container .chosen-results {
+            max-height: 6em !important;
+        }
+
+        .edt_nm {
+            margin-left: -7%;
+            margin-right: 0.2%;
+        }
+
+        .edt-div {
+            /*width: 45%;
+                   margin-right: -3%;*/
+            width: 24%;
+            margin-right: -3%;
+            margin-left: -1%;
+        }
+
+        .nm_txt {
+            margin-left: -14%;
+        }
+
+        .mail-div {
+            width: 24%;
+            margin-right: -3%;
+        }
+
+        .edt_email {
+            /*margin-left: -1%;
+                    padding-left: 0.5%;*/
+            margin-right: 0.5%;
+        }
+
+        .mail_txt {
+            margin-left: -10%;
+        }
+
+        .edt_Gender {
+            /*margin-left: 7%;
+                        margin-top: 1%;
+                        margin-right: -2%;*/
+        }
+
+        .cre_genderbox {
+            margin-left: -3.2%;
+            width: 24%;
+        }
+
+        .edt_addr {
+            margin-left: -8%;
+            margin-right: 0.1%;
+        }
+
+        .addr-div {
+            margin-left: -2.7%;
+            width: 24%;
+        }
+
+        .edt_State {
+            margin-left: 0%;
+            padding-left: 1.6%;
+        }
+
+        .cre_statebox {
+            margin-left: -1.9%;
+            width: 24%;
+        }
+
+        .edt_City {
+            margin-left: -2%;
+            padding-left: 3%;
+        }
+
+        .cre_citybox {
+            margin-left: -2%;
+            width: 24%;
+        }
+
+        .edt_Zip {
+            margin-left: -9%;
+            padding-left: 5%;
+        }
+
+        .zip-div {
+            margin-left: -2.3%;
+            width: 24%;
+        }
+
+        .edt_HomePhone {
+            margin-left: 0%;
+        }
+
+        .hm-div {
+            margin-left: -2%;
+            width: 24%;
+        }
+
+        .edt_mob {
+            margin-left: -1%;
+            white-space: normal !important;
+        }
+
+        .mob-div {
+            margin-left: -2.7%;
+            width: 24%;
+        }
+
+        .edt_log {
+            margin-left: -9%;
+            margin-right: -3%;
+            padding-left: 0.6%;
+        }
+
+        .log-div {
+            margin-left: -2.2%;
+            width: 24%;
+        }
+
+        .edt_pswd {
+            margin-left: -1.6%;
+        }
+
+        .psswd-div {
+            margin-left: -0.3%;
+            width: 24%;
+        }
+
+        .edt_repswd {
+            margin-left: -2%;
+        }
+
+        .repsswd-div {
+            margin-left: -2%;
+            width: 24%;
+        }
+
+        .edt_rle {
+            margin-left: -7%;
+            margin-right: -2%;
+        }
+
+        .edt_job {
+            margin-left: -1%;
+        }
+
+        .jb-div {
+            margin-left: -1%;
+            width: 24%;
+        }
+
+        .edt_frmtyp {
+            margin-left: -2%;
+            white-space: normal !important;
+        }
+
+        .edt_mklab {
+            margin-left: -8%;
+        }
+
+        .edt_modlab {
+        }
+
+        .edt-yr {
+            margin-left: -3%;
+        }
+
+        .yr-div {
+            width: 24%;
+            margin-left: -3%;
+        }
+
+        .edt-lic {
+            margin-left: -8%;
+        }
+
+        .lic-div {
+            margin-left: -2%;
+            width: 24%;
+        }
+
+        .edt-color {
+        }
+
+        .col-div {
+            margin-left: -2%;
+            width: 24%;
+        }
+    }
+
+    @@media only screen and (min-width:920px) and (max-width:967px) {
+        .wrapper {
+            margin-bottom: 8% !important;
+            height: auto;
+        }
+
+        .cre_citybox .chosen-drop {
+            max-height: 14em !important;
+        }
+
+        .chosen-container .chosen-results {
+            max-height: 6em !important;
+        }
+
+        .edt_nm {
+            margin-left: -5%;
+            margin-right: 1%;
+        }
+
+        .edt-div {
+            width: 25%;
+            margin-right: -3%;
+            margin-left: -1%;
+        }
+
+        .nm_txt {
+            margin-left: -14%;
+        }
+
+        .mail-div {
+            width: 25%;
+            margin-right: -3%;
+        }
+
+        .edt_email {
+            margin-right: 1%;
+        }
+
+        .mail_txt {
+            margin-left: -10%;
+        }
+
+        .edt_Gender {
+            margin-left: 2%;
+            margin-right: 1%;
+        }
+
+        .cre_genderbox {
+            margin-left: -2%;
+            width: 25%;
+            margin-right: -10%;
+        }
+
+        .edt_addr {
+            margin-left: -7%;
+            margin-right: -1%;
+        }
+
+        .addr-div {
+            margin-left: 0%;
+            width: 25%;
+        }
+
+        .edt_State {
+            margin-left: 0%;
+            padding-left: 1.6%;
+        }
+
+        .cre_statebox {
+            margin-left: -1%;
+            width: 25%;
+        }
+
+        .edt_City {
+            margin-left: 0%;
+            padding-left: 4%;
+            margin-right: 1%;
+        }
+
+        .cre_citybox {
+            margin-left: -1%;
+            width: 25%;
+        }
+
+        .edt_Zip {
+            margin-left: -8%;
+            padding-left: 5%;
+        }
+
+        .zip-div {
+            margin-left: 0%;
+            width: 25%;
+        }
+
+        .edt_HomePhone {
+            margin-left: 0%;
+        }
+
+        .hm-div {
+            margin-left: -1%;
+            width: 25%;
+        }
+
+        .edt_mob {
+            margin-left: 1%;
+            white-space: normal !important;
+            margin-right: 1%;
+        }
+
+        .mob-div {
+            margin-left: -2%;
+            width: 25%;
+        }
+
+        .edt_log {
+            margin-left: -8%;
+            margin-right: 0%;
+            padding-left: 1.5%;
+        }
+
+        .log-div {
+            margin-left: 0%;
+            width: 25%;
+        }
+
+        .edt_pswd {
+            margin-left: -1.6%;
+        }
+
+        .psswd-div {
+            margin-left: 0.6%;
+            width: 25%;
+        }
+
+        .edt_repswd {
+            margin-left: 0%;
+            padding-left: 1%;
+            margin-right: 1%;
+        }
+
+        .repsswd-div {
+            margin-left: -1%;
+            width: 25%;
+        }
+
+        .edt_rle {
+            margin-left: -5%;
+            margin-right: -2%;
+        }
+
+        .edt_job {
+            margin-left: 0%;
+        }
+
+        .jb-div {
+            margin-left: -1%;
+            width: 25%;
+        }
+
+        .edt_frmtyp {
+            margin-left: 2%;
+            white-space: normal !important;
+            margin-right: -1%;
+        }
+
+        .edt_mklab {
+            margin-left: -5%;
+        }
+
+        .edt_modlab {
+        }
+
+        .edt-yr {
+            margin-left: -3%;
+        }
+
+        .yr-div {
+            width: 25%;
+            margin-left: -3%;
+        }
+
+        .edt-lic {
+            margin-left: -5%;
+        }
+
+        .lic-div {
+            margin-left: -1%;
+            width: 25%;
+        }
+
+        .edt-color {
+        }
+
+        .col-div {
+            margin-left: -1%;
+            width: 25%;
+        }
+    }
+
+    @@media only screen and (min-width:968px) and (max-width:1023px) {
+        .wrapper {
+            margin-bottom: 8%;
+            height: auto;
+        }
+
+        .cre_citybox .chosen-drop {
+            max-height: 14em !important;
+        }
+
+        .chosen-container .chosen-results {
+            max-height: 6em !important;
+        }
+
+        .edt_nm {
+            margin-left: -3%;
+            margin-right: 0.2%;
+        }
+
+        .edt-div {
+            width: 25%;
+            /*margin-left: -1%;*/
+            margin-right: -3%;
+        }
+
+        .nm_txt {
+            margin-left: -14%;
+        }
+
+        .mail-div {
+            width: 25%;
+            margin-right: -3%;
+        }
+
+        .edt_email {
+            /*margin-left: -1%;
+                    padding-left: 0.5%;*/
+            margin-right: 0.5%;
+        }
+
+        .mail_txt {
+            margin-left: -10%;
+        }
+
+        .edt_Gender {
+            margin-right: 2%;
+        }
+
+        .cre_genderbox {
+            margin-left: -3.2%;
+            width: 25%;
+        }
+
+        .edt_addr {
+            margin-left: -5%;
+            margin-right: 2%;
+        }
+
+        .addr-div {
+            margin-left: -2.7%;
+            width: 25%;
+        }
+
+        .edt_State {
+            margin-left: 0%;
+            padding-left: 1.6%;
+        }
+
+        .cre_statebox {
+            margin-left: -1.9%;
+            width: 25%;
+        }
+
+        .edt_City {
+            margin-left: -2%;
+            padding-left: 3%;
+        }
+
+        .cre_citybox {
+            /*margin-left: -2%;*/
+            width: 25%;
+        }
+
+        .edt_Zip {
+            margin-left: -6%;
+            margin-right: 3%;
+            padding-left: 5%;
+        }
+
+        .zip-div {
+            margin-left: -2.7%;
+            width: 25%;
+        }
+
+        .edt_HomePhone {
+            margin-left: 0%;
+        }
+
+        .hm-div {
+            margin-left: -2%;
+            width: 25%;
+        }
+
+        .edt_mob {
+            margin-left: -1%;
+            white-space: normal !important;
+        }
+
+        .mob-div {
+            margin-left: -1%;
+            width: 25%;
+        }
+
+        .edt_log {
+            margin-left: -5%;
+            margin-right: 1%;
+            padding-left: 0%;
+        }
+
+        .log-div {
+            margin-left: -1.5%;
+            width: 25%;
+        }
+
+        .edt_pswd {
+            margin-left: -1.6%;
+        }
+
+        .psswd-div {
+            margin-left: -0.3%;
+            width: 25%;
+        }
+
+        .edt_repswd {
+            margin-left: -1%;
+        }
+
+        .repsswd-div {
+            margin-left: -1%;
+            width: 25%;
+        }
+
+        .edt_rle {
+            margin-left: -4%;
+            margin-right: -2%;
+            padding-left: 2%;
+        }
+
+        .edt_job {
+            margin-left: 0%;
+            margin-right: 0%;
+        }
+
+        .jb-div {
+            margin-left: -1.5%;
+            width: 25%;
+        }
+
+        .edt_frmtyp {
+            margin-left: 0%;
+            white-space: normal !important;
+            margin-right: -2%;
+        }
+
+        .edt_mklab {
+            margin-left: -3%;
+        }
+
+        .edt_modlab {
+        }
+
+        .edt-yr {
+            margin-left: -3%;
+        }
+
+        .yr-div {
+            width: 25%;
+            margin-left: 0%;
+        }
+
+        .edt-lic {
+            margin-left: -3%;
+        }
+
+        .lic-div {
+            margin-left: -2%;
+            width: 25%;
+        }
+
+        .edt-color {
+        }
+
+        .col-div {
+            margin-left: -2%;
+            width: 25%;
+        }
+    }
+
+    @@media only screen and (min-width:1024px) and (max-width:1100px) {
+        .edt_usr_modal {
+        }
+
+        .usr_nm {
+        }
+
+        .usr_pswd {
+        }
+
+        .usr_addr {
+        }
+
+        .usr_mob {
+        }
+        /****Fields class *****/
+        .nm_txt {
+        }
+
+        .log_txt {
+        }
+
+        .pswd_txt {
+        }
+
+        .repswd_txt {
+        }
+
+        .adddr_txt {
+        }
+
+        .mail_txt {
+        }
+
+        .mob_txt {
+        }
+
+        .rle_txt {
+        }
+        /*Label class name*/
+        .edt_nm {
+        }
+
+        .edt_log {
+        }
+
+        .edt_pswd {
+        }
+
+        .edt_repswd {
+        }
+
+        .edt_addr {
+        }
+
+        .edt_email {
+        }
+
+        .edt_mob {
+        }
+
+        .edt_rle {
+        }
+
+        .allocation_usr {
+            margin-left: 42%;
+            margin-top: -15%;
+            width: 55% !important;
+        }
+
+            .allocation_usr > .multiselect {
+                /*margin-left: 131px !important;
+                    margin-top: -38px !important;*/
+            }
+
+        .iconic-input {
+            margin-left: 8%;
+            margin-right: -6%;
+        }
+
+        .input-group-addon1 {
+            margin-left: -75% !important;
+        }
+        /*Deactivate pop up for user*/
+        .usr_deact_mter {
+        }
+
+        .edt_State {
+        }
+
+        .edt_City {
+        }
+
+        .edt_Zip {
+        }
+
+        .edt_Gender {
+        }
+
+        .edt_HomePhone {
+        }
+
+        .edt_rle {
+        }
+
+        .wrapper {
+            margin-bottom: 8%;
+            height: 44em !important;
+        }
+
+        .cre_citybox .chosen-drop {
+            max-height: 14em !important;
+        }
+
+        .chosen-container .chosen-results {
+            max-height: 6em !important;
+        }
+    }
+
+    @@media only screen and (min-width:1101px) and (max-width:1280px) {
+        .wrapper {
+            margin-bottom: 8%;
+            height: auto;
+        }
+
+        .cre_citybox .chosen-drop {
+            max-height: 14em !important;
+        }
+
+        .chosen-container .chosen-results {
+            max-height: 6em !important;
+        }
+    }
+</style>
+
+
+<div id="loading">
+    <div id="loadingcontent">
+        <p id="loadingspinner">
+            Searching things...
+        </p>
+    </div>
+</div>
+
+
+
+<!-- page start-->
+
+<section id="main-content">
+    <section class="wrapper">
+        <!-- page start-->
+        <div class="row">
+            <div class="col-sm-12">
+                <section class="panel">
+                    <header class="panel-heading">
+                        <b>User Master </b>
+                    </header>
+                    <div class="container">
+                        <div class="panel-body">
+                            <div class="panel-group " id="accordion">
+
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                                                <i class="indicator glyphicon glyphicon-minus"></i>Personal Information
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseOne" class="panel-collapse collapse in">
+                                        <div class="panel-body">
+                                            <form id="form3" class="form-horizontal form-top" role="form">
+                                                <div class="form-group">
+                                                    <div class="col-md-12">
+                                                        <div class="fileupload fileupload-new" data-provides="fileupload">
+                                                            <div class="fileupload-new thumbnail" style="width: 150px; height: 150px;">
+                                                                @*<label class="col-lg-8 col-sm-8 control-label">Logo Upload</label>
+                                                                    <label class="col-lg-8 col-sm-8 control-label">(jpeg and png)</label>*@
+                                                                <img src="https://www.placehold.it/200x150/EFEFEF/AAAAAA&amp;text=no+image" style="height:100%" id="MainImgLOgo" alt="" />
+                                                            </div>
+                                                            <div class="fileupload-preview fileupload-exists thumbnail" style="width: 150px; height: 150px;"></div>
+                                                            <div>
+                                                                <span class="btn btn-success btn-file">
+                                                                    <span id="btnSeletImg" class="fileupload-new"><i class="fa fa-paper-clip"></i> Select image</span>
+                                                                    <span id="btnChange" class="fileupload-exists"><i class="fa fa-undo"></i> Change</span>
+                                                                    <input type="file" id="fileLogoURL" multiple="multiple" onchange="Filepath()" class="default" />
+                                                                    @*<input type="file" id="fileLogoURL" onclick="Filepath()" class="default" />*@
+                                                                    <input type="hidden" name="InstallerImage" id="txtLogoURL" />
+                                                                    <input type="hidden" name="TemplateURL" id="txtTemplateURL" />
+                                                                </span>
+                                                                <a href="#" class="btn btn-danger" id="profileimgremove"><i class="fa fa-trash"></i> Remove</a>
+                                                                @*<a href="#" class="btn btn-danger fileupload-exists btnRemoveimage" data-dismiss="fileupload"><i class="fa fa-trash"></i> Remove</a>*@
+
+
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <div class="col-lg-1 col-md-4 col-sm-0"> </div>
+
+                                                    <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_nm" style="text-align:right !important"> Name  <span style="color: red">*</span></label>
+                                                    <div class="col-lg-2 col-md-4 col-sm-10 edt-div">
+                                                        @*<input type="text" name="UserFullName" ondrag="return false" ondrop="return false" oncopy="return false;" maxlength="200" id="txtuserfullname" class="inputclass form-control characterOnly nm_txt" />*@
+                                                        <input type="text" name="UserFullName" maxlength="200" id="txtUserFullName" class="inputclass form-control characterOnly nm_txt" />
+                                                    </div>
+
+                                                    <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_email" style="text-align:right !important">Email id<span style="color: red">*</span></label>
+
+                                                    <div class="col-lg-2 col-md-4 col-sm-10 mail-div">
+                                                        <input type="text" name="Email" id="txtEmail" class="inputclass form-control mail_txt" />
+
+                                                    </div>
+
+
+                                                    <label for="name" class=" col-lg-1 col-md-2 col-sm-2 control-label edt_Gender" style="text-align:right !important">Gender</label>
+                                                    <div class="col-lg-2 col-md-4 col-sm-10 cre_genderbox">
+                                                        <select data-placeholder="Select Gender" id="ddlGender" name="Gender" class="form-control">
+                                                            <option value=""></option>
+                                                            <option value="Male">Male</option>
+                                                            <option value="Female">Female</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-4 col-sm-12"></div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="col-lg-1 col-md-4 col-sm-12"> </div>
+                                                    <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_addr" style="text-align:right !important">Address </label>
+
+                                                    <div class="col-lg-2 col-md-4 col-sm-10 addr-div">
+                                                        <input type="text" name="Address" id="txtUserAddress" maxlength="200" class="inputclass form-control adddr_txt" />
+
+                                                    </div>
+                                                    <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_State" style="text-align:right !important">State <span style="color: red">*</span></label>
+                                                    <div class="col-lg-2 col-md-4 col-sm-10 cre_statebox">
+                                                        <select data-placeholder="Select State" id="ddlState" name="StateID" class="form-control chosen-select " style="width: 100%"></select>
+
+
+                                                    </div>
+
+                                                    <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_City " style="text-align:right !important">City <span style="color: red">*</span></label>
+                                                    <div class="col-lg-2 col-md-4 col-sm-10 cre_citybox">
+                                                        <select id="ddlCity" name="CityID" data-placeholder="Select City" class="form-control chosen-select" style="width: 100%"></select>
+
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-4 col-sm-12"></div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <div class="col-lg-1 col-md-4 col-sm-12"> </div>
+                                                    <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_Zip" style="text-align:right !important">Zip</label>
+
+                                                    <div class="col-lg-2 col-md-4 col-sm-10 zip-div">
+                                                        <input type="text" name="ZipCode" id="txtZip" maxlength="15" ondrag="return false" ondrop="return false" oncopy="return false;" onpaste="return false;" class="inputclass numericOnly form-control zip_txt" />
+
+                                                    </div>
+
+                                                    <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_HomePhone" style="text-align:right !important">Phone </label>
+                                                    <div class="col-lg-2 col-md-4 col-sm-10 hm-div">
+                                                        <input type="text" name="HomePhoneNumber" onpaste="return false;" id="txtHomePhoneNumber" maxlength="15" class="inputclass form-control phon_txt Numeric-Only" />
+
+                                                    </div>
+
+                                                    <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_mob" style="text-align:right !important">Mobile No. </label>
+                                                    <div class="col-lg-2 col-md-4 col-sm-10 mob-div">
+                                                        <input type="text" name="MobileNo" id="txtMobileNo" onpaste="return false;" maxlength="15" class="inputclass form-control mob_txt Numeric-Only" />
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-4 col-sm-12"></div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <div class="col-lg-1 col-md-4 col-sm-12"> </div>
+                                                    <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_log" style="text-align:right !important">Login Id <span style="color: red">*</span></label>
+                                                    <div class="col-lg-2 col-md-4 col-sm-10 log-div">
+                                                        <input type="hidden" name="UserId" id="txtUserId" />
+                                                        <input type="text" name="LogInId" id="txtLogInId" maxlength="200" class="inputclass form-control log_txt" />
+
+
+                                                    </div>
+
+                                                    <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_pswd" style="text-align:right !important">Password<span style="color: red;">*</span></label>
+                                                    <div class="col-lg-2 col-md-4 col-sm-10 psswd-div">
+                                                        <input type="password" name="Password" id="txtPassword" onpaste="return false;" maxlength="50" class="inputclass form-control pswd_txt" />
+
+                                                    </div>
+
+                                                    <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_repswd" style="white-space:normal;text-align:right !important;">Confirm<span style="color: red;">*</span> Password    </label>
+                                                    <div class="col-lg-2 col-md-4 col-sm-10 repsswd-div">
+                                                        <input type="password" name="Confirmpassword" id="txtConfirmPassword" onpaste="return false;" maxlength="50" class="inputclass form-control repswd_txt" />
+
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-4 col-sm-12"></div>
+                                                </div>
+
+
+                                                <div class="form-group">
+                                                    <div class="col-lg-1 col-md-4 col-sm-12"> </div>
+
+                                                    <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_rle" style="text-align:right !important">Role <span style="color: red">*</span></label>
+                                                    <div id="divRole" class="col-lg-2 col-sm-10 cre_citybox">
+                                                        <div class="chosen-container chosen-container-single " title="" id="ddlRole_chosen">
+                                                            <a class="chosen-single chosen-default" id="ancRole_chosen" tabindex="-1"><span class="" id="RoleHeader">Select Role</span><div><b></b></div></a>
+                                                            <div class="chosen-drop">
+                                                                <div class="chosen-search"><input type="text" class="txtfilterall" onkeyup="filterRole(this)" autocomplete="off"></div>
+                                                                <div class="RoleFilter row">
+                                                                    <div class="col-lg-12 col-sm-10">
+                                                                        <div class="">
+                                                                            <label style="margin-left: 7px;"><input type="checkbox" style="zoom:1.2;" class="chbSelectAll" id="Role_SelectAll" autocomplete="off" value=" "><span style="padding-top: -31px;">Select All</span></label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <ul id="ulRole" class="chosen-results " style="max-height: 118px;"></ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+
+                                                    <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_job" style="text-align:right !important">Job Type </label>
+                                                    <div class="col-lg-2 col-md-4 col-sm-10 jb-div">
+                                                        <input type="text" name="JobType" id="txtJobType" maxlength="200" class="inputclass form-control job_txt" />
+                                                    </div>
+
+
+
+                                                    <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_frmtyp" style="text-align:right !important">Form Type <span style="color: red">*</span></label>
+                                                    <div id="divFormType" class="col-lg-2 col-sm-10 cre_citybox">
+                                                        <div class="chosen-container chosen-container-single " title="" id="ddlFormType_chosen">
+                                                            <a class="chosen-single chosen-default" id="ancFormType_chosen" tabindex="-1"><span class="" id="FormTypeHeader">Select FormType</span><div><b></b></div></a>
+                                                            <div class="chosen-drop">
+                                                                <div class="chosen-search"><input type="text" class="txtfilterall" onkeyup="filterFormType(this)" autocomplete="off"></div>
+                                                                <div class="FormTypeFilter row">
+                                                                    <label style="margin-left: 7px;" class="col-lg-2">
+                                                                        <input type="checkbox" style="zoom:1.2;" class="chbSelectAll" id="FormType_SelectAll" autocomplete="off" value=" "><span>Select All</span>
+                                                                    </label>
+
+                                                                </div>
+                                                                <ul id="ulFormType" class="chosen-results " style=""></ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-2 col-md-4 col-sm-12"></div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <div class="col-lg-1 col-md-4 col-sm-12"> </div>
+                                                    <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_City " style="text-align:right !important">Manager <span style="color: red">*</span></label>
+                                                    <div class="col-lg-2 col-md-4 col-sm-10 cre_citybox">
+                                                        <select id="ManagerId" name="ManagerId" data-placeholder="Select Manager" class="form-control chosen-select" style="width: 100%"></select>
+
+                                                    </div>
+
+                                                    <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_City " style="text-align:right !important">Field Supervisor <span style="color: red">*</span></label>
+                                                    <div class="col-lg-2 col-md-4 col-sm-10 cre_citybox">
+                                                        <select id="FieldSupervisorId" name="FieldSupervisorId" data-placeholder="Select Field Supervisor" class="form-control chosen-select" style="width: 100%"></select>
+
+                                                    </div>
+
+                                                    <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_City " style="text-align:right !important">Transfer Approval</label>
+                                                    <div class="col-lg-2 col-md-4 col-sm-10 cre_citybox">
+
+                                                        <select id="ManagerApprovalRequired" name="ManagerApprovalRequired" data-placeholder="Select" class="form-control chosen-select" style="width: 100%">
+                                                            <option value="0"></option>
+                                                            <option value="1">Yes</option>
+                                                            <option value="2">No</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default InstallerRoleDiv">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+                                                <i class="indicator glyphicon glyphicon-plus"></i>Vehicle Information
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseTwo" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            <form id="vehicleform" class="form-horizontal form-top" role="form">
+                                                <div class="form-group">
+                                                    <div class="col-md-12">
+                                                        <div class="fileupload fileupload-new" data-provides="fileupload">
+                                                            <div class="fileupload-new thumbnail" style="width: 150px; height: 150px;">
+                                                                <img src="https://www.placehold.it/200x150/EFEFEF/AAAAAA&amp;text=no+image" style="height:100%;width:100%;" id="VehicleMainImgLOgo" alt="" />
+                                                            </div>
+                                                            <div class="fileupload-preview fileupload-exists thumbnail" style="width: 150px; height: 150px;"></div>
+                                                            <div>
+                                                                <span class="btn btn-success btn-file">
+                                                                    <span class="fileupload-new"><i class="fa fa-paper-clip"></i> Select image</span>
+                                                                    <span class="fileupload-exists"><i class="fa fa-undo"></i> Change</span>
+                                                                    <input type="file" id="fileLogoURLVehicle" multiple="multiple" onchange="FilepathVehicle()" class="default" />
+                                                                    <input type="hidden" name="ImageofVehicle" id="txtImageofVehicle" />
+                                                                    <input type="hidden" name="TemplateURL" id="txtTemplateURL" />
+                                                                </span>
+                                                                <a href="#" class="btn btn-danger" id="vehicleimgremove"><i class="fa fa-trash"></i> Remove</a>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="col-lg-1 col-md-1 col-sm-0"> </div>
+                                                    <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_mklab" style="text-align:right !important">Make </label>
+                                                    <div class="col-lg-2 col-md-4 col-sm-10 cre_statebox">
+                                                        <select data-placeholder="Select Make" id="ddlVehicleMake" name="VehicleMake" class="form-control chosen-select"></select>
+                                                    </div>
+
+                                                    <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_modlab" style="text-align:right !important">Model</label>
+                                                    <div class="col-lg-2 col-md-4 col-sm-10 sel-make cre_statebox">
+                                                        <select data-placeholder="Select Model" id="ddlVehicleModel" name="VehicleModel" class="form-control chosen-select"></select>
+                                                    </div>
+
+                                                    <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt-yr" style="text-align:right !important">Year  </label>
+                                                    <div class="col-lg-2 col-md-4 col-sm-10 yr-div">
+                                                        <input type="text" name="VehicleYear" id="txtYear" maxlength="200" class="inputclass form-control yr_txt Numeric-Only" />
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-4 col-sm-10"></div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="col-lg-1 col-md-1 col-sm-0"> </div>
+                                                    <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt-lic" style="text-align:right !important">Licence  </label>
+                                                    <div class="col-lg-2 col-md-4 col-sm-10 lic-div">
+                                                        <input type="text" name="VehicleLicensePlateNumber" id="txtLicensePlateNumber" maxlength="200" class="inputclass form-control lic_txt" />
+
+                                                    </div>
+
+
+
+                                                    <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt-color" style="text-align:right !important">Color </label>
+                                                    <div class="col-lg-2 col-md-4 col-sm-10 col-div">
+                                                        <input type="text" name="VehicleColor" id="txtColor" maxlength="200" class="inputclass form-control col_txt" />
+
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-4 col-sm-10"></div>
+                                                </div>
+
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="ProjectsassignedDiv" class="panel panel-default InstallerRoleDiv">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
+                                                <i class="indicator glyphicon glyphicon-plus "></i>Projects assigned
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseThree" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            <form id="" class="form-horizontal form-top" role="form">
+                                                <div class="form-group">
+                                                    <div class="col-lg-1 col-md-1 col-sm-0"> </div>
+                                                    <div class="col-lg-9 col-md-4 col-sm-10">
+                                                        @*<div id="InstallerProjectDiv"></div>*@
+                                                        <table class="table table-responsive table-bordered table-condensed " id="InstallerProjectDiv"></table>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="EmploymentDetailsDiv" class="panel panel-default InstallerRoleDiv">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseFour">
+                                                <i class="indicator glyphicon glyphicon-plus "></i>Services
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseFour" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            <form id="" class="form-horizontal form-top" role="form">
+                                                <div id="servicesDiv">
+                                                    <div class="row">
+
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!--Print ID Card-->
+                                <div id="EmployeeIdCardDiv" class="panel panel-default InstallerRoleDiv ">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseIDCard">
+                                                <i class="indicator glyphicon glyphicon-plus"></i>Print ID Card
+
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseIDCard" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            <form id="form5" class="form-horizontal form-top" role="form">
+                                                <div class="form-group">
+                                                    <div class="col-md-12">
+
+                                                        <div class="col-lg-3 col-xs-12 col-sm-4 ">
+                                                            <select id="ddlRoleListPopup" data-placeholder="Select Role" class="form-control chosen-select "></select>
+
+                                                        </div>
+
+                                                        <div class="col-lg-3 col-xs-12 col-sm-4 ">
+                                                            <select id="ddlCustomer" data-placeholder="Select Customer" class="form-control chosen-select "></select>
+                                                        </div>
+
+                                                        <div class="col-lg-3  col-xs-12 col-sm-4 ">
+                                                            <select id="ddlStateList" data-placeholder="Select State" class="form-control chosen-select "></select>
+                                                        </div>
+
+                                                        <div class="col-lg-3 col-xs-12 col-sm-4 ">
+                                                            <select id="ddlCityList" data-placeholder="Select City" class="form-control chosen-select "></select>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                                <br />
+                                                <div class="form-group ">
+
+                                                    <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label ">
+                                                        <b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Message</b><span style="color:red">*</span>
+                                                        <br /><span style="color:red; ">&nbsp;(Max Limit 250 Character)</span>
+                                                    </label>
+
+                                                    <div class="col-lg-4  col-xs-12 col-sm-4">
+                                                        <textarea cols="10" name="Message" id="txtMessage" class="ckeditor form-control" data-placeholder="Enter only Maximum 250 Charactors." maxlength="100" rows="2"></textarea>
+
+                                                    </div>
+                                                    <div class="col-lg-4  col-xs-12 col-sm-4">
+                                                        <button class="btn btn-success" id="btnPreview" type="button">Preview</button>
+                                                    </div>
+                                                </div>
+                                                <br />
+                                                <div id="EmployeeCard" class="col-lg-8 col-sm-12 col-lg-offset-2 " style="border:2px solid;border-radius: 8px; ">
+                                                    <div class="col-sm-12" style="position: relative;top: 6px;right: 0%; text-align: center;">
+                                                        <img src="https://www.placehold.it/200x150/EFEFEF/AAAAAA&amp;text=no+image" id="CityLogoImg" alt="" width="100" height="40" />
+
+                                                    </div><br />
+
+
+                                                    <div class="col-sm-3 all_print_div">
+                                                        <div class="fileupload-new thumbnail " style="text-align:left">
+                                                            <img src="https://www.placehold.it/200x150/EFEFEF/AAAAAA&amp;text=no+image" id="EmpolyeeProfileImg" alt="" width="200" />
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-9 print-empl">
+                                                        <div class="form-group ">
+
+                                                            <div class="col-lg-12  col-xs-12 col-sm-6 ">
+                                                                <label id="lblEmployeeName" style="font-weight: bold;font-size: 16px;"></label>
+                                                                <br />
+                                                                <label id="lblRoleName" class="mt5"></label>
+                                                                <br />
+
+                                                                <b>Vehicle Licence No :</b><label id="lblEmployeeLicenceNo" style="margin-top:5px;"></label><br />
+                                                                <b>Make &amp; Model :</b><label id="lblEmployeeVehicleType" style="margin-top:5px;"></label><br />
+                                                                <b>Vehicle Color :</b><label id="lblEmployeeVehicleColor" style="margin-top:5px;"></label>
+                                                            </div>
+
+                                                            <div class="col-lg-12  col-xs-12 col-sm-6 ">
+                                                                <p>
+                                                                    <div id="DivMessage">
+                                                                    </div>
+                                                                </p>
+
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+
+                                                    <br />
+
+                                                    <div id="div_footer" class="col-lg-12 col-sm-12" style="text-align:center;">
+                                                        <hr style="margin-left:-30px;margin-right:-30px; border-top: 2px solid;" />
+
+                                                        <span style="font-size:14px; font-weight:bold;">
+                                                            ©2018 Data Depot
+                                                            <img src="" id="CMSLogoImage" alt="CMSLogo" />
+                                                        </span>
+
+                                                    </div>
+
+
+
+                                                </div>
+                                                <br />
+                                                <div id="printButtons" class="form-group col-sm-12" style="text-align:center; margin-top:10px; ">
+                                                    <button class="btn btn-success" id="btnPrintsID" type="button">Print</button>
+                                                    <button class="btn btn-danger" id="btnPrintCancel" type="button">Cancel</button>
+
+                                                </div>
+
+                                                <div style="display:none;">
+                                                    <div id="EmployeeCard2" style="border: 2px solid; border-radius:8px; display: block;width:425px;">
+                                                        <div style="position: relative;text-align: center; width:100%; margin-right:10px;margin-top:5px;">
+                                                            <img src="https://www.placehold.it/200x150/EFEFEF/AAAAAA&amp;text=no+image" id="CityLogoImg2" alt="" width="100" height="40">
+
+                                                        </div><br>
+
+
+                                                        <div style="display:inline-block; ">
+                                                            <div style="text-align:left;margin-left:5px;float:left;margin-right:8px;">
+                                                                <img src="https://www.placehold.it/200x150/EFEFEF/AAAAAA&amp;text=no+image" id="EmpolyeeProfileImg2" alt="" width="165" height="200" />
+
+                                                            </div>
+
+                                                            <div style="width:300px;float: right;">
+                                                                <div>
+
+                                                                    <div>
+                                                                        <label id="lblPrtEmployeeName" style="font-weight: bold;font-size:15px;"></label>
+                                                                        <br>
+                                                                        <label id="lblPrtRoleName" style="margin-top:5px;"></label>
+                                                                        <br />
+                                                                        <div>
+                                                                            <span style="font-size:11px;">Vehicle Licence No :<label id="lblprtemployeelicenceno" style="margin-top:5px;"></label></span><br />
+                                                                            <span style="font-size:11px;">Make &amp; Model :<label id="lblPrtEmployeeVehicleType" style="margin-top:5px;"></label></span><br />
+                                                                        </div>
+                                                                        <span style="font-size:11px;">Vehicle Color :<label id="lblprtemployeevehiclecolor" style="margin-top:5px;"></label></span>
+                                                                    </div>
+
+                                                                    <div>
+                                                                        <p>
+                                                                            <div id="DivPrintMessage" style="padding:0px 4px;">
+                                                                            </div>
+
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                        <br>
+
+                                                        <div id="div_footer" style="text-align:center;margin-bottom:10px;">
+                                                            <hr style="border-top: 2px solid;">
+                                                            <div style="font-size:11px; font-weight:bold;">
+                                                                ©2018 Data Depot
+                                                                <img src=""  id="CMSLogoImage2" alt="CMSLogo">
+                                                               
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+
+
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="modal-footer">
+                        <button id="btnSave" class="btn btn-success" type="button">Update</button>
+                        <a class="btn btn-danger" target="_self" href="@Url.Action("index", "Users", new { area = "Admin" })">
+                            <span>Cancel</span>
+                        </a>
+                      
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</section>
+
+@*<html>
+    <head>
+        <title></title>
+    </head>
+    <body>*@
+
+<!-- modal -->
+@*</body>
+
+    </html>*@
+
+<!-- Modal for Add /Edit Dialog -->
+
+
+<script src='@Url.Content("~/Scripts/Admin/UserMaster.js")'></script>
+
+<link href="~/Scripts/js/style.css" rel="stylesheet" />
+<link href="~/Scripts/js/jquery-ui.css" rel="stylesheet" />
+<script src="~/Scripts/js/jquery-ui.js"></script>
+<script src="~/Scripts/js/fieldChooser.js"></script>
+<link href="~/Content/MSTS/admin/css/bootstrap-multiselect.css" rel="stylesheet" />
+<script src="~/Content/MSTS/admin/js/bootstrap-multiselect.js"></script>
+
+@*<script src="~/Scripts/jquery.PrintArea.js"></script>*@
+<link href="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.css")" rel="stylesheet" />
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.jquery.min.js")"></script>
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.proto.min.js")"></script>
+@*<script src='@Url.Content("~/Scripts/Admin/CKEditorFontPlugin.js")'></script>*@
+<script>
+    function toggleChevron(e) {
+        $(e.target)
+            .prev('.panel-heading')
+            .find("i.indicator")
+            .toggleClass('glyphicon-plus glyphicon-minus');
+    }
+    $('#accordion').on('hidden.bs.collapse', toggleChevron);
+    $('#accordion').on('shown.bs.collapse', toggleChevron);
+
+
+</script>

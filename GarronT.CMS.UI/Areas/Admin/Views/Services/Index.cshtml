@@ -1,0 +1,1298 @@
+﻿@{
+    ViewBag.Title = "Service Master";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@Html.Hidden("urlCreateRecord", Url.Action("Create", "Services"))
+
+@Html.Hidden("ServicesListUrl", Url.Action("GetServicesList", "Services"))
+@Html.Hidden("urlDeleteData", Url.Action("Delete", "Services"))
+
+@Html.Hidden("urlDeActiveRecords", Url.Action("GetDeActiveRecords", "Services"))
+@Html.Hidden("urlGetData", Url.Action("Edit", "Services"))
+
+@Html.Hidden("urlEditData", Url.Action("Create", "Services"))
+
+@Html.Hidden("urlDeleteData", Url.Action("Delete", "Services"))
+@Html.Hidden("urlDeActiveRecords", Url.Action("GetDeActiveRecords", "Services"))
+@Html.Hidden("urlGetData", Url.Action("Edit", "Services"))
+@Html.Hidden("urlGetPictureList", Url.Action("GetPictureList", "Services"))
+
+<style type="text/css">
+    .stepwizard-step p {
+        margin-top: 10px;
+    }
+
+    .stepwizard-row {
+        display: table-row;
+    }
+
+    .stepwizard {
+        display: table;
+        width: 100%;
+        position: relative;
+        background: #c0d7e5;
+    }
+
+    .stepwizard-step button[disabled] {
+        opacity: 1 !important;
+        filter: alpha(opacity=100) !important;
+    }
+
+    .stepwizard-row:before {
+        top: 32px;
+        bottom: 0;
+        position: absolute;
+        content: " ";
+        width: 100%;
+        height: 1px;
+        background-color: #ccc;
+        z-index: 0;
+    }
+
+    .stepwizard-step {
+        display: table-cell;
+        text-align: center;
+        position: relative;
+        width: 20%;
+    }
+
+    .btn-circle {
+        width: 30px;
+        height: 30px;
+        text-align: center;
+        padding: 6px 0;
+        font-size: 12px;
+        line-height: 1.428571429;
+        border-radius: 15px;
+    }
+
+    .multiselect {
+        /*width: 180px !important;*/
+        padding: 3px;
+        width:100% !important;
+    }
+
+    .multiselect-container > li > a > label {
+        margin: 0;
+        height: 100%;
+        cursor: pointer;
+        font-weight: 400;
+        padding: 1px 20px 0px 18px !important;
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        z-index: 1000;
+        display: none;
+        float: left;
+        min-width: 160px;
+        padding: 2px 0;
+        margin: 2px 0 0;
+        font-size: 14px;
+        text-align: left;
+        list-style: none;
+        background-color: #fff;
+        -webkit-background-clip: padding-box;
+        background-clip: padding-box;
+        border: 1px solid #ccc;
+        border: 1px solid rgba(0,0,0,.15);
+        border-radius: 4px;
+        -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+        box-shadow: 0 6px 12px rgba(0,0,0,.175);
+        height: 192px;
+        overflow-y: scroll;
+    }
+    .input-group-addon1 {
+        margin-left: 0em !important;
+        margin-inline-start: -87% !important;
+    }
+
+    /********************************** IPHONE 5S PORTRAIT***************/
+    @@media (max-width:320px) {
+        .iconic-input {
+        }
+
+        .serv_mod_cont {
+            margin-left: -18% !important;
+            width: 100%;
+            margin-top: -22% !important;
+        }
+
+        .lab_serv_type {
+            margin-left: -4%;
+            margin-right: 4%;
+        }
+
+        .serv_desc {
+            margin-left: -2%;
+            margin-right: 2%;
+        }
+
+        .serv_rte {
+               margin-left: -1%;
+        }
+
+        .serv_rte_txt {
+               margin-left: 6%;
+        }
+
+        .serv_pic {
+            /*margin-left: 3%;*/
+        }
+
+        .serv_btn {
+            margin-left: 5.78em;
+            margin-top: -4em;
+            width: 15em;
+        }
+
+        .serv_type_txt {
+            margin-left: 7px;
+        }
+
+        .serv_aud {
+            margin-left: 4% !important;
+            margin-right: 1% !important;
+        }
+
+        .serv_vid {
+            margin-left: 4% !important;
+            margin-right: 1% !important;
+        }
+
+        .open > .dropdown-menu {
+            width: 50% !important;
+        }
+
+        .serv_btn > .multiselect {
+        }
+
+        .serv_btn > .allocation_m {
+            width: 108%;
+            padding-left: 12%;
+            padding-top: 6%;
+        }
+
+        .serv_btn > .glyphicon-search {
+            /*margin-left: -20px;*/
+        }
+
+        .input-group-addon1 {
+            margin-left: 0% !important;
+        }
+
+        allocation_m > .dropdown-menu {
+            /*position: relative !important;*/
+        }
+
+        .deact_mter {
+            margin-left: -29%;
+            width: 154%;
+        }
+    }
+    /*****************************End IPhone 5S Portrait******************************/
+
+      @@media only screen and (min-width:321px) and (max-width:359px) {
+        .iconic-input {
+            margin-left: 5% !important;
+        }
+
+        .serv_mod_cont {
+            margin-left: -18% !important;
+            width: 100%;
+            /*margin-top: -22% !important;*/
+            margin-bottom:40%;
+        }
+
+        .lab_serv_type {
+            margin-left: -5%;
+            margin-right: 5%;
+        }
+
+        .serv_desc {
+            margin-left: -3%;
+            margin-right: 3%;
+        }
+
+        .serv_rte {
+        }
+
+        .serv_rte_txt {
+        }
+
+        .serv_pic {
+            margin-left: 1%;
+        }
+
+        .serv_btn {
+            margin-left: 5.78em;
+            margin-top: -4em;
+            width: 15em;
+        }
+
+        .serv_type_txt {
+            margin-left: -1% !important;
+        }
+
+
+        .serv_aud {
+        }
+
+        .serv_vid {
+        }
+
+        .serv_btn > .open > .dropdown-menu {
+            width: 90%;
+            /*margin-bottom: 18%;*/
+        }
+
+        .serv_btn > .multiselect {
+        }
+
+        .serv_btn > .allocation_m {
+            margin-left: 6%;
+            margin-top: 7%;
+        }
+
+        .serv_btn > .glyphicon-search {
+            /*margin-left: -20px;*/
+        }
+
+        .input-group-addon1 {
+            margin-left: -78% !important;
+        }
+
+        allocation_m > .dropdown-menu {
+            /*position: relative !important;*/
+        }
+
+        .deact_mter {
+            margin-left: 1%;
+        }
+    }
+       /*************************IPHONE 6S PORTRAIT*****************/
+    @@media only screen and (min-width:360px) and (max-width:420px) {
+        .iconic-input {
+            margin-left: 5% !important;
+        }
+
+        .serv_mod_cont {
+                margin-left: -18% !important;
+                margin-right: -20%;
+        }
+
+        .lab_serv_type {
+            margin-left: -2%;
+            margin-right: 2%;
+        }
+
+        .serv_desc {
+            margin-left: 0px;
+        }
+
+        .serv_rte {
+        }
+
+        .serv_rte_txt {
+            margin-left: -1%;
+        }
+
+        .serv_pic {
+
+        }
+
+        .serv_btn {
+            margin-left: 20%;
+            margin-top: -4em;
+
+        }
+
+        .serv_type_txt {
+            margin-left: -1% !important;
+        }
+
+
+        .serv_aud {
+        }
+
+        .serv_vid {
+        }
+
+        .serv_btn > .open > .dropdown-menu {
+            width: 90%;
+        }
+
+        .serv_btn > .multiselect {
+        }
+
+        .serv_btn > .allocation_m {
+            margin-left: 24%;
+            margin-top: 5%;
+        }
+
+        .serv_btn > .glyphicon-search {
+            /*margin-left: -20px;*/
+        }
+
+        .input-group-addon1 {
+            margin-left: -78% !important;
+        }
+
+        .dropdown-menu {
+            /*position: relative !important;*/
+        }
+
+        .deact_mter {
+           margin-left: -10%;
+            width: 125%;
+        }
+    }
+     /*******************6s End*********************************************************/
+    @@media only screen and (min-width:421px)and (max-width:479px) {
+        .serv_mod_cont {
+                width: 100%;
+                margin-bottom: 10%;
+                margin-left: 9%;
+        }
+    }
+      @@media only screen and (min-width:430px)and (max-width:767px) {
+        .deactivated_records {
+        }
+
+        /*.serv_mod_cont {
+                width: 100%;
+                margin-bottom: 10%;
+                margin-left: 29%;
+        }*/
+
+        .serv_type_txt {
+            width: auto;
+        }
+
+        .lab_serv_type {
+        }
+
+        .serv_desc {
+        }
+
+        .serv_rte {
+        }
+
+        .serv_rte_txt {
+            width: auto;
+        }
+
+        .serv_pic {
+            /*margin-left: -1%;
+            width: 24% !important;
+            margin-right: -1%;*/
+        }
+
+        .serv_btn {
+            margin-left: 25%;
+            margin-top: -11%;
+        }
+
+        .serv_type_txt {
+        }
+
+        .serv_aud {
+        }
+
+        .serv_aud {
+        }
+
+        .serv_vid {
+        }
+
+        .serv_btn > .open > .dropdown-menu {
+            width: 50%;
+        }
+
+        .serv_btn > .multiselect {
+        }
+
+        .serv_btn > .allocation_m {
+            margin-left: 14%;
+        }
+
+        .serv_btn > .glyphicon-search {
+        }
+
+        .input-group-addon1 {
+            margin-left: 0% !important;
+        }
+
+        .dropdown-menu {
+            /*position: relative !important;*/
+        }
+
+        .deact_mter {
+            margin-left: 1%;
+        }
+
+        .deactivated_records {
+            padding-left: 31%;
+        }
+        /*.modal-backdrop{
+            height:102% !important;
+        }*/
+        .serv_btn >.open > .dropdown-menu {
+            height: 0em !important;
+            margin-bottom: 18%;
+        }
+    }
+
+        @@media only screen and (min-width:480px)and (max-width:530px)and (orientation: portrait) {
+        .deactivated_records {
+            /*padding-left: 29% !important;*/
+        }
+        .modal-backdrop.in {
+            height: 118% !important;
+        }
+      .serv_mod_cont {
+          margin-bottom: 16%;
+        }
+
+         /* .modal-backdrop.in {
+            height: 163% !important;
+        }
+
+        .lab_serv_type {
+            margin-left: -73%;
+            margin-right: -3%;
+        }
+
+        .serv_desc {
+            margin-left: -75%;
+            margin-right: -1%;
+        }
+
+        .serv_type_txt {
+            margin-left: 1%;
+        }
+
+        .serv_rte {
+            margin-left: -75%;
+            margin-right: -2%;
+        }
+
+        .serv_rte_txt {
+            margin-left: 2%;
+        }
+
+        .serv_pic {
+            margin-left: 10px;
+            white-space: normal;
+            width: 22% !important;
+        }
+
+        .serv_btn {
+            margin-left: 18%;
+            margin-top: -16%;
+            padding-left: 9%;
+            width: 80%;
+        }
+
+        .serv_aud {
+            margin-left: 6px;
+        }
+
+        .serv_vid {
+            margin-left: 6px;
+        }
+
+        .serv_btn > .open > .dropdown-menu {
+            width: 100%;
+        }
+
+        .input-group-addon1 {
+            margin-left: 0% !important;
+        }
+
+        .open > .dropdown-menu {
+            min-width: 0% !important;
+        }
+
+        .serv_btn > .allocation_m {
+            margin-left: 3% !important;
+        }
+
+        allocation_m > .dropdown-menu {
+
+        }*/
+
+         .deact_mter {
+           margin-left: 5% !important;
+            width: 125%;
+        }
+    }
+    /*****************************Ihone 5s landscape************************************/
+
+    @@media only screen and (min-width:480px)and (max-width:530px)and (orientation: landscape) {
+        .deactivated_records {
+            /*padding-left: 29% !important;*/
+        }
+        .modal-backdrop.in {
+            height: 118% !important;
+        }
+      .serv_mod_cont {
+          margin-bottom: 16%;
+        }
+
+         /* .modal-backdrop.in {
+            height: 163% !important;
+        }
+
+        .lab_serv_type {
+            margin-left: -73%;
+            margin-right: -3%;
+        }
+
+        .serv_desc {
+            margin-left: -75%;
+            margin-right: -1%;
+        }
+
+        .serv_type_txt {
+            margin-left: 1%;
+        }
+
+        .serv_rte {
+            margin-left: -75%;
+            margin-right: -2%;
+        }
+
+        .serv_rte_txt {
+            margin-left: 2%;
+        }
+
+        .serv_pic {
+            margin-left: 10px;
+            white-space: normal;
+            width: 22% !important;
+        }
+
+        .serv_btn {
+            margin-left: 18%;
+            margin-top: -16%;
+            padding-left: 9%;
+            width: 80%;
+        }
+
+        .serv_aud {
+            margin-left: 6px;
+        }
+
+        .serv_vid {
+            margin-left: 6px;
+        }
+
+        .serv_btn > .open > .dropdown-menu {
+            width: 100%;
+        }
+
+        .input-group-addon1 {
+            margin-left: 0% !important;
+        }
+
+        .open > .dropdown-menu {
+            min-width: 0% !important;
+        }
+
+        .serv_btn > .allocation_m {
+            margin-left: 3% !important;
+        }
+
+        allocation_m > .dropdown-menu {
+
+        }*/
+
+         .deact_mter {
+           margin-left: 5%;
+            width: 125%;
+        }
+    }
+       /****************************5S landscape end**********************************************/
+        @@media only screen and (min-width:531px)and (max-width:567px) {
+        .deactivated_records {
+            /*padding-left: 29% !important;*/
+        }
+        .modal-backdrop.in {
+            height: 118% !important;
+        }
+       .serv_mod_cont {
+          margin-bottom: 16%;
+        }
+        .serv_btn > .open > .dropdown-menu {
+                margin-bottom: 22%;
+            }
+
+
+        /*.modal-backdrop.in {
+            height: 163% !important;
+        }
+
+        .lab_serv_type {
+            margin-left: -73%;
+            margin-right: -3%;
+        }
+
+        .serv_desc {
+            margin-left: -75%;
+            margin-right: -1%;
+        }
+
+        .serv_type_txt {
+            margin-left: 1%;
+        }
+
+        .serv_rte {
+            margin-left: -75%;
+            margin-right: -2%;
+        }
+
+        .serv_rte_txt {
+            margin-left: 2%;
+        }
+
+        .serv_pic {
+            margin-left: 10px;
+            white-space: normal;
+            width: 22% !important;
+        }
+
+        .serv_btn {
+            margin-left: 18%;
+            margin-top: -16%;
+            padding-left: 9%;
+            width: 80%;
+        }
+
+        .serv_aud {
+            margin-left: 6px;
+        }
+
+        .serv_vid {
+            margin-left: 6px;
+        }
+
+        .serv_btn > .open > .dropdown-menu {
+            width: 100%;
+        }
+
+        .input-group-addon1 {
+            margin-left: 0% !important;
+        }
+
+        .open > .dropdown-menu {
+            min-width: 0% !important;
+        }
+
+        .serv_btn > .allocation_m {
+            margin-left: 3% !important;
+        }
+
+        allocation_m > .dropdown-menu {
+
+        }
+
+        .deact_mter {
+            margin-left: 1%;
+        }*/
+    }
+
+        @@media only screen and (min-width:568px)and (max-width:599px) {
+        .deactivated_records {
+            /*padding-left: 29% !important;*/
+        }
+        .modal-backdrop.in {
+            height: 118% !important;
+        }
+       .serv_mod_cont {
+          margin-bottom: 16%;
+        }
+        .serv_btn > .open > .dropdown-menu {
+                margin-bottom: 22%;
+            }
+
+
+        /*.modal-backdrop.in {
+            height: 163% !important;
+        }
+
+        .lab_serv_type {
+            margin-left: -73%;
+            margin-right: -3%;
+        }
+
+        .serv_desc {
+            margin-left: -75%;
+            margin-right: -1%;
+        }
+
+        .serv_type_txt {
+            margin-left: 1%;
+        }
+
+        .serv_rte {
+            margin-left: -75%;
+            margin-right: -2%;
+        }
+
+        .serv_rte_txt {
+            margin-left: 2%;
+        }
+
+        .serv_pic {
+            margin-left: 10px;
+            white-space: normal;
+            width: 22% !important;
+        }
+
+        .serv_btn {
+            margin-left: 18%;
+            margin-top: -16%;
+            padding-left: 9%;
+            width: 80%;
+        }
+
+        .serv_aud {
+            margin-left: 6px;
+        }
+
+        .serv_vid {
+            margin-left: 6px;
+        }
+
+        .serv_btn > .open > .dropdown-menu {
+            width: 100%;
+        }
+
+        .input-group-addon1 {
+            margin-left: 0% !important;
+        }
+
+        .open > .dropdown-menu {
+            min-width: 0% !important;
+        }
+
+        .serv_btn > .allocation_m {
+            margin-left: 3% !important;
+        }
+
+        allocation_m > .dropdown-menu {
+
+        }
+
+        .deact_mter {
+            margin-left: 1%;
+        }*/
+    }
+
+       @@media only screen and (min-width:600px) and (max-width:640px) and (orientation:portrait) {
+            .serv_mod_cont {
+                margin-left: 20%;
+                width: 100%;
+                margin-bottom:16%;
+            }
+
+            /*.lab_serv_type {
+                margin-left: -74%;
+                margin-right: -1%;
+            }
+
+            .serv_desc {
+                margin-left: -76%;
+                margin-right: 1%;
+            }
+
+            .serv_type_txt {
+                margin-left: -1%;
+            }
+
+            .serv_rte {
+                margin-left: -76%;
+                margin-right: 1%;
+            }
+
+            .serv_rte_txt {
+                margin-left: 2%;
+            }
+
+            .serv_pic {
+                margin-left: 10px;
+                white-space: normal;
+                width: 20% !important;
+            }
+
+            .serv_btn {
+                margin-left: 25%;
+                margin-top: -15%;
+            }
+
+            .serv_aud {
+                margin-left: 6px;
+            }
+
+            .serv_vid {
+                margin-left: 6px;
+            }*/
+
+            .serv_btn > .open > .dropdown-menu {
+                margin-bottom: 22%;
+            }
+
+            .input-group-addon1 {
+                margin-left: -86% !important;
+            }
+
+            .open > .dropdown-menu {
+                min-width: 100% !important;
+            }
+
+            allocation_m > .dropdown-menu {
+            }
+
+            .deact_mter {
+               margin-left: 14%;
+                width: 100%;
+            }
+        }
+
+        @@media only screen and (min-width:600px) and (max-width:640px) and (orientation:landscape) {
+            .serv_mod_cont {
+                margin-left: 20%;
+                width: 100%;
+                margin-bottom:11%;
+            }
+
+            /*.lab_serv_type {
+                margin-left: -74%;
+                margin-right: -1%;
+            }
+
+            .serv_desc {
+                margin-left: -76%;
+                margin-right: 1%;
+            }
+
+            .serv_type_txt {
+                margin-left: -1%;
+            }
+
+            .serv_rte {
+                margin-left: -76%;
+                margin-right: 1%;
+            }
+
+            .serv_rte_txt {
+                margin-left: 2%;
+            }
+
+            .serv_pic {
+                margin-left: 10px;
+                white-space: normal;
+                width: 20% !important;
+            }
+
+            .serv_btn {
+                margin-left: 25%;
+                margin-top: -15%;
+            }
+
+            .serv_aud {
+                margin-left: 6px;
+            }
+
+            .serv_vid {
+                margin-left: 6px;
+            }*/
+
+            .serv_btn > .open > .dropdown-menu {
+                margin-bottom: 22%;
+            }
+
+            .input-group-addon1 {
+                margin-left: -86% !important;
+            }
+
+            .open > .dropdown-menu {
+                min-width: 100% !important;
+            }
+
+            allocation_m > .dropdown-menu {
+            }
+
+            .deact_mter {
+                margin-left: 37%;
+                width: 100%;
+            }
+        }
+
+
+    /***************************** IPHONE 6S Landscape **********************************/
+    @@media only screen and (min-width:641px)and (max-width:710px) {
+        .deactivated_records {
+            padding-left: 34.5%;
+        }
+        .serv_mod_cont {
+            margin-left: 32% !important;
+            width: 100%;
+            margin-bottom:16%;
+        }
+
+       /* .lab_serv_type {
+            margin-left: -76%;
+            margin-right: -3%;
+        }
+
+        .serv_desc {
+            margin-left: -78%;
+            margin-right: -1%;
+        }
+
+        .serv_rte {
+            margin-left: -78%;
+            margin-right: -1%;
+        }
+
+        .serv_rte_txt {
+            margin-left: 5%;
+        }
+
+        .serv_pic {
+            margin-left: -1%;
+            width: 24% !important;
+            margin-right: -1%;
+        }
+
+        .serv_btn {
+            margin-left: 25%;
+            margin-top: -11%;
+        }
+
+        .serv_type_txt {
+            margin-left: 5% !important;
+        }
+
+        .serv_aud {
+        }
+
+        .serv_aud {
+        }
+
+        .serv_vid {
+        }
+
+        .serv_btn > .open > .dropdown-menu {
+        }
+
+        .serv_btn > .multiselect {
+        }
+
+        .serv_btn > .allocation_m {
+        }
+
+        .serv_btn > .glyphicon-search {
+
+        }
+
+        .input-group-addon1 {
+            margin-left: 0% !important;
+        }
+
+        .dropdown-menu {
+            position: relative !important;
+        }*/
+
+       .deact_mter {
+           margin-left: 10%;
+            width: 125%;
+        }
+    }
+        /***************************** IPHONE 6S Landscape End **********************************/
+    @@media only screen and (min-width:711px)and (max-width:767px) {
+         .serv_mod_cont {
+            margin-left: 32% !important;
+            width: 100%;
+            margin-bottom:16%;
+        }
+          .deact_mter {
+                margin-left: 37%;
+                width: 100%;
+            }
+    }
+
+       /* @@media only screen and (min-width:421px) and (max-width:500px) {
+
+            .serv_mod_cont {
+                width: 105%;
+            }
+
+            .modal-backdrop.in {
+                height: 163% !important;
+            }
+
+            .lab_serv_type {
+                margin-left: -75%;
+                margin-right: -2%;
+            }
+
+            .serv_desc {
+                margin-left: -78%;
+                margin-right: 1%;
+            }
+
+            .serv_type_txt {
+                margin-left: -1%;
+            }
+
+            .serv_rte {
+                margin-left: -78%;
+                margin-right: -1%;
+            }
+
+            .serv_rte_txt {
+                margin-left: 2%;
+            }
+
+            .serv_pic {
+                margin-left: 10px;
+                white-space: normal;
+                width: 20% !important;
+            }
+
+            .serv_btn {
+                margin-left: 18%;
+                margin-top: -16%;
+                padding-left: 9%;
+                width: 80%;
+            }
+
+            .serv_aud {
+                margin-left: 6px;
+            }
+
+            .serv_vid {
+                margin-left: 6px;
+            }
+
+
+
+            .input-group-addon1 {
+                margin-left: -83% !important;
+            }
+
+            .open > .dropdown-menu {
+                min-width: 28% !important;
+            }
+
+            .dropdown-menu {
+
+            }
+
+            .deact_mter {
+                margin-left: 1%;
+            }
+        }*/
+        /*****************************Ihone 5s landscape************************************/
+
+
+
+    @@media only screen and (min-width:768px) and (max-width:850px) {
+        .deactivated_records {
+            /*padding-left: 31%;*/
+        }
+    }
+
+        @@media only screen and (min-width:1024px) and (max-width:1100px) {
+            .deactivated_records {
+                /*margin-left: -1.5% !important;*/
+            }
+        }
+</style>
+
+<div id="loading">
+    <div id="loadingcontent">
+        <p id="loadingspinner">
+            Searching things...
+        </p>
+    </div>
+</div>
+
+<!-- page start-->
+
+<section id="main-content">
+    <section class="wrapper">
+        <!-- page start-->
+        <div class="row">
+            <div class="col-sm-12">
+                <section class="panel">
+                    <header class="panel-heading">
+                        <b>Service Master </b>
+
+                    </header>
+                    <div class="panel-body">
+
+                        <div class="row">
+                            <div class="col-lg-4 col-md-4 col-xs-4 add_newbtn">
+                                <a class="btn btn-success" id="btnAddServiceType" data-backdrop="static">
+                                    Add New <i class="fa fa-plus"></i>
+                                </a>
+                            </div>
+                            <div class="col-lg-8 col-md-8 col-xs-8 show_deactive deactivated_records">
+                                <input type="checkbox" name="showDeactivate" id="chkShowDeactivate" />Show Deactivated Records
+                            </div>
+                        </div>
+                        <table id="dynamic-table" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                            <thead>
+                                <tr>
+                                    <th width="35%">Services</th>
+                                    <th width="5%">Action</th>
+                                </tr>
+                            </thead>
+                        </table>
+
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</section>
+<!-- Modal for Add /Edit Dialog -->
+<div class="modal fade modal-dialog-center" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md ">
+        <div class="modal-content-wrap">
+            @*<div class="modal-content serv_mod_cont ">*@
+            <div class="modal-content serv_mod_cont ">
+                <div class="modal-header">
+                    <button type="button" class="close" id="btnclose" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Add New Service</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="panel-body">
+                        <form id="form3" class="cmxform form-horizontal tasi-form">
+                            <div class="form-group">
+                                <label for="name" class="col-lg-3 col-sm-4 col-xs-4 lab_serv_type" style="">Service Type<span style="color:red">*</span></label>
+                                <div class="col-lg-9 col-sm-8 col-xs-8 ">
+                                    <input type="hidden" name="ID" id="txtServiceId" class="inputclass form-control" />
+                                    <input type="text" name="Service" id="txtServiceName" maxlength="51" class="inputclass form-control serv_type_txt" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="name" class="col-lg-3 col-sm-4 col-xs-4 serv_desc">Description</label>
+                                <div class="col-lg-9 col-sm-8 col-xs-8">
+                                    <input type="text" name="Description" id="txtServiceDescription" maxlength="500" class="inputclass form-control serv_type_txt" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="name" class="col-lg-3 col-sm-4 col-xs-4 serv_rte">Rate ($)</label>
+                                <div class="col-lg-9 col-sm-8 col-xs-8">
+                                    <input type="text" name="ServiceBasePrice" maxlength="50" id="txtServiceBasePrice" style="text-align:right;" class="inputclass form-control two-decimals serv_rte_txt" />
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-lg-3 col-sm-4 col-xs-4">
+                                </div>
+                                <div class="col-lg-9 col-sm-8 col-xs-8">
+                                    <input type="hidden" name="MaxAudio" id="txtMaxAudio" class="inputclass form-control" />
+                                    <input type="checkbox" name="AudioRequired" id="chkTakeAudio" class="serv_aud" />Take Audio for the service
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-lg-3 col-sm-4 col-xs-4">
+                                </div>
+                                <div class="col-lg-9 col-sm-8 col-xs-8">
+                                    <input type="hidden" name="MaxVideo" id="txtMaxVideo" class="inputclass form-control" />
+                                    <input type="checkbox" name="VideoRequired" id="chkTakeVideo" class="serv_vid" />Take Video for the service
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="name" class="col-lg-3 col-sm-4 col-xs-4 serv_pic" style="">Pictures for the service  </label>
+                                <div class="col-lg-9 col-sm-8 col-xs-8 serv_btn " style="">
+                                    @*<select id="example-getting-started" multiple="multiple">
+                                            <option value="1">House</option>
+                                            <option value="2">Door</option>
+                                            <option value="3">Old Meter Reading</option>
+                                            <option value="4">New Meter Reading</option>
+                                            <option value="5">New Meter Barcode</option>
+                                            <option value="6">New Meter Placement</option>
+                                        </select>*@
+
+                                    <select id="ddlPicture" name="MeterSize" style="display:none;" multiple="multiple"></select>
+
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnSave" class="btn btn-success" type="button">Save</button>
+                    <button class="btn btn-danger" id="btnCancel" type="button">Cancel</button>
+                    <button class="btn btn-default" id="btnReset" type="button">Reset</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal -->
+<!-- Modal for deactivation -->
+<div class="modal fade modal-dialog-center" id="confirmDeactivatedialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content-wrap">
+            <div class="modal-content deact_mter ">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Default Modal Tittle</h4>
+                </div>
+                <div class="modal-body">
+
+                    <input type="hidden" id="deactivationID" />
+                    <p>Are you sure to deactivate this record ?</p>
+
+                </div>
+                <div class="modal-footer">
+                    <button id="btnDeactivateYes" class="btn btn-success" type="button">Yes</button>
+                    <button class="btn btn-danger" id="btnDeactivatNo" type="button">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal -->
+<!-- Modal for confirmActivatedialog -->
+<div class="modal fade modal-dialog-center" id="confirmActivatedialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content-wrap">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Default Modal Tittle</h4>
+                </div>
+                <div class="modal-body">
+
+
+                    <input type="hidden" id="activationID" />
+                    <p>Are you sure to Activate this record ?</p>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button id="btnActivateYes" class="btn btn-success" type="button">Yes</button>
+                    <button class="btn btn-danger" id="btnActivatNo" type="button">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<link href="~/Content/MSTS/admin/css/bootstrap-multiselect.css" rel="stylesheet" />
+<script src="~/Content/MSTS/admin/js/bootstrap-multiselect.js"></script>
+<script src='@Url.Content("~/Scripts/Admin/ServicesMaster.js")'></script>

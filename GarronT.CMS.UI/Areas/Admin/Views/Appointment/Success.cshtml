@@ -1,0 +1,189 @@
+﻿@model GarronT.CMS.Model.BO.AppointmentModel
+
+@{
+    ViewBag.Title = "AppintmentSuccess";
+    Layout = "~/Areas/Global/Views/Shared/_AppointmentLayout.cshtml";
+
+}
+
+<style>
+    .appntmnt-panel-body {
+        padding: 50px 0px;
+    }
+
+    .apptmn_label {
+        line-height: 2;
+        font-size: 17px;
+    }
+
+    .form-group {
+        padding: 15px;
+    }
+</style>
+@*<div id="loading">
+        <div id="loadingcontent">
+            <p id="loadingspinner">
+                Searching things...
+            </p>
+        </div>
+    </div>*@
+<script type="text/javascript">
+
+    window.onload = window.history.forward(0);  //calling function on window onload
+
+</script>
+
+<section id="main-content">
+    <section class="wrapper">
+        <div class="row">
+            <div class="col-sm-12 ">
+                <section class="panel">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            @if (Model != null)
+                            {
+
+                                <header class="panel-heading" style="text-align: center;">
+                                    <b>The following appointment was booked sucessfully. Please see the appointment details:</b>
+
+                                </header>
+                                <div class="container ">
+                                    <div class="panel-body appntmnt-panel-body">
+                                        <div class="row">
+                                            @*<div class="col-lg-1"></div>*@
+                                            <div class="col-lg-8 col-md-offset-2">
+                                                <br />
+
+                                                <div class="modal-header col-lg-10">
+                                                    <h4 class="modal-title">Appointment Details</h4>
+                                                </div>
+
+                                                <div class="col-lg-10" style="background-color: #ddd; border: 1px solid black;">
+                                                    <div class="row">
+                                                        <div class="form-group">
+                                                            <label class="col-lg-4 apptmn_label">Account Number </label>
+                                                            <div class="col-lg-8 col-sm-9 col-xs-10 apptmn_label">
+                                                                : @Model.AccountNumber
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="form-group">
+                                                            <label class="col-lg-4 apptmn_label">Address  </label>
+                                                            <div class="col-lg-8 col-sm-9 col-xs-10 apptmn_label">
+                                                                : @Model.Address
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row">
+                                                        <div class="form-group">
+                                                            <label class="col-lg-4 apptmn_label">Project Name </label>
+                                                            <div class="col-lg-8 col-sm-9 col-xs-10 apptmn_label">
+                                                                :  @Model.ProjectName
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row">
+                                                        <div class="form-group">
+                                                            <label class="col-lg-4 apptmn_label">Utility Type </label>
+                                                            <div class="col-lg-8 col-sm-9 col-xs-10 apptmn_label">
+                                                                :  @Model.UtilityType
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="form-group">
+                                                            <label class="col-lg-4 apptmn_label">City Name  </label>
+                                                            <div class="col-lg-8 col-sm-9 col-xs-10 apptmn_label">
+                                                                : @Model.City
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="form-group">
+                                                            <label class="col-lg-4 apptmn_label">State Name </label>
+                                                            <div class="col-lg-8 col-sm-9 col-xs-10 apptmn_label">
+                                                                : @Model.State
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="form-group">
+                                                            <label class="col-lg-4 apptmn_label">Appointment Date</label>
+                                                            <div class="col-lg-8 col-sm-9 col-xs-10 apptmn_label">
+                                                                : @Model.DateForApp
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row">
+                                                        <div class="form-group ">
+                                                            <label class="col-lg-4 apptmn_label">Appoitment Time </label>
+                                                            <div class="col-lg-8 col-sm-9 col-xs-10 apptmn_label">
+                                                                : @Model.FirstTime
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row">
+                                                        <div class="form-group">
+                                                            <label class="col-lg-4 apptmn_label">Customer Name </label>
+                                                            <div class="col-lg-8 col-sm-9 col-xs-10 apptmn_label">
+                                                                : @Model.FullName
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row">
+                                                        <div class="form-group">
+                                                            <label class="col-lg-4 apptmn_label">Customer Email </label>
+                                                            <div class="col-lg-8 col-sm-9 col-xs-10 apptmn_label">
+                                                                : @Model.EmailAddress
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row">
+                                                        <div class="form-group">
+                                                            <label class="col-lg-4 apptmn_label">Customer Phone </label>
+                                                            <div class="col-lg-8 col-sm-9 col-xs-10 apptmn_label ">
+                                                                : @Model.DayTimePhone
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-3 col-md-offset-1"></div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            }
+                            else
+                            {
+
+                                <header class="panel-heading" style="text-align: center;">
+                                    <b>We are anable to process your request. Please try again.</b>
+
+                                </header>
+
+                            }
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</section>
+
+
+
+<link href="~/Content/MSTS/admin/css/style-responsive.css" rel="stylesheet" />
+<link href="~/Scripts/js/style.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/css/bootstrap2/bootstrap-switch.css">

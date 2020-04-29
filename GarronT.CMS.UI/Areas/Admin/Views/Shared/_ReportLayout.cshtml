@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+<html>
+<head id="layouthead">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Depot - @ViewBag.Title</title>
+ 
+    @Scripts.Render("~/bundles/modernizr")
+    @Html.Partial("_JsLayout")
+    @Html.Partial("_cssLayout")
+    <link rel="shortcut icon" href="~/images/logo_favicon.png" />
+   
+  
+</head>
+<body>
+
+    <section id="container">
+
+      
+        @RenderBody()
+
+
+
+
+    </section>
+
+    <script src="@Url.Content("~/Scripts/Admin/Layout.js")"></script>
+    <script src="@Url.Content("~/Content/MSTS/admin/js/common-scripts.js")"></script>
+    @*@Scripts.Render("~/bundles/jquery")*@
+    @*@Scripts.Render("~/bundles/KSPLbootstrap")*@
+
+    @RenderSection("scripts", required: false)
+
+
+
+
+    <script src="@Url.Content("~/Content/MSTS/admin/js/jquery.shapeshift.js")"></script>
+    <script>
+        jQuery(document).ready(function () {
+            // DraggablePortlet.init();      by Avinash
+        });
+    </script>
+
+    <script>
+        jQuery(document).ready(function () {
+
+            var is_ios = /(iPad|iPhone|iPod)/g.test(navigator.userAgent);
+
+            if (is_ios) {
+                $("#layouthead").append('<link href="../Content/MSTS/admin/css/style-ios.css" rel="stylesheet" />')
+               // $('<link href="~/Content/MSTS/admin/css/style-ios.css" rel="stylesheet" />').appendTo("head");
+            }});
+    </script>
+
+
+
+
+    <script>
+        $(document).ready(function () {
+            $(".clones").shapeshift({
+                dragClone: true,
+                enableCrossDrop: false
+            });
+            $(".droparea").shapeshift({
+                colWidth: 100
+            });
+        })
+    </script>
+
+
+
+    <script>
+        $(document).ready(function () {
+            $(".Drag").shapeshift();
+            $(".trash").shapeshift({
+                autoHeight: false,
+                colWidth: 80,
+                enableTrash: true
+            });
+        })
+    </script>
+    <script>
+
+
+        $(document).on('click', '.close', function () {
+            $('.ss-active-child').hide();
+        });
+    </script>
+
+    <script>
+
+        //owl carousel
+
+        $(document).ready(function () {
+            $("#owl-demo").owlCarousel({
+                navigation: true,
+                slideSpeed: 300,
+                paginationSpeed: 400,
+                singleItem: true,
+                autoPlay: true
+
+            });
+        });
+
+        //custom select box
+
+        $(function () {
+            $('select.styled').customSelect();
+        });
+
+    </script>
+</body>
+</html>
+
+

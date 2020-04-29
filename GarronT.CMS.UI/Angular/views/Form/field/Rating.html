@@ -1,0 +1,102 @@
+<div class="col-md-12 ">
+
+    <div class="form-group">
+        <label for="name" class="col-lg-3"> <strong> Field Label: </strong> <span style="color:red">*</span></label>
+        <div class="col-lg-9">
+            <div><input type="text" class="form-control" maxlength="200" id="txtfieldtitle" ng-blur="FieldLabelCheck(field.field_FieldLabel)" ng-model="field.field_FieldLabel" value="{{field.field_FieldLabel}}"></div>
+        </div>
+    </div>
+
+
+
+    <div class="form-group">
+
+        <div class="checkbox col-md-5">
+            <label for="checkbox1" style=" padding-left 0px;">
+                <span>Allow N/A</span>
+            </label>
+            <input type="checkbox" id="checkbox1" class="col-lg-2 pull-right" ng-model="field.field_AllowNotApplicable" value="{{field.field_AllowNotApplicable}}" />
+        </div>
+        <div class="checkbox col-md-5">
+            <label for="checkbox1" style=" padding-left 0px;">
+                <span>Show Multi Select</span>
+            </label>
+            <input type="checkbox" id="checkbox1" class="col-lg-2 pull-right" ng-model="field.field_ShowMultiselect" value="{{field.field_ShowMultiselect}}" />
+        </div>
+
+    </div>
+    <div class="form-group">
+        <div class="checkbox col-md-5">
+            <label for="checkbox1" style=" padding-left 0px;">
+                <span>Show Rating Labels</span>
+            </label>
+            <input type="checkbox" id="checkbox1" class="col-lg-2 pull-right" ng-model="field.field_ShowRatingLabels" value="{{field.field_ShowRatingLabels}}" />
+        </div>
+        <div class="checkbox col-md-5">
+            <label for="checkbox1" style=" padding-left 0px;">
+                <span>Hide Field Label</span>
+            </label>
+            <input type="checkbox" class="col-lg-2 pull-right" ng-model="field.field_HideFieldLabel" value="{{field.field_HideFieldLabel}}" />
+        </div>
+    </div>
+
+    <div class="form-group">
+
+        <div class="checkbox col-md-5">
+            <label for="checkbox1" style=" padding-left 0px;">
+                <span>Required</span>
+            </label>
+            <input type="checkbox" id="checkbox1" class="col-lg-2 pull-right" ng-model="field.field_IsRequired" value="{{field.field_IsRequired}}" />
+        </div>
+        <div class="checkbox col-md-5">
+            <label for="checkbox1" style=" padding-left 0px;">
+                <span>Capture Geolocation</span>
+            </label>
+            <input type="checkbox" id="checkbox1" class="col-lg-2 pull-right" ng-model="field.field_CaptureGeolocation" value="{{field.field_CaptureGeolocation}}" />
+        </div>
+    </div>
+    <div class="form-group">
+
+        <div class="checkbox col-md-5">
+            <label for="checkbox1" style=" padding-left 0px;">
+                <span>Enabled</span>
+            </label>
+            <input type="checkbox" id="checkbox1" class="col-lg-2 pull-right" ng-model="field.field_IsEnabled" value="{{field.field_IsEnabled}}" />
+        </div>
+
+        <div class="checkbox col-md-5">
+            <label for="checkbox1" style=" padding-left 0px;">
+                <span>Capture Timestamp</span>
+            </label>
+            <input type="checkbox" id="checkbox1" class="col-lg-2 pull-right" ng-model="field.field_CaptureTimestamp" value="{{field.field_CaptureTimestamp}}" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="name" class="col-lg-3"><strong>Rating Max:</strong></label>
+        <div class="col-lg-9">
+            <div>
+                <select class="form-control" ng-model="field.field_RatingMax">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="name" class="col-lg-3"> <strong> Rating Labels: </strong> </label>
+        <div class="col-lg-9">
+            <div><input type="text" class="form-control" maxlength="200" id="txtfieldtitle" ng-model="field.field_FieldLabel" value="{{field.field_RatingLabels}}"></div>
+        </div>
+    </div>
+
+</div>

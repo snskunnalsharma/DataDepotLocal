@@ -1,0 +1,96 @@
+﻿@model GarronT.CMS.Model.AspNetPermission
+
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Unbind the original image 'href' set by the controller...
+        $('.deleteRole').attr('href', 'javascript://');
+        $('.deleteRole').click(function () {
+            $dialog.data('permissionId', $(this).attr('permissionId')).data('roleId', $(this).attr('roleId')).dialog("open");
+        });
+        $(function () {
+            $("#dialog").dialog();
+        });
+
+
+
+        //var $dialog = $('<div/>')
+        //.html("Warning: This will remove the selected Role from this Permission.  Removing this Role may prevent users from accessing areas in the application.  Only remove this Role if you intend to restrict application access.<br/><br/>Do you wish to continue?")
+		//.dialog({
+		//    autoOpen: false,
+		//    resizable: false,
+		//    height: 250,
+		//    modal: true,
+		//    title: 'Remove Role',
+		//    buttons: [
+        //                {
+        //                    text: "Continue",
+        //                    id: "continuebtn",
+        //                    click: function () {
+        //                        var _permissionId = $(this).data('permissionId');
+        //                        var _roleId = $(this).data('roleId');
+
+        //                        var _parameters = { permissionId: _permissionId, id: _roleId };
+        //                        $.ajax({
+        //                            url: "/Admin/DeleteRoleFromPermissionReturnPartialView",
+        //                            type: "GET",
+        //                            data: _parameters,
+        //                            success: function (data, textStatus, jqXHR) {
+        //                                $('#RolesTable').html(data);
+        //                            }
+        //                        });
+        //                        $(this).dialog('close');
+        //                    }
+        //                },
+        //                {
+        //                    text: "Cancel",
+        //                    id: "cancelbtn",
+        //                    click: function () {
+        //                        $(this).dialog("close");
+        //                    }
+        //                }]
+		//});
+    });
+</script>
+<div id="dialog" title="Basic dialog">
+    <p>This is the default dialog which is useful for displaying information. The dialog window can be moved, resized and closed with the 'x' icon.</p>
+</div>
+
+@{if (Model.AspNetRolePermissions.Count == 0)
+{
+    <h2><font color="red">No Associated Roles...</font></h2>
+    <br />
+}
+else
+{
+    <table id="PermissionTable" style="width: 65%">
+        <thead>
+        <th style="width:40%">
+            Role
+        </th>
+       
+        <th>
+            Action
+        </th>
+        </thead>
+        @foreach (GarronT.CMS.Model.AspNetRolePermission role in Model.AspNetRolePermissions)
+        {
+            <tr>
+                <td>
+                    @Html.ActionLink(role.AspNetRole.Name, "RoleDetails", new { id = role.AspNetRole.Id })
+                </td>
+             
+                <td>
+                    <center>
+                        <a href="@Url.Action("DeletePermission", "Admin", new { id = role.AspNetRole.Id, permissionId = Model.Permission_Id })" class="deleteRole" permissionid=@Model.Permission_Id roleid=@role.AspNetRole.Id>
+                            <img src="@Url.Content("~/Content/images/bin.png")" alt="Delete Permission" />
+                        </a>
+                    </center>
+                </td>
+            </tr>
+        }
+    </table>
+    <br />
+}}

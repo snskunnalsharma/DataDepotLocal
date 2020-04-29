@@ -1,0 +1,201 @@
+﻿@model IEnumerable<GarronT.CMS.Model.BO.sectionfiledval>
+
+@{
+    ViewBag.Title = "";
+    Layout = "";
+}
+
+<link href="~/Content/MSTS/admin/admin/css/bootstrap.css" rel="stylesheet" />
+
+<style>
+    #divHeader {
+        float: right;
+        width: 21%;
+    }
+
+    #divFormName {
+    }
+
+    #divsectionData {
+    }
+
+
+    .fieldname {
+        text-align: left;
+        width: 20%;
+        padding: 5px;
+        font-family: Arial;
+        font-size: 14px;
+    }
+
+    .fieldData {
+        width: 80%;
+        padding: 5px;
+    }
+
+    .formname {
+        font-family: Arial;
+        font-size: 18px;
+        color: #0094ff;
+    }
+
+    .sectionname {
+        font-family: Arial;
+        font-size: 18px;
+        color: #0094ff;
+    }
+</style>
+<body style='font-family:calibri;padding:0px; margin:0px auto; '>
+    <div style="margin:0 auto;   width:60%; z-index: 1;">
+
+        <div id="divsectionData" style="margin: 0px 20px;">
+            @{
+                var ss = Model;
+                var listitem = ss.GroupBy(o => o.sectionName);
+
+                <h3 style="text-align: left;padding-left: 33px;color:#0094ff">@ViewBag.FormName</h3>
+
+
+                foreach (var item11 in listitem)
+                {
+                    string sectionName = @item11.Select(o => o.sectionName).FirstOrDefault();
+                    <h4 style="padding-left:36px;color:#0094ff"><strong>@sectionName</strong></h4>
+
+                    <table border="1" style='border:1px solid gray;font-family:calibri; font-size:14px; border-radius:5px;margin-left:34px;width:90%;border-collapse:collapse;'>
+                        
+                         @foreach (var item in item11)
+                        {
+
+                            if (item.FieldName.ToLower() == "gps location" || item.FieldName.ToLower() == "LOCATION/GPS".ToLower())
+                            {
+                            }
+                            else if (item.FieldName.ToLower() == "services")
+                            {
+
+                                List<GarronT.CMS.Model.BO.ServicesModel> listService = new List<GarronT.CMS.Model.BO.ServicesModel>();
+                                //get the list of services along with images
+                                listService = new GarronT.CMS.Model.DAL.ReportDAL().getServicesWithImages(item.FieldValues, item.IDS);
+                                if (listService != null)
+                                {
+                                    foreach (GarronT.CMS.Model.BO.ServicesModel obj in listService)
+                                    {
+                                        <tr style="page-break-inside:avoid;">
+                                            <td width='40%' style="padding:5px;border-bottom: 1px solid gray !important;vertical-align:top;"><strong>@obj.Service</strong></td>
+
+                                            @if (obj.lisServiceAttachment != null)
+                                            {
+                                                <td width='60%' style="border-bottom: 1px solid gray !important;">
+                                                    @foreach (GarronT.CMS.Model.BO.ServiceAttachmentModel objServiceAttachment in obj.lisServiceAttachment)
+                                                    {
+                                                        if (objServiceAttachment.IsAudioVideoImage == 3)
+                                                        {
+                                                            String fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace(@"..\", "");
+                                                            <img src='@fileName' height="150" width="200" />
+
+
+                                                        }
+                                                        else if (objServiceAttachment.IsAudioVideoImage == 2)
+                                                        {
+                                                            String fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace(@"..\", "");
+
+                                                            <a target="_new" href="@fileName" class="btn btn-link">Video</a>
+                                                        }
+                                                        else if (objServiceAttachment.IsAudioVideoImage == 1)
+                                                        {
+                                                            String fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace(@"..\", "");
+
+                                                            <a target="_new" href="@fileName" class="btn btn-link">Audio</a>
+                                                        }
+                                                    }
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                @*<td style="border-bottom: 1px solid gray !important;"> &nbsp;</td>
+                                                    </tr>*@
+                                            }
+
+                                        </tr>
+                                    }
+                                }
+
+                            }
+                            else if (item.FieldName.ToLower() == "ADDITIONAL SERVICES".ToLower())
+                            {
+
+                                List<GarronT.CMS.Model.BO.ServicesModel> listService = new List<GarronT.CMS.Model.BO.ServicesModel>();
+                                //get the list of services along with images
+                                listService = new GarronT.CMS.Model.DAL.ReportDAL().getServicesWithImages(item.FieldValues, item.IDS);
+                                if (listService != null)
+                                {
+                                    foreach (GarronT.CMS.Model.BO.ServicesModel obj in listService)
+                                    {
+                                        <tr style="page-break-inside:avoid;">
+                                            <td width='40%' style="padding:5px;border-bottom: 1px solid gray !important;vertical-align:top;"><strong> @obj.Service</strong>  </td>
+
+                                            @if (obj.lisServiceAttachment != null)
+                                            {
+                                                <td width='60%' style="border-bottom: 1px solid gray !important;">
+                                                    @foreach (GarronT.CMS.Model.BO.ServiceAttachmentModel objServiceAttachment in obj.lisServiceAttachment)
+                                                    {
+                                                        if (objServiceAttachment.IsAudioVideoImage == 3)
+                                                        {
+                                                            String aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace(@"..\", "");
+                                                            <img src='@aditionalFileName' height="150" width="200" />
+
+
+                                                        }
+                                                        else if (objServiceAttachment.IsAudioVideoImage == 2)
+                                                        {
+                                                            String fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace(@"..\", "");
+
+                                                            <a target="_new" href="@fileName" class="btn btn-link">Video</a>
+                                                        }
+                                                        else if (objServiceAttachment.IsAudioVideoImage == 1)
+                                                        {
+                                                            String fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace(@"..\", "");
+
+                                                            <a target="_new" href="@fileName" class="btn btn-link">Audio</a>
+                                                        }
+                                                    }
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                @*<td style="border-bottom: 1px solid gray !important;"> &nbsp;</td>
+                                                    </tr>*@
+                                            }
+
+                                        </tr>
+                                    }
+                                }
+
+                            }
+                            else
+                            {
+                                <tr style="border-bottom: 1px solid gray !important;page-break-inside:avoid;">
+                                    <td width='40%' style="padding:5px; border-bottom: 1px solid gray !important;"><strong>@item.FieldName</strong>   </td>
+                                    <td width='60%' style="padding-left:-5px;border-bottom: 1px solid gray !important;">&nbsp;@item.FieldValues </td>
+                                </tr>
+
+                                if (item.Fieldlatitude != "")
+                                {
+                                    String LatImagesrc = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + "/images/blueT.png";
+                                    <tr style="border-bottom: 1px solid gray !important;page-break-inside:avoid;">
+                                        <td width='20%' style="padding:5px;border-bottom: 1px solid gray !important;">&nbsp;</td>
+                                        <td width='60%' style="border-bottom: 1px solid gray !important;">&nbsp;<img src=@LatImagesrc height="20" width="20" />lat: @item.Fieldlatitude , long: @item.Fieldlongitude  </td>
+                                    </tr>
+                                }
+                            }
+                        }
+
+
+                    </table>
+                }
+
+            }
+
+        </div>
+    </div>
+
+</body>

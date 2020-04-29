@@ -1,0 +1,81 @@
+﻿@model IEnumerable<GarronT.CMS.Model.AspNetRole>
+@{
+    ViewBag.Title = "Roles";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+  $(document).ready(function () {
+    $(":input[type='button']").button();
+  });
+</script>
+
+
+<section id="main-content">
+    <section class="wrapper">
+        <!-- page start-->
+        <div class="row">
+            <div class="col-sm-12">
+                <section class="panel">
+                    <header class="panel-heading">
+                        <b>Roles</b>
+
+                    </header>
+                    <div class="panel-body">
+                        <div class="adv-table">
+                            <fieldset>
+                                <legend>
+                                    <h3>
+                                        Roles
+                                    </h3>
+                                </legend>
+                                <table id="RoleTable" style="width: 100%" class="table table-advance table-condensed table-hover table-bordered table-responsive ">
+                                    <thead>
+                                    <th>
+                                        Role Name
+                                    </th>
+
+                                    <th>
+                                        Is System Admin
+                                    </th>
+                                    <th style="width: 40%">
+                                        Action
+                                    </th>
+                                    </thead>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @Html.ActionLink(item.Name, "RoleName", new { id = item.Id,@class = "btn btn-success" })
+                                            </td>
+
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.IsSysAdmin)
+                                            </td>
+                                            <td>
+                                                <center>
+                                                    <a class="btn btn-success" href="@Url.Action("RoleEdit", "Admin", new { id = item.Id})">
+                                                        @*<img src="@Url.Content("~/Content/Images/pen.png")" alt="Edit Role" />*@Edit Role
+                                                    </a>
+                                                    <a class="btn btn-success" href="@Url.Action("RoleDelete", "Admin", new { id = item.Id })">
+                                                        @*<img src="@Url.Content("~/Content/Images/bin.png")" alt="Delete Role" />*@Delete Role
+                                                    </a>
+                                                </center>
+                                            </td>
+                                        </tr>
+                                    }
+                                </table>
+                                <br />
+                                <div>
+                                    <input type="button" class="btn btn-success" value="Create Role" onclick="location.href='@Url.Action("RoleCreate", "Admin")'" />
+                                    <br />
+                                </div>
+                            </fieldset>
+                            <br />
+                            @Html.ActionLink("Go to Users", "Index", "Admin", new { @class="btn btn-success" })
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</section>

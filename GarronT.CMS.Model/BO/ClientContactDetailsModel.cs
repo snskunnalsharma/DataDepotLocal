@@ -1,0 +1,25 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace GarronT.CMS.Model.BO
+{
+   public class ClientContactDetailsModel
+    {
+        public long ID { get; set; }
+        public long TempID { get; set; }
+        public Nullable<long> tblClient_ClientId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string MobileNumber { get; set; }
+        public string EmailId { get; set; }
+        public Nullable<int> Active { get; set; }
+        public Nullable<int> CreatedBy { get; set; }
+        public Nullable<System.DateTime> CreatedOn { get; set; }
+        public Nullable<int> ModifiedBy { get; set; }
+        public Nullable<System.DateTime> ModifiedOn { get; set; }
+    }
+}

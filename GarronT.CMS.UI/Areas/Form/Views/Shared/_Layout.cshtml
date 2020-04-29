@@ -1,0 +1,175 @@
+﻿<!DOCTYPE html>
+<html ng-app="GarronTCMC-App">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - CMS</title>
+    @*@Styles.Render("~/Content/css")*@
+    @Scripts.Render("~/bundles/modernizr")
+    @Html.Partial("_JsLayout")
+    @Html.Partial("_cssLayout")
+    @Html.Partial("_AngularJs")
+    <base href="@Url.Content("~/")" />
+</head>
+<body>
+    <section id="container">
+
+        <!--header start-->
+        @Html.Partial("_HeaderLayout")
+
+        <!--header end-->
+
+        <aside>
+            <div id="sidebar" class="nav-collapse ">
+                @Html.Partial("_AdminMenuLayout")
+
+                @if (@User.IsInRole("Super Admin"))
+                {
+
+                    @Html.Partial("_SuperAdminMenuLayout")
+                }
+                @if (@User.IsInRole("Company Admin"))
+                {
+                    @Html.Partial("_CompanyAdminMenuLayout")
+                }
+            </div>
+            @*<div id="sidebar1" class="nav-collapse ">
+                    <!-- sidebar menu start-->
+                    @Html.Partial("_CompanyAdminMenuLayout")
+                </div>*@
+        </aside>
+
+        <div id="sidebar1" class="nav-collapse ">
+            <aside class="control-sidebar control-sidebar-dark" style="margin-top:65px;">
+                <!-- Create the tabs -->
+                <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+
+                    <li></li>
+                    <li></li>
+                </ul>
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <!-- Home tab content -->
+                    <div class="tab-pane" id="control-sidebar-home-tab">
+
+
+
+
+                    </div><!-- /.tab-pane -->
+
+
+                </div>
+            </aside><!-- /.control-sidebar -->
+
+        </div>
+
+        @RenderBody()
+
+
+        <div class="text-center">
+
+            <a href="#" class="go-top">
+                <i class="fa fa-angle-up"></i>
+            </a>
+        </div>
+
+        <!--footer end-->
+
+
+
+        <footer class="site-footer">
+            <ul class="footer_smalllogo">
+                <footer>
+                    @*<p style="color:#fff; float:left; width:32%; margin:8px 4px 4px 4px;"><a href="https://www.kaireesystems.com/" target="_blank" title="Kairee Systems" style="padding-top:5px;"><img class="slide" src="~/images/bottom_kairee.png" style="width:15px !important" /> </a></p>*@
+                    <p style=" color:#fff; float:right; width:18%; margin:4px;">&copy; Copyright @DateTime.Now.Year <img class="slide" src="~/images/bottom_clientlogo.png" /></p>
+                </footer>
+            </ul>
+
+        </footer>
+
+
+    </section>
+
+    <script src="@Url.Content("~/Content/MSTS/admin/js/common-scripts.js")"></script>
+    @*@Scripts.Render("~/bundles/jquery")*@
+    @*@Scripts.Render("~/bundles/KSPLbootstrap")*@
+
+    @RenderSection("scripts", required: false)
+
+
+
+
+    <script src="@Url.Content("~/Content/MSTS/admin/js/jquery.shapeshift.js")"></script>
+    <script>
+        jQuery(document).ready(function () {
+            // DraggablePortlet.init();      by Avinash
+        });
+    </script>
+
+
+
+
+
+
+    <script>
+        $(document).ready(function () {
+            $(".clones").shapeshift({
+                dragClone: true,
+                enableCrossDrop: false
+            });
+            $(".droparea").shapeshift({
+                colWidth: 100
+            });
+        })
+    </script>
+
+
+
+    <script>
+        $(document).ready(function () {
+            $(".Drag").shapeshift();
+            $(".trash").shapeshift({
+                autoHeight: false,
+                colWidth: 80,
+                enableTrash: true
+            });
+        })
+    </script>
+    <script>
+        //by Avinash
+        //$('.box droparea ui-droppable').tooltipster({
+        //    interactive: true,
+        //    contentAsHTML: true,
+        //    interactiveTolerance: 500000
+        //});
+
+        $(document).on('click', '.close', function () {
+            $('.ss-active-child').hide();
+        });
+    </script>
+
+    <script>
+
+        //owl carousel
+
+        $(document).ready(function () {
+            $("#owl-demo").owlCarousel({
+                navigation: true,
+                slideSpeed: 300,
+                paginationSpeed: 400,
+                singleItem: true,
+                autoPlay: true
+
+            });
+        });
+
+        //custom select box
+
+        $(function () {
+            $('select.styled').customSelect();
+        });
+
+    </script>
+</body>
+
+</html>

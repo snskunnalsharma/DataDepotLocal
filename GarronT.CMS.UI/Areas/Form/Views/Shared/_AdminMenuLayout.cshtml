@@ -1,0 +1,180 @@
+﻿<ul class="sidebar-menu" id="nav-accordion">
+    <li>
+        <a class="active" href="#">
+            <i class="fa fa-dashboard"></i>
+            <span>Dashboard</span>
+        </a>
+    </li>
+    <li>
+        <a class="active" href="#">
+            <i class="fa fa-user"></i>
+            <span>Administration</span>
+        </a>
+        <ul class="sub">
+            <li id="liMetermake">
+                <a target="_self" href="@Url.Action("Index", "MeterMake", new { area = "Admin" })">
+                    <span class="icon">
+                        @*<img src="~/images/meter-make.png" width="20px" height="20px" />*@
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    <span>Meter Make</span>
+
+                </a>
+            </li>
+            <li id="liMeterType">
+                <a target="_self" href="@Url.Action("Index", "MeterType", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    <span>Meter Type</span>
+
+                </a>
+            </li>
+            <li id="liMeterSize">
+                <a target="_self" href="@Url.Action("Index", "MeterSize", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    <span>Meter Size</span>
+
+                </a>
+            </li>
+            <li id="liServices">
+                <a target="_self" href="@Url.Action("Index", "Services", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    <span>Services</span>
+
+                </a>
+            </li>
+            <li id="liPicture">
+                <a target="_self" href="@Url.Action("Index", "Picture", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    <span>Picture</span>
+
+                </a>
+            </li>
+            @*<li id="liDevice">
+                    <a href="@Url.Action("Index", "Device", new { area = "Admin" })">
+                        <span class="icon">
+                            <i class="fa fa-check-square-o"></i>
+                        </span>
+                        <span>Device</span>
+
+                    </a>
+                </li>
+                <li id="liCountry">
+                    <a href="@Url.Action("Index", "Country", new { area = "Admin" })">
+                        <span class="icon">
+                            <i class="fa fa-check-square-o"></i>
+                        </span>
+                        <span>Country</span>
+
+                    </a>
+                </li>
+                <li id="listate">
+                    <a href="@Url.Action("Index", "State", new { area = "Admin" })">
+                        <span class="icon">
+                            <i class="fa fa-check-square-o"></i>
+                        </span>
+                        <span>State</span>
+                    </a>
+                </li>
+                <li id="licity">
+                    <a href="@Url.Action("Index", "City", new { area = "Admin" })">
+                        <span class="icon">
+                            <i class="fa fa-check-square-o"></i>
+                        </span>
+                        <span>City</span>
+                    </a>
+                </li>*@
+
+            <li id="liUserMaster">
+                <a target="_self" href="@Url.Action("Index", "Users", new { area = "Admin" })">
+                    <i class="fa fa-check-square-o"></i>
+
+                    <span>User Master</span>
+                </a>
+            </li>
+        </ul>
+    </li>
+    <li>
+        <a class="active" href="#">
+            <i class="fa fa-user"></i>
+            <span>Operations</span>
+
+        </a>
+        <ul class="sub">
+            <li  id="liClient">
+                <a target="_self" href="@Url.Action("Index", "Client", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    <span>Client</span>
+                </a>
+            </li>
+            <li id="liProject">
+                <a target="_self" href="@Url.Action("Index", "Project", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    <span>Project</span>
+                </a>
+            </li>          
+            <li id="liInstaller">
+                <a target="_self" href="@Url.Action("Index", "InstallerAllocation", new { area = "Admin" })">
+
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    <span>Installer Allocation</span>
+                </a>
+            </li>
+        </ul>
+    </li>
+    <li>
+        <a class="active" href="@Url.Action("Index", "FormManagement", new { area = "Form" })">
+            <i class="fa fa-user"></i>
+            <span>Form Management</span>
+        </a>
+    </li>
+    <li>
+        <a class="active" href="#">
+            <i class="fa fa-dashboard"></i>
+            <span>Reports</span>
+        </a>
+        @*<ul class="sub">
+                <li id="liCompanyPlanReport">
+                    <a href="@Url.Action("Index", "CompanyPlanReport", new { area = "SuperAdminReport" })">
+                        <span class="icon">
+                            <i class="fa fa-check-square-o"></i>
+                        </span>
+                        <span>Company Plan</span>
+
+                    </a>
+                </li>
+
+                <li id="liCompanyWiseJDReport">
+                    <a href="@Url.Action("Index", "CompanyWiseJDReport", new { area = "SuperAdminReport" })">
+                        <span class="icon">
+                            <i class="fa fa-check-square-o"></i>
+                        </span>
+                        <span>Company Wise JD</span>
+                    </a>
+                </li>
+
+
+
+
+
+            </ul>*@
+        <div style="height:100px;"></div>
+    </li>
+
+
+
+</ul>
+<!-- Right Slidebar start -->

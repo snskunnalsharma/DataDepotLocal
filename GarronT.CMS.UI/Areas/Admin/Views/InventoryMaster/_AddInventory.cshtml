@@ -1,0 +1,160 @@
+﻿@model GarronT.CMS.Model.BO.InventoryMasterBO
+@using GarronT.CMS.UI.CustomHelpers
+<div class="modal-dialog modal-md">
+    <div class="modal-content-wrap">
+        <div class="modal-content metrmke_dialog ">
+            <div class="modal-header">
+                <button type="button" class="close" id="btnclose" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+                @if (@ViewBag.Status == "Create")
+                {
+                    <h4 class="modal-title">Add New Inventory</h4>
+                }
+                else
+                {
+                    <h4 class="modal-title">Edit Inventory</h4>
+                }
+
+            </div>
+            <div class="modal-body">
+                <div class="panel-body">
+                    @*<form id="formAddEdit" class="cmxform form-horizontal tasi-form">*@
+                    @using (Html.BeginForm("", "", FormMethod.Get, new { @class = "form-horizontal", @id = "formAddEdit", role = "form" }))
+                    {
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label">Inventory Name<span style="color:red">*</span></label>
+                            <div class="col-lg-8 col-sm-8 col-xs-8">
+                                @Html.EditorFor(model => model.Id, new { htmlAttributes = new { @class = "form-control", @type = "hidden" } })
+
+                                @Html.EditorFor(model => model.InventoryName, new { htmlAttributes = new { @class = "inputclass form-control  meter_txtbox", @maxlength = "250" } })
+                                @Html.ValidationMessageFor(model => model.InventoryName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label">Inventory Description</label>
+                            <div class="col-lg-8 col-sm-8 col-xs-8">
+                                @Html.EditorFor(model => model.InventoryDescription, new { htmlAttributes = new { @class = "inputclass form-control  meter_txtbox", @maxlength = "250" } })
+                                @Html.ValidationMessageFor(model => model.InventoryDescription, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label">Barcode Required<span style="color:red">*</span></label>
+                            <div class="col-lg-8 col-sm-8 col-xs-8">
+
+                                @{
+                        if (Model.BarcodeRequired == true)
+                        {
+                            <label class="custom-control custom-radio">
+                                @Html.RadioButtonFor(model => model.BarcodeRequired, "true", new { @checked = "true" })
+                                <span class="custom-control-description">Yes</span>
+                            </label>
+                                    <label class="custom-control custom-radio">
+                                        @Html.RadioButtonFor(model => model.BarcodeRequired, "false")
+                                        <span class="custom-control-description">No</span>
+                                    </label>
+                        }
+                        else
+                        {
+                            <label class="custom-control custom-radio">
+                                @Html.RadioButtonFor(model => model.BarcodeRequired, "true")
+                                <span class="custom-control-description">Yes</span>
+                            </label>
+                                    <label class="custom-control custom-radio">
+                                        @Html.RadioButtonFor(model => model.BarcodeRequired, "false", new { @checked = "true" })
+                                        <span class="custom-control-description">No</span>
+                                    </label>
+                        }
+                                }
+
+                                @Html.ValidationMessageFor(model => model.BarcodeRequired, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label">Meter Size</label>
+                            <div class="col-lg-8 col-sm-8 col-xs-8">
+                                @*@Html.MeterSizeDropDownListFor(model => model.MeterSizeList, null, "", new { @class = "inputclass form-control input_shadow" })
+                                    @Html.ValidationMessageFor(model => model.MeterSizeList, "", new { @class = "text-danger" })*@
+
+                                <div id="divMeterSize" class=" ">
+                                    <div class="chosen-container chosen-container-single " title="" id="MeterSize_chosen">
+                                        <a class="chosen-single chosen-default CurrentSelectedDropDown" id="ancMeterSize_chosen" tabindex="-1"><span class="" id="MeterSizeHeader">Select Any Item</span><div><b></b></div></a>
+                                        <div class="chosen-drop">
+                                            <div class="chosen-search"><input type="text" id="txtfilterallMeterSize" class="txtfilterall" onkeyup="filterMultiSelectDropDown(this)" autocomplete="off"></div>
+                                            <div class="MeterSizeFilter row">
+                                                <label style="margin-left: 7px;" class="col-lg-2">
+                                                    <input type="checkbox" style="zoom:1.2;" class="chbSelectAll" id="MeterSize_SelectAll" autocomplete="off" value=" "><span>Select All</span>
+                                                </label>
+                                            </div>
+                                            <ul id="ulMeterSize" class="chosen-results " style=""></ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label">Meter Type</label>
+                            <div class="col-lg-8 col-sm-8 col-xs-8">
+
+                                @*@Html.MeterTypeDropDownListFor(model => model.MeterTypeList, null, "", new { @class = "inputclass form-control input_shadow" })
+                                    @Html.ValidationMessageFor(model => model.MeterTypeList, "", new { @class = "text-danger" })*@
+
+                                <div id="divMeterType" class=" ">
+                                    <div class="chosen-container chosen-container-single " title="" id="MeterType_chosen">
+                                        <a class="chosen-single chosen-default CurrentSelectedDropDown" id="ancMeterType_chosen" tabindex="-1"><span class="" id="MeterTypeHeader">Select Any Item</span><div><b></b></div></a>
+                                        <div class="chosen-drop">
+                                            <div class="chosen-search"><input type="text" id="txtfilterallMeterType" class="txtfilterall" onkeyup="filterMultiSelectDropDown(this)" autocomplete="off"></div>
+                                            <div class="MeterTypeFilter row">
+                                                <label style="margin-left: 7px;" class="col-lg-2">
+                                                    <input type="checkbox" style="zoom:1.2;" class="chbSelectAll" id="MeterType_SelectAll" autocomplete="off" value=" "><span>Select All</span>
+                                                </label>
+                                            </div>
+                                            <ul id="ulMeterType" class="chosen-results " style=""></ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label">Meter Make</label>
+                            <div class="col-lg-8 col-sm-8 col-xs-8">
+
+                                @*@Html.MeterMakeDropDownListFor(model => model.MeterMakeList, null, "", new { @class = "inputclass form-control input_shadow" })
+                                    @Html.ValidationMessageFor(model => model.MeterMakeList, "", new { @class = "text-danger" })*@
+
+                                <div id="divMeterMake" class=" ">
+                                    <div class="chosen-container chosen-container-single " title="" id="MeterMake_chosen">
+                                        <a class="chosen-single chosen-default CurrentSelectedDropDown" id="ancMeterMake_chosen" tabindex="-1"><span class="" id="MeterMakeHeader">Select Any Item</span><div><b></b></div></a>
+                                        <div class="chosen-drop">
+                                            <div class="chosen-search"><input type="text" id="txtfilterallMeterMake" class="txtfilterall" onkeyup="filterMultiSelectDropDown(this)" autocomplete="off"></div>
+                                            <div class="MeterMakeFilter row">
+                                                <label style="margin-left: 7px;" class="col-lg-2">
+                                                    <input type="checkbox" style="zoom:1.2;" class="chbSelectAll" id="MeterMake_SelectAll" autocomplete="off" value=" "><span>Select All</span>
+                                                </label>
+                                            </div>
+                                            <ul id="ulMeterMake" class="chosen-results " style=""></ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnSave" class="btn btn-success" type="button">Save</button>
+                <button id="btnCancel" class="btn btn-danger" type="button">Cancel</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+<link href="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.css")" rel="stylesheet" />
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.jquery.min.js")"></script>
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.proto.min.js")"></script>

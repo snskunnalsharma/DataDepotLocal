@@ -1,0 +1,311 @@
+﻿@model GarronT.CMS.Model.BO.WarehouseBO
+@using GarronT.CMS.UI.CustomHelpers
+<div class="modal-dialog modal-md">
+    <div class="modal-content-wrap">
+        <div class="modal-content metrmke_dialog ">
+            <div class="modal-header">
+                <button type="button" class="close" id="btnclose" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+                @if (@ViewBag.Status == "Create")
+                {
+                    <h4 class="modal-title">Add New Warehouse</h4>
+                }
+                else
+                {
+                    <h4 class="modal-title">Edit Warehouse</h4>
+                }
+
+            </div>
+            <div class="modal-body">
+                <div class="panel-body">
+                    @*<form id="formAddEdit" class="cmxform form-horizontal tasi-form">*@
+                    @using (Html.BeginForm("", "", FormMethod.Get, new { @class = "form-horizontal", @id = "formAddEdit", role = "form" }))
+                    {
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label">Warehouse Name<span style="color:red">*</span></label>
+                            <div class="col-lg-8 col-sm-8 col-xs-8">
+                                @Html.EditorFor(model => model.WarehouseId, new { htmlAttributes = new { @class = "form-control", @type = "hidden" } })
+
+                                @Html.EditorFor(model => model.WarehouseName, new { htmlAttributes = new { @class = "inputclass form-control  meter_txtbox", @maxlength = "250" } })
+                                @Html.ValidationMessageFor(model => model.WarehouseName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label">Warehouse Location<span style="color:red">*</span></label>
+                            <div class="col-lg-8 col-sm-8 col-xs-8">
+                                @Html.EditorFor(model => model.WarehouseLocation, new { htmlAttributes = new { @class = "inputclass form-control  meter_txtbox", @maxlength = "250" } })
+                                @Html.ValidationMessageFor(model => model.WarehouseLocation, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label">State<span style="color:red">*</span> </label>
+                            <div class="col-lg-8 col-sm-8 col-xs-8">
+                                @Html.StateDropDownListFor(model => model.StateId, Model.StateId, "", new { @onchange = "GetCity()", @class = "inputclass form-control input_shadow" })
+                                @Html.ValidationMessageFor(model => model.StateId, "", new { @class = "text-danger" })
+
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label">City<span style="color:red">*</span> </label>
+                            <div class="col-lg-8 col-sm-8 col-xs-8">
+
+                                @Html.CityDropDownListFor(model => model.CityId, Model.StateId, Model.CityId, "", new { @class = "inputclass form-control input_shadow" })
+                                @Html.ValidationMessageFor(model => model.CityId, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+
+
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label">User </label>
+                            <div id="divUser" class="col-lg-8 col-sm-8 col-xs-8 cre_citybox">
+                                
+                                    <div class="chosen-container chosen-container-single " title="" id="ddlUser_chosen">
+                                        <a class="chosen-single chosen-default" id="ancUser_chosen" tabindex="-1"><span class="" id="UserHeader">Select User</span><div><b></b></div></a>
+                                        <div class="chosen-drop">
+                                            <div class="chosen-search"><input type="text" class="txtfilterall" onkeyup="filterUser(this)" autocomplete="off"></div>
+                                            <div class="UserFilter row">
+                                                <label style="margin-left: 7px;" class="col-lg-2">
+                                                    <input type="checkbox" style="zoom:1.2;" class="chbSelectAll" id="User_SelectAll" autocomplete="off" value=" "><span>Select All</span>
+                                                </label>
+
+                                            </div>
+                                            <ul id="ulUser" class="chosen-results " style=""></ul>
+                                        </div>
+                                    </div>
+                               
+                            </div>
+                        </div>
+
+                    }
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnSave" class="btn btn-success" type="button">Save</button>
+                <button id="btnCancel" class="btn btn-danger" type="button">Cancel</button>
+                @*<button id="btnReset" class="btn btn-default" type="button">Reset</button>*@
+            </div>
+        </div>
+    </div>
+</div>
+<link href="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.css")" rel="stylesheet" />
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.jquery.min.js")"></script>
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.proto.min.js")"></script>
+
+
+<script>
+    $(document).ready(function () {
+
+        //#region User dropdown
+
+        $("#ulUser").selectable({
+
+            start: function (event, ui) {
+
+                var target = event.target || event.srcElement;
+
+                if (target.tagName == "LI") {
+                }
+            },
+            selected: function (event, ui) {
+
+                if ($(ui.selected).hasClass('highlighted')) {
+                    $(ui.selected).removeClass('ui-selected click-selected highlighted');
+
+                } else {
+                    $(ui.selected).addClass('click-selected highlighted');
+
+                }
+            },
+            unselected: function (event, ui) {
+
+                $(ui.unselected).removeClass('click-selected');
+            },
+            stop: function (event, ui) {
+
+                selectUser()
+
+            }
+        });
+
+        //#endregion
+
+
+        GetUser()
+
+        setuser()
+    })
+
+    function GetUser() {
+        debugger;
+        var urlGetUserList = $('#urlGetUserList').val();
+        $.ajax({
+            type: 'GET',
+            url: urlGetUserList,
+            async: false,
+            success: function (data) {
+                debugger;
+                $("#UserHeader").removeClass("ddlHeader").text("Select User")
+                $("#User_SelectAll").prop("checked", false);
+                $('#ulUser').empty();
+
+                $.each(data, function (index, item) {
+
+                    $('#ulUser').append($('<li></li>').attr("Id", item.UserId).val(item.UserId).addClass("liUser active-result").html(item.UserFullName));
+
+                });
+
+                //spinner.stop(target);
+            },
+            error: function (error) {
+                console.log(error)
+
+            }
+        });
+        //spinner.stop(target);
+    }
+
+    function setuser() {
+
+        var warehouseid = $('#WarehouseId').val();
+        if (warehouseid != "" || warehouseid != '0') {
+            debugger;
+            var GetUserBywarehouseId = $('#GetUserBywarehouseId').val();
+            $.ajax({
+                type: 'GET',
+                url: GetUserBywarehouseId,
+                data:{warehouseId:warehouseid},
+                async: false,
+                success: function (data) {
+                    $.each(data, function (index, item) {
+                        $("#ulUser").find("li[id='" + item + "']").addClass("ui-selected click-selected highlighted")
+
+                    })
+
+                    selectUser()
+
+                    //spinner.stop(target);
+                },
+                error: function (error) {
+                    console.log(error)
+
+                }
+            });
+        }
+    }
+
+
+
+    //#region New code for User multiselect dropdown
+    function selectUser() {
+
+        var selectedlivalue = $('#ulUser li.highlighted').map(function (i, el) {
+            return $(el).val();
+        });
+
+
+        var selectedlilength = selectedlivalue.length;
+        if (selectedlilength == 0) {
+            $("#UserHeader").removeClass("ddlHeader").text("Select User")
+        } else {
+            $("#UserHeader").addClass("ddlHeader").text(selectedlilength + " User selected")
+        }
+
+        //#region SelectAll checked/unchecked
+        if ($('#ulUser .liUser:visible').length > 0 && $('#ulUser .highlighted:visible').length == $('#ulUser .liUser:visible').length) {
+            $('#User_SelectAll').prop('checked', true);
+        } else {
+            $('#User_SelectAll').prop('checked', false);
+        }
+        //#endregion
+
+    }
+
+    //#region open/close Cycle dropdown
+    $("#ancUser_chosen").click(function () {
+        $("#ddlUser_chosen").toggleClass("chosen-with-drop chosen-container-active")
+    });
+
+    $('body').on('click', function (e) {
+        if (!$('#divUser').is(e.target)
+           && $('#divUser').has(e.target).length === 0
+       ) {
+            $('#ddlUser_chosen').removeClass('chosen-with-drop chosen-container-active');
+        }
+    });
+
+    //#endregion
+
+    function filterCycle(element) {
+
+        var value = $(element).val().toLowerCase();
+
+        $("#ulUser > li").each(function () {
+            if ($(this).text().toLowerCase().search(value) > -1) {
+                $(this).show();
+            }
+            else {
+                $(this).hide();
+            }
+        });
+
+        //#region SelectAll checked/unchecked
+        if ($('#ulUser .liUser:visible').length > 0 && $('#ulUser .highlighted:visible').length == $('#ulUser .liUser:visible').length) {
+            $('#User_SelectAll').prop('checked', true);
+        } else {
+            $('#User_SelectAll').prop('checked', false);
+        }
+        //#endregion
+    }
+
+    $('#User_SelectAll').on('click', function () {
+        if ($('#ulUser .liUser').length > 0) {
+
+
+
+
+            if (this.checked) {
+                $("li.liUser:visible").addClass('ui-selected click-selected highlighted');
+
+                var selectedlitext = $('#ulUser .highlighted').map(function (i, el) {
+
+                    return $(el)[0].value;
+
+                });
+                var selectedlilength = selectedlitext.length;
+                if (selectedlilength == 0) {
+                    $("#UserHeader").removeClass("ddlHeader").text("Select User")
+                } else {
+                    $("#UserHeader").addClass("ddlHeader").text(selectedlilength + " User selected")
+                }
+
+            }
+            else {
+                $("li.liUser:visible").removeClass('ui-selected click-selected highlighted');
+
+                var selectedlitext = $('#ulUser .highlighted').map(function (i, el) {
+
+                    return $(el)[0].value;
+
+                });
+                var selectedlilength = selectedlitext.length;
+                if (selectedlilength == 0) {
+                    $("#UserHeader").removeClass("ddlHeader").text("Select User")
+                } else {
+                    $("#UserHeader").addClass("ddlHeader").text(selectedlilength + " User selected")
+                }
+            }
+
+
+        }
+    });
+
+    //#endregion
+
+
+
+
+
+</script>

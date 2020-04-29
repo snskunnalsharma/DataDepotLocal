@@ -1,0 +1,283 @@
+﻿@*@model IEnumerable<GarronT.CMS.Model.BO.StockRequestModel>*@
+@{
+    ViewBag.Title = "View Stock Request";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+@Html.Hidden("urlGetData", Url.Action("GetData", "StockRequest"))
+@Html.Hidden("urlApproveReject", Url.Action("ApproveReject", "StockRequest"))
+@Html.Hidden("urlGetDetailData", Url.Action("GetDetailData", "StockRequest"))
+
+
+<style>
+    .recinv-drp3 {
+        margin-bottom: 4px;
+    }
+
+    .recinv-drp4 {
+        margin-top: 8px;
+        margin-bottom: 8px;
+    }
+
+    .recinv-drp5 {
+        margin-top: 8px;
+        margin-bottom: 8px;
+    }
+
+    #StockRequestModel {
+        padding-left: 0px !important;
+    }
+</style>
+
+<div id="loading">
+    <div id="loadingcontent">
+        <p id="loadingspinner">
+            Searching things...
+        </p>
+    </div>
+</div>
+
+<section id="main-content">
+    <section class="wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <!--progress bar start-->
+                <section class="panel">
+                    <header class="panel-heading">
+                        <b>View Stock Request</b>
+                    </header>
+                    <div class="row" style="">
+                        <div class="col-lg-12">
+                            @*<div class="container-fluid con_fluid_new">*@
+                            <div class="con_fluid_new">
+                                <div class="panel-body">
+                                    @*<div class="form-group">*@
+
+                                    <div class="table-responsive col-lg-12 rep_dyn_table" id="inventryReceiveDiv">
+                                        <table id="dynamic-table" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                                            <thead>
+                                                <tr>
+                                                    <th>Project Name</th>
+                                                    <th>Request From</th>
+                                                    <th>Request To</th>
+                                                    <th>Device DateTime</th>
+                                                    <th>Request Status</th>
+                                                    <th width="5%">Action</th>
+                                                </tr>
+                                            </thead>
+
+                                        </table>
+                                    </div>
+                                    @*</div>*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+        </div>
+    </section>
+</section>
+
+<!-- Modal for deactivation -->
+<div class="modal fade modal-dialog-center" id="StockRequestModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content-wrap">
+            <div class="modal-content product_dialog">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h5 class="modal-title">Approve Stock Request</h5>
+                </div>
+                <div class="modal-body" id="divStockDetail">
+
+                </div>
+                <div class="modal-footer" style="text-align:center">
+                    <button id="btnApprove" class="btn btn-success approvereject" type="button">Approve</button>
+                    <button id="btnReject" class="btn btn-info approvereject" type="button">Reject</button>
+                    <button id="btnCancel" class="btn btn-danger" data-dismiss="modal" type="button">Cancel</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal -->
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#InventoryManagement").addClass('active');
+        $("#subInventoryManagement").addClass('block');
+
+        $('.sub').find("*").removeClass('active');
+        $('#liInventoryStockRequest').addClass("active");
+
+
+        $('#dynamic-table').DataTable({ "language": { "emptyTable": "No Data To Show" } });
+        BindGrid()
+    })
+
+    function BindGrid() {
+        waitingDialog.show('Please Wait...');
+        var urlGetData = $('#urlGetData').val();
+        $.ajax({
+            type: 'GET',
+            url: urlGetData,
+            async: true,
+            //data: { requestId: requestId },
+            success: function (data) {
+                waitingDialog.hide();
+
+                oTable = $('#dynamic-table').dataTable(
+                        {
+
+                            "bDestroy": true,
+                            "bserverSide": true,
+                            "bDeferRender": true,
+                            "oLanguage": {
+                                "sLengthMenu": '_MENU_ Records per page'
+                            },
+                            "aaData": data,
+                            "aaSorting": [],
+                            "order": [],
+                            "aoColumns": [
+
+                                          { "mData": "ProjectName" },
+                                          { "mData": "RequestFrom" },
+                                          { "mData": "RequestTo" },
+                                          { "mData": "DeviceDateTime" },
+                                          { "mData": "StockRequestStatus" },
+                                          { "bSearchable": false, "mData": null },
+
+                            ],
+                            "aoColumnDefs": [
+                                          {
+                                              "mRender": function (data, type, full, row) {
+                                                  if (full.FKInventoryRequestStatusId == 1) {
+                                                      return '<a id="" onclick="editStockRequest(' + full.RequestId + ')" class="btn btn-primary btn-xs" role="button" alt="Edit" title="Edit"><i class="fa fa-pencil"></i></a>'
+                                                  }
+                                                  else {
+                                                      return '<a id="" onclick="viewStockRequest(' + full.RequestId + ')" class="btn btn-success btn-xs" role="button" alt="Edit" title="View"><i class="fa fa-eye"></i></a>'
+                                                  }
+                                              },
+                                              "aTargets": [5]
+                                          },
+                            ],
+
+                        }), $('.dataTables_filter input').attr('maxlength', 50);
+
+            },
+            error: function () {
+                waitingDialog.hide();
+                var $toast = toastr["error"]("something seems wrong", "Error Notification");
+            }
+        })
+    }
+
+
+    var requstID = 0;
+    var recordEditView = "";
+    function editStockRequest(requestId) {
+        // debugger;
+        recordEditView = "edit";
+        requstID = requestId;
+
+        getDetailData(requestId)
+    }
+
+
+    function viewStockRequest(requestId) {
+        //debugger;
+        recordEditView = "view";
+        requstID = requestId;
+        getDetailData(requestId)
+    }
+
+    function getDetailData(requestId) {
+        // debugger;
+        waitingDialog.show('Please Wait...');
+
+        var urlGetDetailData = $('#urlGetDetailData').val();
+        $.ajax({
+            type: 'GET',
+            url: urlGetDetailData,
+            async: true,
+            data: { requestId: requestId, status: (recordEditView === "edit" ? true : false) },
+            success: function (data) {
+                waitingDialog.hide();
+
+                if (data.success === undefined || data.success == true) {
+
+                    $("#divStockDetail").html(data)
+
+                    if (recordEditView == "edit") {
+                        $('.approvereject').show();
+                    } else {
+                        $('.approvereject').hide();
+                    }
+
+                    $("#StockRequestModel").modal({ show: true, backdrop: 'static', keyboard: false });
+
+                }
+                else {
+                    var $toast = toastr["error"](data.returnMessage, "Notification");
+                }
+
+            },
+            error: function () {
+                waitingDialog.hide();
+                var $toast = toastr["error"]("something seems wrong", "Error Notification");
+            }
+
+
+        })
+    }
+
+
+    $('#btnApprove').click(function () {
+        var action = 1; //1-Approve  2-Reject
+        ApproveReject(1)
+    })
+
+    $('#btnReject').click(function () {
+        var action = 2; //1-Approve  2-Reject
+        ApproveReject(2)
+    })
+
+    function ApproveReject(actionId) {
+        //debugger;
+        var comment = $('#txtComment').val();
+        var requestId = requstID;
+
+        waitingDialog.show('Please Wait...');
+        var urlApproveReject = $('#urlApproveReject').val();
+        $.ajax({
+            type: 'GET',
+            url: urlApproveReject,
+            async: true,
+            data: { requestId: requestId, actionId: actionId, comment: comment },
+            success: function (data) {
+                // debugger;
+                waitingDialog.hide();
+                if (data.success) {
+                    BindGrid()
+                    $("#StockRequestModel").modal("hide");
+                    var $toast = toastr["success"](data.returnMessage, "Success Notification");
+                }
+                else {
+                    var $toast = toastr["error"](data.returnMessage, "Error Notification");
+                }
+
+            },
+            error: function () {
+                waitingDialog.hide();
+                var $toast = toastr["error"]("something seems wrong", "Error Notification");
+            }
+
+
+        })
+
+    }
+
+</script>

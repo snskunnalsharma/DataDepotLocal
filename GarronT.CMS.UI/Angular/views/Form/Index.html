@@ -1,0 +1,240 @@
+
+
+<style>
+    @media (max-width:320px) {
+        .iconic-input {
+            margin-top: -34% !important;
+            margin-left: 51% !important;
+        }
+
+        .deactivated_records {
+            padding-left: 6%;
+            -webkit-padding-start: 4%;
+            -moz-padding-start: 8%;
+            white-space: nowrap;
+        }
+
+        .adv-table .dataTables_length select {
+            width: 85% !important;
+        }
+
+        .dataTables_length {
+            width: 52% !important;
+            margin-bottom: -13% !important;
+        }
+
+            .dataTables_length > label {
+            }
+
+        div.dataTables_length label {
+            white-space: normal !important;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: scroll;
+            overflow-y: hidden;
+            margin-bottom: 15%;
+        }
+
+        .header {
+            height: 12% !important;
+        }
+
+        #sidebar {
+            margin-top: -32% !important;
+        }
+
+        .panel-heading {
+            padding-top: 4% !important;
+        }
+
+        footer > p {
+            width: 45% !important;
+        }
+    }
+    /******************End Ihone 5s Portrait *******************/
+
+    /*****************************Ihone 5s landscape************************************/
+    @media only screen and (min-width:501px)and (max-width:599px){
+        .deactivated_records {
+            padding-left: 29% !important;
+        }
+    }
+
+    /****************************5S landscape end**********************************************/
+
+    /*************************IPHONE 6S PORTRAIT***********************************************/
+    @media only screen and (min-width:360px) and (max-width:420px){
+        .adv-table .dataTables_length select {
+            width: 82% !important;
+        }
+
+        .iconic-input {
+            margin-left: 3%;
+        }
+
+        div.dataTables_length label {
+            white-space: normal !important;
+        }
+    }
+
+    /*******************6s Portrait End*********************************************************/
+
+    /***************************** IPHONE 6S Landscape **********************************/
+    @media only screen and (min-width:650px) and (max-width:700px) {
+        .deactivated_records {
+            padding-left: 34.5%;
+            -webkit-padding-start: 34.5%;
+        }
+    }
+
+
+    /***************************** IPHONE 6S Landscape End **********************************/
+    
+     @media only screen and (min-width:321px)and (max-width:359px) {
+        .deactivated_records {
+            padding-left: 8% !important;
+        }
+
+        .adv-table .dataTables_length select {
+            width: 82% !important;
+        }
+
+        div.dataTables_length label {
+            white-space: normal !important;
+        }
+
+        .iconic-input {
+            margin-left: 3%;
+        }
+
+        .panel-heading {
+            margin-top: 2% !important;
+        }
+    }
+       
+        @media only screen and (min-width:421px)and (max-width:500px) {
+                .deactivated_records {
+                    padding-left: 20%;
+                    -webkit-padding-start: 10px;
+                }
+            }
+
+        @media only screen and (min-width:501px) and (max-width:599px) {
+                .deactivated_records {
+                    padding-left: 29%;
+                    -webkit-padding-start: 10px;
+                }
+            }
+        @media only screen and (min-width:600px) and (max-width:640px) {
+            .deactivated_records {
+                padding-left: 29%;
+                -webkit-padding-start: 10px;
+            }
+        }
+
+        @media only screen and (min-width:701px) and (max-width:767px){
+            .deactivated_records {
+                padding-left: 38%;
+            }
+      }
+
+     @media only screen and (min-width:768px) and (max-width:798px) {
+        .deactivated_records {
+            padding-left: 29.5%;
+        }
+    }
+
+        @media only screen and (min-width:799px) and (max-width:840px) {
+                .deactivated_records {
+                    padding-left: 31.4%;
+                }
+            }
+    @media only screen and (min-width:841px) and (max-width:900px) {
+        .deactivated_records {
+            padding-left: 37%;
+        }
+    }
+    @media only screen and (min-width:901px) and (max-width:967px) {
+        .deactivated_records {
+            padding-left: 40%;
+        }
+    }
+        @media only screen and (min-width:968px)and (max-width:1023px) {
+            .deactivated_records {
+                padding-left: 38% !important;
+            }
+            .iconic-input{
+                width:18em !important;
+                margin-right:0% !important;
+            }
+            }
+
+        @media only screen and (min-width:1024px)and (max-width:1100px) {
+                .deactivated_records {
+                    padding-left: 43%;
+                }
+            }
+</style>
+
+
+
+<div id="loading">
+    <div id="loadingcontent">
+        <p id="loadingspinner">
+            Searching things...
+        </p>
+    </div>
+</div>
+
+
+
+<section id="main-content" >
+    <section class="wrapper">
+        <!-- page start-->
+        <div class="row">
+            <div class="col-sm-12">
+                <section class="panel">
+                    <header class="panel-heading" style="padding-top:5px;">
+                        <b>Form Management </b>
+
+                    </header>
+                    <div class="panel-body" id="divLandingPage" style="">
+                       
+                            <div class="row">
+                                <div class="col-lg-4 col-md-4 col-xs-4 add_newbtn">
+                                    <a class="btn btn-success" id="btnAddForm" href="{{AddFormUrl}}">
+                                        Add New <i class="fa fa-plus"></i>
+                                    </a>
+                                </div>
+                                <div class="col-lg-8 col-md-8 col-xs-8 show_deactive deactivated_records ">
+                                    <input type="checkbox" name="showDeactivate" id="chkShowDeactivate" />Show Deactivated Records
+                                </div>
+                            </div>
+                        <div class="adv-table">
+                            <div class="table-responsive">
+                                <table id="dynamic-table" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                                    <thead>
+                                        <tr>
+
+                                            <th width="20%">Customer Name</th>
+                                            <th width="15%">Project Name</th>
+                                            <th width="15%">Form Name</th>
+                                            <th width="15%">City</th>
+                                            <th width="11%">Start Date</th>
+                                            <th width="11%">End Date</th>
+                                            <th width="25%">Action</th>
+                                        </tr>
+                                    </thead>
+
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</section>

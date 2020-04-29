@@ -1,0 +1,193 @@
+﻿@model System.Collections.Generic.List<GarronT.CMS.Model.BO.BindDropDownListData>
+
+@{
+    int i = 1;
+}
+
+
+
+<form role="form" action="" method="post" id="FrmSaveExcelmappingdata">
+
+    @foreach (var item in Model)
+    {
+        <input type="hidden" id="ProjectID" value=@item.ProjectID />
+        try
+        {
+
+            if (item.headerlist != null && item.objData != null)
+            {
+                if (i == 1)
+                {
+                    <div class="form-group" style="padding:10px;">
+                        <div class="col-lg-4" style="white-space: nowrap; font-weight: bold;">
+                            <label>Excel File Fields</label>
+                        </div>
+                        <div class="col-lg-4" style="white-space:nowrap; font-weight: bold;">
+                            <label>Data</label>
+                        </div>
+                    </div>
+                }
+
+                for (int j = 0; j < item.headerlist.Count; j++)
+                {
+
+                    <div class="form-group" style="padding:10px;">
+
+                        <label class="col-lg-4" id="lblfildname" style="white-space:nowrap; ">@item.headerlist[j].ToString() </label>
+
+                        <div class="col-lg-4" id="opt">
+
+                            @if (item.objData.Count > 0)
+                            {
+
+                                <select name="Foo" id="Foo1">
+                                    <option value="0">--Select--</option>
+                                    @foreach (var b in item.objData)
+                                    {                           
+
+                                        <option value="@b.Id">@b.FieldName</option>
+                                        
+                                    }
+                                </select>
+
+
+                            }
+
+
+                        </div>
+                        
+
+
+                    </div>
+
+                }
+                i++;
+            }
+
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+
+    }
+</form>
+
+
+
+<script type="text/javascript">
+   
+    var ExcelFields = [];
+    var FielddType = [];
+    var FieldID = [];
+    var usedNames = {};
+    var Data = { ExcelFieldName: "", FID: "", FieldType: "" };
+    $(document).ready(function () {
+
+        var text = document.getElementById('FrmSaveExcelmappingdata');
+
+
+        var abc = $(text).children().children('div');
+        debugger;
+        for (var i = 2; i <= text.length; i++)
+        {
+
+            var lablename = $($(text).children()[i]).children()[0].innerHTML;
+
+            var abc = $(text).children().children('div')[i];
+
+
+            var select = $(abc).children()[0];
+            //select.options[select.options.length] = new Option('--Select--', '0');
+            var dd = select;
+
+
+
+            for (var j = 0; j < dd.options.length; j++)
+            {
+
+
+                if (dd.options[j].text.replace(/\s+/g, '') === lablename.replace(/\s+/g, '')) {
+                    debugger;
+                    var id = $(dd.options[j]).val();
+                    dd.selectedIndex = j;
+
+                    break;
+                }
+                else {
+                    debugger;
+                    dd.selectedIndex = 0;
+
+                }
+
+            }
+            debugger;
+
+        }
+
+    })
+   
+
+    $("#btn_Submit").unbind().click(function () {
+
+        debugger;
+        FiledType = [];
+        ExcelFields = [];
+        FieldID = [];
+        var text = document.getElementById('FrmSaveExcelmappingdata');
+        var abc = $(text).children().children('div');
+        for (var i = 2; i <= text.length; i++)
+        {
+            debugger;
+            var lablename = $($(text).children()[i]).children()[0].innerHTML;
+
+            var abc = $(text).children().children('div')[i];
+
+            var select = $(abc).children()[0];
+            
+            ExcelFields.push(lablename);
+            var index = select.options.selectedIndex;
+            FieldID.push(select.options[index].value);
+           
+        }
+
+        debugger;
+        var GetFromID = document.getElementById('FrmSaveExcelmappingdata');
+        var abc = $(GetFromID).children().children('div');
+        var Projectid = document.getElementById('ProjectID');
+        // var hv = $('#ProjectID').val();
+        var UrlSaveExcelData = $('#SaveTab6Url').val();
+
+
+        $.ajax({
+            url: UrlSaveExcelData,
+
+            data: { ProjectID: Projectid.value, ExcelField: ExcelFields, FieldID: FieldID },
+            type: 'POST',
+            async: false,
+            success: function (data) {
+                debugger;
+                if (data.success == true) {
+                    var $toast = toastr["success"](data.returnMessage, "Success Notification");
+
+                }
+                else {
+
+                    var $toast = toastr["success"](data.returnMessage, "Success Notification");
+                }
+
+            },
+            error: function () {
+                alert("something seems wrong");
+            }
+
+        });
+
+    });
+
+
+
+</script>
+
+
+

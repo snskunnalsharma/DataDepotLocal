@@ -1,0 +1,17 @@
+﻿<div>
+    <h4>Datatype not selected for the following fields</h4>
+    <div class="form-group" style="padding-left:30px">
+       
+        <ol>
+            
+            <li  ng-repeat="DatatypenotselectedField in DatatypenotselectedFieldList">{{DatatypenotselectedField}}</li>
+        </ol>
+    </div>
+
+    <div class="ngdialog-buttons">
+        <!--<button type="button" class="ngdialog-button ngdialog-button-secondary" ng-click=closeThisDialog("Cancel")>Cancel</button>-->
+        <button type="button" class="ngdialog-button ngdialog-button-primary" ng-click=confirm("OK")>OK</button>
+    </div>
+</div>
+
+

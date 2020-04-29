@@ -1,0 +1,46 @@
+﻿@model GarronT.CMS.Model.BO.CategoryBO
+@using GarronT.CMS.UI.CustomHelpers
+<div class="modal-dialog modal-md">
+    <div class="modal-content-wrap">
+        <div class="modal-content metrmke_dialog ">
+            <div class="modal-header">
+                <button type="button" class="close" id="btnclose" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+                @if (@ViewBag.Status == "Create")
+                {
+                <h4 class="modal-title">Add Category</h4>
+                }
+                else
+                {
+                <h4 class="modal-title">Edit Category</h4>
+                }
+
+            </div>
+            <div class="modal-body">
+                <div class="panel-body">
+                    @*<form id="formAddEdit" class="cmxform form-horizontal tasi-form">*@
+                    @using (Html.BeginForm("", "", FormMethod.Get, new { @class = "form-horizontal", @id = "formAddEdit", role = "form" }))
+                    {
+                    <div class="form-group ">
+                        <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label">Category Name<span style="color:red">*</span></label>
+                        <div class="col-lg-8 col-sm-8 col-xs-8">
+                            @Html.EditorFor(model => model.CategoryId, new { htmlAttributes = new { @class = "form-control", @type = "hidden" } })
+
+                            @Html.EditorFor(model => model.CategoryName, new { htmlAttributes = new { @class = "inputclass form-control  meter_txtbox", @maxlength = "250" } })
+                            @Html.ValidationMessageFor(model => model.CategoryName, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    }
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnSave" class="btn btn-success" type="button">Save</button>
+                <button id="btnCancel" class="btn btn-danger" type="button">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+<link href="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.css")" rel="stylesheet" />
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.jquery.min.js")"></script>
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.proto.min.js")"></script>

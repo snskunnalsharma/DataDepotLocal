@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="~/images/logo_favicon.png" />
+    <title>Data Depot - @ViewBag.Title</title>
+    @Styles.Render("~/Content/KSPLcss")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+   
+    <link href="~/Content/MSTS/admin/css/style.css" rel="stylesheet" />
+    <link href="~/Content/MSTS/admin/css/style-responsive_new.css" rel="stylesheet" />
+
+
+    <style>
+        .header_box {
+            border: none;
+            background: #f6f8f7;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="@Url.Content("~/Scripts/bootstrap.min.js")"></script>
+    <script src="@Url.Content("~/Content/MSTS/Admin/assets/toastr-master/toastr.js")"></script>
+    <script src="@Url.Content("~/Scripts/jquery.validate.js")"></script>
+    <script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")"></script>
+</head>
+<body>
+    <header class="header white-bg">
+        <link rel="shortcut icon" href="~/images/logo_favicon.png" />
+        <div class="header_box">
+            @*<div class="sidebar-toggle-box">
+                    <div class="fa fa-bars tooltips" data-placement="right" data-original-title="Toggle Navigation"></div>
+                </div>*@
+
+            @*<div class="sidebar-toggle-box">
+                <i class="fa fa-bars"></i>
+            </div>*@
+            <!--logo start-->
+           <img src=@Url.Content("~/images/logo_favicon.png")>
+
+            <!--logo end-->
+            <div class="nauser login dropdown startv notify-row" id="top_menu"> </div>
+        </div>
+
+        <div class="top-nav">
+
+            <div class="heading_top"> </div>
+
+         
+            <!--search & user info end-->
+           
+        </div>
+        
+
+    </header>
+    <div id="loading">
+        <div id="loadingcontent">
+            <p id="loadingspinner"> Searching things... </p>
+        </div>
+    </div>
+    <section id="container">
+        <div>
+            @RenderBody()
+
+            <footer class="site-footer">
+                <ul class="footer_smalllogo">
+                    <footer>
+                        @{
+                            var version = new GarronT.CMS.Model.DAL.VersionDAL().getVersionDetials();
+                        }
+                       
+                        <p style="color:#fff; width: 50%; margin: 4px; text-align: right;float:right;padding: 9px 0px;">
+                       </p>
+                    </footer>
+                </ul>
+
+            </footer>
+        </div>
+    </section>
+</body>
+</html>

@@ -1,0 +1,1219 @@
+﻿@{
+    ViewBag.Title = "Create Audit Project";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@Html.Hidden("urlGetProjectData", Url.Action("GetProjectData", "ProjectAudit"))
+@Html.Hidden("urlGoToIndex", Url.Action("Index", "ProjectAudit"))
+@Html.Hidden("urlGetProjectDetails", Url.Action("GetProjectDetails", "ProjectAudit"))
+@Html.Hidden("urlSaveAuditDetails", Url.Action("SaveAuditDetails", "ProjectAudit"))
+@Html.Hidden("urlGetInstallerAuditCycleData", Url.Action("GetInstallerAuditCycleData", "ProjectAudit"))
+
+@Html.Hidden("urlGetCustData", Url.Action("GetCustData", "ProjectAudit"))
+@Html.Hidden("urlUpdateInstallerAuditCycles", Url.Action("UpdateInstallerAuditCycles", "ProjectAudit"))
+
+@Html.Hidden("urlAddNewAuditCycle", Url.Action("AddNewAuditCycle", "ProjectAudit"))
+@Html.Hidden("urlEditAuditCycle", Url.Action("EditAuditCycle", "ProjectAudit"))
+
+
+@Html.Hidden("urlAddNewFailCycle", Url.Action("AddNewFailCycle", "ProjectAudit"))
+@Html.Hidden("urlGetCloneProjectDetails", Url.Action("GetCloneProjectDetails", "ProjectAudit"))
+
+
+<style>
+    form {
+        padding: 20px 0px 0px 0px;
+    }
+
+    .form-control {
+        width: 98%;
+    }
+
+
+    @@media only screen and (max-width: 767px) and (min-width: 721px) {
+        .cre_uti_label {
+            margin-right: 0px;
+            text-align: right !important;
+        }
+    }
+
+    @@media only screen and (max-width: 767px) and (min-width: 531px) {
+        .cre_uti_label {
+            margin-left: 0%;
+            margin-top: 0%;
+            padding-left: 1%;
+            margin-right: 0px;
+        }
+
+        .create_label {
+            margin-right: 0px;
+        }
+    }
+
+    @@media only screen and (max-width: 850px) and (min-width: 768px) {
+        .cre_uti_label {
+            margin-left: 0%;
+            margin-top: 0%;
+            padding-left: 1%;
+        }
+
+        .create_label {
+            margin-right: 0px;
+        }
+    }
+
+    @@media only screen and (max-width: 1100px) and (min-width: 851px) {
+        .cre_uti_label {
+            padding-left: 1%;
+        }
+    }
+
+    @@media (min-width:1200px) {
+        .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9 {
+            float: left;
+        }
+
+        .col-lg-12 {
+            width: 100%;
+        }
+
+        .col-lg-11 {
+            width: 91.66666667%;
+        }
+
+        .col-lg-10 {
+            width: 83.33333333%;
+        }
+
+        .col-lg-9 {
+            width: 75%;
+        }
+
+        .col-lg-8 {
+            width: 66.66666667%;
+        }
+
+        .col-lg-7 {
+            width: 58.33333333%;
+        }
+
+        .col-lg-6 {
+            width: 50% !important;
+        }
+
+        .col-lg-5 {
+            width: 41.66666667%;
+        }
+
+        .col-lg-4 {
+            width: 33.33333333%;
+        }
+
+        .col-lg-3 {
+            width: 25%;
+        }
+
+        .col-lg-2 {
+            width: 16.66666667%;
+        }
+
+        .col-lg-1 {
+            width: 8.33333333%;
+        }
+
+
+        .multiselect {
+            padding: 3px;
+        }
+    }
+
+    @@media (min-width:992px) and (max-width:1199px) {
+        .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9 {
+            float: left;
+        }
+
+        .col-md-12 {
+            width: 100%;
+        }
+
+        .col-md-11 {
+            width: 91.66666667%;
+        }
+
+        .col-md-10 {
+            width: 83.33333333%;
+        }
+
+        .col-md-9 {
+            width: 75%;
+        }
+
+        .col-md-8 {
+            width: 66.66666667%;
+        }
+
+        .col-md-7 {
+            width: 58.33333333%;
+        }
+
+        .col-md-6 {
+            width: 50%;
+        }
+
+        .col-md-5 {
+            width: 41.66666667%;
+        }
+
+        .col-md-4 {
+            width: 33.33333333%;
+        }
+
+        .col-md-3 {
+            width: 25%;
+        }
+
+        .col-md-2 {
+            width: 16.66666667%;
+        }
+
+        .col-md-1 {
+            width: 8.33333333%;
+        }
+
+        .col-md-pull-12 {
+            right: 100%;
+        }
+
+        .col-md-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-md-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-md-pull-9 {
+            right: 75%;
+        }
+
+        .col-md-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-md-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-md-pull-6 {
+            right: 50%;
+        }
+
+        .col-md-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-md-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-md-pull-3 {
+            right: 25%;
+        }
+
+        .col-md-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-md-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-md-pull-0 {
+            right: auto;
+        }
+
+        .col-md-push-12 {
+            left: 100%;
+        }
+
+        .col-md-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-md-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-md-push-9 {
+            left: 75%;
+        }
+
+        .col-md-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-md-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-md-push-6 {
+            left: 50%;
+        }
+
+        .col-md-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-md-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-md-push-3 {
+            left: 25%;
+        }
+
+        .col-md-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-md-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-md-push-0 {
+            left: auto;
+        }
+
+        .col-md-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-md-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-md-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-md-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-md-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-md-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-md-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-md-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-md-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-md-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-md-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-md-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-md-offset-0 {
+            margin-left: 0;
+        }
+    }
+
+    @@media (min-width:768px) and (max-width:991px) {
+        /*.show_deactive {
+            padding-left: 40px;
+        }*/
+        .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9 {
+            float: left;
+        }
+
+
+
+
+        .col-sm-12 {
+            width: 100%;
+        }
+
+        .col-sm-11 {
+            width: 91.66666667%;
+        }
+
+        .col-sm-10 {
+            width: 83.33333333%;
+        }
+
+        .col-sm-9 {
+            width: 75%;
+        }
+
+        .col-sm-8 {
+            width: 66.66666667%;
+        }
+
+        .col-sm-7 {
+            width: 58.33333333%;
+        }
+
+        .col-sm-6 {
+            width: 50%;
+        }
+
+        .col-sm-5 {
+            width: 41.66666667%;
+        }
+
+        .col-sm-4 {
+            width: 33.33333333%;
+        }
+
+        .col-sm-3 {
+            width: 25%;
+        }
+
+        .col-sm-2 {
+            width: 16.66666667%;
+        }
+
+        .col-sm-1 {
+            width: 8.33333333%;
+        }
+
+        .col-sm-pull-12 {
+            right: 100%;
+        }
+
+        .col-sm-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-sm-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-sm-pull-9 {
+            right: 75%;
+        }
+
+        .col-sm-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-sm-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-sm-pull-6 {
+            right: 50%;
+        }
+
+        .col-sm-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-sm-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-sm-pull-3 {
+            right: 25%;
+        }
+
+        .col-sm-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-sm-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-sm-pull-0 {
+            right: auto;
+        }
+
+        .col-sm-push-12 {
+            left: 100%;
+        }
+
+        .col-sm-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-sm-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-sm-push-9 {
+            left: 75%;
+        }
+
+        .col-sm-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-sm-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-sm-push-6 {
+            left: 50%;
+        }
+
+        .col-sm-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-sm-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-sm-push-3 {
+            left: 25%;
+        }
+
+        .col-sm-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-sm-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-sm-push-0 {
+            left: auto;
+        }
+
+        .col-sm-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-sm-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-sm-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-sm-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-sm-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-sm-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-sm-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-sm-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-sm-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-sm-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-sm-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-sm-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-sm-offset-0 {
+            margin-left: 0;
+        }
+
+        .sm-clear {
+            clear: both;
+        }
+    }
+
+    @@media (min-width:481px) and (max-width:767px) {
+        .xs-clear {
+            clear: both;
+        }
+
+        .col-xs-1, .col-xs-10, .col-xs-11, .col-xs-12, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9 {
+            float: left;
+        }
+
+        .col-xs-12 {
+            width: 100%;
+        }
+
+        .col-xs-11 {
+            width: 91.66666667%;
+        }
+
+        .col-xs-10 {
+            width: 83.33333333%;
+        }
+
+        .col-xs-9 {
+            width: 75%;
+        }
+
+        .col-xs-8 {
+            width: 66.66666667%;
+        }
+
+        .col-xs-7 {
+            width: 58.33333333%;
+        }
+
+        .col-xs-6 {
+            width: 50%;
+        }
+
+        .col-xs-5 {
+            width: 41.66666667%;
+        }
+
+        .col-xs-4 {
+            width: 33.33333333%;
+        }
+
+        .col-xs-3 {
+            width: 25%;
+        }
+
+        .col-xs-2 {
+            width: 16.66666667%;
+        }
+
+        .col-xs-1 {
+            width: 8.33333333%;
+        }
+
+        .col-xs-pull-12 {
+            right: 100%;
+        }
+
+        .col-xs-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-xs-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-xs-pull-9 {
+            right: 75%;
+        }
+
+        .col-xs-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-xs-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-xs-pull-6 {
+            right: 50%;
+        }
+
+        .col-xs-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-xs-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-xs-pull-3 {
+            right: 25%;
+        }
+
+        .col-xs-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-xs-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-xs-pull-0 {
+            right: auto;
+        }
+
+        .col-xs-push-12 {
+            left: 100%;
+        }
+
+        .col-xs-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-xs-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-xs-push-9 {
+            left: 75%;
+        }
+
+        .col-xs-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-xs-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-xs-push-6 {
+            left: 50%;
+        }
+
+        .col-xs-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-xs-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-xs-push-3 {
+            left: 25%;
+        }
+
+        .col-xs-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-xs-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-xs-push-0 {
+            left: auto;
+        }
+
+        .col-xs-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-xs-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-xs-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-xs-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-xs-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-xs-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-xs-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-xs-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-xs-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-xs-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-xs-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-xs-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-xs-offset-0 {
+            margin-left: 0;
+        }
+
+        .cre_uti_label {
+            margin-left: 0%;
+            text-align: right !important;
+        }
+
+        .create_label {
+            margin-right: 0px;
+        }
+    }
+
+    @@media (max-width:480px) {
+        .xxs-clear {
+            clear: both;
+        }
+
+        .col-xxs-1, .col-xxs-10, .col-xxs-11, .col-xxs-12, .col-xxs-2, .col-xxs-3, .col-xxs-4, .col-xxs-5, .col-xxs-6, .col-xxs-7, .col-xxs-8, .col-xxs-9 {
+            float: left;
+        }
+
+        .col-xxs-12 {
+            width: 100%;
+        }
+
+        .col-xxs-11 {
+            width: 91.66666667%;
+        }
+
+        .col-xxs-10 {
+            width: 83.33333333%;
+        }
+
+        .col-xxs-9 {
+            width: 75%;
+        }
+
+        .col-xxs-8 {
+            width: 66.66666667%;
+        }
+
+        .col-xxs-7 {
+            width: 58.33333333%;
+        }
+
+        .col-xxs-6 {
+            width: 50%;
+        }
+
+        .col-xxs-5 {
+            width: 41.66666667%;
+        }
+
+        .col-xxs-4 {
+            width: 33.33333333%;
+        }
+
+        .col-xxs-3 {
+            width: 25%;
+        }
+
+        .col-xxs-2 {
+            width: 16.66666667%;
+        }
+
+        .col-xxs-1 {
+            width: 8.33333333%;
+        }
+
+        .col-xxs-pull-12 {
+            right: 100%;
+        }
+
+        .col-xxs-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-xxs-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-xxs-pull-9 {
+            right: 75%;
+        }
+
+        .col-xxs-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-xxs-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-xxs-pull-6 {
+            right: 50%;
+        }
+
+        .col-xxs-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-xxs-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-xxs-pull-3 {
+            right: 25%;
+        }
+
+        .col-xxs-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-xxs-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-xxs-pull-0 {
+            right: auto;
+        }
+
+        .col-xxs-push-12 {
+            left: 100%;
+        }
+
+        .col-xxs-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-xxs-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-xxs-push-9 {
+            left: 75%;
+        }
+
+        .col-xxs-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-xxs-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-xxs-push-6 {
+            left: 50%;
+        }
+
+        .col-xxs-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-xxs-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-xxs-push-3 {
+            left: 25%;
+        }
+
+        .col-xxs-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-xxs-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-xxs-push-0 {
+            left: auto;
+        }
+
+        .col-xxs-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-xxs-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-xxs-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-xxs-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-xxs-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-xxs-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-xxs-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-xxs-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-xxs-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-xxs-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-xxs-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-xxs-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-xxs-offset-0 {
+            margin-left: 0;
+        }
+
+        .create_label {
+            margin-left: 0%;
+            margin-right: 0px;
+        }
+    }
+</style>
+
+<div id="loading">
+    <div id="loadingcontent">
+        <p id="loadingspinner"> Searching things... </p>
+    </div>
+</div>
+
+<section id="main-content">
+    <section class="wrapper">
+        <!-- page start-->
+        <div class="row">
+            <div class="col-sm-12">
+                <section class="panel">
+                    <header class="panel-heading"><strong> Audit Management - <label id="lblProjectName"></label> </strong> </header>
+                    <div class="panel-body panel_top">
+                        <form role="form" action="" id="fromsave" method="post" style="background: rgb(190, 210, 230);" class="form-horizontal">
+                            <div class="row setup-content">
+                                <div class="col-xs-12 ">
+                                    @*<div class="col-md-12 creproj_form_box">*@
+                                    <div class="col-md-12 ">
+                                        <div class="form-group">
+                                            <div class="col-lg-2 col-sm-4 col-xs-12 label color_name control-label">                                         
+                                                <span>Utility type<span style="color:red">*</span> :- </span>
+                                            </div>
+                                            <div class="col-lg-2 col-sm-4 col-xs-10 ">
+                                                <select id="ddlUtilitytype" name="Utilitytype" data-placeholder="Select Utility type" class="inputclass form-control input_shadow">
+                                                    <option value="0"></option>
+                                                    <option value="1">Electric</option>
+                                                    <option value="2">Gas</option>
+                                                    <option value="3">Water</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-lg-2 col-sm-4 col-xs-12 label color_name control-label">
+                                                <span>Project Name<span style="color:red">*</span> :- </span>
+                                            </div>
+                                            <div class="col-lg-4 col-sm-4 col-xs-10 ">
+                                                <select name="Project" id="ddlProject" data-placeholder="Select Project" typeof="text" class="required form-control input_shadow "></select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+
+                                            <div class="col-lg-2 col-sm-4 col-xs-12 label color_name control-label">
+                                                <span>Customer Name :- </span>
+                                            </div>
+                                            <div class="col-lg-2 col-sm-4 col-xs-10 ">
+                                                <label for="name" id="lblCustomerName">-</label>
+                                            </div>
+
+
+                                            <div class="col-lg-2 col-sm-4 col-xs-12 label color_name control-label">
+                                                <span>Project Start Date :- </span>
+                                            </div>
+                                            <div class="col-lg-2 col-sm-4 col-xs-10 ">
+                                                <label for="name" id="lblProjectStartDate">-</label>
+                                            </div>
+
+                                            <div class="col-lg-2 col-sm-4 col-xs-12 label color_name control-label">
+                                                <span>Project End Date :- </span>
+                                            </div>
+                                            <div class="col-lg-2 col-sm-4 col-xs-10 ">
+                                                <label for="name" id="lblProjectEndDate">-</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <div class="col-lg-2 col-sm-4 col-xs-10  label color_name control-label">
+                                                <span> Audit Start Date<span style="color:red">*</span> :- </span>
+                                            </div>
+                                            <div class="col-lg-2 col-md-4 col-sm-3 col-xs-4 col-xxs-12">
+                                                <input type="text" name="FromDate" id="txtFromDate" readonly class="inputclass form-control input_shadow ">
+                                            </div>
+
+                                            <div class="col-lg-2 col-sm-4 col-xs-10  label color_name control-label">
+                                                <span> Audit End Date<span style="color:red">*</span> :- </span>
+                                            </div>
+                                            <div class="col-lg-2 col-md-4 col-sm-3 col-xs-4 col-xxs-12">
+                                                <input type="text" name="ToDate" id="txtToDate" readonly class="inputclass form-control input_shadow">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            @*<label class="col-lg-2 col-md-2 col-sm-3 col-xs-4 label col-xxs-12 color_name control-label  create_label cre_uti_label" style="white-space:nowrap;">Select Auditor<span style="color:red">*</span></label>*@
+                                            <div class="col-lg-2 col-sm-4 col-xs-10  label color_name control-label">
+                                                <span>Select Auditor<span style="color:red">*</span> :- </span>
+                                            </div>
+                                            <div class="col-lg-2 col-md-4 col-sm-6 col-xs-8 col-xxs-12">
+                                                @*<select name="Auditor" id="ddlAuditor" data-placeholder="Select Auditor" type="text" class="required form-control input_shadow"></select>*@
+
+                                                <div id="divroot">
+                                                    <div id="divAuditor" class="">
+                                                        <div class="chosen-container chosen-container-single " title="" id="ddlAuditor_chosen">
+                                                            <a class="chosen-single chosen-default" id="ancAuditor_chosen" tabindex="-1"><span class="" id="AuditorHeader">Select Auditor</span><div><b></b></div></a>
+                                                            <div class="chosen-drop">
+                                                                <div class="chosen-search"><input type="text" id="txtfilterallAuditor" class="txtfilterall" onkeyup="filterAuditor(this)" autocomplete="off"></div>
+                                                                <div class="InstallerFilter row">
+                                                                    <label style="margin-left: 7px;" class="col-lg-2">
+                                                                        <input type="checkbox" style="zoom:1.2;" class="chbSelectAll" id="Auditor_SelectAll" autocomplete="off" value=" "><span>Select All</span>
+                                                                    </label>
+                                                                </div>
+                                                                <ul id="ulAuditor" class="chosen-results " style=""></ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <br />
+                                        </div>
+
+                                        <div class="form-group">
+                                            <header class="panel-heading"><strong> Installer Audit Cycle Details </strong> </header>
+                                            <div class="adv-table">
+                                                <div class="row">
+                                                    <div class="col-lg-4 col-md-4 col-xs-4 add_newbtn">
+                                                        <a class="btn btn-success" id="btnAddCustomerPercent" data-toggle="modal" data-backdrop="static" href="#">
+                                                            Add Audit Cycle <i class="fa fa-plus"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-xs-12 ">
+                                                    <table id="dynamic-table" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                                                        <thead>
+                                                            <tr>
+                                                                <th width="5%">Installer Name</th>
+                                                                <th width="4%">Audit Percent</th>
+                                                                <th width="3%">Start Day</th>
+                                                                <th width="3%">End Day</th>
+                                                                <th width="3%">Audit Cycle Failed</th>
+                                                                <th width="3%">Action</th>
+                                                            </tr>
+                                                        </thead>
+                                                    </table>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <br />
+
+                                        <div class="form-group ">
+                                            <header class="panel-heading"><strong> Fail Cycle Details For All Installers </strong> </header>
+                                            <div class="adv-table">
+                                                <div class="row">
+                                                    <div class="col-lg-4 col-md-4 col-xs-4 add_newbtn">
+                                                        <a class="btn btn-success" id="btnAddFailurePercent" data-toggle="modal" data-backdrop="static" href="#">
+                                                            Add Fail Cycle <i class="fa fa-plus"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-12 ">
+                                                    <table id="dynamic-table1" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                                                        <thead>
+                                                            <tr>
+                                                                <th width="5%">Fail Percent From</th>
+                                                                <th width="5%">Fail Percent To</th>
+                                                                <th width="5%">Increased Day</th>
+                                                                <th width="5%">Action</th>
+                                                            </tr>
+                                                        </thead>
+                                                    </table>
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+
+
+                                        <div class="form-group">
+                                            <div class="col-lg-12 col-sm-12 col-xs-12 text-center">
+                                                <button id="btnSave" class="btn btn-success" type="button">Save</button>
+                                                @*<button class="btn btn-danger" id="btnResetAudit" type="button">Reset</button>*@
+                                                <button class="btn btn-danger" id="btnCancelAudit" type="button">Cancel</button>
+                                            </div>
+
+                                        </div>
+                                        <div class="form-group">
+                                            <br />
+                                        </div>
+
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</section>
+
+<!-- Modal for Add /Edit Dialog -->
+<div class="modal fade modal-dialog-center" id="AddEditModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+</div>
+
+
+
+
+<link href="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.css")" rel="stylesheet" />
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.jquery.min.js")"></script>
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.proto.min.js")"></script>
+
+
+
+<link href="~/Scripts/js/style.css" rel="stylesheet" />
+<link href="~/Scripts/js/jquery-ui.css" rel="stylesheet">
+<script src="~/Scripts/js/jquery-ui.js"></script>
+
+<link href="~/jquery-confirm-master/css/jquery-confirm.css" rel="stylesheet" />
+<script src="~/jquery-confirm-master/js/jquery-confirm.js"></script>
+
+
+@System.Web.Optimization.Scripts.RenderFormat(GarronT.CMS.UI.SiteKeys.ScriptVersion, "~/bundles/AuditEdit_js")  

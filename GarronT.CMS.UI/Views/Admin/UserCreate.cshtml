@@ -1,0 +1,35 @@
+﻿@model GarronT.CMS.Model.AspNetUser
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(":input[type='submit']").button();
+    })
+</script>
+<div class="panel">
+    @using (Html.BeginForm("UserCreate", "Admin", FormMethod.Post))
+    {
+        @Html.ValidationSummary(true)
+        <fieldset>            
+            <legend><strong> Create User</strong></legend>
+            <br />
+            <table style='width: 100%'>
+                <tr>
+                    <td style='width: 10%; font-weight: bold' class='userTable'>
+                        @Html.LabelFor(model => model.UserName, "UserName")
+                    </td>
+                    <td class='userTable'>
+                        @Html.TextBoxFor(model => model.UserName, new { style = "width:250px" })
+                        @Html.ValidationMessageFor(model => model.UserName)
+                    </td>
+                </tr>
+                
+            </table>
+            <br />
+            <input type="submit" value="Create" />
+        </fieldset>
+    }
+</div>
+<div>
+    @Html.ActionLink("Go to Users", "Index", "Admin")
+</div>

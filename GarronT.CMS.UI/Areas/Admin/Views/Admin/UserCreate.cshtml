@@ -1,0 +1,63 @@
+﻿@model GarronT.CMS.Model.AspNetUser
+
+@{
+    ViewBag.Title = "Create User";
+
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(":input[type='submit']").button();
+    })
+</script>
+
+
+
+
+<section id="main-content">
+    <section class="wrapper">
+        <!-- page start-->
+        <div class="row">
+            <div class="col-sm-12">
+                <section class="panel">
+                    <header class="panel-heading">
+                        <b>Create User</b>
+
+                    </header>
+                    <div class="panel-body">
+                        <div class="adv-table">
+                            <div class="panel">
+                                @using (Html.BeginForm("UserCreate", "Admin", FormMethod.Post))
+                                {
+                                    @Html.ValidationSummary(true)
+                                    <fieldset>
+                                        <legend><strong> Create User</strong></legend>
+                                        <br />
+                                        <table style='width: 100%'>
+                                            <tr>
+                                                <td style='width: 10%; font-weight: bold' class='userTable'>
+                                                    @Html.LabelFor(model => model.UserName, "UserName")
+                                                </td>
+                                                <td class='userTable'>
+                                                    @Html.TextBoxFor(model => model.UserName, new { style = "width:250px" })
+                                                    @Html.ValidationMessageFor(model => model.UserName)
+                                                </td>
+                                            </tr>
+
+                                        </table>
+                                        <br />
+                                        <input type="submit" value="Create" />
+                                    </fieldset>
+                                }
+                            </div>
+                            <div>
+                                @Html.ActionLink("Go to Users", "Index", "Admin")
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</section>

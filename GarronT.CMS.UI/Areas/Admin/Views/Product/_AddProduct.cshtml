@@ -1,0 +1,1742 @@
+﻿@model GarronT.CMS.Model.BO.ProductMasterBO
+@using GarronT.CMS.UI.CustomHelpers
+<style>
+    .checkbox-inline, .radio-inline {
+        /*position: relative;
+    display: inline-block;
+    padding-left: 20px;
+    margin-bottom: 0;
+    font-weight: 400;
+    vertical-align: middle;
+    cursor: pointer;*/
+    }
+
+        .checkbox input[type=checkbox], .checkbox-inline input[type=checkbox], .radio input[type=radio], .radio-inline input[type=radio] {
+            position: absolute;
+            margin-top: 4px\9;
+        }
+
+    .chck-lab {
+        padding-left: 20px !important;
+    }
+
+    .product_dialog {
+        margin-top: -9%;
+    }
+
+    .prod_txtbox {
+        width: 98%;
+    }
+</style>
+<style>
+    /*************************************Bootstrap Css***********************************/
+    @@media (min-width:1200px) {
+        .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9 {
+            float: left;
+        }
+
+
+        .col-lg-12 {
+            width: 100%;
+        }
+
+        .col-lg-11 {
+            width: 91.66666667%;
+        }
+
+        .col-lg-10 {
+            width: 83.33333333%;
+        }
+
+        .col-lg-9 {
+            width: 75%;
+        }
+
+        .col-lg-8 {
+            width: 66.66666667%;
+        }
+
+        .col-lg-7 {
+            width: 58.33333333%;
+        }
+
+        .col-lg-6 {
+            width: 50% !important;
+        }
+
+        .col-lg-5 {
+            width: 41.66666667%;
+        }
+
+        .col-lg-4 {
+            width: 33.33333333%;
+        }
+
+        .col-lg-3 {
+            width: 25%;
+        }
+
+        .col-lg-2 {
+            width: 16.66666667%;
+        }
+
+        .col-lg-1 {
+            width: 8.33333333%;
+        }
+
+        .multiselect {
+            padding: 3px;
+        }
+
+        .lg-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .lg-nopaddingright {
+            padding-right: 0px;
+        }
+
+        .lg-nopadding {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+    }
+
+    @@media (min-width:992px) and (max-width:1199px) {
+        .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9 {
+            float: left;
+        }
+
+        .col-md-12 {
+            width: 100%;
+        }
+
+        .col-md-11 {
+            width: 91.66666667%;
+        }
+
+        .col-md-10 {
+            width: 83.33333333%;
+        }
+
+        .col-md-9 {
+            width: 75%;
+        }
+
+        .col-md-8 {
+            width: 66.66666667%;
+        }
+
+        .col-md-7 {
+            width: 58.33333333%;
+        }
+
+        .col-md-6 {
+            width: 50%;
+        }
+
+        .col-md-5 {
+            width: 41.66666667%;
+        }
+
+        .col-md-4 {
+            width: 33.33333333%;
+        }
+
+        .col-md-3 {
+            width: 25%;
+        }
+
+        .col-md-2 {
+            width: 16.66666667%;
+        }
+
+        .col-md-1 {
+            width: 8.33333333%;
+        }
+
+        .col-md-pull-12 {
+            right: 100%;
+        }
+
+        .col-md-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-md-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-md-pull-9 {
+            right: 75%;
+        }
+
+        .col-md-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-md-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-md-pull-6 {
+            right: 50%;
+        }
+
+        .col-md-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-md-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-md-pull-3 {
+            right: 25%;
+        }
+
+        .col-md-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-md-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-md-pull-0 {
+            right: auto;
+        }
+
+        .col-md-push-12 {
+            left: 100%;
+        }
+
+        .col-md-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-md-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-md-push-9 {
+            left: 75%;
+        }
+
+        .col-md-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-md-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-md-push-6 {
+            left: 50%;
+        }
+
+        .col-md-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-md-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-md-push-3 {
+            left: 25%;
+        }
+
+        .col-md-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-md-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-md-push-0 {
+            left: auto;
+        }
+
+        .col-md-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-md-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-md-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-md-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-md-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-md-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-md-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-md-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-md-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-md-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-md-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-md-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-md-offset-0 {
+            margin-left: 0;
+        }
+
+        .md-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .md-nopaddingright {
+            padding-right: 0px;
+        }
+
+        .md-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .md-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .md-clear {
+            clear: both;
+        }
+
+        .md-nopadding {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+
+        .Warehouse_label {
+            /*margin-left: -20px;
+                        margin-right: 2px;*/
+        }
+    }
+
+    @@media (min-width:768px) and (max-width:991px) {
+
+        .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9 {
+            float: left;
+        }
+
+        .col-sm-12 {
+            width: 100%;
+        }
+
+        .col-sm-11 {
+            width: 91.66666667%;
+        }
+
+        .col-sm-10 {
+            width: 83.33333333%;
+        }
+
+        .col-sm-9 {
+            width: 75%;
+        }
+
+        .col-sm-8 {
+            width: 66.66666667%;
+        }
+
+        .col-sm-7 {
+            width: 58.33333333%;
+        }
+
+        .col-sm-6 {
+            width: 50%;
+        }
+
+        .col-sm-5 {
+            width: 41.66666667%;
+        }
+
+        .col-sm-4 {
+            width: 33.33333333%;
+        }
+
+        .col-sm-3 {
+            width: 25%;
+        }
+
+        .col-sm-2 {
+            width: 16.66666667%;
+        }
+
+        .col-sm-1 {
+            width: 8.33333333%;
+        }
+
+        .col-sm-pull-12 {
+            right: 100%;
+        }
+
+        .col-sm-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-sm-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-sm-pull-9 {
+            right: 75%;
+        }
+
+        .col-sm-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-sm-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-sm-pull-6 {
+            right: 50%;
+        }
+
+        .col-sm-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-sm-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-sm-pull-3 {
+            right: 25%;
+        }
+
+        .col-sm-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-sm-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-sm-pull-0 {
+            right: auto;
+        }
+
+        .col-sm-push-12 {
+            left: 100%;
+        }
+
+        .col-sm-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-sm-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-sm-push-9 {
+            left: 75%;
+        }
+
+        .col-sm-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-sm-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-sm-push-6 {
+            left: 50%;
+        }
+
+        .col-sm-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-sm-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-sm-push-3 {
+            left: 25%;
+        }
+
+        .col-sm-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-sm-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-sm-push-0 {
+            left: auto;
+        }
+
+        .col-sm-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-sm-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-sm-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-sm-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-sm-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-sm-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-sm-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-sm-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-sm-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-sm-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-sm-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-sm-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-sm-offset-0 {
+            margin-left: 0;
+        }
+
+        .sm-clear {
+            clear: both;
+        }
+
+        .sm-center {
+            text-align: center;
+        }
+
+        .sm-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .sm-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .sm-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .sm-nopaddingright {
+            padding-right: 0px;
+        }
+
+        .sm-no-padding {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+    }
+
+    @@media (min-width:481px) and (max-width:767px) {
+        .xs-clear {
+            clear: both;
+        }
+
+        .col-xs-1, .col-xs-10, .col-xs-11, .col-xs-12, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9 {
+            float: left;
+        }
+
+        .col-xs-12 {
+            width: 100%;
+        }
+
+        .col-xs-11 {
+            width: 91.66666667%;
+        }
+
+        .col-xs-10 {
+            width: 83.33333333%;
+        }
+
+        .col-xs-9 {
+            width: 75%;
+        }
+
+        .col-xs-8 {
+            width: 66.66666667%;
+        }
+
+        .col-xs-7 {
+            width: 58.33333333%;
+        }
+
+        .col-xs-6 {
+            width: 50%;
+        }
+
+        .col-xs-5 {
+            width: 41.66666667%;
+        }
+
+        .col-xs-4 {
+            width: 33.33333333%;
+        }
+
+        .col-xs-3 {
+            width: 25%;
+        }
+
+        .col-xs-2 {
+            width: 16.66666667%;
+        }
+
+        .col-xs-1 {
+            width: 8.33333333%;
+        }
+
+        .col-xs-pull-12 {
+            right: 100%;
+        }
+
+        .col-xs-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-xs-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-xs-pull-9 {
+            right: 75%;
+        }
+
+        .col-xs-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-xs-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-xs-pull-6 {
+            right: 50%;
+        }
+
+        .col-xs-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-xs-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-xs-pull-3 {
+            right: 25%;
+        }
+
+        .col-xs-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-xs-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-xs-pull-0 {
+            right: auto;
+        }
+
+        .col-xs-push-12 {
+            left: 100%;
+        }
+
+        .col-xs-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-xs-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-xs-push-9 {
+            left: 75%;
+        }
+
+        .col-xs-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-xs-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-xs-push-6 {
+            left: 50%;
+        }
+
+        .col-xs-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-xs-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-xs-push-3 {
+            left: 25%;
+        }
+
+        .col-xs-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-xs-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-xs-push-0 {
+            left: auto;
+        }
+
+        .col-xs-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-xs-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-xs-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-xs-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-xs-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-xs-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-xs-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-xs-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-xs-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-xs-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-xs-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-xs-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-xs-offset-0 {
+            margin-left: 0;
+        }
+
+        .xs-left {
+            text-align: left !important;
+        }
+
+        .xs-mbot1 {
+            margin-bottom: 1% !important;
+        }
+
+        .xs-mbot2 {
+            margin-bottom: 2% !important;
+        }
+
+        .xs-block {
+            display: block;
+        }
+
+        .xs-nopadding {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+
+        .xs-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .xs-nopaddingright {
+            padding-right: 0px;
+        }
+
+        .xs-center {
+            text-align: center;
+        }
+    }
+
+    @@media (max-width:480px) {
+        .xxs-clear {
+            clear: both;
+        }
+
+        .col-xxs-1, .col-xxs-10, .col-xxs-11, .col-xxs-12, .col-xxs-2, .col-xxs-3, .col-xxs-4, .col-xxs-5, .col-xxs-6, .col-xxs-7, .col-xxs-8, .col-xxs-9 {
+            float: left;
+        }
+
+        .col-xxs-12 {
+            width: 100%;
+        }
+
+        .col-xxs-11 {
+            width: 91.66666667%;
+        }
+
+        .col-xxs-10 {
+            width: 83.33333333%;
+        }
+
+        .col-xxs-9 {
+            width: 75%;
+        }
+
+        .col-xxs-8 {
+            width: 66.66666667%;
+        }
+
+        .col-xxs-7 {
+            width: 58.33333333%;
+        }
+
+        .col-xxs-6 {
+            width: 50%;
+        }
+
+        .col-xxs-5 {
+            width: 41.66666667%;
+        }
+
+        .col-xxs-4 {
+            width: 33.33333333%;
+        }
+
+        .col-xxs-3 {
+            width: 25%;
+        }
+
+        .col-xxs-2 {
+            width: 16.66666667%;
+        }
+
+        .col-xxs-1 {
+            width: 8.33333333%;
+        }
+
+        .col-xxs-0 {
+            width: 0%;
+        }
+
+        .col-xxs-pull-12 {
+            right: 100%;
+        }
+
+        .col-xxs-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-xxs-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-xxs-pull-9 {
+            right: 75%;
+        }
+
+        .col-xxs-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-xxs-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-xxs-pull-6 {
+            right: 50%;
+        }
+
+        .col-xxs-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-xxs-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-xxs-pull-3 {
+            right: 25%;
+        }
+
+        .col-xxs-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-xxs-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-xxs-pull-0 {
+            right: auto;
+        }
+
+        .col-xxs-push-12 {
+            left: 100%;
+        }
+
+        .col-xxs-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-xxs-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-xxs-push-9 {
+            left: 75%;
+        }
+
+        .col-xxs-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-xxs-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-xxs-push-6 {
+            left: 50%;
+        }
+
+        .col-xxs-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-xxs-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-xxs-push-3 {
+            left: 25%;
+        }
+
+        .col-xxs-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-xxs-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-xxs-push-0 {
+            left: auto;
+        }
+
+        .col-xxs-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-xxs-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-xxs-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-xxs-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-xxs-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-xxs-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-xxs-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-xxs-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-xxs-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-xxs-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-xxs-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-xxs-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-xxs-offset-0 {
+            margin-left: 0;
+        }
+
+
+
+        .xxs-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .xxs-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .xxs-mbot3 {
+            margin-bottom: 3%;
+        }
+
+        .xxs-block {
+            display: block;
+        }
+
+        .xxs-nopadding {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+
+        .xxs-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .xxs-nopaddingright {
+            padding-right: 0px;
+        }
+
+        .xxs-center {
+            text-align: center;
+        }
+
+        .control-label {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+    }
+
+    /*****************************new css****************************/
+    .product_dialog {
+        margin-top: 0%;
+    }
+
+    .modal.fade.modal-dialog-center .modal-dialog {
+        height: auto;
+    }
+
+    .control-label {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    @@media (max-width:320px) {
+        .modal-dialog {
+            margin: 2% 2%;
+            width: 95%;
+        }
+
+        .modal-body {
+            padding: 1% 2%;
+        }
+
+        .product_dialog {
+            margin-top: 0%;
+            height: 33em;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+    }
+
+    @@media only screen and (min-width:321px)and (max-width:360px) {
+        .modal.fade.modal-dialog-center .modal-dialog {
+            height: auto;
+        }
+
+        .modal-dialog {
+            margin: 2% 2%;
+            width: 95%;
+        }
+
+        .modal-body {
+            padding: 1% 2%;
+        }
+
+        .product_dialog {
+            margin-top: 0%;
+            height: 42em;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+    }
+
+    @@media only screen and (min-width:361px)and (max-width:479px) {
+        .modal.fade.modal-dialog-center .modal-dialog {
+            height: auto;
+        }
+
+        .modal-dialog {
+            margin: 2% 2%;
+            width: 95%;
+        }
+
+        .modal-body {
+            padding: 1% 2%;
+        }
+
+        .product_dialog {
+            margin-top: 0%;
+            height: 45em;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+    }
+
+    @@media only screen and (min-width:480px)and (max-width:767px) {
+        .modal.fade.modal-dialog-center .modal-dialog {
+            height: auto;
+        }
+
+        .modal-dialog {
+            margin: 2% 2%;
+            width: 95%;
+        }
+
+        .modal-body {
+            padding: 1% 2%;
+        }
+
+        .product_dialog {
+            margin-top: 0%;
+            height: 22em;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .control-label {
+            text-align: right !important;
+        }
+    }
+
+    @@media only screen and (min-width:768px)and (max-width:991px)  and (orientation:portrait) {
+        .modal.fade.modal-dialog-center .modal-dialog {
+            height: auto;
+        }
+
+        .modal-dialog {
+            margin: 2% 2%;
+            width: 95%;
+        }
+
+        .modal-body {
+            padding: 1% 2%;
+        }
+
+        .product_dialog {
+            margin-top: 0%;
+            height: auto;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .control-label {
+            text-align: right !important;
+        }
+
+        .checkbox-inline, .radio-inline {
+            text-align: left !important;
+        }
+    }
+
+     @@media only screen and (min-width:768px)and (max-width:991px) and (orientation:landscape) {
+        .modal.fade.modal-dialog-center .modal-dialog {
+            height: auto;
+        }
+
+        .modal-dialog {
+            margin: 2% 2%;
+            width: 95%;
+        }
+
+        .modal-body {
+            padding: 1% 2%;
+        }
+
+        .product_dialog {
+            margin-top: 0%;
+            height: 30em;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .control-label {
+            text-align: right !important;
+        }
+
+        .checkbox-inline, .radio-inline {
+            text-align: left !important;
+        }
+    }
+    @@media only screen and (max-device-width: 1024px) and (min-device-width: 980px) {
+        .form-control {
+            width: 98% !important;
+        }
+    }
+</style>
+<div class="modal-dialog modal-md">
+    <div class="modal-content-wrap">
+        <div class="modal-content product_dialog ">
+            <div class="modal-header">
+                <button type="button" class="close" id="btnclose" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+                @if (@ViewBag.Status == "Create")
+                {
+                    <h4 class="modal-title">Add Product</h4>
+                }
+                else
+                {
+                    <h4 class="modal-title">Edit Product</h4>
+                }
+
+            </div>
+            <div class="modal-body">
+                <div class="panel-body">
+                    @*<form id="formAddEdit" class="cmxform form-horizontal tasi-form">*@
+                    @using (Html.BeginForm("", "", FormMethod.Get, new { @class = "form-horizontal", @id = "formAddEdit", role = "form" }))
+                    {
+
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-4 xs-mbot1 col-xxs-12 control-label">Utility Type<span style="color:red">*</span></label>
+                            <div class="col-lg-8 col-sm-8 col-xs-8 col-xxs-12 xs-mbot1">
+                                @Html.EditorFor(model => model.Id, new { htmlAttributes = new { @class = "form-control", @type = "hidden" } })
+
+                                @*<div id="divUtilityType" class=" ">
+                                        <div class="chosen-container chosen-container-single " title="" id="UtilityType_chosen">
+                                            <a class="chosen-single chosen-default CurrentSelectedDropDown" id="ancUtilityType_chosen" tabindex="-1"><span class="" id="UtilityTypeHeader">Select Any Item</span><div><b></b></div></a>
+                                            <div class="chosen-drop">
+                                                <div class="chosen-search"><input type="text" id="txtfilterallUtilityType" class="txtfilterall" onkeyup="filterMultiSelectDropDown(this)" autocomplete="off"></div>
+                                                <div class="UtilityTypeFilter row">
+                                                    <label style="margin-left: 7px;" class="col-lg-2">
+                                                        <input type="checkbox" style="zoom:1.2;" class="chbSelectAll" id="UtilityType_SelectAll" autocomplete="off" value=" "><span>Select All</span>
+                                                    </label>
+                                                </div>
+                                                <ul id="ulUtilityType" class="chosen-results " style=""></ul>
+                                            </div>
+                                        </div>
+                                    </div>*@
+                                @Html.UtilityDropDownListFor(model => model.UtilityId, Model.UtilityId, "", new { @class = "form-control chosen-select" })
+                                @Html.ValidationMessageFor(model => model.UtilityId, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-4 col-xxs-12 xs-mbot1 control-label">Product Category<span style="color:red">*</span></label>
+                            <div class="col-lg-8 col-sm-8 col-xs-8 col-xxs-12 xs-mbot1">
+                                @Html.CategoryDropDownListFor(model => model.CategoryId, Model.CategoryId, "", new { @class = "form-control chosen-select" })
+                                @Html.ValidationMessageFor(model => model.CategoryId, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-4 col-xxs-12 xs-mbot1 control-label">Make/Manufacturer<span style="color:red">*</span></label>
+                            <div class="col-lg-8 col-sm-8 col-xs-8 col-xxs-12 xs-mbot1">
+
+                                @*<div id="divMeterMake" class=" ">
+                                        <div class="chosen-container chosen-container-single " title="" id="MeterMake_chosen">
+                                            <a class="chosen-single chosen-default CurrentSelectedDropDown" id="ancMeterMake_chosen" tabindex="-1"><span class="" id="MeterMakeHeader">Select Any Item</span><div><b></b></div></a>
+                                            <div class="chosen-drop">
+                                                <div class="chosen-search"><input type="text" id="txtfilterallMeterMake" class="txtfilterall" onkeyup="filterMultiSelectDropDown(this)" autocomplete="off"></div>
+                                                <div class="MeterMakeFilter row">
+                                                    <label style="margin-left: 7px;" class="col-lg-2">
+                                                        <input type="checkbox" style="zoom:1.2;" class="chbSelectAll" id="MeterMake_SelectAll" autocomplete="off" value=" "><span>Select All</span>
+                                                    </label>
+                                                </div>
+                                                <ul id="ulMeterMake" class="chosen-results " style=""></ul>
+                                            </div>
+                                        </div>
+                                    </div>*@
+                                @Html.MeterMakeDropDownListFor(model => model.MeterMakeId, Model.MeterMakeId, "", new { @class = "form-control chosen-select" })
+                                @Html.ValidationMessageFor(model => model.MeterMakeId, "", new { @class = "text-danger" })
+                            </div>
+
+                        </div>
+
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-4 col-xxs-12 control-label xs-mbot1">Size</label>
+                            <div class="col-lg-8 col-sm-8 col-xs-8 col-xxs-12 xs-mbot1">
+
+                                @*<div id="divMeterSize" class=" ">
+                                        <div class="chosen-container chosen-container-single " title="" id="MeterSize_chosen">
+                                            <a class="chosen-single chosen-default CurrentSelectedDropDown" id="ancMeterSize_chosen" tabindex="-1"><span class="" id="MeterSizeHeader">Select Any Item</span><div><b></b></div></a>
+                                            <div class="chosen-drop">
+                                                <div class="chosen-search"><input type="text" id="txtfilterallMeterSize" class="txtfilterall" onkeyup="filterMultiSelectDropDown(this)" autocomplete="off"></div>
+                                                <div class="MeterSizeFilter row">
+                                                    <label style="margin-left: 7px;" class="col-lg-2">
+                                                        <input type="checkbox" style="zoom:1.2;" class="chbSelectAll" id="MeterSize_SelectAll" autocomplete="off" value=" "><span>Select All</span>
+                                                    </label>
+                                                </div>
+                                                <ul id="ulMeterSize" class="chosen-results " style=""></ul>
+                                            </div>
+                                        </div>
+                                    </div>*@
+
+                                @Html.MeterSizeDropDownListFor(model => model.MeterSizeId, Model.MeterSizeId, "", new { @class = "form-control chosen-select" })
+                                @Html.ValidationMessageFor(model => model.MeterSizeId, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-4 col-xxs-12 control-label xs-mbot1">Type</label>
+                            <div class="col-lg-8 col-sm-8 col-xs-8 col-xxs-12 xs-mbot1">
+
+                                @*<div id="divMeterType" class=" ">
+                                        <div class="chosen-container chosen-container-single " title="" id="MeterType_chosen">
+                                            <a class="chosen-single chosen-default CurrentSelectedDropDown" id="ancMeterType_chosen" tabindex="-1"><span class="" id="MeterTypeHeader">Select Any Item</span><div><b></b></div></a>
+                                            <div class="chosen-drop">
+                                                <div class="chosen-search"><input type="text" id="txtfilterallMeterType" class="txtfilterall" onkeyup="filterMultiSelectDropDown(this)" autocomplete="off"></div>
+                                                <div class="MeterTypeFilter row">
+                                                    <label style="margin-left: 7px;" class="col-lg-2">
+                                                        <input type="checkbox" style="zoom:1.2;" class="chbSelectAll" id="MeterType_SelectAll" autocomplete="off" value=" "><span>Select All</span>
+                                                    </label>
+                                                </div>
+                                                <ul id="ulMeterType" class="chosen-results " style=""></ul>
+                                            </div>
+                                        </div>
+                                    </div>*@
+                                @Html.MeterTypeDropDownListFor(model => model.MeterTypeId, Model.MeterTypeId, "", new { @class = "form-control chosen-select" })
+                                @Html.ValidationMessageFor(model => model.MeterTypeId, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-4 col-xxs-12 control-label xs-mbot1">Product Name<span style="color:red">*</span></label>
+                            <div class="col-lg-8 col-sm-8 col-xs-8 col-xxs-12 xs-mbot1">
+
+                                @Html.EditorFor(model => model.ProductName, new { htmlAttributes = new { @class = "inputclass form-control  prod_txtbox", @maxlength = "250" } })
+                                @Html.ValidationMessageFor(model => model.ProductName, "", new { @class = "text-danger" })
+
+                            </div>
+                        </div>
+
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-4 col-xxs-12 xs-mbot1 control-label">Product Description</label>
+                            <div class="col-lg-8 col-sm-8 col-xs-8 col-xxs-12 xs-mbot1">
+                                @Html.EditorFor(model => model.ProductDescription, new { htmlAttributes = new { @class = "inputclass form-control  prod_txtbox", @maxlength = "250" } })
+                                @Html.ValidationMessageFor(model => model.ProductDescription, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-4 col-xxs-12 xs-mbot1 control-label">Part No.<span style="color:red">*</span></label>
+                            <div class="col-lg-8 col-sm-8 col-xs-8 col-xxs-12 xs-mbot1">
+                                @Html.EditorFor(model => model.ProductPartNumber, new { htmlAttributes = new { @class = "inputclass form-control prod_txtbox", @maxlength = "50" } })
+                                @Html.ValidationMessageFor(model => model.ProductPartNumber, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-lg-4 col-sm-4 col-xs-4" style="text-align: right;">
+                                @*<button id="btnPrintPartBarcode" class="btn btn-success" type="button">Print Barcode</button>*@
+                                @*<label class="checkbox-inline">
+                                        @Html.CheckBoxFor(model => model.IncludePartNoInBarcode) <span class="chck-lab">Part Number Barcode Required</span>
+                                    </label>*@
+                            </div>
+                        </div>
+
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-4 col-xxs-12 xs-mbot1 control-label">UPC Code</label>
+                            <div class="col-lg-8 col-sm-8 col-xs-8 col-xxs-12 xs-mbot1">
+                                @Html.EditorFor(model => model.ProductUPCCode, new { htmlAttributes = new { @class = "inputclass form-control  prod_txtbox", @maxlength = "13" } })
+                                @Html.ValidationMessageFor(model => model.ProductUPCCode, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-lg-4 col-sm-4 col-xs-4 col-xxs-12 xs-mbot1" style="text-align: right;">
+                                @*<button id="btnPrintUpcBarcode" class="btn btn-success" type="button">Print Barcode</button>*@
+                                @*<label class="checkbox-inline">
+                                        @Html.CheckBoxFor(model => model.IncludeUPCInBarcode) <span class="chck-lab">UPC Barcode Required</span>
+                                    </label>*@
+                            </div>
+                        </div>
+
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-4 col-xxs-0 control-label"></label>
+                            <label for="name" class="col-lg-3 col-sm-2 col-xs-2 col-xxs-6 control-label">
+
+                                <span class="col-lg-3 col-sm-2 col-xs-2 col-xxs-12">
+                                    @Html.RadioButtonFor(model => model.SerialNumberRequired, true, new { id = "rbSerialNumber" })
+                                    Serial No.
+                                </span>
+                            </label>
+                            <label for="name" class="col-lg-3 col-sm-2 col-xs-2 col-xxs-6 control-label">
+                                <div class="col-lg-2 col-sm-2 col-xs-2 col-xxs-12">
+                                    @Html.RadioButtonFor(model => model.SerialNumberRequired, false, new { id = "rbConsumables" })
+                                    Consumables
+                                </div>
+
+                            </label>
+                        </div>
+                        @*<div class="form-group ">
+                                <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label">Generate Barcode</label>
+                                <div class="col-lg-2 col-sm-2 col-xs-2">
+                                    @Html.CheckBoxFor(model => model.GenerateBarcode)
+                                </div>
+
+                            </div>*@
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-4 col-xxs-12 control-label xs-mbot1"><strong>Low Stock Alerts :-</strong></label>
+                            <div class="col-lg-2 col-sm-2 col-xs-2 col-xxs-0">
+
+                            </div>
+
+                        </div>
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-4 col-xxs-12 xs-mbot1 control-label">Warehouse Min. Quantity</label>
+                            <div class="col-lg-2 col-sm-2 col-xs-2 col-xxs-12 xs-mbot1">
+                                @Html.EditorFor(model => model.WarehouseMinimumStock, new { htmlAttributes = new { @value = "100", @class = "inputclass form-control  meter_txtbox numeric-only", @type = "text", @maxlength = "4" } })
+                            </div>
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-2 col-xxs-12 xs-mbot1 xxs-clear control-label">Send To</label>
+                            <div class="col-lg-4 col-sm-4 col-xs-4 col-xxs-12 xs-mbot1">
+                                <div id="divUser" class="col-lg-12 col-sm-12 col-xs-12 col-xxs-12 cre_citybox xxs-nopadding xs-nopadding">
+                                    <div class="chosen-container chosen-container-single " title="" id="ddlUser_chosen">
+                                        <a class="chosen-single chosen-default" id="ancUser_chosen" tabindex="-1"><span class="" id="UserHeader">Select User</span><div><b></b></div></a>
+                                        <div class="chosen-drop">
+                                            <div class="chosen-search"><input type="text" class="txtfilterall" onkeyup="filterUser(this)" autocomplete="off"></div>
+                                            <div class="UserFilter row">
+                                                <label style="margin-left: 7px;" class="col-lg-2">
+                                                    <input type="checkbox" style="zoom:1.2;" class="chbSelectAll" id="User_SelectAll" autocomplete="off" value=""><span>Select All</span>
+                                                </label>
+
+                                            </div>
+                                            <ul id="ulUser" class="chosen-results " style=""></ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-4 col-xxs-12 control-label">User Min. Quantity</label>
+                            <div class="col-lg-2 col-sm-2 col-xs-2 col-xxs-12 ">
+                                @Html.EditorFor(model => model.UserMinimumStock, new { htmlAttributes = new { @value = "10", @class = "inputclass form-control  meter_txtbox numeric-only", @type = "text", @maxlength = "4" } })
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-4 col-xxs-12 control-label">Alert Type</label>
+
+                            <form class="">
+                                <label class="checkbox-inline col-xs-6 xs-left">
+                                    @Html.CheckBoxFor(model => model.AlertTypeEmail) <span class="chck-lab">Email</span>
+                                </label>
+                                @*<label class="checkbox-inline">
+                                        @Html.CheckBoxFor(model => model.AlertTypeSMS)<span class="chck-lab">SMS</span>
+                                    </label>*@
+
+                            </form>
+
+
+                            @*<div class="col-lg-1 col-sm-1 col-xs-1">
+
+                                    @Html.CheckBoxFor(model => model.AlertTypeEmail)
+                                </div>
+                                <label for="name" class="col-lg-1 col-sm-1 col-xs-1 control-label">Email</label>
+                                <div class="col-lg-1 col-sm-1 col-xs-1">
+                                    @Html.CheckBoxFor(model => model.AlertTypeSMS)
+                                </div>
+                                <label for="name" class="col-lg-1 col-sm-1 col-xs-1 control-label">SMS</label>*@
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnPrintBarcode" class="btn btn-success" type="button">Print Barcode</button>
+                <button id="btnSave" class="btn btn-success" type="button">Save</button>
+                <button id="btnCancel" class="btn btn-danger" type="button">Cancel</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+<link href="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.css")" rel="stylesheet" />
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.jquery.min.js")"></script>
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.proto.min.js")"></script>
+
+
+<script>
+    $(document).ready(function () {
+        //#region User dropdown
+
+        $("#ulUser").selectable({
+
+            start: function (event, ui) {
+
+                var target = event.target || event.srcElement;
+
+                if (target.tagName == "LI") {
+                }
+            },
+            selected: function (event, ui) {
+
+                if ($(ui.selected).hasClass('highlighted')) {
+                    $(ui.selected).removeClass('ui-selected click-selected highlighted');
+
+                } else {
+                    $(ui.selected).addClass('click-selected highlighted');
+
+                }
+            },
+            unselected: function (event, ui) {
+
+                $(ui.unselected).removeClass('click-selected');
+            },
+            stop: function (event, ui) {
+
+                selectUser()
+
+            }
+        });
+
+        //#endregion
+
+
+        GetUser()
+
+        setuser()
+    })
+
+    function GetUser() {
+        debugger;
+        var urlGetUserList = $('#urlGetUserList').val();
+        waitingDialog.show('Please Wait...');
+        $.ajax({
+            type: 'GET',
+            url: urlGetUserList,
+            async: true,
+            success: function (data) {
+                waitingDialog.hide();
+                debugger;
+                $("#UserHeader").removeClass("ddlHeader").text("Select User")
+                $("#User_SelectAll").prop("checked", false);
+                $('#ulUser').empty();
+
+                $.each(data, function (index, item) {
+
+                    $('#ulUser').append($('<li></li>').attr("Id", item.ChildId).val(item.ChildId).addClass("liUser active-result").html(item.ChildName));
+
+                });
+
+                //spinner.stop(target);
+            },
+            error: function (error) {
+                console.log(error)
+
+            }
+        });
+        //spinner.stop(target);
+    }
+
+    function setuser() {
+
+        var productId = $('#Id').val();
+        if (productId != "" || productId != '0') {
+            debugger;
+            var GetUserByproductId = $('#GetUserByproductId').val();
+            waitingDialog.show('Please Wait...');
+            $.ajax({
+                type: 'GET',
+                url: GetUserByproductId,
+                data: { productId: productId },
+                async: true,
+                success: function (data) {
+                    waitingDialog.hide();
+                    $.each(data, function (index, item) {
+                        $("#ulUser").find("li[id='" + item + "']").addClass("ui-selected click-selected highlighted")
+
+                    })
+
+                    selectUser()
+
+                    //spinner.stop(target);
+                },
+                error: function (error) {
+                    console.log(error)
+
+                }
+            });
+        }
+    }
+
+    //#region New code for User multiselect dropdown
+    function selectUser() {
+
+        var selectedlivalue = $('#ulUser li.highlighted').map(function (i, el) {
+            return $(el).val();
+        });
+
+
+        var selectedlilength = selectedlivalue.length;
+        if (selectedlilength == 0) {
+            $("#UserHeader").removeClass("ddlHeader").text("Select User")
+        } else {
+            $("#UserHeader").addClass("ddlHeader").text(selectedlilength + " User selected")
+        }
+
+        //#region SelectAll checked/unchecked
+        if ($('#ulUser .liUser:visible').length > 0 && $('#ulUser .highlighted:visible').length == $('#ulUser .liUser:visible').length) {
+            $('#User_SelectAll').prop('checked', true);
+        } else {
+            $('#User_SelectAll').prop('checked', false);
+        }
+        //#endregion
+
+    }
+
+    //#region open/close Cycle dropdown
+    $("#ancUser_chosen").click(function () {
+        $("#ddlUser_chosen").toggleClass("chosen-with-drop chosen-container-active")
+    });
+
+    $('body').on('click', function (e) {
+        if (!$('#divUser').is(e.target)
+           && $('#divUser').has(e.target).length === 0
+       ) {
+            $('#ddlUser_chosen').removeClass('chosen-with-drop chosen-container-active');
+        }
+    });
+
+    //#endregion
+
+    function filterCycle(element) {
+
+        var value = $(element).val().toLowerCase();
+
+        $("#ulUser > li").each(function () {
+            if ($(this).text().toLowerCase().search(value) > -1) {
+                $(this).show();
+            }
+            else {
+                $(this).hide();
+            }
+        });
+
+        //#region SelectAll checked/unchecked
+        if ($('#ulUser .liUser:visible').length > 0 && $('#ulUser .highlighted:visible').length == $('#ulUser .liUser:visible').length) {
+            $('#User_SelectAll').prop('checked', true);
+        } else {
+            $('#User_SelectAll').prop('checked', false);
+        }
+        //#endregion
+    }
+
+    $('#User_SelectAll').on('click', function () {
+        if ($('#ulUser .liUser').length > 0) {
+
+
+
+
+            if (this.checked) {
+                $("li.liUser:visible").addClass('ui-selected click-selected highlighted');
+
+                var selectedlitext = $('#ulUser .highlighted').map(function (i, el) {
+
+                    return $(el)[0].value;
+
+                });
+                var selectedlilength = selectedlitext.length;
+                if (selectedlilength == 0) {
+                    $("#UserHeader").removeClass("ddlHeader").text("Select User")
+                } else {
+                    $("#UserHeader").addClass("ddlHeader").text(selectedlilength + " User selected")
+                }
+
+            }
+            else {
+                $("li.liUser:visible").removeClass('ui-selected click-selected highlighted');
+
+                var selectedlitext = $('#ulUser .highlighted').map(function (i, el) {
+
+                    return $(el)[0].value;
+
+                });
+                var selectedlilength = selectedlitext.length;
+                if (selectedlilength == 0) {
+                    $("#UserHeader").removeClass("ddlHeader").text("Select User")
+                } else {
+                    $("#UserHeader").addClass("ddlHeader").text(selectedlilength + " User selected")
+                }
+            }
+
+
+        }
+    });
+
+    //#endregion
+
+
+</script>

@@ -1,0 +1,1230 @@
+﻿@{
+    ViewBag.Title = "Project Status";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@Html.Hidden("CountryListUrl", Url.Action("GetCountryList", "City"))
+
+@Html.Hidden("getRowPartial", Url.Action("getRowPartial", "ProjectStatus"))
+
+@Html.Hidden("urlGetAddressMap", Url.Action("GetAddressMap", "ProjectStatus"))
+
+@Html.Hidden("urlGetProject", Url.Action("GetPoject", "ProjectStatus"))
+@Html.Hidden("urlGetInstallerList", Url.Action("getCurrentInstallerList", "ProjectStatus"))
+@Html.Hidden("urlGetFormType", Url.Action("GetFormType", "ProjectStatus"))
+
+<div id="loading">
+    <div id="loadingcontent">
+        <p id="loadingspinner">
+            Searching things...
+        </p>
+    </div>
+</div>
+<style>
+        .map_align {
+        }
+
+        .projectmap_flow {
+            width: 102%;
+            bottom: 0px;
+            padding-left: 9px;
+            height: 41em;
+        }
+
+        .scrollFixMAP {
+            line-height: 1.35;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .prostat-formgrp {
+            margin-top: 32px;
+        }
+
+        /*.proj_shw_map {
+            margin-top: 2px;
+        }*/
+        .proj-stat-drp3{
+                margin-top: 8px;
+                margin-bottom: -4px;
+        }
+        .proj-stat-drp4{
+                margin-top: 8px;
+                margin-bottom: -4px;
+        }
+        .proj-stat-shwmapdiv{
+                margin-top: 8px;
+                margin-bottom: -4px;
+        }
+        .proj_shw_map{
+                margin-top: 3px;
+        }
+        @@media (max-width:320px) {
+            .proj_shw_map {
+                /*margin-top: 11%;
+                margin-left: 50%;*/
+                margin-top: 2%;
+                margin-left: 0%;
+            }
+
+            .map_align {
+                margin-right: -10%;
+                margin-left: -5% !important;
+                margin-top: 0% !important;
+            }
+
+            .map_flow {
+                height: 27em !important;
+                margin-right: -4%;
+                margin-left: -6%;
+            }
+
+            .chosen-container {
+                margin-bottom: 4%;
+                padding-bottom:0%;
+            }
+             .proj-stat-drp3{
+                margin-top: 0%;
+                margin-bottom: 0%;
+            }
+             .proj-stat-drp4{
+                margin-top: 0%;
+                margin-bottom:0%;
+            }
+            .proj-stat-shwmapdiv{
+                    margin-top: 0%;
+                    margin-bottom: 0%;
+            }
+             .dot-img1{
+               
+            }
+            .dot-img2{
+                
+            }
+            .dot-img3{
+                padding-top: 2%;
+            }
+            .dot-img4{
+                padding-top: 2%;
+            }
+            .dot-img5{
+                padding-top: 2%;
+            }
+            .dot-img6{
+                margin-left: 1%;
+                padding-top: 2%;
+            }
+        }
+
+        @@media only screen and (min-width:321px) and (max-width:359px) {
+            .con_fluid_new {
+                /*margin-bottom: 10% !important;*/
+                /*margin-top: -13%;*/
+            }
+
+            .chosen-container {
+                margin-bottom: 4%;
+            }
+
+            .proj_shw_map {
+                /*margin-top: 7%;
+                margin-left: 58%;*/
+                margin-top: 2%;
+                margin-left: 0%;
+            }
+
+            .map_align {
+                margin-right: -10%;
+                margin-left: -5% !important;
+                margin-top: 0% !important;
+            }
+
+            .map_flow {
+                height: 22em !important;
+                margin-top: 0%;
+                margin-left: -5%;
+            }
+             .proj-stat-drp3{
+                margin-top: 0%;
+                margin-bottom: 0%;
+            }
+             .proj-stat-drp4{
+                margin-top: 0%;
+                margin-bottom:0%;
+            }
+            .proj-stat-shwmapdiv{
+                    margin-top: 0%;
+                    margin-bottom: 0%;
+            }
+            .dot-img1{
+               padding-top: 2%;
+            }
+            .dot-img2{
+                padding-top: 2%;
+            }
+            .dot-img3{
+                padding-top: 2%;
+            }
+            .dot-img4{
+                padding-top: 2%;
+            }
+            .dot-img5{
+                padding-top: 2%;
+            }
+            .dot-img6{
+                padding-top: 2%;
+                margin-left: 1%;
+            }
+        }
+
+        @@media only screen and (min-width:360px) and (max-width:410px) {
+            .con_fluid_new {
+                /*margin-bottom: 10% !important;*/
+                /*margin-top: -13%;*/
+            }
+
+            .chosen-container {
+                margin-bottom: 4%;
+            }
+
+            .proj_shw_map {
+                /*margin-top: 7%;
+                margin-left: 58%;*/
+            }
+
+            .map_align {
+                margin-right: -10%;
+                margin-left: -5% !important;
+                margin-top: 0% !important;
+            }
+
+            .map_flow {
+                height: 27em !important;
+                margin-top: 0%;
+                margin-left: -5%;
+            }
+             .proj-stat-drp3{
+                margin-top: 0%;
+                margin-bottom: 0%;
+            }
+             .proj-stat-drp4{
+                margin-top: 0%;
+                margin-bottom:0%;
+            }
+            .proj-stat-shwmapdiv{
+                    margin-top: 0%;
+                    margin-bottom: 0%;
+            }
+            .dot-img1{
+               
+            }
+            .dot-img2{
+                padding-left: 22%;
+            }
+            .dot-img3{
+                padding-top: 2%;
+            }
+            .dot-img4{
+                padding-top: 2%;
+                padding-left: 22%;
+            }
+            .dot-img5{
+                padding-top: 2%;
+            }
+            .dot-img6{
+                margin-left: 1%;
+                padding-top: 2%;
+                padding-left: 22%;
+            }
+        }
+
+        @@media only screen and (min-width:411px) and (max-width:429px) {
+            .con_fluid_new {
+                /*margin-bottom: 10% !important;*/
+                /*margin-top: -13%;*/
+            }
+
+            .chosen-container {
+                margin-bottom: 4%;
+            }
+
+            .proj_shw_map {
+                /*margin-top: 7%;
+                margin-left: 58%;*/
+            }
+
+            .map_align {
+                margin-right: -10%;
+                margin-left: -5% !important;
+                margin-top: 0% !important;
+            }
+
+            .map_flow {
+                height: 27em !important;
+                margin-top: 0%;
+                margin-left: -5%;
+            }
+             .proj-stat-drp3{
+                margin-top: 0%;
+                margin-bottom: 0%;
+            }
+             .proj-stat-drp4{
+                margin-top: 0%;
+                margin-bottom:0%;
+            }
+            .proj-stat-shwmapdiv{
+                    margin-top: 0%;
+                    margin-bottom: 0%;
+            }
+            .dot-img1{
+               padding-left: 9%;
+            }
+            .dot-img2{
+                padding-left: 22%;
+            }
+            .dot-img3{
+                padding-top: 2%;
+                padding-left: 9%;
+            }
+            .dot-img4{
+                padding-top: 2%;
+                padding-left: 22%;
+            }
+            .dot-img5{
+                padding-top: 2%;
+                padding-left: 9%;
+            }
+            .dot-img6{
+                margin-left: 1%;
+                padding-top: 2%;
+                padding-left: 22%;
+            }
+        }
+        /*@@media only screen and (min-width:430px) and (max-width:767px) {
+             .map_flow {
+                height: 26em !important;
+                margin-top: 0%;
+                margin-left: 0%;
+                margin-right: 2%;
+            }
+        }*/
+        @@media only screen and (min-width:430px) and (max-width:479px) {
+            .con_fluid_new {
+                /*margin-bottom: 6% !important;*/
+                margin-top: 0%;
+            }
+
+            .chosen-container {
+                margin-bottom: 4%;
+            }
+            .proj-stat-drp3{
+                margin-top: 0%;
+                margin-bottom: 0%;
+            }
+            .proj-stat-drp4 {
+                margin-top: 0%;
+                margin-bottom: 0%;
+            }
+            .proj-stat-shwmapdiv {
+                margin-top:0%;
+            }
+            .proj_shw_map {
+                 margin-top:0%;
+                /*margin-top: 4%;
+                margin-left: 33%;*/
+            }
+
+            .map_align {
+                margin-right: -8%;
+                margin-left: -4% !important;
+                margin-top: 0% !important;
+            }
+
+            .map_flow {
+                height: 26em !important;
+                margin-top: 0%;
+                margin-left: 0%;
+                margin-right: 2%;
+            }
+             .dot-img1{
+                margin-right: -2% !important;
+                margin-left: -7%;
+            }
+            .dot-img2{
+                white-space:nowrap;
+                margin-right:15% !important;
+            }
+            .dot-img3 {
+                margin-right: 4%;
+             }
+            .dot-img4 {
+                margin-right:-4% !important;
+            }
+             .dot-img5 {
+                margin-right:2% !important;
+            }
+             .dot-img6 {
+               margin-left: -6%;
+                padding-top: 2%;
+            }
+        }
+
+        @@media only screen and (min-width:480px) and (max-width:530px)and (orientation:portrait) {
+            .con_fluid_new {
+                /*margin-bottom: 6% !important;*/
+                margin-top: 0%;
+            }
+
+            .chosen-container {
+                margin-bottom: 4%;
+            }
+
+            .proj_shw_map {
+                /*margin-top: 4%;
+                margin-left: 33%;*/
+                margin-top: 2%;
+            }
+            .map_align {
+                margin-right: -8%;
+                margin-left: -4% !important;
+                margin-top: 0% !important;
+            }
+
+            .map_flow {
+                height: 32em !important;
+                margin-top: 0%;
+                margin-left: 0%;
+                margin-right: 2%;
+            }
+             .proj-stat-drp3{
+                margin-top: 0%;
+                margin-bottom: 0%;
+            }
+             .proj-stat-drp4{
+                margin-top: 0%;
+                margin-bottom:0%;
+            }
+            .proj-stat-shwmapdiv{
+                    margin-top: 0%;
+                    margin-bottom: 0%;
+            }
+            /*starrt dot image css*/
+            .dot-img1 {
+            }
+
+            .dot-img2 {
+                /*padding-right: 17%;*/
+                padding-right: 24%;
+            }
+
+            .dot-img3 {
+                padding-right: 17%;
+            }
+
+            .dot-img4 {
+            }
+
+            .dot-img5 {
+            }
+
+            .dot-img6 {
+                    padding-top: 1%;
+                    padding-left: 5%;
+            }
+            /*end dot image css*/
+            
+        }
+
+        @@media only screen and (min-width:480px) and (max-width:530px)and (orientation:landscape) {
+            .con_fluid_new {
+                /*margin-bottom: 6% !important;*/
+                margin-top: 0%;
+            }
+
+            .chosen-container {
+                margin-bottom: 4%;
+            }
+
+            .proj_shw_map {
+                /*margin-top: 4%;
+                margin-left: 33%;*/
+                margin-top: 2%;
+            }
+
+            .map_align {
+                margin-right: -8%;
+                margin-left: -4% !important;
+                margin-top: 0% !important;
+            }
+
+            .map_flow {
+                height: 32em !important;
+                margin-top: 0%;
+                margin-left: 0%;
+                margin-right: 2%;
+            }
+              .proj-stat-drp3{
+                margin-top: 0%;
+                margin-bottom: 0%;
+            }
+             .proj-stat-drp4{
+                margin-top: 0%;
+                margin-bottom:0%;
+            }
+            .proj-stat-shwmapdiv{
+                    margin-top: 0%;
+                    margin-bottom: 0%;
+            }
+             .dot-img1{
+               margin-left: -8%;
+            }
+             .dot-img2{
+               margin-left: -5%;
+               margin-right: 10%;
+            }
+             .dot-img3{
+               
+            }
+             .dot-img4{
+               padding-left: 6%;
+            }
+            .dot-img5{
+                    padding-left: 1%;
+                    margin-right: 1%;
+            }
+            .dot-img6 {
+                padding-left: 6%;
+
+            }
+        }
+
+        @@media only screen and (min-width:531px) and (max-width:567px) {
+            .con_fluid_new {
+                /*margin-bottom: 6% !important;*/
+                margin-top: 0%;
+            }
+
+            .chosen-container {
+                margin-bottom: 4%;
+            }
+
+            .proj_shw_map {
+                /*margin-top: 4%;
+                margin-left: 33%;*/
+            }
+
+            .map_align {
+                margin-right: -8%;
+                margin-left: -4% !important;
+                margin-top: 0% !important;
+            }
+
+            .map_flow {
+                height: 26em !important;
+                margin-top: 0%;
+                margin-left: 0%;
+                margin-right: 2%;
+            }
+              .proj-stat-drp3{
+                margin-top: 0%;
+                margin-bottom: 0%;
+            }
+             .proj-stat-drp4{
+                margin-top: 0%;
+                margin-bottom:0%;
+            }
+            .proj-stat-shwmapdiv{
+                    margin-top: 0%;
+                    margin-bottom: 0%;
+            }
+              /*starrt dot image css*/
+            .dot-img1 {
+                margin-left: 0%;
+                margin-right: -5%;
+            }
+            .dot-img2 {                
+               margin-right: 7%;
+            }
+
+            .dot-img3 {
+                
+            }
+
+            .dot-img4 {
+                    margin-right: -6%;
+            }
+
+            .dot-img5 {
+                margin-right: 4%;
+            }
+
+            .dot-img6 {
+                    padding-top: 0%;
+                    padding-left: 4%;
+            }
+        }
+
+         @@media only screen and (min-width:568px) and (max-width:599px) {
+            .con_fluid_new {
+                /*margin-bottom: 6% !important;*/
+                margin-top: 0%;
+            }
+
+            .chosen-container {
+                margin-bottom: 4%;
+            }
+
+            .proj_shw_map {
+                margin-top: 4%;
+                /*margin-left: 33%;*/
+            }
+
+            .map_align {
+                margin-right: -8%;
+                margin-left: -4% !important;
+                margin-top: 0% !important;
+            }
+
+            .map_flow {
+                height: 26em !important;
+                margin-top: 0%;
+                margin-left: 0%;
+                margin-right: 2%;
+            }
+              .proj-stat-drp3{
+                margin-top: 0%;
+                margin-bottom: 0%;
+            }
+             .proj-stat-drp4{
+                margin-top: 0%;
+                margin-bottom:0%;
+            }
+            .proj-stat-shwmapdiv{
+                    margin-top: 0%;
+                    margin-bottom: 0%;
+            }
+             .dot-img1{
+               
+            }
+             .dot-img2{
+               margin-left: -5%;
+               margin-right: 7%;
+            }
+             .dot-img3{
+               
+            }
+             .dot-img4{
+               
+            }
+            .dot-img5{
+                margin-left: -6%;
+                margin-right: 4%;
+            }
+        }
+
+        @@media only screen and (min-width:600px) and (max-width:640px) and (orientation:portrait) {
+            .con_fluid_new {
+                /*margin-bottom: 6% !important;*/
+                margin-top: 0%;
+            }
+
+            .chosen-container {
+                margin-bottom: 4%;
+            }
+
+            .proj_shw_map {
+                /*margin-top: 4%;
+                margin-left: 33%;*/
+            }
+
+            .map_align {
+                margin-right: -6%;
+                margin-left: -3% !important;
+                margin-top: 0% !important;
+            }
+
+            .map_flow {
+                height: 26em !important;
+                margin-top: 0%;
+                margin-left: 0%;
+                margin-right: 2%;
+            }
+             .proj-stat-drp3{
+                margin-top: 0%;
+                margin-bottom: 0%;
+            }
+             .proj-stat-drp4{
+                margin-top: 0%;
+                margin-bottom:0%;
+            }
+            .proj-stat-shwmapdiv{
+                    margin-top: 0%;
+                    margin-bottom: 0%;
+            }
+              /*starrt dot image css*/
+            .dot-img1 {
+                margin-left: 0%;
+                margin-right: -5%;
+            }
+            .dot-img2 {                
+               margin-right: 5%;
+            }
+
+            .dot-img3 {
+                
+            }
+
+            .dot-img4 {
+                    margin-right: -4%;
+            }
+
+            .dot-img5 {
+            }
+
+            .dot-img6 {
+                    padding-top: 0%;
+                    padding-left: 4%;
+            }
+            /*end dot image css*/
+        }
+
+        @@media only screen and (min-width:600px) and (max-width:640px) and (orientation:landscape) {
+            .con_fluid_new {
+                /*margin-bottom: 6% !important;*/
+                margin-top: 0%;
+            }
+
+            .chosen-container {
+                margin-bottom: 4%;
+            }
+
+            .proj_shw_map {
+                /*margin-top: 4%;
+                margin-left: 33%;*/
+                margin-top: 2%;
+            }
+
+            .map_align {
+                margin-right: -6%;
+                margin-left: -3% !important;
+                margin-top: 0% !important;
+            }
+
+            .map_flow {
+                height: 26em !important;
+                margin-top: 0%;
+                margin-left: 0%;
+                margin-right: 2%;
+            }
+             .proj-stat-drp3{
+                margin-top: 0%;
+                margin-bottom: 0%;
+            }
+             .proj-stat-drp4{
+                margin-top: 0%;
+                margin-bottom:0%;
+            }
+            .proj-stat-shwmapdiv{
+                    margin-top: 0%;
+                    margin-bottom: 0%;
+            }
+            .dot-img2{
+               margin-left: -5%;
+               margin-right: 4%;
+            }
+            .dot-img4 {
+             margin-right: -4%;
+            }
+             .dot-img5 {
+             margin-right: 2%;
+            }
+        }
+
+        @@media only screen and (min-width:641px) and (max-width:710px) {
+            .con_fluid_new {
+                /*margin-bottom: 6% !important;*/
+                /*margin-top: 0%;*/
+            }
+
+            .chosen-container {
+                margin-bottom: 4%;
+            }
+
+            .proj_shw_map {
+                /*margin-top: 4%;
+                margin-left: 33%;*/
+                margin-top: 1%;
+            }
+
+            .map_align {
+                margin-right: -4%;
+                margin-left: -2% !important;
+                margin-top: 0% !important;
+            }
+
+            .map_flow {
+                height: 24em !important;
+                margin-top: 0%;
+                margin-left: 0%;
+                margin-right: 2%;
+            }
+             .proj-stat-drp3{
+                margin-top: 0%;
+                margin-bottom: 0%;
+            }
+             .proj-stat-drp4{
+                margin-top: 0%;
+                margin-bottom:0%;
+            }
+            .proj-stat-shwmapdiv{
+                    margin-top: 0%;
+                    margin-bottom: 0%;
+            }
+             .dot-img2{
+               margin-left: -5%;
+               margin-right: 4%;
+            }
+            .dot-img4 {
+             margin-right: -4%;
+            }
+             .dot-img5 {
+             margin-right: 2%;
+            }
+        }
+
+        @@media only screen and (min-width:711px) and (max-width:767px) {
+            .con_fluid_new {
+                /*margin-bottom: 6% !important;*/
+                /*margin-top: 0%;*/
+            }
+
+            .chosen-container {
+                margin-bottom: 4%;
+            }
+
+            .proj_shw_map {
+                /*margin-top: 4%;
+                margin-left: 33%;*/
+                margin-top: 1%;
+            }
+
+            .map_align {
+                margin-right: -4%;
+                margin-left: -2% !important;
+                margin-top: 0% !important;
+            }
+
+            .map_flow {
+                height: 24em !important;
+                margin-top: 0%;
+                margin-left: 0%;
+                margin-right: 2%;
+            }
+             .proj-stat-drp3{
+                margin-top: 0%;
+                margin-bottom: 0%;
+            }
+             .proj-stat-drp4{
+                margin-top: 0%;
+                margin-bottom:0%;
+            }
+            .proj-stat-shwmapdiv{
+                    margin-top: 0%;
+                    margin-bottom: 0%;
+            }
+            .dot-img2{
+               margin-left: -5%;
+               margin-right: 4%;
+            }
+            .dot-img4 {
+             margin-right: -4%;
+            }
+             .dot-img5 {
+             margin-right: 2%;
+            }
+        }
+
+        @@media only screen and (min-width:768px) and (max-width:799px) {
+            .prj-btn {
+                padding-bottom: 1%;
+            }
+
+            .control-label {
+                padding-bottom: 3%;
+            }
+
+            .proj_shw_map {
+                /*margin-top: 4%;
+                margin-left: 33%;*/
+            }
+
+            .map_align {
+                margin-right: -4%;
+                margin-left: -3% !important;
+                margin-top: 0% !important;
+            }
+
+            .map_flow {
+                /*height: 24em !important;*/
+                height:30em !important;
+                margin-top: 0%;
+                margin-left: 0%;
+                margin-right: 0%;
+            }
+            .proj-stat-drp3{
+                margin-top: 0%;
+                margin-bottom: 1%;
+            }
+             .proj-stat-drp4{
+                margin-top: 0%;
+                margin-bottom:0%;
+            }
+            .proj-stat-shwmapdiv{
+                    margin-top: 0%;
+                    margin-bottom: 0%;
+            }
+            .dot-img1{
+                  margin-right: -3%;
+            }
+            .dot-img2{
+                margin-right: 3%;
+            }
+            .dot-img3{
+                
+            }
+            .dot-img4{
+                margin-right: -2%;
+            }
+            .dot-img5{
+               margin-right: 2%;
+            }
+            .dot-img6{
+               
+            }
+            .frm-grp-dotimg{
+                float:none !important;
+            }
+        }
+
+        @@media only screen and (min-width:800px) and (max-width:850px) {
+            .prj-btn {
+                padding-bottom: 2%;
+            }
+
+            .control-label {
+                padding-bottom: 3%;
+            }
+
+            .proj_shw_map {
+                /*margin-top: 4%;
+                margin-left: 33%;*/
+            }
+
+            .map_align {
+                margin-right: -4%;
+                margin-left: -3% !important;
+                margin-top: 0% !important;
+            }
+
+            .map_flow {
+                height: 30em !important;
+                margin-top: 0%;
+                margin-left: 0%;
+                margin-right: 0%;
+            }
+             .proj-stat-drp3{
+                margin-top: 0%;
+                margin-bottom: 1%;
+            }
+             .proj-stat-drp4{
+                margin-top: 0%;
+                margin-bottom:0%;
+            }
+            .proj-stat-shwmapdiv{
+                    margin-top: 0%;
+                    margin-bottom: 0%;
+            }
+              /*starrt dot image css*/
+            .dot-img1 {
+                margin-left: 0%;
+                margin-right: -5%;
+            }
+            .dot-img2 {                
+               margin-right: 5%;
+            }
+
+            .dot-img3 {
+                
+            }
+
+            .dot-img4 {
+                    margin-right: -4%;
+            }
+
+            .dot-img5 {
+            }
+
+            .dot-img6 {
+                    padding-top: 0%;
+                    padding-left: 4%;
+            }
+            /*end dot image css*/
+            
+        }
+
+        @@media only screen and (min-width:851px) and (max-width:910px) {            
+           .dot-img1 {                
+               margin-right: -6%;
+            }
+            .dot-img2 {                
+               /*margin-right: 3%;*/
+               margin-right: 4%;
+               padding-left: 3%;
+            }
+            .dot-img3 {
+                
+            }
+
+            .dot-img4 {
+                   
+            }
+
+            .dot-img5 {
+            }
+
+            .dot-img6 {
+                   padding-left: 5%;
+            }
+            /*end dot image css*/
+            
+        }
+
+        @@media only screen and (min-width:911px) and (max-width:967px) {
+            .frm-grp-dotimg{
+
+            }
+           .dot-img1 {                
+               /*margin-right: -5%;*/
+               margin-right: -3%;
+            }
+            .dot-img2 {                
+               /*margin-right: 3%;*/
+               margin-right: 4%;
+            }
+
+            .dot-img3 {
+                
+            }
+
+            .dot-img4 {
+                  margin-right: -3%; 
+            }
+
+            .dot-img5 {
+                margin-right: 2%;
+            }
+            .dot-img6 {
+                   /*padding-left: 5%;*/
+            }
+            /*end dot image css*/
+            
+        }
+
+        @@media only screen and (min-width:968px) and (max-width:1023px) {
+           .dot-img1 {                
+               margin-right: -6%;
+            }
+            .dot-img2 {                
+               margin-right: 3%;
+            }
+
+            .dot-img3 {
+                
+            }
+
+            .dot-img4 {
+                   
+            }
+
+            .dot-img5 {
+            }
+
+            .dot-img6 {
+                   padding-left: 5%;
+            }
+            /*end dot image css*/
+            
+        }
+
+         @@media only screen and (min-width:1024px) and (max-width:1100px) {
+           .dot-img1 {                
+               margin-right: -4%;
+            }
+            .dot-img2 {                
+               margin-right: 3%;
+            }
+            .dot-img3 {
+                
+            }
+            .dot-img4 {
+               /*margin-right: -5%;*/  
+               margin-right: -3%;  
+            }
+
+            .dot-img5 {
+            }
+
+            .dot-img6 {
+                   padding-left: 5%;
+            }
+            /*end dot image css*/
+            
+        }
+
+
+        @@media only screen and (min-width:1200px) and (max-width:1280px){
+        .dot-img1{
+           margin-right: -5% !important;
+           margin-left: 3%;
+
+        }
+        .dot-img2{
+            white-space:nowrap;
+            margin-right:2% !important;
+        }
+        .dot-img4 {
+            margin-right:-4% !important;
+        }
+         .dot-img5 {
+            margin-right:2% !important;
+        }
+    }
+</style>
+@{
+    var href = "https://maps.googleapis.com/maps/api/js?key=" + System.Configuration.ConfigurationManager.AppSettings["googleapiKey"].ToString() + "&sensor=false";
+}
+<script type="text/javascript" src="@href"> </script>
+<div id="loading"> <div id="loadingcontent"> <p id="loadingspinner"> Searching things... </p> </div> </div>
+
+
+
+
+<section id="main-content">
+    <section class="wrapper proj-stat-wrap">
+        <!-- page start-->
+        @*<div class="row">*@
+        <div class="col-sm-12" id="m">
+
+            <section class="panel" style="">
+                <header class="panel-heading proj-status-head">
+                    <b>Project Status</b>
+
+                </header>
+                <div class="row" style="">
+
+                    <div class="col-lg-12">
+                        <section class="panel">
+                            <div class="container-fluid con_fluid_new">
+                                <div class="panel-body">
+                                    <div class="form-group ">
+                                        <div class="col-lg-4 col-md-3 col-sm-6 col-xs-12 ">
+                                            <select id="ddlUtilityType" data-placeholder="Select Utility" class="form-control chosen-select">
+                                                <option value="0"></option>
+                                                <option value="1">Electric</option>
+                                                <option value="2">Gas</option>
+                                                <option value="3">Water</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-4 col-md-3 col-sm-6 col-xs-12 prj-btn ">
+                                            <select id="ddlProjectStatus" data-placeholder="Select Project Status" class="form-control chosen-select ">
+                                                <option value="0"></option>
+                                                <option value="1">Active</option>
+                                                <option value="2">Completed</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-4 col-md-3 col-sm-6 col-xs-12 prj-btn ">
+                                            <select id="ddlProject" data-placeholder="Select Project" class="form-control chosen-select "></select>
+                                        </div>
+                                    @*</div>
+                                    <div class="form-group prostat-formgrp">*@
+                                        <div class="col-lg-4 col-md-3 col-sm-6 col-xs-12 proj-stat-drp3">
+                                            <select id="ddlformtype" data-placeholder="Select Form Type" class="form-control chosen-select"></select>
+                                        </div>
+                                        <div class="col-lg-4 col-md-3 col-sm-6 col-xs-12 prj-btn proj-stat-drp4">
+                                            <select id="ddlInstaller" data-placeholder="Select" class="form-control chosen-select"></select>
+                                        </div>
+                                        <div class="col-lg-4  col-sm-6 col-xs-12 proj-stat-shwmapdiv" style="text-align:center;">
+                                            <button id="btnShowMap" class="btn btn-warning proj_shw_map " type="button">Show Map</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="col-lg-12">
+                        <section class="panel dot-img-panel">
+                            <div class="panel-body">
+                                <div class="container-fluid ">
+                                    <div class="form-group frm-grp-dotimg" style="float:right;">
+                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-5 dot-img1" style="display:inline-flex;width: -moz-fit-content;">
+                                            <img src="https://maps.google.com/mapfiles/ms/icons/yellow-dot.png" class="" alt="skip" width="22" height="20" style="" />
+                                            Skip
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-5 dot-img2" style="display:inline-flex;width: -moz-fit-content;">
+                                            <img src="https://maps.google.com/mapfiles/ms/icons/orange-dot.png" class="" alt="Partially Done" width="20" height="20" style="" />
+                                            Partially Done
+                                        </div>
+                                        <div class="col-lg-2 col-md-3 col-sm-2 col-xs-5 dot-img3" style="display:inline-flex;width: -moz-fit-content;">
+                                            <img src="https://maps.google.com/mapfiles/ms/icons/blue-dot.png" class="" alt="pending" width="20" height="20" style="" />
+                                            Pending
+                                        </div>
+                                        <div class="col-lg-2 col-md-3 col-sm-2 col-xs-5 dot-img4" style="display:inline-flex;width: -moz-fit-content;">
+                                            <img src="https://maps.google.com/mapfiles/ms/icons/red-dot.png" class="" alt="RTU" width="20" height="20" style="" />
+                                            RTU
+                                        </div>
+
+                                        <div class="col-lg-2 col-md-3 col-sm-2 col-xs-5 dot-img5" style="display:inline-flex;width: -moz-fit-content;">
+
+                                            <img src="https://maps.google.com/mapfiles/ms/icons/green-dot.png" class="" alt="Completed"width="20" height="20" style="" />
+                                            Completed
+                                        </div>
+
+                                        <div class="col-lg-2 col-md-3 col-sm-2 col-xs-5 dot-img6" style="width:-moz-fit-content;white-space:nowrap;">@*display:inline-flex;*@
+                                            <img src="https://maps.google.com/mapfiles/kml/paddle/wht-circle.png" class="" alt="UnAssigned" width="20" height="20" style="" />
+                                            UnAssigned
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+
+                <section class="map_align">
+                    <div class="container-fluid">
+                        <div class="row">
+
+
+                            <div class="col-lg-12 map_flow" id="LoadRow">
+
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </section>
+        </div>
+
+        @*</div>*@
+    </section>
+
+
+</section>
+
+
+
+<link href="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.css")" rel="stylesheet" />
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.jquery.js")"></script>
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.proto.min.js")"></script>
+<script src='@Url.Content("~/Scripts/Admin/ProjectStatus.js")'></script>

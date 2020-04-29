@@ -1,0 +1,115 @@
+<div class="col-md-12 ">
+
+    <div class="form-group">
+        <label for="name" class="col-lg-3 txt-fld-lab"><strong>Field Label:</strong><span class="txt-mandatory" style="color:red">*</span></label>
+        <div class="col-lg-9">
+            <div><input type="text" maxlength="200" class="form-control" id="txtfieldtitle" ng-blur="FieldLabelCheck(field.field_FieldLabel)" ng-model="field.field_FieldLabel" value="{{field.field_FieldLabel}}"></div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="name" class="col-lg-3 txt-hnt-lab"><strong>Hint Text:</strong></label>
+        <div class="col-lg-9">
+            <div><input type="text" maxlength="200" class="form-control" ng-model="field.field_HintText" value="{{field.field_HintText}}"></div>
+        </div>
+    </div>
+    <div class="form-group">
+        <!--<div class="col-md-3"></div>-->
+        <div class="checkbox col-lg-5 col-md-6 col-sm-6 col-xs-6 loc_hide-div ">
+            <label for="checkbox1" class="loc_hide-lab" style="padding-left: 0px !important;">
+                <span><strong>Hide Field Label</strong></span>
+            </label>
+            <input type="checkbox" class="col-lg-2 pull-right" ng-model="field.field_HideFieldLabel" value="{{field.field_HideFieldLabel}}" />
+        </div>
+
+
+
+    </div>
+
+    <!--<div class="form-group">
+        <div class="col-md-3"></div>
+
+        <div class="checkbox col-md-4">
+            <label for="checkbox1" style="padding-left: 0px;">
+                <span>Required</span>
+            </label>
+            <input type="checkbox" id="checkbox1" class="col-lg-2 pull-right" ng-model="field.field_IsRequired" value="{{field.field_IsRequired}}" />
+        </div>
+        <div class="checkbox col-md-5">
+            <label for="checkbox1">
+                <span>Capture Geolocation</span>
+            </label>
+            <input type="checkbox" id="checkbox1" class="col-lg-2 pull-right" ng-model="field.field_CaptureGeolocation" value="{{field.field_CaptureGeolocation}}" />
+        </div>
+
+    </div>-->
+
+    <div class="form-group">
+
+        <div class="checkbox col-lg-5 col-md-6 col-sm-6 col-xs-6 enf-div">
+            <label for="checkbox1" style="padding-left: 0px !important;">
+                <span><strong>Required</strong></span>
+            </label>
+            <input type="checkbox" id="checkbox1" class="col-lg-2 pull-right" ng-model="field.field_IsRequired" value="{{field.field_IsRequired}}" />
+        </div>
+        <div class="checkbox col-lg-5 col-md-6 col-sm-6 col-xs-6 stat-geo-div">
+
+            <label class="stat-cap" for="checkbox1" style="padding-left: 0px !important;">
+                <span><strong>Capture Geolocation</strong></span>
+            </label>
+            <input type="checkbox" id="checkbox1" class="col-lg-2 pull-right" ng-model="field.field_CaptureGeolocation" value="{{field.field_CaptureGeolocation}}" />
+        </div>
+
+    </div>
+
+    <div class="form-group">
+
+        <div class="checkbox col-lg-5 col-md-6 col-sm-6 col-xs-6 enf-div">
+            <label for="checkbox1" style="padding-left: 0px !important;">
+                <span><strong>Enabled</strong></span>
+            </label>
+            <input type="checkbox" id="checkbox1" class="col-lg-2 pull-right" ng-model="field.field_IsEnabled" value="{{field.field_IsEnabled}}" />
+        </div>
+
+        <div class="checkbox col-lg-5 col-md-6 col-sm-6 col-xs-6 stat-tme-div">
+            <label class="stat-tme" for="checkbox1" style="padding-left: 0px !important;">
+                <span><strong>Capture Timestamp</strong></span>
+            </label>
+            <input type="checkbox" id="checkbox1" class="col-lg-2 pull-right" ng-model="field.field_CaptureTimestamp" value="{{field.field_CaptureTimestamp}}" />
+        </div>
+    </div>
+
+    <!--<div class="form-group">
+        <div class="col-md-3"></div>
+        <div class="checkbox col-md-4">
+            <label for="checkbox1" style="padding-left: 0px;">
+                <span>Enabled</span>
+            </label>
+            <input type="checkbox" id="checkbox1" class="col-lg-2 pull-right" ng-model="field.field_IsEnabled" value="{{field.field_IsEnabled}}" />
+        </div>
+
+        <div class="checkbox col-md-5">
+            <label for="checkbox1">
+                <span>Capture Timestamp</span>
+            </label>
+            <input type="checkbox" id="checkbox1" class="col-lg-2 pull-right" ng-model="field.field_CaptureTimestamp" value="{{field.field_CaptureTimestamp}}" />
+        </div>
+    </div>-->
+    <!--<div class="form-group">
+        <label for="name" class="col-lg-3">Has Alert:</label>
+        <div class="col-lg-9">
+            <div>
+                <select class="form-control" ng-init="field.field_HasAlert='NONE'" ng-model="field.field_HasAlert">
+                    <option value="NONE">NONE</option>
+                    <option value="SUCCESS">SUCCESS (Green)</option>
+                    <option value="INFO">INFO (Blue)</option>
+                    <option value="WARNING">WARNING (Yellow)</option>
+                    <option value="ERROR">ERROR (Red)</option>
+                </select>
+
+            </div>
+        </div>
+
+    </div>-->
+
+</div>

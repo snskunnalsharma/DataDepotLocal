@@ -1,0 +1,39 @@
+﻿@model IEnumerable<GarronT.CMS.Model.AspNetUser>
+@{
+    ViewBag.Title = "Users";
+   // Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<script>
+    $(function () {
+        $("#pbFilter").click(function () {
+            $.get("/Admin/filter4Users", { _surname: $("#SurnameId").val() }, function (data) {
+                $("#divUsers").html(data);
+            })
+        })
+    });
+
+    $(function () {
+        $("#pbReset").click(function () {
+            $("#SurnameId").val('');
+            $.get("/Admin/filterReset", {}, function (data) {
+                $("#divUsers").html(data);
+            })
+        })
+    });
+
+    $(document).ready(function () {
+        $(":input[type='button']").button();
+    });
+</script>
+
+
+<fieldset>
+   
+    @Html.Partial("_ListUserTable", Model)
+    <br />    
+    <div>
+        <input type="button" value="Create User" onclick="location.href='@Url.Action("UserCreate", "Admin")'" />
+        <br />
+    </div>
+</fieldset>

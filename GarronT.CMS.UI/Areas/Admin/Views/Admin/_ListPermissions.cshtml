@@ -1,0 +1,105 @@
+﻿@model GarronT.CMS.Model.AspNetRole
+
+@{if (Model.AspNetRolePermissions.Count == 0)
+{
+    <h2><font color="red">No Associated Permissions...</font></h2>
+    <br />
+}
+else
+{
+    <table id="PermissionTable" style="width: 65%">
+        <thead>
+        <th style="width:90%">
+            Permission
+        </th>
+        <th>
+            Action
+        </th>
+        </thead>
+        @foreach (GarronT.CMS.Model.AspNetRolePermission permission in Model.AspNetRolePermissions.OrderBy(n => n.Permission_Id))
+        {
+            <tr>
+                <td>
+                    @Html.ActionLink(permission.AspNetPermission.PermissionDescription, "PermissionDetails", new { id = permission.Permission_Id })
+                </td>
+                <td>
+                    <center>
+                        <button type="button" class="deletePermission" id=@Model.Id permissionid=@permission.Permission_Id>Delete</button>
+                       
+                    </center>
+                </td>
+            </tr>
+        }
+    </table>
+    <br />
+}
+}
+
+
+<script type="text/javascript">
+
+    $('.deletePermission').click(function () {
+        debugger;
+        var _id = $(this)[0].id;
+        var _permissionId = $($(this)[0]).attr("permissionid")
+
+        var _parameters = { id: _id, permissionId: _permissionId };
+        var urlDeletePermissionFromRole = $('#urlDeletePermissionFromRoleReturnPartialView').val();
+
+        $.ajax({
+            url: urlDeletePermissionFromRole,
+            type: "GET",
+            data: _parameters,
+            success: function (data, textStatus, jqXHR) {
+                $('#PermissionsTable').html(data);
+            }
+        });
+    });
+
+
+
+    //$(document).ready(function () {
+    //    //Unbind the original image 'href' set by the controller...
+    //    $('.deletePermission').attr('href', 'javascript://');
+    //    $('.deletePermission').click(function () {
+    //        $dialog.data('id', $(this).attr('id')).data('permissionId', $(this).attr('permissionId')).dialog("open");
+    //    });
+
+    //    var $dialog = $('<div/>')
+	//	.html("Warning: This will remove the selected Permission from this Role.  Removing this permission may prevent users from accessing areas in the application.  Only remove this permission if you intend to restrict application access on this role.<br/><br/>Do you wish to continue?")
+	//	.dialog({
+	//	    autoOpen: false,
+	//	    resizable: false,
+	//	    height: 250,
+	//	    modal: true,
+	//	    title: 'Remove Permission',
+	//	    buttons: [
+    //                    {
+    //                        text: "Continue",
+    //                        id: "continuebtn",
+    //                        click: function () {
+    //                            var _id = $(this).data('id');
+    //                            var _permissionId = $(this).data('permissionId');
+
+    //                            var _parameters = { id: _id, permissionId: _permissionId };
+    //                            $.ajax({
+    //                                url: "/Admin/DeletePermissionFromRoleReturnPartialView",
+    //                                type: "GET",
+    //                                data: _parameters,
+    //                                success: function (data, textStatus, jqXHR) {
+    //                                    $('#PermissionsTable').html(data);
+    //                                }
+    //                            });
+    //                            $(this).dialog('close');
+    //                        }
+    //                    },
+    //                    {
+    //                        text: "Cancel",
+    //                        id: "cancelbtn",
+    //                        click: function () {
+    //                            $(this).dialog("close");
+    //                        }
+    //                    }]
+	//	});
+    //});
+</script>

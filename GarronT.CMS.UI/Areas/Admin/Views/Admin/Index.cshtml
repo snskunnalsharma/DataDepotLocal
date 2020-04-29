@@ -1,0 +1,58 @@
+﻿@model IEnumerable<GarronT.CMS.Model.AspNetUser>
+@{
+    ViewBag.Title = "Users";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<script>
+    $(function () {
+        $("#pbFilter").click(function () {
+            $.get("/Admin/filter4Users", { _surname: $("#SurnameId").val() }, function (data) {
+                $("#divUsers").html(data);
+            })
+        })
+    });
+
+    $(function () {
+        $("#pbReset").click(function () {
+            $("#SurnameId").val('');
+            $.get("/Admin/filterReset", {}, function (data) {
+                $("#divUsers").html(data);
+            })
+        })
+    });
+
+    $(document).ready(function () {
+        $(":input[type='button']").button();
+    });
+</script>
+
+
+
+
+
+<section id="main-content">
+    <section class="wrapper">
+        <!-- page start-->
+        <div class="row">
+            <div class="col-sm-12">
+                <section class="panel">
+                    <header class="panel-heading">
+                        <b>Users </b>
+
+                    </header>
+                    <div class="panel-body">
+                        <div class="adv-table">
+                            @Html.Partial("_ListUserTable", Model)
+                            <br />
+                            <div>
+                                <input type="button" value="Create User"  class="btn btn-success" onclick="location.href='@Url.Action("UserCreate", "Admin")'" />
+                                <br />
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</section>

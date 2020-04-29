@@ -1,0 +1,230 @@
+﻿@model IEnumerable<GarronT.CMS.Model.BO.SkippedPDFVM>
+@{
+    ViewBag.Title = "Download Skipped records";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutReport.cshtml";
+}
+
+@*@Html.Hidden("btnpdfPrev", Url.Action("DownloadFile", "Reports"), new { target = "_blank" })*@
+
+<style>
+    #divHeader {
+        float: right;
+        width: 21%;
+    }
+
+    #divFormName {
+    }
+
+    #divsectionData {
+    }
+
+
+    .fieldname {
+        text-align: left;
+        width: 20%;
+        padding: 5px;
+        font-family: Arial;
+        font-size: 14px;
+    }
+
+    .fieldData {
+        width: 80%;
+        padding: 5px;
+    }
+
+    .formname {
+        font-family: Arial;
+        font-size: 18px;
+        color: #0094ff;
+    }
+
+    .sectionname {
+        padding-left: 36px;
+        color: #0094ff;
+        font-size: 17px;
+    }
+
+    .FieldNametd {
+        padding: 5px;
+        border-right: 1px solid #000;
+        background-color: #fbd3b5;
+        color: #000000;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .FieldValuestd {
+        padding: 5px;
+        border-right: 1px solid #000;
+        color: #000000;
+        font-size: 14px;
+    }
+</style>
+
+
+
+@*<section id="main-content">*@
+<section class="wrapper">
+    <!-- page start-->
+    <div class="row">
+        <div class="col-sm-12">
+            <section class="panel">
+                <header class="panel-heading"></header>
+                <div class="panel-body">
+
+                    <div class="row pdfdiv">
+                        <div style="margin:0 auto;width:100%; z-index: 1;">
+
+                            <div id="divsectionData" style="margin: 0px 20px;">
+                                @{
+                                    var skipRtuReportList = Model;
+
+                                    foreach (var SingleReport in skipRtuReportList)
+                                    {
+                                        var skiprtuModel = SingleReport.skipRecordModel;
+                                        <div class="pdf-1" style="border: 2px solid black;margin-bottom:28px;">
+                                            <div style='page-break-inside:avoid;page-break-after:always;margin-bottom:20px;'>
+                                                @{
+
+                                                    <h3 style="text-align: center;padding-left: 33px;color:#0094ff">@SingleReport.FormName</h3>
+                                                    <div class="row" style="width:92%;">
+                                                        @*<div class="col-lg-12 headername" style="text-align:right;">
+                                                                <span class="headerTitle">Project Name- </span>@System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((SingleReport.ProjectName.ToLower()))
+                                                            </div>*@
+                                                        <div class="col-lg-12 headername" style="text-align:right;">
+                                                            <span class="headerTitle">Installer Name- </span>@System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((SingleReport.InstallerName.ToLower()))
+                                                        </div>
+                                                        <div class="col-lg-12 headername" style="text-align:right;">
+                                                            <span class="headerTitle">Service Date- </span>@SingleReport.VisitedDate
+                                                        </div>
+                                                    </div>
+
+                                                    <table border="0" style='font-family:calibri; border-radius:5px;margin-left:34px;width:90%;border-collapse:collapse;'>
+                                                        <tr style="page-break-inside:avoid;border:1px solid #000;">
+                                                            <td width='25%' class='FieldNametd'>Account</td>
+
+                                                            <td width='25%' class='FieldValuestd'>@skiprtuModel.Account</td>
+
+                                                            <td width='25%' class='FieldNametd'>Address</td>
+
+                                                            <td width='25%' class='FieldValuestd'>@skiprtuModel.Street</td>
+                                                        </tr>
+
+                                                        <tr style="page-break-inside:avoid;border:1px solid #000;">
+                                                            <td width='25%' class='FieldNametd'>Form Name</td>
+
+                                                            <td width='25%' class='FieldValuestd'>@skiprtuModel.FormName</td>
+
+                                                            <td width='25%' class='FieldNametd'>Cycle</td>
+
+                                                            <td width='25%' class='FieldValuestd'>@skiprtuModel.Cycle</td>
+                                                        </tr>
+
+                                                        <tr style="page-break-inside:avoid;border:1px solid #000;">
+                                                            <td width='25%' class='FieldNametd'>Route</td>
+
+                                                            <td width='25%' class='FieldValuestd'>@skiprtuModel.Route</td>
+
+                                                            <td width='25%' class='FieldNametd'>Installer</td>
+
+                                                            <td width='25%' class='FieldValuestd'>@skiprtuModel.InstallerName</td>
+                                                        </tr>
+
+                                                        <tr style="page-break-inside:avoid;border:1px solid #000;">
+                                                            <td width='25%' class='FieldNametd'>Status</td>
+
+                                                            <td width='25%' class='FieldValuestd' style="color:red;font:bold !important">Skip</td>
+
+                                                            <td width='25%' class='FieldNametd'>Visit Date Time</td>
+
+                                                            <td width='25%' class='FieldValuestd'>@skiprtuModel.VisitedDate</td>
+                                                        </tr>
+
+                                                        <tr style="page-break-inside:avoid;border:1px solid #000;">
+                                                            <td width='25%' class='FieldNametd'>Reason</td>
+
+                                                            <td width='25%' class='FieldValuestd'>@skiprtuModel.SkippedReason</td>
+
+                                                            <td width='25%' class='FieldNametd'>Comment</td>
+
+                                                            <td width='25%' class='FieldValuestd'>@skiprtuModel.SkipComment</td>
+                                                        </tr>
+                                                        <tr style="page-break-inside:avoid;border:1px solid #000;">
+                                                            <td width='25%' class='FieldNametd'>Media</td>
+
+                                                            <td width='75%' style="padding:5px;border-right: 1px solid #000 !important;" colspan="3" class='FieldValuestd'>
+                                                                @{
+
+
+                                                                    List<GarronT.CMS.Model.BO.SkipRtuAttachmentModel> objAttachementList =
+                                                                        new GarronT.CMS.Model.DAL.InstallerMapHistoryDAL().getSkipRtuImages(skiprtuModel.ProjectFieldDataId);
+                                                                    if (objAttachementList != null && objAttachementList.Count > 0)
+                                                                    {
+                                                                        foreach (GarronT.CMS.Model.BO.SkipRtuAttachmentModel obj1 in objAttachementList)
+                                                                        {
+                                                                            if (obj1.IsAudioVideoImage == 3)
+                                                                            {
+                                                                                String aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + obj1.strFilePath.Replace(@"..\", "");
+                                                                                aditionalFileName =aditionalFileName.Replace(@"~\", "");
+                                                                                <img src='@aditionalFileName' height="180" width='210' />
+
+
+                                                                            }
+                                                                            else if (obj1.IsAudioVideoImage == 2)
+                                                                            {
+                                                                                String fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + obj1.strFilePath.Replace(@"..\", "");
+                                                                                fileName = fileName.Replace(@"~\", "");
+                                                                                <a target="_new" href="@fileName" class="btn btn-info pdf-video-btn">Video</a>
+
+                                                                            }
+                                                                            else if (obj1.IsAudioVideoImage == 1)
+                                                                            {
+                                                                                String fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + obj1.strFilePath.Replace(@"..\", "");
+                                                                                fileName = fileName.Replace(@"~\", "");
+                                                                                <audio controls style="width:43px;">
+                                                                                    <source src="@fileName" type="audio/mp4">
+                                                                                    Your browser does not support the audio tag.
+                                                                                </audio>
+                                                                                                @*<a target="_new" href="@fileName" class="btn btn-link">Audio</a>*@
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            </td>
+
+
+                                                        </tr>
+
+
+
+                                                    </table>
+
+                                                }
+                                            </div>
+                                        </div>
+                                                    }
+                                }
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</section>
+@*</section>*@
+
+<script language="javascript" type="text/javascript">
+
+
+    function resizeIframe(obj) {
+
+        var contentheight = (obj.contentWindow.document.body.scrollHeight + 5) + 'px';
+        obj.style.height = contentheight
+
+    }
+
+</script>
+

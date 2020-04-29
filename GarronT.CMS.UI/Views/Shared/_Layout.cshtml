@@ -1,0 +1,204 @@
+﻿<!DOCTYPE html>
+<html ng-app="GarronTCMC-App">
+<head id="layouthead">
+    <meta charset="utf-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Depot - @ViewBag.Title</title>
+
+    <link rel="shortcut icon" href="~/images/logo_favicon.png" />
+    @Scripts.Render("~/bundles/modernizr")
+    @Html.Partial("~/Areas/Admin/Views/Shared/_JsLayout.cshtml")
+    @Html.Partial("~/Areas/Admin/Views/Shared/_cssLayout.cshtml")
+    @Html.Partial("_AngularJs")
+    @Html.Partial("_AngularCSS")
+
+ 
+    <base href="/" />
+   
+
+    @Html.Hidden("urlGetCityListHeader", Url.Action("GetCityListHeader", "Dashboard"))
+    @Html.Hidden("urlGetProjectListbyCity", Url.Action("GetProjectByCityID", "Dashboard"))
+
+    @Html.Hidden("urlDashboard", Url.Action("Index", "Dashboard"))
+    
+
+    <script>
+        jQuery(document).ready(function () {
+            debugger
+            var is_ios = /(iPad|iPhone|iPod)/g.test(navigator.userAgent);
+
+            if (is_ios) {
+                $("#layouthead").append('<link href="../Content/MSTS/admin/css/style-ios.css" rel="stylesheet" />')
+               
+            }
+        });
+    </script>
+</head>
+<body>
+    <section id="container">
+       
+        <!--header start-->
+       
+        @Html.Partial("~/Areas/Admin/Views/Shared/_HeaderLayout.cshtml")
+        <!--header end-->
+       
+        <aside>
+            <div id="sidebar" class="nav-collapse ">
+              
+                @Html.Partial("~/Areas/Admin/Views/Shared/_AdminMenuLayout.cshtml")
+
+                @if (@User.IsInRole("Super Admin"))
+                {
+
+                    @Html.Partial("_SuperAdminMenuLayout")
+                }
+                @if (@User.IsInRole("Company Admin"))
+                {
+                    @Html.Partial("_CompanyAdminMenuLayout")
+                }
+            </div>
+         
+        </aside>
+
+        <div id="sidebar1" class="nav-collapse ">
+            <aside class="control-sidebar control-sidebar-dark" style="margin-top:65px;">
+                <!-- Create the tabs -->
+                <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+
+                    <li></li>
+                    <li></li>
+                </ul>
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <!-- Home tab content -->
+                    <div class="tab-pane" id="control-sidebar-home-tab">
+
+
+
+
+                    </div><!-- /.tab-pane -->
+
+
+                </div>
+            </aside><!-- /.control-sidebar -->
+
+        </div>
+
+        @RenderBody()
+
+
+        <div class="text-center">
+
+            <a href="#" class="go-top">
+                <i class="fa fa-angle-up"></i>
+            </a>
+        </div>
+
+        <!--footer end-->
+
+
+
+        <footer class="site-footer">
+            <ul class="footer_smalllogo">
+                <footer>
+                    @{
+                        var version = new GarronT.CMS.Model.DAL.VersionDAL().getVersionDetials();
+                    }
+                    <p style=" color: #fff; float: right; width: 50%; margin: 4px; text-align: right;"><a id="lblVersionId" href="#" style="color:white">@version  </a><img class="slide" src="~/images/bottom_clientlogo.png" /></p>
+                </footer>
+            </ul>
+
+        </footer>
+
+
+    </section>
+
+    <script src="@Url.Content("~/Content/MSTS/admin/js/common-scripts.js")"></script>
+    @*@Scripts.Render("~/bundles/jquery")*@
+    @*@Scripts.Render("~/bundles/KSPLbootstrap")*@
+
+    @RenderSection("scripts", required: false)
+
+
+    @*<script src="@Url.Content("~/Scripts/Admin/Layout.js")"></script>*@
+
+    <script src="@Url.Content("~/Content/MSTS/admin/js/jquery.shapeshift.js")"></script>
+    <script>
+        jQuery(document).ready(function () {
+            // DraggablePortlet.init();      by Avinash
+        });
+    </script>
+
+
+    <script type="text/javascript">
+    $(document).ajaxError(function (xhr, props) {
+        // alert("Error")
+        if (props.status === 306) {
+          
+            var dashboardurl = $("#urlDashboard").val();
+            location.href = dashboardurl;
+        }
+    })
+   
+    </script>
+
+
+
+    <script>
+        $(document).ready(function () {
+            $(".clones").shapeshift({
+                dragClone: true,
+                enableCrossDrop: false
+            });
+            $(".droparea").shapeshift({
+                colWidth: 100
+            });
+        })
+    </script>
+
+
+
+    <script>
+        $(document).ready(function () {
+            $(".Drag").shapeshift();
+            $(".trash").shapeshift({
+                autoHeight: false,
+                colWidth: 80,
+                enableTrash: true
+            });
+        })
+    </script>
+    <script>
+       
+
+        $(document).on('click', '.close', function () {
+            $('.ss-active-child').hide();
+        });
+    </script>
+
+    <script>
+
+        //owl carousel
+
+        $(document).ready(function () {
+            $("#owl-demo").owlCarousel({
+                navigation: true,
+                slideSpeed: 300,
+                paginationSpeed: 400,
+                singleItem: true,
+                autoPlay: true
+
+            });
+        });
+
+        //custom select box
+
+        $(function () {
+            $('select.styled').customSelect();
+        });
+
+    </script>
+</body>
+
+</html>

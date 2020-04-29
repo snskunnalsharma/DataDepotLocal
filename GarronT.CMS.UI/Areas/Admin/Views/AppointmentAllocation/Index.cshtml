@@ -1,0 +1,381 @@
+﻿
+@{
+    ViewBag.Title = "Appointment";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+
+@Html.Hidden("urlGetProject", Url.Action("GetPoject", "AppointmentAllocation"))
+@Html.Hidden("UrlGetProjectDetails",Url.Action("GetAppointmentList", "AppointmentAllocation"))
+@Html.Hidden("UrlViewRecords", Url.Action("ViewRecor", "AppointmentAllocation"))
+@Html.Hidden("UrlInstallerList", Url.Action("GetInstaller","AppointmentAllocation"))
+@Html.Hidden("UrlInsertRecord", Url.Action("InserAppointmentWithInstaller", "AppointmentAllocation"))
+@Html.Hidden("UrlPassedAppointment", Url.Action("ViewPassedAppointment", "AppointmentAllocation"))
+@Html.Hidden("RedirctUrl", Url.Action("Index","AppointmentAllocation"))
+@Html.Hidden("urlCreateRescheduleAppUrl", Url.Action("RescheduleAppointment", "AppointmentAllocation"))
+<style>
+    .instal-dat-hist {
+        margin-top: 50px;
+    }
+    .reappnt-span{
+        font-size: 14px;
+    line-height: 1.8;
+    }
+</style>
+<section id="main-content">
+    <section class="wrapper instal-dat-hist">
+        <!-- page start-->
+        <div class="row">
+            <div class="col-sm-12" id="m">
+                <section class="panel">
+                    <header class="panel-heading">
+                        <b>Appointment Allocation</b>
+                    </header>
+                    <div class="row" style="">
+                        <div class="col-lg-12">
+                            <div class="container-fluid con_fluid_new">
+                                <div class="panel-body">
+                                    <div class="row" style="margin-bottom: 5px;">
+                                        <div class="form-group">
+                                            <div class="col-lg-2 col-sm-4 prj-btn">                                           
+                                               
+                                                    <select id="ddlUtilityType" data-placeholder="Select Utility" class="form-control chosen-select">
+                                                        <option value="0"></option>
+                                                        <option value="Electric">Electric</option>
+                                                        <option value="Gas">Gas</option>
+                                                        <option value="Water">Water</option>
+                                                    </select>                                              
+                                            </div>
+                                            <div class="col-lg-3 col-md-4 col-sm-8 ">
+                                                <select id="ddlAppointments" data-placeholder="Select Appointments" class="form-control chosen-select ">
+                                                    <option value="0"></option>
+                                                    <option value="1">Upcoming Appointments</option>
+                                                    <option value="2">Passed Appointments</option>
+                                                </select>
+                                            </div>                                          
+                                            <div class="col-lg-4 col-md-3 col-sm-6 col-xs-12 prj-btn ">
+                                                <select id="ddlProjectList" data-placeholder="Select Project" class="form-control chosen-select "></select>
+                                            </div>                                   
+
+                                            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 reasgn-bx4">
+                                                <button id="btnSearch" class="btn btn-warning reasgn-srch-btn" type="button" style="background-color:green;border-color:green;">Search</button>
+                                                <button id="btnReset" class="btn btn-warning reasgn-res-btn" type="button" style="background-color:grey;border-color:grey;">Reset</button>
+                                            </div>                                         
+                                        </div>
+                                    </div>
+                                    <br/>
+                                    <div class="table-responsive col-lg-12 rep_dyn_table">
+                                        <table id="dynamic-table" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                                            <thead>
+                                                <tr>
+                                                    <th width="15%">Account Number</th>
+                                                    <th width="">Cycle</th>
+                                                    <th width="">Route</th>
+                                                    <th width="">Address</th>                                                  
+                                                    <th width="">Appointment Date</th>
+                                                    <th width="">Appointment Time</th> 
+                                                    <th width="">Allocated Installer</th>                                                   
+                                                    <th width="">Action</th>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</section>
+
+<!-- Modal for deactivation -->
+<div class="modal fade modal-dialog-center" id="ModalPassedAppointment" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content-wrap">
+            <div class="modal-content modal-lg clnt-mdlg">
+                <div class="modal-header">
+                    <button type="button" class="close" id="btnClose" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Appointment-Installer Allocation </h4>
+                </div>
+                <div class="modal-body client-mod-bdy">
+                    <form id="form4" class="cmxform form-horizontal tasi-form">
+
+                        <div style='background:#e6e1e1; width:100%;'>
+                           
+                        </div>
+                        <br />
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Appointment ID :</b></label>
+
+                            <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
+                                <span id="lblAppID2" class="reappnt-span"></span>
+                            </div>
+                            <div id="hideLbl2">
+                                <label for="lblUploadedId2" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>UploadedId  :</b></label>
+
+                                <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
+                                    <span id="lblUploadedId2" class="reappnt-span"></span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label "><b>Account Number :</b> </label>
+                            <div class="col-lg-4 col-xs-12 col-sm-4 drp-fld ">
+                                <span id="lblAccount2" class="reappnt-span"></span>
+                            </div>                       
+
+
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label pncde-lab"><b>Address :</b></label>
+                            <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
+                                <span id="lblAddress2" class="reappnt-span"></span>
+                            </div>
+
+                        </div>
+                        <div class="form-group">
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label "><b>Project Name :</b> </label>
+
+                            <div class="col-lg-4 col-xs-12 col-sm-4">
+                                <span id="lblProjectName2" class="reappnt-span"></span>
+                            </div>
+
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label drp-lab"><b>Utility Type :</b></label>
+                            <div class="col-lg-4 col-xs-12 col-sm-4  drp-fld ">
+                                <span id="lblUtility2" class="reappnt-span"></span>
+                            </div>                         
+
+                        </div>
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label "><b>Cycle :</b> </label>
+                            <div class="col-lg-4 col-xs-12 col-sm-4 drp-fld ">
+                                <span id="lblCycle2" class="reappnt-span"></span>
+                            </div>                         
+
+
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label pncde-lab"><b>Route :</b></label>
+                            <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
+                                <span id="lblRoute2" class="reappnt-span"></span>
+                            </div>
+
+                        </div>               
+
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Appointment Date :</b></label>
+
+                            <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
+                                <span id="lblAppDate2" class="reappnt-span"></span>
+                            </div>
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Appointment Time :</b></label>
+
+                            <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
+                                <span id="lblAppTime2" class="reappnt-span"></span>
+                            </div>
+                        </div>                 
+                        <div class="form-group">
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label "><b>Customer Name :</b></label>
+
+                            <div class="col-lg-4 col-xs-12 col-sm-4 mob-err addrs-fld">
+                                <span id="lblCustName2" class="reappnt-span"></span>
+                            </div>                         
+
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label pncde-lab"><b>Customer Email :</b></label>
+                            <div class="col-lg-4 col-xs-12 col-sm-4 phn-err addrs-fld">
+
+                                <span id="lblCustEmail2" class="reappnt-span"></span>
+                            </div>
+
+                        </div>
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Customer Phone :</b></label>
+
+                            <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
+                                <span id="lblCustPhone2" class="reappnt-span"></span>
+                            </div>
+
+                         
+
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Current Installer :</b></label>
+
+                            <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
+                                <span id="lblInataller2" class="reappnt-span"></span>
+                            </div>
+                        </div>                                                      
+                       
+                          
+                        
+                        <div class="form-group " style="text-align:center; margin-top:50px;">
+                            @*<button id="btnSave" class="btn btn-success" type="button">Save</button>*@
+                            <button class="btn btn-danger" id="btnCancel2" type="button">Cancel</button>
+                        </div>
+
+                    </form>
+
+                </div>
+              
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal -->
+
+<div class="modal fade modal-dialog-center" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content-wrap">
+            <div class="modal-content modal-lg clnt-mdlg">
+                <div class="modal-header">
+                    <button type="button" class="close" id="btnClose" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"> Appointment-Installer Allocation  </h4>
+                </div>
+                <div class="modal-body client-mod-bdy">
+                    <form id="form3" class="cmxform form-horizontal tasi-form">                                                         
+
+                        <div style='background:#e6e1e1; width:100%;'>                           
+                        </div>
+                        <br/>
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Appointment ID :</b></label>
+
+                            <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
+                                <span id="lblAppID" class="reappnt-span"></span>
+                            </div>
+                            <div id="hiddenLbl">
+                                <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label" disabled="true"><b>UploadedId  :</b></label>
+
+                                <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld" disabled="true">
+                                    <span id="lblUploadedId" class="reappnt-span"></span>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label "><b>Account Number :</b> </label>
+                            <div class="col-lg-4 col-xs-12 col-sm-4 drp-fld ">
+                                <span id="lblAccount" class="reappnt-span"></span>
+                            </div>
+
+
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label pncde-lab"><b>Address :</b></label>
+                            <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
+                                <span id="lblAddress" class="reappnt-span"></span>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label "><b>Project Name :</b> </label>
+
+                            <div class="col-lg-4 col-xs-12 col-sm-4">
+                                <span id="lblProjectName" class="reappnt-span"></span>
+                            </div>
+
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label drp-lab"><b>Utility Type :</b></label>
+                            <div class="col-lg-4 col-xs-12 col-sm-4  drp-fld ">
+                                <span id="lblUtility" class="reappnt-span"></span>
+                            </div>
+
+                        </div>
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label "><b>Cycle :</b> </label>
+                            <div class="col-lg-4 col-xs-12 col-sm-4 drp-fld ">
+                                <span id="lblCycle" class="reappnt-span"></span>
+                            </div>
+
+
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label pncde-lab"><b>Route :</b></label>
+                            <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
+                                <span id="lblRoute" class="reappnt-span"></span>
+                            </div>
+
+                        </div>
+                    
+
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Appointment Date :</b></label>
+
+                            <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
+                                <span id="lblAppDate" class="reappnt-span"></span>
+                            </div>
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Appointment Time :</b></label>
+
+                            <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
+                                <span id="lblAppTime" class="reappnt-span"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label "><b>Customer Name :</b></label>
+
+                            <div class="col-lg-4 col-xs-12 col-sm-4 mob-err addrs-fld">
+                                <span id="lblCustName" class="reappnt-span"></span>
+                            </div>
+
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label pncde-lab"><b>Customer Email :</b></label>
+                            <div class="col-lg-4 col-xs-12 col-sm-4 phn-err addrs-fld">
+
+                                <span id="lblCustEmail" class="reappnt-span"></span>
+                            </div>
+
+                        </div>
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Customer Phone :</b></label>
+
+                            <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
+                                <span id="lblCustPhone" class="reappnt-span"></span>
+                            </div>
+
+
+
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Current Installer:</b></label>
+
+                            <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
+                                <span id="lblInataller" class="reappnt-span"></span>
+                            </div>
+                        </div>      
+
+                      
+                        <br/>
+                        <div id="DDLInstallerListDIV" class="form-group ">
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label "><b>Select Installer</b> <span style="color:red">*</span></label>
+                            <div class="col-lg-4  col-xs-12 col-sm-4 addrs-fld">
+                                <select data-placeholder="Select Installer" name="Installer" id="InstallerDLL" class="form-control chosen-select"></select>
+                            </div>
+                        </div>
+                        <div class="form-group " style="text-align:center; margin-top:50px;">
+                            <button id="btnSave" class="btn btn-success" type="button">Save</button>
+                            <button class="btn btn-danger" id="btnCancel" type="button">Cancel</button>
+                        </div>
+
+                        </form>
+                    
+                </div>
+                @*<div class="modal-footer " >
+                    <div class="col-lg-4  col-xs-12 col-sm-4 addrs-fld "></div>
+                    <button id="btnSave" class="btn btn-success" type="button">Save</button>
+                    <button class="btn btn-danger" id="btnCancel" type="button">Cancel</button>
+                    @*<button class="btn btn-default" id="btnReset" type="button">Reset</button>*@
+                @*</div>*@
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<link href="~/Scripts/js/style.css" rel="stylesheet" />
+<link href="~/Scripts/js/jquery-ui.css" rel="stylesheet" />
+<script src="~/Scripts/js/jquery-ui.js"></script>
+<script src="~/Scripts/js/fieldChooser.js"></script>
+<link href="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.css")" rel="stylesheet" />
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.jquery.min.js")"></script>
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.proto.min.js")"></script>
+
+<script src='@Url.Content("~/Scripts/Admin/AppointmentAllocation.js")'></script>
+<link href="~/Content/MSTS/admin/css/bootstrap-multiselect.css" rel="stylesheet" />
+<script src="~/Content/MSTS/admin/js/bootstrap-multiselect.js"></script>
+
+
+<link href="~/jquery-confirm-master/css/jquery-confirm.css" rel="stylesheet" />
+
+<script src="~/jquery-confirm-master/js/jquery-confirm.js"></script>

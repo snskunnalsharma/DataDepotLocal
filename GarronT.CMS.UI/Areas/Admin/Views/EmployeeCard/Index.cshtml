@@ -1,0 +1,99 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+@Html.Hidden("urlUploadFile", Url.Action("UploadFile", "EmployeeCard"))
+@Html.Hidden("urlGetStateList", Url.Action("GetStateList", "EmployeeCard"))
+@Html.Hidden("urlGetCityLisyByStateId", Url.Action("GetCityList", "EmployeeCard"))
+
+
+
+<div id="loading">
+    <div id="loadingcontent">
+        <p id="loadingspinner"> Searching things... </p>
+    </div>
+</div>
+
+
+
+<section id="main-content">
+    <section class="wrapper site-min-height">
+        <div class="row">
+            <div class="col-lg-12">
+                <!--progress bar start-->
+                <section class="panel">
+                    <header class="panel-heading"> <b> Upload City Logo <label id="lblProjectName"></label> </b> </header>
+                    <div class="panel-body panel_top">
+                        <div class="stepwizard ">
+                            <div class="stepwizard-row setup-panel">    
+                                @*<div class="stepwizard-step stepwizard-step-circle">
+                                    <br />
+                                    <a href="" type="button" class="btn btn-default btn-circle" disabled="disabled"></a>
+                                    <p>Upload  Data</p>
+                                </div>*@
+                            </div>
+                        </div>
+                        <form role="form" action="" id="fromsave" method="post" style="background: rgb(190, 210, 230);" class="form-horizontal">
+                            <div class="col-md-12">                              
+                                
+                                   
+                                    <div class="form-group" style="margin-top:15px;">
+                                        <div class="col-lg-5 col-sm-12">
+
+                                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 labelcolor_name control-label cre_sta_label">State<span style="color:red">*</span></label>
+                                            <div class="col-lg-4 col-sm-4 col-xs-10 ">
+                                                @*<select id="ddlState" data-placeholder="Select State" name="" class="inputclass form-control input_shadow" ></select>*@
+                                                <select id="ddlState" data-placeholder="Select State" class="form-control chosen-select "></select>
+                                            </div>
+
+                                            <label class="col-lg-2 col-sm-2 col-xs-12 labelcolor_name  control-label cre_cty_label">City<span style="color:red">*</span></label>
+
+                                            <div class="col-lg-4 col-sm-4 col-xs-10 ">
+                                                @*<select id="ddlCity" data-placeholder="Select City" name="" class="form-control chosen-select "></select>*@
+                                                <select id="ddlCity" data-placeholder="Select City" class="form-control chosen-select "></select>
+                                            </div>
+
+                                        </div>
+                                        <label class="control-label col-lg-1">Upload File<span style="color:red">*</span></label>
+                                       
+                                        @*<input maxlength="200" type="file" required="required" placeholder="Upload Customer Data" class=" col-lg-3" />*@
+                                        <input maxlength="200" type="file" id="fileInput" required="required" placeholder="Upload Customer Data" class="col-lg-3 col-sm-4 col-xs-12" />  
+                                        <span class="col-lg-2 col-sm-5 col-xs-12"  style="color:red;">(City Logo size 100x40)</span>                                      
+                                        <input class="btn btn-success " type="button" id="btn_Upload" value="Upload" style="margin-left:10px;" />
+                                       
+                                    </div>
+                               
+                                @*<div class="form-group col-lg-12" id="divPartialFileUpload" style="margin:0 auto; "> </div>
+
+                                <button class="btn btn-primary previous btn-lg pull-left cre_prvs_btn" type="button">Previous</button>
+                                <button class="btn btn-success  btn btn-primary nextBtn btn-lg pull-right" type="button" id="btn_Submit" style="">Submit</button>*@
+
+
+                            </div>
+
+                            
+                            
+
+                            
+
+                            
+
+                            
+                        </form>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</section>
+
+<link href="~/Scripts/js/style.css" rel="stylesheet" />
+<link href="~/Scripts/js/jquery-ui.css" rel="stylesheet" />
+      @*Switch CSS*@>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/css/bootstrap2/bootstrap-switch.css">
+
+<script src="~/Scripts/js/jquery-ui.js"></script>
+
+<script src="~/Content/MSTS/admin/js/bootstrap-switch.js"></script>
+<script src="~/Scripts/Admin/EmployeeCard.js"></script>

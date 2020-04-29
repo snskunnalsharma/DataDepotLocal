@@ -1,0 +1,81 @@
+﻿@model IEnumerable<GarronT.CMS.Model.AspNetPermission>
+@{
+    ViewBag.Title = "Rights";
+  
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(":input[type='button']").button();
+    });
+</script>
+
+
+
+
+
+
+
+<section id="main-content">
+    <section class="wrapper">
+        <!-- page start-->
+        <div class="row">
+            <div class="col-sm-12">
+                <section class="panel">
+                    <header class="panel-heading">
+                        <b>Rights</b>
+
+                    </header>
+                    <div class="panel-body">
+                        <div class="adv-table">
+                            <fieldset>
+                                <legend>
+                                    <h3>
+                                        Permissions
+                                    </h3>
+                                </legend>
+                                <table id="PermissionTable" style="width: 100%" class="table table-advance table-condensed table-hover table-bordered table-responsive ">
+                                    <thead>
+                                    <th>
+                                        Permission
+                                    </th>
+                                    <th style="width: 50%">
+                                        Action
+                                    </th>
+                                    </thead>
+                                    @foreach (GarronT.CMS.Model.AspNetPermission item in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @Html.ActionLink(item.PermissionDescription, "PermissionDetails", new { id = item.Permission_Id })
+                                            </td>
+                                            <td>
+                                                <center>
+                                                    <a class="btn btn-success" href="@Url.Action("PermissionEdit", "Admin", new { id = item.Permission_Id })">
+                                                        Edit Permission
+                                                    </a>
+
+                                                    <a class="btn btn-success" href="@Url.Action("PermissionDelete", "Admin", new { id = item.Permission_Id })">
+                                                        Delete Permission
+                                                    </a>
+                                                </center>
+                                            </td>
+                                        </tr>
+                                    }
+                                </table>
+                                <br />
+                                <div>
+                                    <input type="button" class="btn btn-success" value="Create Permission" onclick="location.href='@Url.Action("PermissionCreate", "Admin")'" />
+                                    <input type="button" class="btn btn-success" id="importPermissions2" name="importPermissions2" value="Import Permissions" onclick="location.href='@Url.Action("PermissionsImport", "Admin")'" />
+                                    <br />
+                                </div>
+                            </fieldset>
+                            <br />
+                            @Html.ActionLink("Go to Roles", "RoleIndex", "Admin", new { @class="btn btn-success" })
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</section>

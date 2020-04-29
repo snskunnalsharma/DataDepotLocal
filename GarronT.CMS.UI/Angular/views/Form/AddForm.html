@@ -1,0 +1,1214 @@
+
+
+<style type="text/css">
+    .row {
+        margin-right: -26px !important;
+    }
+
+    .stepwizard-step p {
+        margin-top: 10px;
+    }
+
+    .stepwizard-row {
+        display: table-row;
+    }
+
+    .stepwizard {
+        display: table;
+        width: 100%;
+        position: relative;
+        background: #c0d7e5;
+    }
+
+    .stepwizard-step button[disabled] {
+        opacity: 1 !important;
+        filter: alpha(opacity=100) !important;
+    }
+
+    .stepwizard-row:before {
+        top: 32px;
+        bottom: 0;
+        position: absolute;
+        content: " ";
+        width: 100%;
+        height: 1px;
+        background-color: #ccc;
+        z-index: 0;
+    }
+
+    .stepwizard-step {
+        display: table-cell;
+        text-align: center;
+        position: relative;
+        width: 20%;
+    }
+
+    .btn-circle {
+        width: 30px;
+        height: 30px;
+        text-align: center;
+        padding: 6px 0;
+        font-size: 12px;
+        line-height: 1.428571429;
+        border-radius: 15px;
+    }
+
+    .multiselect {
+        width: 180px;
+        padding: 3px;
+    }
+
+    .sel {
+        /*color: red;*/
+        background-color: #fb8c00 !important;
+    }
+
+
+    #sortable1, #sortable2 {
+        min-height: 265px;
+        list-style-type: none;
+        margin: 0;
+        padding: 0px;
+        /*margin-right: 10px;
+              width: 194px;
+            float: left;
+        border: 1px solid #eee;*/
+    }
+
+    /*#sortable1 li, #sortable2 li {
+            margin: 0 5px 5px 5px;
+            padding: 5px;
+            font-size: 1.2em;
+            width: 200px;
+        }*/
+    .showli {
+        visibility: visible;
+    }
+
+    .hideli {
+        visibility: hidden;
+    }
+
+    #sortable {
+        list-style-type: none;
+        margin: 0 0 20px 0;
+        padding: 0;
+        width: 100%;
+    }
+
+        #sortable li {
+            padding-left: 3em;
+            font-size: 12px;
+        }
+
+            #sortable li i {
+                position: absolute;
+                left: 6px;
+                padding: 4px 10px 0 10px;
+                cursor: pointer;
+            }
+
+            #sortable li input[type=checkbox] {
+                margin-top: 0;
+            }
+
+    .ui-sortable > li {
+        padding: 5px 2px 5px 10px !important;
+        position: relative;
+        background: #a7a9aa !important;
+        /* margin-bottom: 2px; */
+        border-bottom: none !important;
+        margin: 5px !important;
+        color: #fff;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+
+
+
+        .ui-sortable > li.dataSaved {
+            /*background: #008000 !important;*/
+            /* margin-bottom: 2px; */
+            color: #fff;
+        }
+
+        .ui-sortable > li.active {
+            background: #41cac0 !important;
+            box-shadow: 0 4px #29b392;
+            background-color: #78CD51;
+            border-color: #41cac0;
+            color: #FFFFFF;
+            border: 1px solid transparent;
+            border-radius: 4px;
+        }
+
+    #FormSectionTable > tr > td.Active {
+        background: #FF6C60 !important;
+        color: #fff;
+        border: none !important;
+        border-radius: 4px;
+    }
+
+
+
+    .ui-sortable li.list-primary {
+        border-left: 3px solid #41CAC0;
+    }
+
+    .ui-sortable li.list-success {
+        border-left: 3px solid #78CD51;
+    }
+
+    .ui-sortable li.list-danger {
+        border-left: 3px solid #FF6C60;
+    }
+
+    .ui-sortable li.list-warning {
+        border-left: 3px solid #F1C500;
+    }
+
+    .ui-sortable li.list-info {
+        border-left: 3px solid #58C9F3;
+    }
+
+    .ui-sortable li.list-inverse {
+        border-left: 3px solid #BEC3C7;
+    }
+
+
+    .btn-group-sm > .btn, .btn-sm {
+        padding: 5px 6px !important;
+        font-size: 12px;
+        line-height: 1.5;
+        border-radius: 3px;
+    }
+
+
+    .chat-box-div {
+        border: 2px solid #80B2DF;
+        border-bottom: 2px solid #80B2DF;
+    }
+
+    .chat-box-head {
+        padding: 10px 15px;
+        border-bottom: 2px solid #80B2DF;
+        background-color: #80B2DF;
+        color: #000;
+        text-align: left;
+    }
+
+    .chat-box-main {
+        max-height: 400px;
+        overflow: auto;
+        min-height: 400px;
+        cursor: auto;
+    }
+
+    .chat-box-online-div {
+        border: 2px solid #80B2DF;
+        border-bottom: 2px solid #80B2DF;
+    }
+
+    .chat-box-online-head {
+        padding: 10px 15px;
+        border-bottom: 2px solid #80B2DF;
+        background-color: #80B2DF;
+        color: #000;
+        text-align: left;
+    }
+
+    .chat-box-online {
+        min-height: 400px;
+        overflow: auto;
+        max-height: 400px;
+    }
+
+    .chat-box-new-div {
+        border: 2px solid #80B2DF;
+        border-bottom: 2px solid #80B2DF;
+    }
+
+    .chat-box-new-head {
+        padding: 10px 15px;
+        border-bottom: 2px solid #80B2DF;
+        background-color: #ff6a00;
+        color: #000;
+        text-align: left;
+    }
+
+    .chat-box-new {
+        max-height: 554px;
+        overflow: auto;
+    }
+
+    .nopadding {
+        padding-right: 5px !important;
+        padding-left: 5px !important;
+        margin-left: -5px !important;
+    }
+
+    .checkbox label span {
+        font-weight: 700;
+        color: #000 !important;
+    }
+
+    strong {
+        font-weight: 700;
+        color: #000 !important;
+    }
+
+    .addfrm-name {
+        width: 98%;
+    }
+
+    .radio-inline {
+        padding-left: 34px !important;
+    }
+
+    @media only screen and (min-width:430px)and (max-width:767px) {
+        .addfrm-name {
+            width: 94%;
+        }
+
+        .toast-top-center {
+            margin-top: 10% !important;
+        }
+        /*.addfrm_fromdte {
+             width: 24%;
+        }
+
+        .addfrm_todte {
+           margin-left: -1%;
+            width: 24%;
+        }*/
+    }
+
+    @media (max-width:320px) {
+
+
+        .frm_mngt_box {
+            margin-left: -3%;
+        }
+
+        .frmmngt_header {
+            padding-top: 4% !important;
+        }
+
+        .form_chos_sel {
+        }
+
+        .add_frm_panel {
+            margin-top: 10% !important;
+        }
+
+        .addfrm_instest {
+            margin-bottom: 4% !important;
+            margin-top: 4% !important;
+        }
+
+        .addfrm_fromdte {
+            margin-top: 5% !important;
+        }
+
+        .addfrm_todte {
+            margin-top: 5% !important;
+        }
+
+        .chat-box-online-div {
+            width: 90%;
+        }
+
+        .toast-top-center {
+            margin-top: 8% !important;
+        }
+    }
+
+    @media only screen and (min-width:321px)and (max-width:359px) {
+        .frm_mngt_box {
+            margin-left: -3%;
+        }
+
+        .frmmngt_header {
+            padding-top: 4% !important;
+        }
+
+        .form_chos_sel {
+        }
+
+        .add_frm_panel {
+            padding-top: 3%;
+        }
+
+        .addfrm_instest {
+            margin-bottom: 4% !important;
+            margin-top: 4% !important;
+        }
+
+        .addfrm_fromdte {
+            margin-top: 5% !important;
+        }
+
+        .addfrm_todte {
+            margin-top: 5% !important;
+        }
+
+        .chat-box-online-div {
+            width: 90%;
+        }
+
+        .toast-top-center {
+            margin-top: 8% !important;
+        }
+    }
+
+    @media only screen and (min-width:360px)and (max-width:420px) {
+        .frm_mngt_box {
+            margin-left: -3%;
+        }
+
+        .frmmngt_header {
+            padding-top: 4% !important;
+        }
+
+        .form_chos_sel {
+        }
+
+        .add_frm_panel {
+            padding-top: 3%;
+        }
+
+        .addfrm_instest {
+            margin-bottom: 4% !important;
+            margin-top: 4% !important;
+        }
+
+        .addfrm_fromdte {
+            margin-top: 5% !important;
+        }
+
+        .addfrm_todte {
+            margin-top: 5% !important;
+        }
+
+        .chat-box-online-div {
+            width: 90%;
+        }
+
+        .frm-footbtn {
+            margin-top: -2% !important;
+            margin-bottom: 4% !important;
+        }
+
+        .toast-top-center {
+            margin-top: 10% !important;
+        }
+    }
+
+    @media only screen and (min-width:421px)and (max-width:479px) {
+        .frm_mngt_box {
+            margin-left: -3%;
+        }
+
+        .frmmngt_header {
+            padding-left: 0% !important;
+            padding-top: 2% !important;
+        }
+
+        .form_chos_sel {
+        }
+
+        .add_frm_panel {
+            padding-top: 3% !important;
+        }
+
+        .addfrm_instest {
+            margin-bottom: 5% !important;
+        }
+
+        .addfrm_fromdte {
+            margin-bottom: 5% !important;
+        }
+
+        .addfrm_todte {
+            margin-bottom: 5% !important;
+        }
+
+        .frm-footbtn {
+            margin-top: -2% !important;
+            margin-bottom: 4% !important;
+        }
+
+        .toast-top-center {
+            margin-top: 8% !important;
+        }
+    }
+
+    @media only screen and (min-width:480px) and (max-width:540px) {
+        .frm_mngt_box {
+            margin-left: -3%;
+        }
+
+        .frmmngt_header {
+            margin-left: -2% !important;
+            padding-top: 3% !important;
+        }
+
+        .form_chos_sel {
+            /*width: 48%;*/
+        }
+
+        .add_frm_panel {
+            margin-top: 4% !important;
+        }
+
+        .addfrm_instest {
+            margin-bottom: 3%;
+        }
+
+        .addfrm_fromdte {
+        }
+
+        .addfrm_todte {
+            margin-left: -3%;
+        }
+
+        .toast-top-center {
+            margin-top: 10% !important;
+        }
+    }
+
+    @media only screen and (min-width:541px) and (max-width:599px) {
+        .frm_mngt_box {
+            margin-left: -3%;
+        }
+
+        .frmmngt_header {
+            margin-left: -2% !important;
+            padding-top: 3% !important;
+        }
+
+        .form_chos_sel {
+            /*width: 48%;*/
+        }
+
+        .add_frm_panel {
+            margin-top: 4% !important;
+        }
+
+        .addfrm_instest {
+            margin-bottom: 3%;
+        }
+
+        .addfrm_fromdte {
+        }
+
+        .addfrm_todte {
+            margin-left: -3%;
+        }
+
+        .frm-footbtn {
+            margin-top: -2% !important;
+            margin-bottom: 2% !important;
+        }
+
+        .toast-top-center {
+            margin-top: 10% !important;
+        }
+    }
+
+    @media only screen and (min-width:600px) and (max-width:640px) {
+        .frm_mngt_box {
+            margin-left: -3%;
+        }
+
+        .frmmngt_header {
+            margin-left: -2% !important;
+        }
+
+        .form_chos_sel {
+            /*width: 48%;*/
+        }
+
+        .add_frm_panel {
+            margin-top: 4% !important;
+        }
+
+        .addfrm_instest {
+            margin-bottom: 3%;
+        }
+
+        .addfrm_fromdte {
+            padding-top: 2%;
+        }
+
+        .addfrm_todte {
+            margin-left: -3%;
+            padding-top: 2%;
+        }
+
+        .frm-footbtn {
+            margin-top: -3% !important;
+            margin-bottom: 3% !important;
+        }
+
+        .toast-top-center {
+            margin-top: 7% !important;
+        }
+
+        .frmmngt_header {
+            padding-top: 3% !important;
+        }
+
+        .addfrm_frmtype {
+            margin-top: 2% !important;
+            width: 50.01%;
+        }
+    }
+
+    @media only screen and (min-width:641px) and (max-width:720px) {
+        .frm_mngt_box {
+            margin-left: -3%;
+        }
+
+        .frmmngt_header {
+            margin-left: -2% !important;
+        }
+
+        .form_chos_sel {
+            /*width: 48%;*/
+        }
+
+        .add_frm_panel {
+            margin-top: 4% !important;
+        }
+
+        .addfrm_instest {
+            margin-bottom: 3%;
+        }
+
+        .addfrm_fromdte {
+            width: 24%;
+        }
+
+        .addfrm_todte {
+            margin-left: -1%;
+            width: 24%;
+        }
+
+        .toast-top-center {
+            margin-top: 5% !important;
+        }
+
+        .frm-footbtn {
+            margin-top: -2% !important;
+            margin-bottom: 2% !important;
+        }
+    }
+
+    @media only screen and (min-width:721px) and (max-width:767px) {
+        .frm_mngt_box {
+            margin-left: -3%;
+        }
+
+        .frmmngt_header {
+            margin-left: -2% !important;
+        }
+
+        .form_chos_sel {
+            /*width: 48%;*/
+        }
+
+        .add_frm_panel {
+            margin-top: 4% !important;
+        }
+
+        .addfrm_instest {
+            margin-bottom: 3%;
+        }
+
+        .addfrm_fromdte {
+        }
+
+        .addfrm_todte {
+            margin-left: -3%;
+        }
+    }
+
+    @media only screen and (min-width:768px) and (max-width:798px) {
+
+        .frm_mngt_box {
+            margin-left: -3%;
+        }
+
+        .frmmngt_header {
+            margin-left: -1.4%;
+        }
+
+        .add_frm_panel {
+            margin-top: 6% !important;
+        }
+
+        .addfrm_instest {
+            margin-bottom: 3%;
+        }
+
+        .addfrm_fromdte {
+        }
+
+        .addfrm_todte {
+        }
+
+        .toast-top-center {
+            margin-top: 3% !important;
+        }
+    }
+
+    @media only screen and (min-width:799px) and (max-width:850px) {
+        .frm_mngt_box {
+            margin-left: -2% !important;
+        }
+
+        .frmmngt_header {
+            margin-left: -1% !important;
+        }
+
+        .add_frm_panel {
+            padding-top: 1.8%;
+        }
+
+        .form_chos_sel {
+            /*width: 25% !important;*/
+        }
+
+        addfrm_instest {
+        }
+
+        .addfrm_fromdte {
+        }
+
+        .addfrm_todte {
+        }
+
+        .toast-top-center {
+            margin-top: 3% !important;
+        }
+    }
+
+    @media only screen and (min-width:851px) and (max-width:910px) {
+        .frm_mngt_box {
+            margin-left: -2% !important;
+        }
+
+        .frmmngt_header {
+            margin-left: -1% !important;
+        }
+
+        .add_frm_panel {
+            padding-top: 1.8%;
+        }
+
+        .form_chos_sel {
+            min-width: 25% !important;
+        }
+
+        .addfrm_frmtype {
+            min-width: 25% !important;
+            margin-left: -4%;
+        }
+
+        addfrm_instest {
+        }
+
+        .addfrm_fromdte {
+            margin-left: -2%;
+            margin-right: -3%;
+        }
+
+        .addfrm_todte {
+        }
+
+        .toast-top-center {
+            margin-top: 3% !important;
+        }
+
+        .frm-hd1 {
+            margin-left: -10% !important;
+            white-space: nowrap;
+        }
+
+        .frmmngt-btngrp {
+            margin-top: -6% !important;
+        }
+
+        .frm-blck1 {
+            /*width:48%;*/
+        }
+
+        .ui-sortable > li {
+            padding: 4px 2px 4px 1px !important;
+            margin: 0% !important;
+        }
+
+        .chat-box-head {
+            padding: 9px 0px;
+        }
+    }
+
+    @media only screen and (min-width:911px) and (max-width:967px) {
+        .frm_mngt_box {
+            margin-left: -2% !important;
+        }
+
+        .frmmngt_header {
+            margin-left: -1% !important;
+        }
+
+        .add_frm_panel {
+            padding-top: 1.8%;
+        }
+
+        .form_chos_sel {
+            min-width: 25% !important;
+        }
+
+        .addfrm_frmtype {
+            min-width: 25% !important;
+            margin-left: -4%;
+        }
+
+        addfrm_instest {
+        }
+
+        .addfrm_fromdte {
+            margin-left: -2%;
+            margin-right: -3%;
+        }
+
+        .addfrm_todte {
+        }
+
+        .toast-top-center {
+            margin-top: 3% !important;
+        }
+
+        .frm-hd1 {
+            /*margin-left: -10% !important;*/
+            white-space: nowrap;
+        }
+
+        .frmmngt-btngrp {
+            /*margin-top: -6% !important;*/
+        }
+
+        .frm-blck1 {
+            /*width:48%;*/
+        }
+
+        .chat-box-head {
+            padding: 0px 1px;
+            height: 3em;
+        }
+
+        .ui-sortable > li {
+            margin: 0px !important;
+            padding: 5px 2px 1px 2px !important;
+        }
+    }
+
+    @media only screen and (min-width:968px)and (max-width:1023px) {
+        .add_frm_panel {
+            margin-top: 10%;
+        }
+
+        .frmmngt_header {
+        }
+
+        .addfrm_instest {
+        }
+
+        .addfrm_fromdte {
+        }
+
+        .addfrm_todte {
+        }
+
+        .frm-blck1 {
+            width: 48%;
+        }
+    }
+
+    @media only screen and (min-width:1024px)and (max-width:1100px) {
+
+        .frmmngt_header {
+            padding-left: 0% !important;
+        }
+
+        .form_chos_sel {
+            margin-left: -2%;
+            margin-right: 2%;
+            width: 25%;
+        }
+
+        .addfrm_frmtype {
+            width: 25%;
+            margin-left: -2%;
+        }
+
+        .add_frm_panel {
+            padding-top: 1.2%;
+        }
+
+        .addfrm_instest {
+            margin-left: -2%;
+        }
+
+        .addfrm_fromdte {
+            margin-left: -1%;
+            width: 12%;
+        }
+
+        .addfrm_todte {
+            margin-left: -1%;
+            width: 12%;
+        }
+
+        .frm-blck1 {
+            /*width:48%;*/
+        }
+
+        .chat-box-head {
+            padding: 9px 0px;
+        }
+
+        .ui-sortable > li {
+            margin: 2px -1px !important;
+        }
+
+        .radio-inline {
+            padding-left: 8% !important;
+        }
+    }
+
+    @media only screen and (min-width:1101px)and (max-width:1280px) {
+        .radio-inline {
+            padding-left: 10% !important;
+        }
+    }
+
+    @media only screen and (min-width:480px)and (max-width:840px)and (orientation:landscape) {
+        .frm-blck1 {
+            width: 48%;
+        }
+    }
+</style>
+<div>
+    <section id="main-content">
+        <section class="wrapper">
+            <!-- page start-->
+            <div class="row">
+                <div class="col-sm-12 col-lg-12">
+                    <section class="panel add_frm_panel " style="">
+                        <header class="panel-heading frmmngt_header" style="padding-top:5px;border:none;">
+                            <b>Form Management </b>
+
+                        </header>
+                        <div>
+                            <form id="FormManagementForm" name="FormManagement">
+
+                                <div class="row">
+                                    <div class="col-lg-12 col-sm-12 col-xs-12 frm_mngt_box">
+                                        <div class="form-group col-lg-2 col-sm-6 col-xs-12 form_chos_sel">
+                                            <input type="hidden" id="hdnFormID" />
+                                            <!--<label for="name">Project Name<span style="color:red">*</span></label>-->
+                                            <select data-placeholder="Select Project" name="ddlProjectdropdown" id="ddlProject" class="form-control chosen-select "></select>
+
+                                        </div>
+
+                                        <div class="form-group col-lg-3 col-sm-6 col-xs-12 addfrm_instest ">
+                                            <!--<label for="name">Form Name<span style="color:red">*</span></label>-->
+
+                                            <input type="text" name="NewFormName" placeholder="Enter Form Name" maxlength="200" id="txtNewFormName" class=" form-control addfrm-name" />
+
+                                        </div>
+                                        <div class="form-group col-lg-2 col-sm-6 col-xs-12 addfrm_frmtype">
+                                            <!--<label for="name">End Date<span style="color:red">*</span></label>-->
+                                            <select data-placeholder="Select Form Type" id="ddlFormType" name="FormType" class="form-control chosen-select"></select>
+
+                                        </div>
+                                        <div class="form-group col-lg-2 col-sm-3 col-xs-6 addfrm_fromdte ">
+                                            <!--<label for="name">Start Date<span style="color:red">*</span></label>-->
+                                            <input type="text" name="FromDate" placeholder="Start Date" readonly="readonly" onkeypress="return false" id="txtFromDate" class=" form-control" />
+
+                                        </div>
+                                        <div class="form-group col-lg-2 col-sm-3 col-xs-6 addfrm_todte">
+                                            <!--<label for="name">End Date<span style="color:red">*</span></label>-->
+                                            <input type="text" name="ToDate" placeholder="End Date" readonly="readonly" onkeypress="return false" id="txtToDate" class="inputclass form-control" />
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </form>
+                            <br /><br />
+                            <!--<div class="form-group">
+                                <p style="padding-left: 16px;"><strong>You can select already existing form fields here</strong></p>
+                            </div>-->
+                            <!--<div class="form-group">
+
+                                <div class="col-md-3"><select id="ddlExistedProject" data-placeholder="Select Project" class="form-control chosen-select"></select></div>
+                                <div class="col-md-3"><select id="ddlExistedProjectForm" data-placeholder="Select Form" class="form-control chosen-select"></select></div>
+                            </div>-->
+
+                            <div class="form-group frm-footbtn" style="text-align:center; margin:9px 0px">
+                                <strong id="lblnote" class="pull-left">Note:- This form is submitted by installer, you can't update.</strong>
+                                <button id="btnSave" ng-click="FormSave()" class="btn btn-success" type="button">Save</button>
+                                <button id="btnCancel" ng-click="FormCancel()" class="btn btn-danger" type="button">Cancel</button>
+                                <button id="btnReset" ng-click="FormReset()" class="btn btn-info" type="button">Reset</button>
+                            </div>
+
+
+
+
+
+
+                            <div class="row  nopadding">
+                                <div class="col-lg-3 col-md-2 col-sm-11 nopadding frm-blck1">
+                                    <div class="chat-box-online-div">
+                                        <!---main---->
+
+                                        <div id="divCustmizedContainer">
+                                            <div class="chat-box-online-head">
+                                                <!---heading---->
+                                                <b class="frm-hd1">Sections </b>
+                                                <div class="btn-group pull-right frmmngt-btngrp" id="sectionActions" style="margin-top: -5px;">
+                                                    <button type="submit" id="btnAddSection" title="Add New Section" class="btn btn-default btn-sm btn-flied"> <i class="fa fa-plus-square" style="font-size: 14px;color: #47a447;"></i> </button>
+                                                    <button type="submit" id="btnDeleteSection" ng-disabled="DisableSectionEditDelete()" ng-click="DeleteSection()" title="Delete Section" class="btn btn-default btn-sm btn-flied"> <i class="fa fa-times" style="font-size: 14px;color: #d2322d;"></i> </button>
+                                                    <button type="submit" id="btnEditCustomized" ng-click="EditSection()" title="Edit Section" class="btn btn-default btn-sm btn-flied"> <i class="fa fa-pencil-square-o" style="font-size: 14px;"></i> </button>
+                                                </div>
+                                            </div>
+                                            <!---heading End---->
+                                        </div>
+                                        <div class="panel-body chat-box-online">
+                                            <!---content---->
+
+                                            <table class="table table-striped">
+                                                <thead>
+                                                </thead>
+                                                <tbody id="FormSectionTable">
+                                                    <tr ng-repeat="section in sectionList" id="{{section.SectionID}}" style="margin-bottom:10px;">
+                                                        <td ng-click="SectionSelect($event,section.SectionID)" style="cursor: pointer;" class=""><span>{{section.SectionName}}</span></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <!---content End---->
+
+                                    </div>
+                                    <!---main End---->
+
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-11 nopadding frm-blck1">
+                                    <div class="chat-box-online-div">
+                                        <!---main---->
+
+                                        <div id="sourceFields">
+                                            <div class="chat-box-online-head">
+                                                <!---heading---->
+                                                <b class="frm-hd1"> Source Fields </b>
+                                            </div>
+                                            <!---heading End---->
+                                        </div>
+                                        <div class="panel-body chat-box-online">
+                                            <!---content---->
+                                            <ul id="sortable1" class="connectedSortable">
+
+
+
+
+                                                <!--<li ng-rep
+                                                eat="field in SourceFieldList" lang="{{field.isMappedToExcel}}" id="{{field.Id}}" class=" ui-state-default">{{field.FieldName}}</li>
+                                                                                      <li lang="{{field.isMappedToExcel}}" id="{{field.Id}}" class=" ui-state-default">{{field.FieldName}}</li>-->
+
+
+
+
+                                            </ul>
+
+                                        </div>
+                                        <!---content End---->
+
+                                    </div>
+                                    <!---main End---->
+
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-11 nopadding frm-blck1">
+                                    <div class="chat-box-online-div">
+                                        <!---main---->
+
+                                        <div id="destinationFields">
+                                            <div class="chat-box-online-head  ">
+                                                <div class="cust_hd_frm">
+                                                    <!---heading---->
+                                                    <strong title="{{FieldForCurrentSection}}" class=""> {{FieldForCurrentSection}} Fields </strong>
+                                                </div>
+                                            </div>
+                                            <!---heading End---->
+                                        </div>
+                                        <div class="panel-body chat-box-online">
+                                            <!---content---->
+                                            <ul id="sortable2" class="connectedSortable"></ul>
+                                        </div>
+                                        <!---content End---->
+
+                                    </div>
+                                    <!---main End---->
+
+                                </div>
+                                <div class="col-lg-5 col-md-6 col-sm-11 col-xs-11 nopadding frm-blck1">
+                                    <div class="chat-box-div">
+                                        <!---main---->
+                                        <div id="setfield">
+                                            <div class="chat-box-head">
+                                                <!---heading---->
+                                                <b> Set Field Type & Properties {{SetFieldFor}} </b>
+                                            </div>
+                                            <!---heading End---->
+
+                                        </div>
+                                        <div class="panel-body chat-box-main" id="datatypediv">
+                                            <!---content---->
+                                            <div id="childPartialDiv">
+                                                <div id="SetFieldDiv">
+
+                                                    <div ng-show="SetFieldddl" id="SetFieldddl" class="">
+                                                        <div id="myDropdown"></div>
+
+                                                        <!--<select class=" form-control" id="htmlselect">
+
+                                                        </select>-->
+                                                    </div>
+                                                </div>
+                                                <br />
+                                                <div ng-show="SetFieldAttr" class=" form-horizontal " id="SetFieldAttr">
+                                                    <div ng-include="FieldTemplateName" onload="finishLoading()" class=""></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!---content End---->
+
+                                    </div>
+                                    <!---main End---->
+
+                                </div>
+                                </d
+                            </div>
+
+                            <div></div>
+
+                            <!--<div class="form-group col-md-8">
+                               {{ProjectForms|json}}
+                            </div>-->
+
+                        </div>
+
+                    </section>
+
+                </div>
+            </div>
+
+        </section>
+    </section>
+
+
+    <div class="modal fade modal-dialog-center" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content-wrap">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Set Section Name</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="panel-body">
+                            <form id="AddSectionForm" name="AddSectionForm" class="cmxform form-horizontal tasi-form">
+                                <div class="form-group">
+                                    <label for="name" class="col-lg-4">Section Name <span style="color:red">*</span></label>
+                                    <div class="col-lg-3">
+                                        <input type="hidden" id="txtDivName" />
+                                        <input type="text" maxlength="200" name="sectionName" required ng-model="sectionName" id="txtsectionName" />
+
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="modal-footer ">
+                        <button id="btnSaveSection" ng-disabled="AddSectionForm.sectionName.$invalid " ng-click="SaveSaction()" class="btn btn-success" type="button">Save</button>
+                        <button id="btnCancelSection" data-dismiss="modal" class="btn btn-danger" ng-click="sectionName=''" type="button">Cancel</button>
+                        <button id="btnResetSection" ng-click="resetsection()" ng-hide="AddSectionForm.sectionName.$invalid" class="btn btn-default" type="button">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade modal-dialog-center" id="EditSectionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content-wrap">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Edit Section Name</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="panel-body">
+                            <form id="EditSectionForm" name="EditSectionForm" class="cmxform form-horizontal tasi-form">
+                                <div class="form-group">
+                                    <label for="name" class="col-lg-4">Section Name <span style="color:red">*</span></label>
+                                    <div class="col-lg-3">
+
+                                        <input type="text" maxlength="200" name="EditsectionName" required ng-model="EditsectionName" id="txtEditsectionName" />
+
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="btnSaveSection" ng-disabled="EditSectionForm.EditsectionName.$invalid " ng-click="SaveEditSection()" class="btn btn-success" type="button">Save</button>
+                        <button id="btnCancelSection" data-dismiss="modal" class="btn btn-danger" type="button">Cancel</button>
+                        <button id="btnResetSection" ng-click="EditsectionName=''" class="btn btn-default" type="button">Reset</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    //$(window).on("beforeunload", function () {
+    //    return "Are you sure? You didn't finish the form!";
+    //});
+
+    //$(document).ready(function () {
+    //    $("#btnSave").on("click", function (e) {
+    //        //check form to make sure it is kosher
+    //        //remove the ev
+    //        $(window).off("beforeunload");
+    //        return true;
+    //    });
+    //});
+</script>
+
+
+
+
+
+<!--<link href="../../../Scripts/js/style.css" rel="stylesheet" />
+<link href="../../../Scripts/js/jquery-ui.css" rel="stylesheet" />
+<script src="../../../Scripts/js/jquery-ui.js"></script>
+<script src="../../../Scripts/js/fieldChooser.js"></script>-->
+<!--<link href="../../../Content/MSTS/admin/css/style-responsive.css" rel="stylesheet" />-->
+<link href="../../../Content/MSTS/admin/css/style.css" rel="stylesheet" />

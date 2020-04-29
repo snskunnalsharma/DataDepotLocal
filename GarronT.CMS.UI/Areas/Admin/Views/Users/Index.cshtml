@@ -1,0 +1,1805 @@
+﻿@{
+    ViewBag.Title = "User Master";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+@Html.Hidden("urlRoleList", Url.Action("GetRoleList", "Users"))
+@Html.Hidden("TmpListClearUrl", Url.Action("TmpListClear", "Users"))
+@Html.Hidden("TmpListRemoveUrl", Url.Action("TmpListRemove", "Users"))
+@Html.Hidden("urlEditData", Url.Action("Create", "Users"))
+@Html.Hidden("UrlStateList", Url.Action("GetStateList", "Users"))
+@Html.Hidden("urlDeleteData", Url.Action("Delete", "Users"))
+
+@Html.Hidden("urlActivateRecord", Url.Action("Activate", "Users"))
+@Html.Hidden("urlDeActivateRecord", Url.Action("Deactivate", "Users"))
+
+@Html.Hidden("urlDeActiveRecords", Url.Action("GetDeActiveRecords", "Users"))
+@Html.Hidden("urlGetData", Url.Action("Edit", "Users"))
+
+@Html.Hidden("UrlUserList", Url.Action("GetUserList", "Users"))
+
+@Html.Hidden("urlEditData", Url.Action("Create", "Users"))
+@Html.Hidden("EditUserDetails", Url.Action("EditUserDetails", "Users"))
+
+@Html.Hidden("StateListUrl", Url.Action("GetStateList", "Client"))
+@Html.Hidden("CityByStateIDListUrl", Url.Action("GetCityList", "Client"))
+
+@Html.Hidden("ServicesListUrl", Url.Action("GetServicesList", "Services"))
+
+@Html.Hidden("EditUserListUrl", Url.Action("EditUser", "Users"))
+
+@Html.Hidden("UserForm", (object)ViewBag.Form)
+
+@Html.Hidden("urlUserPermission", Url.Action("UserPermission", "Users"))
+
+@Html.Hidden("urlCreateRecord", Url.Action("Create", "Users"))
+@Html.Hidden("urlEditUser", Url.Action("EditUser", "Users"))
+
+
+
+<style type="text/css">
+    .multiselect {
+        width: 167px !important;
+    }
+</style>
+<style type="text/css">
+    /********************************** IPHONE 5S PORTRAIT***************/
+          @@media (max-width:320px) {
+              .iconic-input {
+                  padding-left: 5%;
+              }
+              .adv-table .dataTables_length select{
+                  width:130% !important;
+              }
+              .edt_usr_modal {
+                  margin-left: -15%;
+                  width: 100%;
+                  margin-top: -20%;
+              }
+
+              .modal-backdrop.in {
+                  height: 118% !important;
+              }
+
+              .usr_header {
+              }
+
+              .usr_nm {
+                  margin-bottom: 5px !important;
+                  margin-left: -17% !important;
+                  margin-top: -6%;
+              }
+
+              .usr_pswd {
+                  margin-bottom: 0 !important;
+                  margin-left: -17% !important;
+                  margin-top: -2%;
+              }
+
+              .usr_addr {
+                  margin-bottom: 0% !important;
+                  margin-left: -17% !important;
+                  margin-top: -2%;
+              }
+
+              .usr_mob {
+                  margin-bottom: 0% !important;
+                  margin-left: -17% !important;
+                  margin-top: -2%;
+              }
+              /*Label class name*/
+              .edt_nm {
+                  padding-bottom: 1px !important;
+                  margin-left: 1px !important;
+              }
+
+              .edt_log {
+                  margin-left: -20%;
+                  padding-top: 5px;
+              }
+
+              .edt_pswd {
+                  padding-bottom: 1px;
+                  margin-left: 1px;
+              }
+
+              .edt_repswd {
+                  padding-top: 6px;
+                  margin-left: 1px;
+              }
+
+              .edt_addr {
+                  margin-left: 1%;
+                  padding-top: 2%;
+              }
+
+              .edt_email {
+                  margin-left: -21%;
+                  padding-top: 4%;
+              }
+
+              .edt_mob {
+                  padding-top: 2%;
+                  margin-left: 1%;
+              }
+
+              .edt_rle {
+                  margin-left: 1%;
+                  padding-top: 3%;
+              }
+
+              .allocation_usr {
+                  width: 76% !important;
+              }
+
+              .open > .dropdown-menu {
+                  width: 148% !important;
+              }
+
+            allocation_m > .dropdown-menu {
+                  position: relative !important;
+              }
+              /*Search icon*/
+              .input-group-addon1 {
+                  margin-left: 0% !important;
+              }
+              /*Deactivate pop up for user*/
+              .usr_deact_mter {
+                  margin-left: -28%;
+                  margin-right: -26%;
+              }
+          }
+
+          @@media only screen and (min-width:321px) and (max-width:359px) {
+              .adv-table .dataTables_length select {
+                  width: 82% !important;
+              }
+
+              div.dataTables_length label {
+                  white-space: normal !important;
+              }
+
+              .iconic-input {
+                  margin-left: 3%;
+                  margin-top: 0%;
+              }
+
+              .edt_usr_modal {
+                  margin-left: 0;
+                  width: 82% !important;
+                  margin-bottom: 6px;
+                  height: 33em;
+                  overflow-y: scroll;
+              }
+
+              .usr_header {
+                  position: static;
+                  z-index: 9999999;
+                  width: 100%;
+              }
+
+              .usr_modal_body {
+                  /*height: 33em;
+                    overflow-y: scroll;*/
+              }
+
+              .usr_nm {
+                  margin-bottom: 5px !important;
+                  margin-left: -17% !important;
+                  margin-top: -6%;
+              }
+
+              .usr_pswd {
+                  margin-bottom: 0 !important;
+                  margin-left: -17% !important;
+                  margin-top: -2%;
+              }
+
+              .usr_addr {
+                  margin-bottom: 0% !important;
+                  margin-left: -17% !important;
+                  margin-top: -2%;
+              }
+
+              .usr_mob {
+                  margin-bottom: 0% !important;
+                  margin-left: -17% !important;
+                  margin-top: -2%;
+              }
+              /*Label class name*/
+              .edt_nm {
+                  padding-bottom: 1px !important;
+                  margin-left: 1px !important;
+              }
+
+              .edt_log {
+                  margin-left: -20%;
+                  padding-top: 5px;
+              }
+
+              .edt_pswd {
+                  padding-bottom: 1px;
+                  margin-left: 1px;
+              }
+
+              .edt_repswd {
+                  padding-top: 6px;
+                  margin-left: 1px;
+              }
+
+              .edt_addr {
+                  margin-left: 1%;
+                  padding-top: 2%;
+              }
+
+              .edt_email {
+                  margin-left: -21%;
+                  padding-top: 4%;
+              }
+
+              .edt_mob {
+                  padding-top: 2%;
+                  margin-left: 1%;
+              }
+
+              .edt_rle {
+                  margin-left: 1%;
+                  padding-top: 3%;
+              }
+
+              .allocation_usr {
+                  width: 76% !important;
+              }
+
+              .open > .dropdown-menu {
+                  width: 184% !important;
+              }
+
+              allocation_m > .dropdown-menu {
+                  position: relative !important;
+              }
+              /*Search icon*/
+              .input-group-addon1 {
+                  margin-left: -75% !important;
+              }
+              /*Deactivate pop up for user*/
+              .usr_deact_mter {
+              }
+
+              .cmxform .form-group label.error {
+                  padding-left: 0;
+                  white-space: normal;
+                  text-align: left;
+              }
+          }
+
+           /*****************************************iphone 6s portrait*******************************/
+
+          @@media only screen and (min-width:360px) and (max-width:420px) {
+              .adv-table .dataTables_length select {
+                  width: 82% !important;
+              }
+
+              .iconic-input {
+                  /*margin-left: 3%;*/
+              }
+
+              div.dataTables_length label {
+                  white-space: normal !important;
+              }
+
+              .edt_usr_modal {
+                  margin-left: 0;
+                  width: 82% !important;
+                  margin-bottom: 6px;
+                  height: 33em;
+                  overflow-y: scroll;
+              }
+
+              .usr_header {
+                  position: static;
+                  z-index: 9999999;
+                  width: 100%;
+              }
+
+              .usr_modal_body {
+                  /*height: 33em;
+                    overflow-y: scroll;*/
+              }
+
+              .usr_nm {
+                  margin-bottom: 5px !important;
+                  margin-left: -17% !important;
+                  margin-top: -6%;
+              }
+
+              .usr_pswd {
+                  margin-bottom: 0 !important;
+                  margin-left: -17% !important;
+                  margin-top: -2%;
+              }
+
+              .usr_addr {
+                  margin-bottom: 0% !important;
+                  margin-left: -17% !important;
+                  margin-top: -2%;
+              }
+
+              .usr_mob {
+                  margin-bottom: 0% !important;
+                  margin-left: -17% !important;
+                  margin-top: -2%;
+              }
+              /*Label class name*/
+              .edt_nm {
+                  padding-bottom: 1px !important;
+                  margin-left: 1px !important;
+              }
+
+              .edt_log {
+                  margin-left: -20%;
+                  padding-top: 5px;
+              }
+
+              .edt_pswd {
+                  padding-bottom: 1px;
+                  margin-left: 1px;
+              }
+
+              .edt_repswd {
+                  padding-top: 6px;
+                  margin-left: 1px;
+              }
+
+              .edt_addr {
+                  margin-left: 1%;
+                  padding-top: 2%;
+              }
+
+              .edt_email {
+                  margin-left: -21%;
+                  padding-top: 4%;
+              }
+
+              .edt_mob {
+                  padding-top: 2%;
+                  margin-left: 1%;
+              }
+
+              .edt_rle {
+                  margin-left: 1%;
+                  padding-top: 3%;
+              }
+
+              .allocation_usr {
+                  width: 76% !important;
+              }
+
+              .open > .dropdown-menu {
+                  width: 184% !important;
+              }
+
+              allocation_m > .dropdown-menu {
+                  position: relative !important;
+              }
+              /*Search icon*/
+              .input-group-addon1 {
+                  margin-left: -75% !important;
+              }
+              /*Deactivate pop up for user*/
+              .usr_deact_mter {
+              }
+          }
+
+          @@media only screen and (min-width:421px) and (max-width:479px) {
+              .edt_usr_modal {
+                  margin-left: -10%;
+                  width: 118%;
+                  margin-bottom: 18% !important;
+              }
+
+              .usr_nm {
+              }
+
+              .usr_pswd {
+              }
+
+              .usr_addr {
+              }
+
+              .usr_mob {
+              }
+              /****Fields class *****/
+              .nm_txt {
+                  margin-left: -24px;
+              }
+
+              .log_txt {
+              }
+
+              .pswd_txt {
+                  margin-left: -26px;
+              }
+
+              .repswd_txt {
+              }
+
+              .adddr_txt {
+                  margin-left: -26px;
+              }
+
+              .mail_txt {
+              }
+
+              .mob_txt {
+                  margin-left: -26px;
+              }
+
+              .rle_txt {
+              }
+              /*Label class name*/
+              .edt_nm {
+                  margin-left: -119px;
+              }
+
+              .edt_log {
+                  margin-left: -82px;
+              }
+
+              .edt_pswd {
+                  margin-left: -97px;
+              }
+
+              .edt_repswd {
+                  margin-left: -15px;
+              }
+
+              .edt_addr {
+                  margin-left: -118px;
+              }
+
+              .edt_email {
+                  margin-left: -85px;
+              }
+
+              .edt_mob {
+                  margin-left: -89px;
+              }
+
+              .edt_rle {
+                  margin-left: -104px;
+              }
+
+              .allocation_usr {
+                  width: 71%;
+              }
+
+              .open > .dropdown-menu {
+                  width: 165% !important;
+              }
+
+              allocation_m > .dropdown-menu {
+                  position: relative !important;
+              }
+
+              .input-group-addon1 {
+                  margin-left: -75% !important;
+              }
+              /*Deactivate pop up for user*/
+              .usr_deact_mter {
+              }
+
+              .cmxform .form-group label.error {
+                  padding-left: 0;
+                  white-space: normal;
+              }
+          }
+
+
+           @@media only screen and (min-width:480px) and (max-width:530px) {
+                .iconic-input {
+                margin-left: 37% !important;
+                margin-right: -10% !important;
+            }
+              .edt_usr_modal {
+                  margin-left: -10%;
+                  width: 118%;
+                  margin-bottom: 18% !important;
+              }
+
+              .usr_nm {
+              }
+
+              .usr_pswd {
+              }
+
+              .usr_addr {
+              }
+
+              .usr_mob {
+              }
+              /****Fields class *****/
+              .nm_txt {
+                  margin-left: -24px;
+              }
+
+              .log_txt {
+              }
+
+              .pswd_txt {
+                  margin-left: -26px;
+              }
+
+              .repswd_txt {
+              }
+
+              .adddr_txt {
+                  margin-left: -26px;
+              }
+
+              .mail_txt {
+              }
+
+              .mob_txt {
+                  margin-left: -26px;
+              }
+
+              .rle_txt {
+              }
+              /*Label class name*/
+              .edt_nm {
+                  margin-left: -119px;
+              }
+
+              .edt_log {
+                  margin-left: -82px;
+              }
+
+              .edt_pswd {
+                  margin-left: -97px;
+              }
+
+              .edt_repswd {
+                  margin-left: -15px;
+              }
+
+              .edt_addr {
+                  margin-left: -118px;
+              }
+
+              .edt_email {
+                  margin-left: -85px;
+              }
+
+              .edt_mob {
+                  margin-left: -89px;
+              }
+
+              .edt_rle {
+                  margin-left: -104px;
+              }
+
+              .allocation_usr {
+                  width: 71%;
+              }
+
+              .open > .dropdown-menu {
+                  width: 165% !important;
+              }
+
+              allocation_m > .dropdown-menu {
+                  position: relative !important;
+              }
+
+              .input-group-addon1 {
+                  margin-left: -75% !important;
+              }
+              /*Deactivate pop up for user*/
+              .usr_deact_mter {
+              }
+
+              .cmxform .form-group label.error {
+                  padding-left: 0;
+                  white-space: normal;
+              }
+          }
+
+           @@media only screen and (min-width:531px)and (max-width:567px) {
+              .deactivated_records {
+                  padding-left: 29% !important;
+              }
+              /*Modal background fade*/
+              .modal-backdrop {
+                  height: 122% !important;
+              }
+
+                  .modal-backdrop.in {
+                      height: 174% !important;
+                  }
+
+              .iconic-input {
+              }
+
+              .edt_usr_modal {
+                  width: 100%;
+                  margin-bottom: 12%;
+              }
+
+              .usr_header {
+              }
+
+              .usr_nm {
+                  /*margin-bottom: 5px !important;
+                   margin-left: -17% !important;
+                   margin-top: -6%;*/
+              }
+
+              .usr_pswd {
+                  /*margin-bottom: 0 !important;
+                   margin-left: -17% !important;
+                   margin-top: -2%;*/
+              }
+
+              .usr_addr {
+                  /*margin-bottom: 0% !important;
+                   margin-left: -17% !important;
+                   margin-top: -2%;*/
+              }
+
+              .usr_mob {
+                  /*margin-bottom: 0% !important;
+                   margin-left: -17% !important;
+                   margin-top: -2%;*/
+              }
+              /*Label class name*/
+              .edt_nm {
+                  margin-left: -67% !important;
+              }
+
+              .edt_log {
+                  margin-left: -58%;
+              }
+
+              .edt_pswd {
+                  margin-left: -51%;
+              }
+
+              .edt_repswd {
+                  margin-left: -14%;
+              }
+
+              .edt_addr {
+                  margin-left: -65%;
+              }
+
+              .edt_email {
+                  margin-left: -61%;
+              }
+
+              .edt_mob {
+                  margin-left: -47%;
+              }
+
+              .edt_rle {
+                  margin-left: -72%;
+              }
+
+              .allocation_usr {
+                  width: 70% !important;
+              }
+
+              .open > .dropdown-menu {
+                  width: 165% !important;
+              }
+
+              allocation_m > .dropdown-menu {
+                  position: relative !important;
+              }
+              /*Search icon*/
+              .input-group-addon1 {
+                  margin-left: 0% !important;
+              }
+              /*Deactivate pop up for user*/
+              .usr_deact_mter {
+                  margin-left: 2%;
+              }
+          }
+
+          @@media only screen and (min-width:568px)and (max-width:599px) {
+              .deactivated_records {
+                  padding-left: 29% !important;
+              }
+              /*Modal background fade*/
+              .modal-backdrop {
+                  height: 122% !important;
+              }
+
+                  .modal-backdrop.in {
+                      height: 174% !important;
+                  }
+
+              .iconic-input {
+              }
+
+              .edt_usr_modal {
+                  width: 100%;
+                  margin-bottom: 12%;
+              }
+
+              .usr_header {
+              }
+
+              .usr_nm {
+                  /*margin-bottom: 5px !important;
+                   margin-left: -17% !important;
+                   margin-top: -6%;*/
+              }
+
+              .usr_pswd {
+                  /*margin-bottom: 0 !important;
+                   margin-left: -17% !important;
+                   margin-top: -2%;*/
+              }
+
+              .usr_addr {
+                  /*margin-bottom: 0% !important;
+                   margin-left: -17% !important;
+                   margin-top: -2%;*/
+              }
+
+              .usr_mob {
+                  /*margin-bottom: 0% !important;
+                   margin-left: -17% !important;
+                   margin-top: -2%;*/
+              }
+              /*Label class name*/
+              .edt_nm {
+                  margin-left: -67% !important;
+              }
+
+              .edt_log {
+                  margin-left: -58%;
+              }
+
+              .edt_pswd {
+                  margin-left: -51%;
+              }
+
+              .edt_repswd {
+                  margin-left: -14%;
+              }
+
+              .edt_addr {
+                  margin-left: -65%;
+              }
+
+              .edt_email {
+                  margin-left: -61%;
+              }
+
+              .edt_mob {
+                  margin-left: -47%;
+              }
+
+              .edt_rle {
+                  margin-left: -72%;
+              }
+
+              .allocation_usr {
+                  width: 70% !important;
+              }
+
+              .open > .dropdown-menu {
+                  width: 165% !important;
+              }
+
+              allocation_m > .dropdown-menu {
+                  position: relative !important;
+              }
+              /*Search icon*/
+              .input-group-addon1 {
+                  margin-left: 0% !important;
+              }
+              /*Deactivate pop up for user*/
+              .usr_deact_mter {
+                  margin-left: 2%;
+              }
+          }
+
+          @@media only screen and (min-width:600px) and (max-width:640px) and (orientation:portrait) {
+                  .edt_usr_modal {
+                      margin-left: -25px;
+                      width: 112%;
+                  }
+
+                  .usr_nm {
+                  }
+
+                  .usr_pswd {
+                  }
+
+                  .usr_addr {
+                  }
+
+                  .usr_mob {
+                  }
+                  /*Label class name*/
+                  .edt_nm {
+                      margin-left: -11.6em;
+                  }
+
+                  .nm_txt {
+                  }
+
+                  .edt_log {
+                      margin-left: -139px;
+                  }
+
+                  .log_txt {
+                  }
+
+                  .edt_pswd {
+                      margin-left: -129px;
+                  }
+
+                  .pswd_txt {
+                  }
+
+                  .edt_repswd {
+                      margin-left: -73px;
+                  }
+
+                  .repswd_txt {
+                  }
+
+                  .edt_addr {
+                      margin-left: -149px;
+                  }
+
+                  .adddr_txt {
+                  }
+
+                  .edt_email {
+                      margin-left: -142px;
+                  }
+
+                  .mail_txt {
+                  }
+
+                  .edt_mob {
+                      margin-left: -121px;
+                  }
+
+                  .mob_txt {
+                  }
+
+                  .edt_rle {
+                      margin-left: -160px;
+                  }
+
+                  .rle_txt {
+                  }
+
+                  .allocation_usr {
+                      width: 82% !important;
+                  }
+
+                  .input-group-addon1 {
+                      margin-left: -75% !important;
+                  }
+                  /*Deactivate pop up for user*/
+                  .usr_deact_mter {
+                      margin-left: 26%;
+                      width: 79%;
+                  }
+
+              .cmxform .form-group label.error {
+                  padding-left: 0;
+                  white-space: normal;
+              }
+              }
+
+           @@media only screen and (min-width:600px) and (max-width:640px) and (orientation:landscape) {
+                  .edt_usr_modal {
+                      margin-left: -25px;
+                      width: 112%;
+                  }
+
+                  .usr_nm {
+                  }
+
+                  .usr_pswd {
+                  }
+
+                  .usr_addr {
+                  }
+
+                  .usr_mob {
+                  }
+                  /*Label class name*/
+                  .edt_nm {
+                      margin-left: -11.6em;
+                  }
+
+                  .nm_txt {
+                  }
+
+                  .edt_log {
+                      margin-left: -139px;
+                  }
+
+                  .log_txt {
+                  }
+
+                  .edt_pswd {
+                      margin-left: -129px;
+                  }
+
+                  .pswd_txt {
+                  }
+
+                  .edt_repswd {
+                      margin-left: -73px;
+                  }
+
+                  .repswd_txt {
+                  }
+
+                  .edt_addr {
+                      margin-left: -149px;
+                  }
+
+                  .adddr_txt {
+                  }
+
+                  .edt_email {
+                      margin-left: -142px;
+                  }
+
+                  .mail_txt {
+                  }
+
+                  .edt_mob {
+                      margin-left: -121px;
+                  }
+
+                  .mob_txt {
+                  }
+
+                  .edt_rle {
+                      margin-left: -160px;
+                  }
+
+                  .rle_txt {
+                  }
+
+                  .allocation_usr {
+                      width: 82% !important;
+                  }
+
+                  .input-group-addon1 {
+                      margin-left: -75% !important;
+                  }
+                  /*Deactivate pop up for user*/
+                  .usr_deact_mter {
+                      margin-left: 26%;
+                      width: 79%;
+                  }
+
+              .cmxform .form-group label.error {
+                  padding-left: 0;
+                  white-space: normal;
+              }
+              }
+
+           /***************************** IPHONE 6S Landscape **********************************/
+          @@media only screen and (min-width:651px)and (max-width:710px) {
+              .deactivated_records {
+                  padding-left: 34.5% !important;
+              }
+
+              .edt_usr_modal {
+                  margin-left: -6%;
+                  width: 100%;
+              }
+
+              .usr_nm {
+              }
+
+              .usr_pswd {
+              }
+
+              .usr_addr {
+              }
+
+              .usr_mob {
+              }
+              /*Label class name*/
+              .edt_nm {
+                  margin-left: -76%;
+              }
+
+              .nm_txt {
+              }
+
+              .edt_log {
+                  margin-left: -69%;
+              }
+
+              .log_txt {
+              }
+
+              .edt_pswd {
+                  margin-left: -129px;
+              }
+
+              .pswd_txt {
+              }
+
+              .edt_repswd {
+                  margin-left: -36%;
+              }
+
+              .repswd_txt {
+              }
+
+              .edt_addr {
+                  margin-left: -149px;
+              }
+
+              .adddr_txt {
+              }
+
+              .edt_email {
+                  margin-left: -142px;
+              }
+
+              .mail_txt {
+              }
+
+              .edt_mob {
+                  margin-left: -121px;
+              }
+
+              .mob_txt {
+              }
+
+              .edt_rle {
+                  margin-left: -160px;
+              }
+
+              .rle_txt {
+              }
+
+              .allocation_usr {
+                  width: 82% !important;
+              }
+
+              .input-group-addon1 {
+                  margin-left: 0% !important;
+              }
+
+              allocation_m > .dropdown-menu {
+                  position: relative !important;
+              }
+              /*Deactivate pop up for user*/
+              .usr_deact_mter {
+                  margin-left: 26%;
+                  width: 79%;
+              }
+          }
+
+           @@media only screen and (min-width:711px)and (max-width:767px) {
+              .deactivated_records {
+                  padding-left: 38% !important;
+              }
+
+              .edt_usr_modal {
+                  margin-left: -6%;
+                  width: 100%;
+              }
+
+              .usr_nm {
+              }
+
+              .usr_pswd {
+              }
+
+              .usr_addr {
+              }
+
+              .usr_mob {
+              }
+              /*Label class name*/
+              .edt_nm {
+                  margin-left: -76%;
+              }
+
+              .nm_txt {
+              }
+
+              .edt_log {
+                  margin-left: -69%;
+              }
+
+              .log_txt {
+              }
+
+              .edt_pswd {
+                  margin-left: -129px;
+              }
+
+              .pswd_txt {
+              }
+
+              .edt_repswd {
+                  margin-left: -36%;
+              }
+
+              .repswd_txt {
+              }
+
+              .edt_addr {
+                  margin-left: -149px;
+              }
+
+              .adddr_txt {
+              }
+
+              .edt_email {
+                  margin-left: -142px;
+              }
+
+              .mail_txt {
+              }
+
+              .edt_mob {
+                  margin-left: -121px;
+              }
+
+              .mob_txt {
+              }
+
+              .edt_rle {
+                  margin-left: -160px;
+              }
+
+              .rle_txt {
+              }
+
+              .allocation_usr {
+                  width: 82% !important;
+              }
+
+              .input-group-addon1 {
+                  margin-left: 0% !important;
+              }
+
+              allocation_m > .dropdown-menu {
+                  position: relative !important;
+              }
+              /*Deactivate pop up for user*/
+              .usr_deact_mter {
+                  margin-left: 26%;
+                  width: 79%;
+              }
+          }
+
+          @@media only screen and (min-width:768px) and (max-width:798px) {
+                  .edt_usr_modal {
+                      margin-left: -11%;
+                      margin-top: -49%;
+                  }
+
+                  .usr_nm {
+                  }
+
+                  .usr_pswd {
+                  }
+
+                  .usr_addr {
+                  }
+
+                  .usr_mob {
+                  }
+                  /****Fields class *****/
+                  .nm_txt {
+                  }
+
+                  .log_txt {
+                  }
+
+                  .pswd_txt {
+                  }
+
+                  .repswd_txt {
+                  }
+
+                  .adddr_txt {
+                  }
+
+                  .mail_txt {
+                  }
+
+                  .mob_txt {
+                  }
+
+                  .rle_txt {
+                  }
+                  /*Label class name*/
+                  .edt_nm {
+                  }
+
+                  .edt_log {
+                  }
+
+                  .edt_pswd {
+                  }
+
+                  .edt_repswd {
+                  }
+
+                  .edt_addr {
+                  }
+
+                  .edt_email {
+                  }
+
+                  .edt_mob {
+                  }
+
+                  .edt_rle {
+                  }
+
+                  .allocation_usr {
+                      width: 55%;
+                  }
+
+                  .input-group-addon1 {
+                      margin-left: -75% !important;
+                  }
+                  /*Deactivate pop up for user*/
+                  .usr_deact_mter {
+                  }
+              }
+
+          @@media only screen and (min-width:799px) and (max-width:850px) {
+                  .edt_usr_modal {
+                      margin-left: -64px;
+                  }
+
+                  .usr_nm {
+                  }
+
+                  .usr_pswd {
+                  }
+
+                  .usr_addr {
+                  }
+
+                  .usr_mob {
+                  }
+                  /****Fields class *****/
+                  .nm_txt {
+                  }
+
+                  .log_txt {
+                  }
+
+                  .pswd_txt {
+                  }
+
+                  .repswd_txt {
+                  }
+
+                  .adddr_txt {
+                  }
+
+                  .mail_txt {
+                  }
+
+                  .mob_txt {
+                  }
+
+                  .rle_txt {
+                  }
+                  /*Label class name*/
+                  .edt_nm {
+                  }
+
+                  .edt_log {
+                  }
+
+                  .edt_pswd {
+                  }
+
+                  .edt_repswd {
+                  }
+
+                  .edt_addr {
+                  }
+
+                  .edt_email {
+                  }
+
+                  .edt_mob {
+                  }
+
+                  .edt_rle {
+                  }
+
+                  .allocation_usr {
+                      margin-left: 42%;
+                      margin-top: -14%;
+                      width: 55% !important;
+                  }
+
+                      .allocation_usr > .multiselect {
+                          /*margin-left: 131px !important;
+                        margin-top: -38px !important;*/
+                      }
+
+                  .open > .dropdown-menu {
+                  }
+
+                  .input-group-addon1 {
+                      margin-left: -75% !important;
+                  }
+                  /*Deactivate pop up for user*/
+                  .usr_deact_mter {
+                  }
+              }
+
+          @@media only screen and (min-width:1024px) and (max-width:1100px) {
+              .edt_usr_modal {
+              }
+
+              .usr_nm {
+              }
+
+              .usr_pswd {
+              }
+
+              .usr_addr {
+              }
+
+              .usr_mob {
+              }
+              /****Fields class *****/
+              .nm_txt {
+              }
+
+              .log_txt {
+              }
+
+              .pswd_txt {
+              }
+
+              .repswd_txt {
+              }
+
+              .adddr_txt {
+              }
+
+              .mail_txt {
+              }
+
+              .mob_txt {
+              }
+
+              .rle_txt {
+              }
+              /*Label class name*/
+              .edt_nm {
+              }
+
+              .edt_log {
+              }
+
+              .edt_pswd {
+              }
+
+              .edt_repswd {
+              }
+
+              .edt_addr {
+              }
+
+              .edt_email {
+              }
+
+              .edt_mob {
+              }
+
+              .edt_rle {
+              }
+
+              .allocation_usr {
+                  margin-left: 42%;
+                  margin-top: -15%;
+                  width: 55% !important;
+              }
+
+                  .allocation_usr > .multiselect {
+                      /*margin-left: 131px !important;
+                        margin-top: -38px !important;*/
+                  }
+
+              .iconic-input {
+                  margin-left: 8%;
+                  margin-right: -6%;
+              }
+
+              .input-group-addon1 {
+                  margin-left: -75% !important;
+              }
+              /*Deactivate pop up for user*/
+              .usr_deact_mter {
+              }
+
+        .edt_State {
+            margin-left: 46px;
+        }
+
+        .edt_City {
+            margin-left: 101px;
+        }
+
+        .edt_Zip {
+            margin-left: 59px;
+        }
+
+        .edt_Gender {
+            margin-left: 71px;
+          }
+
+        .edt_HomePhone {
+            margin-left: 13px;
+        }
+
+        .edt_rle {
+            margin-left: 38px;
+        }
+</style>
+
+
+<div id="loading">
+    <div id="loadingcontent">
+        <p id="loadingspinner">
+            Searching things...
+        </p>
+    </div>
+</div>
+
+
+
+<!-- page start-->
+
+
+<section id="main-content">
+    <section class="wrapper">
+        <!-- page start-->
+        <div class="row">
+            <div class="col-sm-12">
+                <section class="panel">
+                    <header class="panel-heading">
+                        <b>User Master </b>
+                    </header>
+                    <div class="panel-body">
+                        <div class="adv-table">
+                            <div class="row">
+                                <div class="col-lg-4 col-md-4 col-xs-4 add_newbtn">
+
+                                    <a class="btn btn-warning" data-backdrop="static" id="btnAddUser">
+                                        <span class="icon">
+                                            <i class="fa fa-plus"></i>
+                                        </span>
+                                        <span>Add New</span>
+                                    </a>
+                                </div>
+                                <div class="col-lg-8 col-md-8 col-xs-8 show_deactive deactivated_records">
+                                    <input type="checkbox" name="showDeactivate" id="chkShowDeactivate" />Show Deactivated Records
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table id="dynamic-table" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                                    <thead>
+                                        <tr>
+                                            <th width="20%">Login Id</th>
+                                            <th width="25%">Name</th>
+                                            <th width="20%">Role</th>
+                                            <th width="15%">Email ID</th>
+                                            <th width="10%">Mobile No</th>
+                                            <th width="10%">Action</th>
+                                        </tr>
+                                    </thead>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</section>
+<!-- Modal for Add /Edit Dialog -->
+<div class="modal fade modal-dialog-center" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content-wrap">
+            <div class="modal-content edt_usr_modal">
+                <div class="modal-header usr_header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Add New User</h4>
+                </div>
+                <div class="modal-body usr_modal_body">
+                    <div class="panel-body">
+                        <form id="form3" class="cmxform form-horizontal tasi-form">
+                            <fieldset>
+                                <legend>Personal Information</legend>
+                                <div class="form-group col-lg-12 col-sm-12 col-xs-12 usr_nm">
+                                    @*<label for="name" class="col-lg-2">Name <span style="color:red">*</span></label>*@
+                                    <div class="col-lg-6 col-sm-6 col-xs-12 ">
+                                        <label for="name" class="edt_nm">Name <span style="color:red">*</span></label>
+                                        <input type="text" name="UserFullName" id="txtUserFullName" maxlength="201" class="nm_txt" />
+                                    </div>
+                                    @*<label for="name" class="col-lg-3">Login Id <span style="color:red">*</span></label>*@
+                                    <div class="col-lg-6 col-sm-6 col-xs-12 ">
+                                        <label for="name" class="edt_log">Login Id <span style="color:red">*</span></label>
+                                        <input type="hidden" name="UserId" id="txtUserId" />
+                                        <input type="text" name="LogInId" id="txtLogInId" maxlength="200" class="log_txt" />
+                                    </div>
+                                </div>
+                                <div class="form-group col-lg-12 col-sm-12 col-xs-12 usr_pswd">
+                                    @*<label for="name" class="col-lg-2">Password <span style="color:red">*</span></label>*@
+                                    <div class="col-lg-6 col-sm-6 col-xs-12">
+                                        <label for="name" class="edt_pswd">Password <span style="color:red">*</span></label>
+
+                                        <input type="password" name="password" id="txtPassword" maxlength="50" class="pswd_txt" />
+                                    </div>
+                                    @*<label for="name" class="col-lg-3">Re-enter Password <span style="color:red">*</span></label>*@
+                                    <div class="col-lg-6 col-sm-6 col-xs-12 rent_pswd">
+                                        <label for="name" class="edt_repswd">Re-enter Password <span style="color:red">*</span></label>
+                                        <input type="password" name="Confirmpassword" id="txtConfirmPassword" maxlength="50" class="repswd_txt" />
+                                    </div>
+                                </div>
+                                <div class="form-group col-lg-12 col-sm-12 col-xs-12 usr_addr">
+                                    @*<label for="name" class="col-lg-2">Address </label>*@
+                                    <div class="col-lg-6 col-sm-6">
+                                        <label for="name" class="edt_addr">Address </label>
+                                        <input type="text" name="Address" id="txtUserAddress" maxlength="200" class="adddr_txt" />
+                                    </div>
+                                    @*<label for="name" class="col-lg-3">Email Id<span style="color:red">*</span></label>*@
+                                    <div class="col-lg-6 col-sm-6">
+                                        <label for="name" class="edt_email">Email Id<span style="color:red">*</span></label>
+                                        <input type="text" name="Email" id="txtEmail" class="mail_txt" />
+                                    </div>
+
+                                </div>
+
+
+                                <div class="form-group col-lg-12 col-sm-12 col-xs-12">
+
+                                    <div class="col-lg-6 col-sm-6">
+                                        <label for="name" class="edt_State">State</label>
+                                        <select data-placeholder="Select State" id="ddlState" style="width:100%" name="StateID" class=" form-control chosen-select"></select>
+
+                                    </div>
+                                    <div class="col-lg-6 col-sm-6">
+                                        <label for="name" class="edt_City">City </label>
+                                        <select data-placeholder="Select City" id="ddlCity" name="CityID" class="  chosen-select"></select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group col-lg-12 col-sm-12 col-xs-12 usr_City">
+                                    @*<label for="name" class="col-lg-2">Address </label>*@
+                                    <div class="col-lg-6 col-sm-6">
+                                        <label for="name" class="edt_Zip">Zip </label>
+                                        <input type="text" name="ZipCode" id="txtZip" maxlength="6" minlength="6" class="Zip_txt Numeric-Only" />
+                                    </div>
+                                    @*<label for="name" class="col-lg-3">Email Id<span style="color:red">*</span></label>*@
+                                    <div class="col-lg-6 col-sm-6">
+                                        <label for="name" class="edt_Gender">Gender</label>
+                                        <select data-placeholder="Select Gender" id="ddlGender" name="Gender" class="Gender_txt chosen-select">
+                                            <option value=""></option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                        </select>
+                                    </div>
+
+                                </div>
+
+                                <div class="form-group col-lg-12 col-sm-12 col-xs-12 usr_mob">
+                                    @*<label for="name" class="col-lg-2">Mobile No. <span style="color:red">*</span></label>*@
+                                    <div class="col-lg-6 col-sm-6">
+                                        <label for="name" class="edt_mob">Mobile No. <span style="color:red">*</span></label>
+                                        <input type="text" name="MobileNo" id="txtMobileNo" maxlength="15" class="mob_txt Numeric-Only" />
+                                    </div>
+                                    @*<label for="name" class="col-lg-3">Role <span style="color:red">*</span></label>*@
+                                    <div class="col-lg-6 col-sm-6">
+                                        <label for="name" class="edt_HomePhone">Home Phone No.</label>
+                                        <input type="text" name="HomePhoneNumber" id="txtHomePhoneNumber" maxlength="200" class="HomePhone_txt Numeric-Only" />
+                                    </div>
+                                </div>
+                                <div class="form-group col-lg-12 col-sm-12 col-xs-12 usr_mob">
+
+                                    <div class="col-lg-6 col-sm-6">
+                                        <label for="name" class="edt_rle">Role <span style="color:red">*</span></label>
+                                        <input type="hidden" name="PrimaryRoleId" id="txtPrimaryRoleId" class="rle_txt" />
+                                        <select id="ddlPrimaryRole" name="PrimaryRole" class="role_drp_btn" style="display:none; text-align:left" multiple="multiple"></select>
+                                    </div>
+                                </div>
+
+
+
+                            </fieldset>
+                            <br />
+                            <div id="installerDiv" style="padding: 0px 5px 0px 5px;">
+                                <fieldset>
+                                    <legend>Vehicle Information</legend>
+                                    <div class="form-group col-lg-12 col-sm-12 col-xs-12 usr_mob">
+                                        @*<label for="name" class="col-lg-2">Mobile No. <span style="color:red">*</span></label>*@
+                                        <div class="col-lg-6 col-sm-6">
+                                            <label for="name" class="edt_Make">Make</label>
+                                            <input type="text" name="VehicleMake" id="txtMake" maxlength="200" class="Make_txt" />
+                                        </div>
+                                        @*<label for="name" class="col-lg-3">Role <span style="color:red">*</span></label>*@
+                                        <div class="col-lg-6 col-sm-6">
+                                            <label for="name" class="edt_Model">Model</label>
+                                            <input type="text" name="VehicleModel" id="txtModel" maxlength="200" class="Model_txt" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-lg-12 col-sm-12 col-xs-12 usr_mob">
+                                        <div class="col-lg-6 col-sm-6">
+                                            <label for="name" class="edt_Year">Year</label>
+                                            <input type="text" name="VehicleYear" id="txtYear" maxlength="200" class="Year_txt" />
+                                        </div>
+                                        <div class="col-lg-6 col-sm-6">
+                                            <label for="name" class="edt_LicensePlateNumber">License Plate Number</label>
+                                            <input type="text" name="VehicleLicensePlateNumber" id="txtLicensePlateNumber" maxlength="200" class="LicensePlateNumber_txt" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-lg-12 col-sm-12 col-xs-12 usr_mob">
+                                        <div class="col-lg-6 col-sm-6">
+                                            <label for="name" class="edt_Vehicle">Vehicle</label>
+                                            <input type="text" name="Vehicle" id="txtVehicle" maxlength="200" class="Vehicle_txt" />
+                                        </div>
+                                        <div class="col-lg-6 col-sm-6">
+                                            <label for="name" class="edt_Color">Color</label>
+                                            <input type="text" name="VehicleColor" id="txtColor" maxlength="200" class="Color_txt" />
+                                        </div>
+
+
+                                    </div>
+
+                                    <div class="form-group col-lg-12 col-sm-12 col-xs-12 usr_mob">
+                                        <div class="col-lg-6 col-sm-6">
+                                            <label for="name" class="edt_ImageofVehicle">Image of Vehicle</label>
+                                            <input type="text" name="ImageofVehicle" id="txtImageofVehicle" maxlength="200" class="ImageofVehicle_txt" />
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div id="EmploymentDetailsDiv" style="padding: 0px 5px 0px 5px;">
+                                <fieldset>
+                                    <legend>Employment Details</legend>
+                                    <div class="form-group col-lg-12 col-sm-12 col-xs-12 usr_mob">
+
+                                        <div class="col-lg-6 col-sm-6">
+                                            <label for="name" class="edt_Make">Job Type</label>
+                                            <input type="text" name="JobType" id="txtJobType" maxlength="200" class="" />
+                                        </div>
+
+
+                                    </div>
+                                    <div class="form-group col-lg-12 col-sm-12 col-xs-12 usr_mob">
+                                        <div class="col-lg-6 col-sm-6">
+                                            <label for="name" class="edt_Make">Services</label>
+                                        </div>
+                                    </div>
+                                    <div id="servicesDiv"></div>
+
+                                </fieldset>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnSave" class="btn btn-success" type="button">Save</button>
+                    <button class="btn btn-danger" id="btnCancel" type="button">Cancel</button>
+                    <button class="btn btn-default" id="btnReset" type="button">Reset</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal -->
+<!-- Modal for deactivation -->
+<div class="modal fade modal-dialog-center" id="confirmDeactivatedialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content-wrap">
+            <div class="modal-content metrmke_dialog usr_deact_mter">
+                <div class="modal-header ">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Default Modal Title</h4>
+                </div>
+                <div class="modal-body">
+
+                    <input type="hidden" id="deactivationID" />
+                    <p>Are you sure to deactivate this record ?</p>
+
+                </div>
+                <div class="modal-footer">
+                    <button id="btnDeactivateYes" class="btn btn-success" type="button">Yes</button>
+                    <button class="btn btn-danger" id="btnDeactivatNo" type="button">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal -->
+<!-- Modal for confirmActivatedialog -->
+<div class="modal fade modal-dialog-center" id="confirmActivatedialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content-wrap">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Default Modal Title</h4>
+                </div>
+                <div class="modal-body">
+
+
+                    <input type="hidden" id="activationID" />
+                    <p>Are you sure to Activate this record ?</p>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button id="btnActivateYes" class="btn btn-success" type="button">Yes</button>
+                    <button class="btn btn-danger" id="btnActivatNo" type="button">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade modal-dialog-center" id="confirmDeactivatedialog1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content-wrap">
+            <div class="modal-content metrmke_dialog deact_mter">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="RemoveUserDetails">Default Modal Tittle</h4>
+                </div>
+                <div class="modal-body">
+
+                    <input type="hidden" id="deactivationID1" />
+                    <p>Are you sure to remove this record ?</p>
+
+                </div>
+                <div class="modal-footer">
+                    <button id="btnDeactivateYes1" class="btn btn-success" type="button">Yes</button>
+                    <button class="btn btn-danger" id="btnDeactivatNo1" type="button">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src='@Url.Content("~/Scripts/Admin/UserMasterIndex.js")'></script>
+
+<link href="~/Scripts/js/style.css" rel="stylesheet" />
+<link href="~/Scripts/js/jquery-ui.css" rel="stylesheet" />
+<script src="~/Scripts/js/jquery-ui.js"></script>
+<script src="~/Scripts/js/fieldChooser.js"></script>
+<link href="~/Content/MSTS/admin/css/bootstrap-multiselect.css" rel="stylesheet" />
+<script src="~/Content/MSTS/admin/js/bootstrap-multiselect.js"></script>
+
+<link href="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.css")" rel="stylesheet" />
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.jquery.min.js")"></script>
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.proto.min.js")"></script>

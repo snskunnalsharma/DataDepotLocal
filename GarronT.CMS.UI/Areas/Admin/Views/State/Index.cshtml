@@ -1,0 +1,157 @@
+﻿@{
+    ViewBag.Title = "State";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@Html.Hidden("CountryListUrl", Url.Action("GetCountryList", "Country"))
+@Html.Hidden("StateByCoutryIDListUrl", Url.Action("GetStateListByCountryID", "State"))
+@Html.Hidden("urlEditData", Url.Action("Create", "State"))
+@Html.Hidden("UrlStateList", Url.Action("GetStateList", "State"))
+@Html.Hidden("urlDeleteData", Url.Action("Delete", "State"))
+@Html.Hidden("urlDeActiveRecords", Url.Action("GetDeActiveRecords", "State"))
+@Html.Hidden("urlGetData", Url.Action("Edit", "State"))
+
+<div id="loading">
+    <div id="loadingcontent">
+        <p id="loadingspinner">
+            Searching things...
+        </p>
+    </div>
+</div>
+
+
+
+<!-- page start-->
+
+
+<section id="main-content">
+    <section class="wrapper">
+        <!-- page start-->
+        <div class="row">
+            <div class="col-sm-12">
+                <section class="panel">
+                    <header class="panel-heading">
+                        <b>State Master </b>
+
+                    </header>
+                    <div class="panel-body">
+                        <div class="adv-table">
+                            <div class="row">
+                                <div class="col-lg-4 col-md-4 col-xs-4 add_newbtn">
+                                    <a class="btn btn-success" id="btnAddState" data-toggle="modal" data-backdrop="static" href="#myModal">
+                                        Add New <i class="fa fa-plus"></i>
+                                    </a>
+                                </div>
+                                <div class="col-lg-8 col-md-8 col-xs-8 show_deactive deactivated_records">
+                                    <input type="checkbox" name="showDeactivate" id="chkShowDeactivate" />Show Deactivated Records
+                                </div>
+                            </div>
+                            <table id="dynamic-table" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                                <thead>
+                                    <tr>
+                                        <th width="45%">Country Name</th>
+                                        <th width="45%">State Name</th>
+                                        <th width="10%">Action</th>
+                                    </tr>
+                                </thead>
+
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</section>
+<!-- Modal for Add /Edit Dialog -->
+<div class="modal fade modal-dialog-center" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content-wrap">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Add New State</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="panel-body">
+                        <form id="form3" class="cmxform form-horizontal tasi-form">
+                            <div class="form-group">
+                                <label for="name" class="col-lg-3">Country Name <span style="color:red">*</span></label>
+                                <div class="col-lg-9">
+                                    <input type="hidden" name="CountryID" id="txtCountryID" />
+                                    <select id="ddlCountry" name="Country" class="inputclass form-control"></select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="name" class="col-lg-3">State Name <span style="color:red">*</span></label>
+                                <div class="col-lg-9">
+                                    <input type="hidden" name="StateID" id="txtStateID" />
+                                    <input type="text" name="StateName" id="txtStateName" />                                    
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnSave" class="btn btn-success" type="button">Save</button>
+                    <button class="btn btn-danger" id="btnCancel" type="button">Cancel</button>
+                    <button class="btn btn-default" id="btnReset" type="button">Reset</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal -->
+<!-- Modal for deactivation -->
+<div class="modal fade modal-dialog-center" id="confirmDeactivatedialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content-wrap">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Default Modal Title</h4>
+                </div>
+                <div class="modal-body">
+
+                    <input type="hidden" id="deactivationID" />
+                    <p>Are you sure to deactivate this record ?</p>
+
+                </div>
+                <div class="modal-footer">
+                    <button id="btnDeactivateYes" class="btn btn-success" type="button">Yes</button>
+                    <button class="btn btn-danger" id="btnDeactivatNo" type="button">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal -->
+<!-- Modal for confirmActivatedialog -->
+<div class="modal fade modal-dialog-center" id="confirmActivatedialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content-wrap">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Default Modal Title</h4>
+                </div>
+                <div class="modal-body">
+
+
+                    <input type="hidden" id="activationID" />
+                    <p>Are you sure to Activate this record ?</p>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button id="btnActivateYes" class="btn btn-success" type="button">Yes</button>
+                    <button class="btn btn-danger" id="btnActivatNo" type="button">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src='@Url.Content("~/Scripts/Admin/StateMaster.js")'></script>

@@ -1,0 +1,588 @@
+﻿@{
+    ViewBag.Title = "Customer";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@*@Html.Hidden("CityListUrl", Url.Action("GetCityList", "Client"))*@
+@Html.Hidden("StateByCityIDListUrl", Url.Action("GetState", "Client"))
+
+
+@Html.Hidden("StateListUrl", Url.Action("GetStateList", "Client"))
+@Html.Hidden("CityByStateIDListUrl", Url.Action("GetCityList", "Client"))
+
+@Html.Hidden("CityByStateIDListUrl", Url.Action("GetCity", "Client"))
+
+@Html.Hidden("UrlClientList", Url.Action("GetClientsList", "Client"))
+@Html.Hidden("urlEditData", Url.Action("Create", "Client"))
+@Html.Hidden("urlDeleteData", Url.Action("Delete", "Client"))
+
+@Html.Hidden("urlDeActiveRecords", Url.Action("GetDeActiveRecords", "Client"))
+@Html.Hidden("urlGetData", Url.Action("Edit", "Client"))
+
+@Html.Hidden("TmpCategoryListUrl", Url.Action("TmpList", "Client"))
+@Html.Hidden("TmpListClearUrl", Url.Action("TmpListClear", "Client"))
+@Html.Hidden("TmpListRemoveUrl", Url.Action("TmpListRemove", "Client"))
+@Html.Hidden("DuplicateCategoryCheckUrl", Url.Action("DuplicateCategoryCheck", "Client"))
+
+@Html.Hidden("EditContactDetalisUrl", Url.Action("EditContactDetails", "Client"))
+
+<style type="text/css">
+    .multiselect{width:100% !important;}
+   
+    .client_mod_content {
+        margin-bottom: 34px;
+    } 
+    .client_deactv_dialog {
+        margin-left: 33px;
+    }
+    .client_nme {
+      
+    }
+    .client_inp {
+        margin-left: -4px;
+        width: 101%;
+    }
+    .client_addr {
+        padding-left: 30px;
+    }
+    .client_addr2{}
+    .client_addr3 {
+    }
+    .client_addr_inp{
+
+    }
+    .input-group-addon1 {
+        margin-left: -75% !important;
+    }
+    .open > .dropdown-menu {
+       width: 100% !important;
+    }
+    .client_btn_success {
+        margin-left: 51px;
+    }
+    .cmxform .form-group label.error {
+        margin-left: -47%;
+    }
+    .clnt-err > label.error {
+        margin-left: -17% !important;
+    }
+</style>
+<style>
+
+
+    @@media only screen and (min-width:320px) and (max-width:429px) {
+
+        .form-horizontal .control-label {
+            margin-left: 6%;
+        }
+
+        .cmxform .form-group label.error {
+            margin-left: -17%;
+        }
+    }
+    @@media only screen and (min-width:430px) and (max-width:600px) {
+        .form-horizontal .control-label {
+            margin-left: 2%;
+            margin-right: -2%;
+            white-space: normal !important;
+        }
+
+        .cmxform .form-group label.error {
+            margin-left: -100%;
+        }
+
+        .error {
+            padding-top: 0% !important;
+        }
+
+        .clnt-err > label.error {
+            padding-top: 0% !important;
+        }
+
+        .email-err > label.error {
+            margin-left: -170% !important;
+        }
+
+        .mob-err > label.error {
+            margin-left: -145% !important;
+            margin-top: 17% !important;
+        }
+
+        .phn-err > label.error {
+            margin-left: -150% !important;
+            margin-top: 17% !important;
+        }
+    }
+
+    @@media only screen and (min-width:601px) and (max-width:767px) {
+        .form-horizontal .control-label {
+            margin-left: 2%;
+            margin-right: -2%;
+            white-space: normal !important;
+        }
+
+        .cmxform .form-group label.error {
+            margin-left: -100%;
+        }
+
+        .error {
+            padding-top: 0% !important;
+        }
+
+        .clnt-err > label.error {
+            padding-top: 0% !important;
+        }
+
+        .email-err > label.error {
+            margin-left: -88% !important;
+        }
+
+        .mob-err > label.error {
+            margin-left: -71% !important;
+        }
+
+        .phn-err > label.error {
+            margin-left: -71% !important;
+        }
+    }
+        /********************************** IPHONE 5S PORTRAIT***************/
+        @@media (max-width:320px) {
+            .modal.fade.modal-dialog-center {
+                height: 94%;
+                overflow-y: scroll;
+            }
+
+            .input-group-addon1 {
+                margin-left: 0% !important;
+            }
+
+            .form-horizontal .control-label {
+                margin-left: 6%;
+            }
+
+            .modal-md {
+                margin-left: -12%;
+                width: 65%;
+            }
+
+            .cmxform .form-group label.error {
+                margin-left: -27%;
+            }
+        }
+        /*****************************End IPhone 5S Portrait******************************/
+        /*****************************Ihone 5s landscape************************************/
+        @@media only screen and (min-width:501px)and (max-width:599px) {
+            .modal.fade.modal-dialog-center {
+                height: 92%;
+                overflow-y: scroll;
+            }
+
+            .open > .dropdown-menu {
+                width: 100% !important;
+            }
+
+            .input-group-addon1 {
+                margin-left: 0% !important;
+            }
+        }
+        /****************************5S landscape end**********************************************/
+        /*************************IPHONE 6S PORTRAIT***********************************************/
+        @@media only screen and (min-width:360px) and (max-width:420px) {
+            .modal.fade.modal-dialog-center {
+                height: 94%;
+                overflow-y: scroll;
+            }
+
+            .input-group-addon1 {
+                margin-left: 0% !important;
+            }
+        }
+        /*******************6s Portrait End*********************************************************/
+        /***************************** IPHONE 6S Landscape *****************************************/
+        @@media only screen and (min-width:651px)and (max-width:767px) {
+            .modal.fade.modal-dialog-center {
+                height: 92%;
+                overflow-y: scroll;
+            }
+
+            .open > .dropdown-menu {
+                width: 100% !important;
+            }
+
+            .input-group-addon1 {
+                margin-left: 0% !important;
+            }
+        }
+
+
+        @@media only screen and (min-width:320px) and (max-width:359px) {
+            .iconic-input {
+                margin-left: 4%;
+                margin-right: -9%;
+            }
+
+            .input-group-addon1 {
+                margin-left: -84% !important;
+            }
+
+            .open > .dropdown-menu {
+                min-width: 100% !important;
+            }
+
+            .modal.fade.modal-dialog-center {
+                height: 94%;
+                overflow-y: scroll;
+            }
+        }
+
+        @@media only screen and (min-width:421px) and (max-width:500px) {
+            .modal.fade.modal-dialog-center {
+                height: 92%;
+                overflow-y: scroll;
+            }
+
+            .open > .dropdown-menu {
+                width: 100% !important;
+            }
+
+            .input-group-addon1 {
+                margin-left: -78% !important;
+            }
+        }
+
+        @@media only screen and (min-width:600px) and (max-width:640px) {
+            .modal.fade.modal-dialog-center {
+                height: 97%;
+                overflow-y: hidden;
+            }
+
+            .modal-backdrop {
+                height: 142% !important;
+            }
+
+            .open > .dropdown-menu {
+                width: 100% !important;
+            }
+
+            .input-group-addon1 {
+                margin-left: -75% !important;
+            }
+        }
+
+        @@media only screen and (min-width:768px) and (max-width:799px) {
+            .modal.fade.modal-dialog-center {
+                height: 97%;
+                overflow-y: hidden;
+            }
+
+            .modal-backdrop {
+                height: 142% !important;
+            }
+
+            .open > .dropdown-menu {
+                width: 100% !important;
+            }
+
+            .input-group-addon1 {
+                margin-left: -75% !important;
+            }
+        }
+
+        @@media only screen and (min-width:1024px) and (max-width:1100px) {
+            .iconic-input {
+                margin-left: 50%;
+                margin-right: -3%;
+            }
+        }
+</style>
+
+
+
+
+
+<div id="loading">
+    <div id="loadingcontent">
+        <p id="loadingspinner"> Searching things... </p>
+    </div>
+</div>
+
+<!-- page start-->
+
+<section id="main-content">
+    <section class="wrapper">
+        <!-- page start-->
+        <div class="row">
+            <div class="col-sm-12">
+                <section class="panel">
+                    <header class="panel-heading"> <b>Customer Management</b> </header>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-lg-4 col-md-4 col-xs-4 add_newbtn"> <a class="btn btn-success" id="btnAddCLient" data-toggle="modal" data-backdrop="static"> Add New <i class="fa fa-plus"></i> </a> </div>
+                            <div class="col-lg-8 col-md-8 col-xs-8 show_deactive deactivated_records cli_deactv_rec">
+                                <input type="checkbox" name="showDeactivate" id="chkShowDeactivate" />
+                                Show Deactivated Records
+                            </div>
+                        </div>
+                      
+                        <div class="table-responsive">
+                            <table id="dynamic-table" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                                <thead>
+                                    <tr>
+                                        <th width="35%">Customer Name</th>
+                                        <th width="20%">City</th>
+                                        <th width="15%">Phone Number</th>
+                                        <th width="20%">Mobile Number</th>
+                                        <th width="10%">Action</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</section>
+<!-- Modal for Add /Edit Dialog -->
+<div class="modal fade modal-dialog-center" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content-wrap">
+            <div class="modal-content modal-md">
+                <div class="modal-header">
+                    <button type="button" class="close" id="btnClose" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Add New Customer</h4>
+                </div>
+                <div class="modal-body client-mod-bdy">
+                    <form id="form3" class="cmxform form-horizontal tasi-form">
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label" style="white-space:nowrap;">Customer Name <span style="color:red">*</span></label>
+                            <div class="col-lg-10 col-xs-12 col-sm-10 clnt-err" >
+                                <input type="hidden" name="ClientId" id="txtClientId" />
+                                <input type="text" name="ClientName" id="txtClientName" class="inputclass form-control " />
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label ">Address 1 <span style="color:red">*</span></label>
+                            <div class="col-lg-4  col-xs-12 col-sm-4">
+                                <input type="text" name="Address1" id="txtAddress1" class="inputclass form-control " maxlength="200" />
+                            </div>
+                           
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label ">Address 2</label>
+                            <div class="col-lg-4 col-xs-12 col-sm-4 ">
+                                <input type="text" id="txtAddress2" name="Address2" class="inputclass form-control " maxlength="200" />
+                            </div>
+                            
+                        </div>
+                        <div class="form-group">
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label ">Address 3 </label>
+                            
+                            <div class="col-lg-4 col-xs-12 col-sm-4  ">
+                                <input type="text" id="txtAddress3" name="Address3" class="inputclass form-control " maxlength="200" />
+                            </div>
+
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label ">State</label>                          
+                            <div class="col-lg-4 col-xs-12 col-sm-4   ">
+                                <input type="hidden" name="State" id="txtStateID" />
+                                <select id="ddlState" data-placeholder="Select State" name="StateID" class="form-control chosen-select "></select>
+                            </div>
+                            
+                        </div>
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label ">City </label>
+                            
+                                                           
+                            <div class="col-lg-4 col-xs-12 col-sm-4  ">
+                                <input type="hidden" name="City" id="txtCityID" />
+                                <select id="ddlCity" data-placeholder="Select City" name="CityId" class="form-control chosen-select"></select>
+                            </div>
+                         
+                           
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label ">Pin Code </label>
+                            <div class="col-lg-4 col-xs-12 col-sm-4">
+                                <input type="text" id="txtPinCode" name="Pincode" maxlength="6" class="inputclass form-control numericOnly client_pin_inp" />
+                            </div>
+                           
+                        </div>
+                        <div class="form-group">
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label ">Mobile No.</label>
+                               
+                            <div class="col-lg-4 col-xs-12 col-sm-4 mob-err">
+                                <input type="text" id="txtMobile" name="MobileNumber" maxlength="15" class="inputclass form-control numericOnly client_mobi_inp" />
+                            </div>
+                           
+                          
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label ">Phone No.</label>
+                            <div class="col-lg-4 col-xs-12 col-sm-4 phn-err ">
+
+                                <input id="txtPhone" name="PhoneNumber" value="" type="text" class="inputclass form-control numericOnly client_phn_inp" onkeyup="javascript:return mask(this.value,this,'1,5,9','-');" onblur="javascript:return mask(this.value,this,'1,5,9','-');" maxlength="14">
+                            </div>
+                           
+                        </div>
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label">Email Id.</label>
+
+                            <div class="col-lg-4 col-xs-12 col-sm-4 ">
+                                <input type="text" name="ClientEmailId" id="txtClientEmailId1" class="inputclass form-control client_emailid_inp" />
+                            </div>
+                            <div class="col-lg-6 col-xs-0 col-sm-0 ">
+                            </div>
+                        </div>
+                    </form>
+                    <form id="form4" class="cmxform form-horizontal tasi-form">
+                        <div class="form-group">
+                            <div class="col-lg-12  col-xs-8 col-sm-12 ">
+                                <h5>Contact Person Details:</h5>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label">FirstName</label>
+                          
+                            <div class="col-lg-4 col-xs-12 col-sm-4 ">
+                                <input type="text" name="FirstName" id="txtFirstName" maxlength="201" class="inputclass form-control " />
+                            </div>
+                           
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label">LastName</label>
+                            <div class="col-lg-4 col-xs-12 col-sm-4">
+                                <input type="text" name="LastName" id="txtLastName" maxlength="201" class="inputclass form-control " />
+                            </div>
+                           
+                        </div>
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label">Mobile No.</label>
+                               
+                            <div class="col-lg-4 col-xs-12 col-sm-4 mob-err">
+                                <input type="text" name="MobileNumber" id="txtMobileNumber" maxlength="15" class="inputclass form-control numericOnly " />
+                            </div>
+                           
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label " style="white-space: nowrap; ">Email Id.</label>
+                            <div class="col-lg-4 col-xs-12 col-sm-4 email-err" style="margin-bottom:5px;">
+                                <input type="text" name="EmailId" id="txtEmailId" class="inputclass form-control " />
+                            </div>
+                            </div>
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-2 control-label"></label>
+                            <div class="col-lg-4 col-xs-0 col-sm-0 " style="margin-bottom:5px;"></div>
+                           
+                                <div class="col-lg-2 col-md-2 col-xs-2 col-sm-2 ">
+                                    <button id="btnAddCPerson" class="btn btn-success  " type="button" title="Add Contact"> <i class="fa fa-plus-square"></i> </button>
+                                </div>
+                            <div class="col-lg-4"></div>
+                         </div>
+                        <div class="table-responsive">
+                            <table id="dynamic-tableCategory" class="display table table-bordered table-striped dataTable model-table" aria-describedby="dynamic-table_info">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>First Name</th>
+                                        <th>Last Name</th>
+                                        <th>Mobile No.</th>
+                                        <th>Email-Id</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnSave" class="btn btn-success" type="button">Save</button>
+                    <button class="btn btn-danger" id="btnCancel" type="button">Cancel</button>
+                    <button class="btn btn-default" id="btnReset" type="button">Reset</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal -->
+<!-- Modal for deactivation -->
+<div class="modal fade modal-dialog-center" id="confirmDeactivatedialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content-wrap">
+            @*<div class="modal-content metrmke_dialog deact_mter">*@
+                <div class="modal-content metrmke_dialog client_deactv_dialog">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Default Modal Tittle</h4>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="deactivationID" />
+                        <p>Are you sure to deactivate this record ?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="btnDeactivateYes" class="btn btn-success" type="button">Yes</button>
+                        <button class="btn btn-danger" id="btnDeactivatNo" type="button">No</button>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+<!-- modal -->
+<!-- Modal for confirmActivatedialog -->
+<div class="modal fade modal-dialog-center" id="confirmActivatedialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content-wrap">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="">Default Modal Tittle</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="activationID" />
+                    <p>Are you sure to Activate this record ?</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnActivateYes" class="btn btn-success" type="button">Yes</button>
+                    <button class="btn btn-danger" id="btnActivatNo" type="button">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade modal-dialog-center" id="confirmDeactivatedialog1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content-wrap">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="RemoveContactDetails">Default Modal Tittle</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="deactivationID1" />
+                    <p>Are you sure to remove this record ?</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnDeactivateYes1" class="btn btn-success" type="button">Yes</button>
+                    <button class="btn btn-danger" id="btnDeactivatNo1" type="button">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<link href="~/Scripts/js/style.css" rel="stylesheet" />
+<link href="~/Scripts/js/jquery-ui.css" rel="stylesheet" />
+<script src="~/Scripts/js/jquery-ui.js"></script>
+<script src="~/Scripts/js/fieldChooser.js"></script>
+<link href="~/Content/MSTS/admin/css/bootstrap-multiselect.css" rel="stylesheet" />
+<script src="~/Content/MSTS/admin/js/bootstrap-multiselect.js"></script>
+<link href="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.css")" rel="stylesheet" />
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.jquery.min.js")"></script>
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.proto.min.js")"></script>
+
+<script src='@Url.Content("~/Scripts/Admin/ClientMaster.js")'></script>
+<script type="text/javascript" language="javascript">
+    function mask(str, textbox, loc, delim) {
+        debugger;
+        var locs = loc.split(',');
+
+        for (var i = 0; i <= locs.length; i++) {
+            for (var k = 0; k <= str.length; k++) {
+                if (k == locs[i]) {
+                    if (str.substring(k, k + 1) != delim) {
+                        str = str.substring(0, k) + delim + str.substring(k, str.length)
+                    }
+                }
+            }
+        }
+        textbox.value = str
+    }
+</script>

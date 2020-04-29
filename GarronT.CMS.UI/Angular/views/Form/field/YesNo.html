@@ -1,0 +1,111 @@
+<style>
+    .radio-inline {
+        padding-top: 0px !important;
+    }
+</style>
+
+<div class="col-md-12 ">
+
+    <div class="form-group">
+        <label for="name" class="col-lg-3 txt-fld-lab"> <strong> Field Label:</strong> <span class="txt-mandatory" style="color:red">*</span></label>
+        <div class="col-lg-9">
+            <div><input type="text" class="form-control" maxlength="200" id="txtfieldtitle" ng-blur="FieldLabelCheck(field.field_FieldLabel)" ng-model="field.field_FieldLabel" value="{{field.field_FieldLabel}}"></div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <!--<div class="checkbox col-md-5">
+            <label for="checkbox1" style=" padding-left: 0px;">
+                <span>Allow N/A</span>
+            </label>
+            <input type="checkbox" id="checkbox1" class="col-lg-2 pull-right" ng-model="field.field_AllowNotApplicable" value="{{field.field_AllowNotApplicable}}" />
+        </div>-->
+        <div class="checkbox " style="margin-left: 16px;">
+            <div class="row col-md-12">
+                <label class="col-lg-3" for="checkbox1" style="padding-left: 0px;">
+                    <span>Default Value</span>
+                </label>
+                <label class="radio-inline ">
+                    <input type="radio" name="FieldDefaultValue" ng-model="field.field_DefaultValue" value="Yes"> Yes
+                </label>
+                <label class="radio-inline ">
+                    <input type="radio" name="FieldDefaultValue" ng-model="field.field_DefaultValue" value="No"> No
+                </label>
+            </div>
+            <!--<div class="row" >
+                <label class="radio-inline">
+                    <input type="radio" name="FieldDefaultValue" ng-model="field.field_DefaultValue" value="Yes"> Yes
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" name="FieldDefaultValue" ng-model="field.field_DefaultValue" value="No"> No
+                </label>
+               <label class="radio-inline">
+                    <input type="radio" name="FieldDefaultValue" ng-model="field.field_DefaultValue" value="N/A"> N/A
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" name="FieldDefaultValue" ng-model="field.field_DefaultValue" value="NoDefault"> No Default
+                </label>
+            </div>-->
+
+        </div>
+
+
+
+    </div>
+
+
+    <div class="form-group">
+        <div class="checkbox col-lg-5 col-md-6 col-sm-6 col-xs-6 enf-div">
+            <label for="checkbox1" style="padding-left: 0px;" class="txt-enf-lab">
+                <span>Hide Field Label</span>
+            </label>
+            <input type="checkbox" class="col-lg-2 pull-right" ng-model="field.field_HideFieldLabel" value="{{field.field_HideFieldLabel}}" />
+        </div>
+    </div>
+
+    <div class="form-group">
+
+        <div class="checkbox col-lg-5 col-md-6 col-sm-6 col-xs-6 enf-div">
+            <label for="checkbox1" style="padding-left: 0px;">
+                <span>Required</span>
+            </label>
+            <input type="checkbox" id="checkbox1" class="col-lg-2 pull-right" ng-model="field.field_IsRequired" value="{{field.field_IsRequired}}" />
+        </div>
+        <div class="checkbox col-lg-5 col-md-6 col-sm-6 col-xs-6 txt-cap-div">
+            <label for="checkbox1" style="padding-left: 0px;" class="txt-cap">
+                <span>Capture Geolocation</span>
+            </label>
+            <input type="checkbox" id="checkbox1" class="col-lg-2 pull-right" ng-model="field.field_CaptureGeolocation" value="{{field.field_CaptureGeolocation}}" />
+        </div>
+
+    </div>
+    <div class="form-group">
+
+        <div class="checkbox col-lg-5 col-md-6 col-sm-6 col-xs-6 enf-div">
+            <label for="checkbox1" style="padding-left: 0px;">
+                <span>Enabled</span>
+            </label>
+            <input type="checkbox" id="checkbox1" class="col-lg-2 pull-right" ng-model="field.field_IsEnabled" value="{{field.field_IsEnabled}}" />
+        </div>
+
+        <div class="checkbox col-lg-5 col-md-6 col-sm-6 col-xs-6 txt-tme-div">
+            <label for="checkbox1" style="padding-left: 0px;" class="txt-cap">
+                <span>Capture Timestamp</span>
+            </label>
+            <input type="checkbox" id="checkbox1" class="col-lg-2 pull-right" ng-model="field.field_CaptureTimestamp" value="{{field.field_CaptureTimestamp}}" />
+        </div>
+    </div>
+
+    <div class="form-group" id="divfield_SynchFlag">
+
+        <div class="checkbox col-lg-5 col-md-6 col-sm-6 col-xs-6 enf-div">
+            <label for="checkbox1" style="padding-left: 0px;">
+                <span>Sync</span>
+            </label>
+            <input type="checkbox" id="chkfield_SynchFlag" class="col-lg-2 pull-right" ng-model="field.field_SynchFlag" value="{{field.field_SynchFlag}}" />
+        </div>
+
+       
+    </div>
+
+</div>

@@ -1,0 +1,282 @@
+﻿@model GarronT.CMS.Model.BO.ProjectModel
+
+@{
+    ViewBag.Title = "Appointment";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@Html.Hidden("urlGetProject", Url.Action("GetPoject", "InstallerAllocation"))
+@Html.Hidden("getRowPartial", Url.Action("getRowPartial", "InstallerAllocation"))
+@Html.Hidden("GetAddressUrl", Url.Action("GetAddress", "InstallerAllocation"))
+@Html.Hidden("GetCycle", Url.Action("GetExcelRootData", "InstallerAllocation"))
+@Html.Hidden("GetRootByCycle", Url.Action("GetRootByCycle", "InstallerAllocation"))
+@Html.Hidden("GetAddress", Url.Action("GetAddressByCycle_Root", "InstallerAllocation"))
+@Html.Hidden("GetLatLag", Url.Action("GetLat_by_Root", "InstallerAllocation"))
+@Html.Hidden("urlGetInstallerList", Url.Action("getCurrentInstallerList", "Project"))
+@Html.Hidden("urlSaveInstallerMap", Url.Action("SaveInstallerMap", "InstallerAllocation"))
+@Html.Hidden("urlGetInstallerMap", Url.Action("GetInstallerMap", "InstallerAllocation"))
+@Html.Hidden("GetLatLagby_ProjectInstaller", Url.Action("GetLat_by_ProjectInstaller", "InstallerAllocation"))
+@Html.Hidden("UrlDashboard", Url.Action("Index", "Dashboard"))
+
+<script>
+    $(function () {
+        //$("#datepicker").datepicker();
+    });
+</script>
+
+<style type="text/css">
+    .list {
+        background-color: lightblue;
+    }
+
+    #items .ui-selected {
+        background: red;
+        color: white;
+        font-weight: bold;
+    }
+
+    #items .ui-selecting {
+        background: #ffd800;
+        color: white;
+        font-weight: bold;
+    }
+
+
+    #items {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        width: 100px;
+    }
+
+        #items li {
+            margin: 2px;
+            padding: 2px;
+        }
+</style>
+
+<script type="text/javascript">
+    //$("#datepicker").datepicker({
+    //    buttonImage: '...images/DatePicker_icon.png',
+    //    buttonImageOnly: true,
+    //    changeMonth: true,
+    //    changeYear: true,
+    //    showOn: 'both',
+    //}); </script>
+@*<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=&sensor=false"> </script>*@
+@{
+    var href = "https://maps.googleapis.com/maps/api/js?key=" + System.Configuration.ConfigurationManager.AppSettings["googleapiKey"].ToString() + "&sensor=false";
+}
+<script type="text/javascript" src="@href"></script>
+
+<div id="loading"> <div id="loadingcontent"> <p id="loadingspinner"> Searching things... </p> </div> </div>
+<style>
+    .toast-top-center {
+        margin-top: -50px;
+    }
+</style>
+<section id="main-content">
+    <section class="wrapper">
+        <!-- page start-->
+        <div class="row">
+            <div class="col-sm-12" id="m">
+                <section class="panel">
+                    @*<header class="panel-heading">
+                        <b>Installer Allocation </b>
+
+                        </header>*@
+
+
+
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col-lg-12">
+                            <section class="panel">
+                                <header class="panel-heading" style="background: #80B2DF; color: #fff;">
+                                    Installer Allocation
+                                    <span class="tools pull-right">
+                                        <a id="haha" class="fa fa-chevron-down clickdive" href="javascript:;" style="color: #fff; padding-right:10px;"></a>
+
+                                    </span>
+                                </header>
+                                <div class="panel-body" style="padding-top:20px;">
+                                    <form id="InstallerAllocationForm">
+
+                                        <div class="row">
+                                            <div class="form-group col-lg-4">
+
+                                                <label class="col-lg-8" for=" name">Date</label>
+
+                                                @*<input type="text" name="Date" id="Date" class="inputclass form-control" />@*<img src="~/images/DatePicker_icon.png" width="20px" hight="20px" />*@
+
+                                                <input type="text" name="Dates" id="datepicker" readonly='true' class="form-control col-lg-3" />
+
+
+                                            </div>
+
+                                            <div class="form-group col-lg-4">
+
+                                                <label for="name"> Project <span style="color:red">*</span></label>
+
+
+                                                <select id="ddlProject" class="form-control" name="ProjectName"></select>
+                                            </div>
+
+
+                                            <div class="form-group col-lg-4">
+
+                                                <label for="name">Installer <span style="color:red">*</span></label>
+
+                                                <select id="ddlInstaller" class="form-control" name="Installer"></select>
+                                            </div>
+
+
+
+                                        </div>
+
+                                        <div class="row">
+
+                                            <div class="form-group col-lg-4">
+
+                                                <label> Cycle &nbsp; </label>
+                                                <div id="divcycle">
+                                                    <input type="text" onkeyup="filter(this)" />
+
+                                                    <ul id="items">
+                                                        <li class="list" value="11">Item 11</li>
+                                                        <li class="list" value="12">Item 12</li>
+                                                        <li class="list" value="13">Item 13</li>
+                                                        <li class="list" value="14">Item 4</li>
+                                                        <li class="list" value="15">Item 5</li>
+                                                        <li class="list" value="16">Item 16</li>
+                                                        <li class="list" value="17">Item 17</li>
+                                                        <li class="list" value="18">Item 18</li>
+                                                        <li class="list" value="19">Item 9</li>
+                                                        <li class="list" value="20">Item 10</li>
+                                                    </ul>
+                                                    @*<select id="ddlCycle" name="Cycle" class="form-control" style="display:none;" multiple="multiple"></select>*@
+                                                </div>
+                                            </div>
+
+
+                                            <div class="form-group col-lg-4">
+
+                                                <label> Route &nbsp; </label>
+                                                <div id="divroot">
+                                                    <select id="ddlRoot" name="Root" class="form-control" multiple="multiple"></select>
+
+                                                </div>
+                                            </div>
+
+
+
+                                            <div class="form-group col-lg-4">
+                                                <label> Address &nbsp; </label>
+                                                <div id="divaddress">
+                                                    <select id="ddlAddress" class="form-control" name="Address" multiple="multiple"></select>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+
+
+                                        <br />
+                                        <br />
+                                        <div class="form-group">
+
+                                            <div class="col-lg-12" style="text-align:center">
+                                                @*<input type="submit" class="btn btn-success" value="Add" onclick="" />*@
+                                                <button id="btnShowMap" class="btn btn-success" type="button">Show Map</button>
+                                                <button id="btnSave" class="btn btn-success" type="button">Save</button>
+                                                <button class="btn btn-danger" id="btnCancel" type="button">Cancel</button>
+                                                <button class="btn btn-default" id="btnReset" type="button">Reset</button>
+                                            </div>
+                                            <br />
+                                        </div>
+
+                                </div>
+                                </form>
+                        </div>
+                </section>
+            </div>
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-12" id="LoadRow" style="height: 100% ; width: 95%; bottom: 0px;">
+
+            </div>
+
+        </div>
+    </section>
+    </div>
+    </div>
+</section>
+
+
+
+</section>
+
+<script src='@Url.Content("~/Scripts/Admin/InstallerAllocation.js")'></script>
+
+
+@*<link href="~/Scripts/js/style.css" rel="stylesheet" />
+    <link href="~/Scripts/js/jquery-ui.css" rel="stylesheet" />
+    <script src="~/Scripts/js/jquery-ui.js"></script>
+    <script src="~/Scripts/js/fieldChooser.js"></script>
+    <link href="~/Content/MSTS/admin/css/bootstrap-multiselect.css" rel="stylesheet" />
+    <script src="~/Content/MSTS/admin/js/bootstrap-multiselect.js"></script>
+    <script src="~/Scripts/Admin/InstallerAllocation.js"></script>*@
+
+
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />
+<script type="text/javascript" src="https://code.jquery.com/jquery.min.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+<script type="text/javascript" src="https://www.pureexample.com/js/lib/jquery.ui.touch-punch.min.js"></script>
+
+
+<script>
+    $(document).ready(function () {
+        $("#items").selectable({
+            start: function (event, ui) {
+
+                $('#items').trigger('unselected')
+                $('#items li').removeClass('click-selected');
+                $(ui.unselected).removeClass('click-selected');
+            },
+            selected: function (event, ui) {
+                debugger;
+                if ($(ui.selected).hasClass('click-selected')) {
+                    $(ui.selected).removeClass('ui-selected click-selected');
+
+                } else {
+                    $(ui.selected).addClass('click-selected');
+
+                }
+            },
+            unselected: function (event, ui) {
+                debugger;
+                $(ui.unselected).removeClass('click-selected');
+            },
+            stop: function (event, ui) {
+                debugger;
+                $(".ui-selected", this).each(function () {
+                    debugger;
+                    alert(this.value)
+                });
+            }
+        });
+    })
+    function filter(element) {
+        var value = $(element).val();
+
+        $("#items > li").each(function () {
+            if ($(this).text().search(value) > -1) {
+                $(this).show();
+            }
+            else {
+                $(this).hide();
+            }
+        });
+    }
+</script>

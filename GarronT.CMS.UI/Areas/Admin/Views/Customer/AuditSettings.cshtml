@@ -1,0 +1,263 @@
+﻿@{
+    ViewBag.Title = "Customer Audit Settings";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@Html.Hidden("urlGetAuditPercentage", Url.Action("GetAuditPercentage", "Customer"))
+@Html.Hidden("urlGetFailPercentage", Url.Action("GetFailPercentage", "Customer"))
+
+@Html.Hidden("urlSaveAuditPercentage", Url.Action("SaveAuditPercentage", "Customer"))
+@Html.Hidden("urlSaveFailPercentage", Url.Action("SaveFailPercentage", "Customer"))
+
+
+@Html.Hidden("urlGetAuditPercentageRecord", Url.Action("GetAuditPercentageRecord", "Customer"))
+@Html.Hidden("urlGetFailPercentageRecord", Url.Action("GetFailPercentageRecord", "Customer"))
+
+@Html.Hidden("urlActivateDeactivateRecord", Url.Action("ActivateDeactivateRecord", "Customer"))
+
+<div id="loading">
+    <div id="loadingcontent">
+        <p id="loadingspinner">
+            Searching things...
+
+            <input type="hidden" name="CustomerId" id="txtCustomerId" value="@(ViewBag.CustomerId)" />
+
+        </p>
+    </div>
+</div>
+<section id="main-content">
+    <section class="wrapper">
+        <!-- page start-->
+        <div class="row">
+            <div class="col-sm-12">
+
+                <section class="panel">
+                    <header class="panel-heading">
+                        <b>Customer Management- Audit Settings</b>
+
+                    </header>
+
+                    <div class="panel-body">
+                        <div class="row" style="">
+
+                            <div class="col-lg-12">
+
+                                <div class="container-fluid con_fluid_new">
+                                    <div class="panel-body">
+                                        <div class="form-group ">
+                                            <div class="adv-table">
+                                                <div class="row">
+                                                    <div class="col-lg-4 col-md-4 col-xs-4 add_newbtn">
+                                                        <a class="btn btn-success" id="btnAddCustomerPercent" data-toggle="modal" data-backdrop="static" href="#">
+                                                            Add New <i class="fa fa-plus"></i>
+                                                        </a>
+                                                    </div>
+                                                    <div class="col-lg-8 col-md-8 col-xs-8 show_deactive deactivated_records">
+                                                        <input type="checkbox" name="showDeactivate" id="chkShowDeactivateAudit" />Show Deactivated Records
+                                                    </div>
+                                                </div>
+                                                <div class="table-responsive">
+                                                    <table id="dynamic-table" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                                                        <thead>
+                                                            <tr>
+                                                                <th width="20%">Audit Percent</th>
+                                                                <th width="13%">Start Day</th>
+                                                                <th width="13%">End Day</th>
+                                                                <th width="11%">Action</th>
+                                                            </tr>
+                                                        </thead>
+                                                    </table>
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+                                        <br />
+
+                                        <div class="form-group ">
+                                            <div class="adv-table">
+                                                <div class="row">
+                                                    <div class="col-lg-4 col-md-4 col-xs-4 add_newbtn">
+                                                        <a class="btn btn-success" id="btnAddFailurePercent" data-toggle="modal" data-backdrop="static" href="#">
+                                                            Add New <i class="fa fa-plus"></i>
+                                                        </a>
+                                                    </div>
+                                                    <div class="col-lg-8 col-md-8 col-xs-8 show_deactive deactivated_records">
+                                                        <input type="checkbox" name="showDeactivate" id="chkShowDeactivateFail" />Show Deactivated Records
+                                                    </div>
+                                                </div>
+                                                <div class="table-responsive">
+                                                    <table id="dynamic-table1" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                                                        <thead>
+                                                            <tr>
+                                                                <th width="10%">Fail Percent From</th>
+                                                                <th width="10%">Fail Percent To</th>
+                                                                <th width="13%">Increased Day</th>
+                                                                <th width="11%">Action</th>
+                                                            </tr>
+                                                        </thead>
+                                                    </table>
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+        </div>
+    </section>
+</section>
+
+<div class="modal fade modal-dialog-center" id="myAuditModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content-wrap">
+            <div class="modal-content modal-md ">
+                <div class="modal-header">
+                    <button type="button" class="close" id="btnClose" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Add Audit Percentage</h4>
+                </div>
+                <div class="modal-body ">
+                    <form id="form3" class="cmxform form-horizontal tasi-form">
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label cus-nm" style="white-space:nowrap;">Audit % <span style="color:red">*</span></label>
+                            <div class="col-lg-4 col-xs-12 col-sm-4 clnt-err">
+                                <input type="hidden" name="AuditCustomerId" id="txtAuditCustomerId" />
+                                <input type="hidden" name="AuditId" id="txtAuditId" />
+                                <input type="text" name="AuditPercentage" id="txtAuditPercentage" class="inputclass form-control" maxlength="7" /> 
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label ">Start Day<span style="color:red">*</span></label>
+                            <div class="col-lg-4  col-xs-12 col-sm-4 addrs-fld">
+                                <input type="text" name="startDay" id="txtStartDay" class="inputclass form-control " maxlength="3" />
+                            </div>
+
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label addr-cus2">End Day</label>
+                            <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
+                                <input type="text" name="endDay" id="txtEndDay" class="inputclass form-control " maxlength="3" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnAuditSave" class="btn btn-success" type="button">Save</button>
+                    <button class="btn btn-danger" id="btnAuditCancel" type="button">Cancel</button>
+                    <button class="btn btn-default" id="btnAuditReset" type="button">Reset</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade modal-dialog-center" id="myFailModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content-wrap">
+            <div class="modal-content modal-md ">
+                <div class="modal-header">
+                    <button type="button" class="close" id="btnClose" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Add Fail Percentage</h4>
+                </div>
+                <div class="modal-body ">
+                    <form id="form3" class="cmxform form-horizontal tasi-form">
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-12 control-label cus-nm" style="white-space:nowrap;"> Fail % From <span style="color:red">*</span></label>
+                            <div class="col-lg-6 col-xs-12 col-sm-6 clnt-err">
+                                <input type="hidden" name="FailCustomerId" id="txtFailAuditCustomerId" />
+                                <input type="hidden" name="FailId" id="txtFailId" />
+                                <input type="text" name="FailPercentageFrom" id="txtFailPercentageStart" class="inputclass form-control" maxlength="7" />
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-12 control-label cus-nm" style="white-space:nowrap;">Fail % To<span style="color:red">*</span></label>
+                            <div class="col-lg-6 col-xs-12 col-sm-6 clnt-err">                              
+                                <input type="text" name="FailPercentageTo" id="txtFailPercentageEnd" class="inputclass form-control" maxlength="7" />
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-12 control-label cus-nm" style="white-space:nowrap;">Increase Audit Days By <span style="color:red">*</span></label>
+                            <div class="col-lg-6 col-xs-12 col-sm-6 clnt-err">
+                                <input type="text" name="IncreaseByDays" id="txtIncreaseByDays" class="inputclass form-control" maxlength="3" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnFailSave" class="btn btn-success" type="button">Save</button>
+                    <button class="btn btn-danger" id="btnFailCancel" type="button">Cancel</button>
+                    <button class="btn btn-default" id="btnFailReset" type="button">Reset</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal for deactivation -->
+<div class="modal fade modal-dialog-center" id="confirmDeactivatedialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content-wrap ">
+            <div class="modal-content deactv_rec_mter ">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Default Modal Tittle</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="deactivationType" />
+                    <input type="hidden" id="deactivationID" />
+                    <p>Are you sure to deactivate this record ?</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnDeactivateYes" class="btn btn-success" type="button">Yes</button>
+                    <button class="btn btn-danger" id="btnDeactivatNo" type="button">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal -->
+<!-- Modal for confirmActivatedialog -->
+<div class="modal fade modal-dialog-center" id="confirmActivatedialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content-wrap">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="">Default Modal Tittle</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="deactivationType" />
+                    <input type="hidden" id="activationID" />
+                    <p>Are you sure to Activate this record ?</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnActivateYes" class="btn btn-success" type="button">Yes</button>
+                    <button class="btn btn-danger" id="btnActivatNo" type="button">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal -->
+
+
+
+
+
+
+
+<script src="~/Scripts/Admin/CustomerAuditSetting.js"></script>

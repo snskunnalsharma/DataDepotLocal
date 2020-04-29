@@ -1,0 +1,992 @@
+﻿@{
+    ViewBag.Title = "ExportReport";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+@Html.Hidden("urlGetProject", Url.Action("GetPoject", "ExportReport"))
+@Html.Hidden("urlGetFormType", Url.Action("GetFormType", "ExportReport"))
+@Html.Hidden("urlGetFormNameList", Url.Action("GetFormName", "ExportReport"))
+@Html.Hidden("urlgetFormData", Url.Action("getFormData", "ExportReport"))
+@Html.Hidden("urlGetsourceField", Url.Action("GetsourceField", "ExportReport"))
+@Html.Hidden("urlGetdestinationField", Url.Action("GetdestinationField", "ExportReport"))
+@Html.Hidden("urlGetFormData1", Url.Action("GetFormData1", "ExportReport"))
+@Html.Hidden("urlSaveData", Url.Action("SaveFields", "ExportReport"))
+@Html.Hidden("urlGetFormField", Url.Action("GetFormField", "ExportReport"))
+@Html.Hidden("urlcreateExcel", Url.Action("createExcel", "ExportReport"))
+
+@Html.Hidden("urlDownloadExcelExport", Url.Action("DownloadExcelExport", "ExportReport"))
+@Html.Hidden("urlGetFormTypeFields", Url.Action("GetFormTypeFields", "ExportReport"))
+@Html.Hidden("urlSaveFieldsNew", Url.Action("SaveFieldsNew", "ExportReport"))
+
+
+@Html.Hidden("urlcreateExcelNew", Url.Action("createExcelNew", "ExportReport"))
+
+
+<style>
+    .disabledli {
+        pointer-events: none;
+        opacity: 0.4;
+    }
+
+    .disable_a_href {
+        pointer-events: none;
+    }
+
+    .chosen-results .ui-selected {
+        background-color: #3875d7;
+        background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, #3875d7), color-stop(90%, #2a62bc));
+        background-image: -webkit-linear-gradient(#3875d7 20%, #2a62bc 90%);
+        background-image: -moz-linear-gradient(#3875d7 20%, #2a62bc 90%);
+        background-image: -o-linear-gradient(#3875d7 20%, #2a62bc 90%);
+        background-image: linear-gradient(#3875d7 20%, #2a62bc 90%);
+        color: #fff;
+    }
+
+    .chosen-results .ui-selecting {
+        background-color: #3875d7;
+        background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, #3875d7), color-stop(90%, #2a62bc));
+        background-image: -webkit-linear-gradient(#3875d7 20%, #2a62bc 90%);
+        background-image: -moz-linear-gradient(#3875d7 20%, #2a62bc 90%);
+        background-image: -o-linear-gradient(#3875d7 20%, #2a62bc 90%);
+        background-image: linear-gradient(#3875d7 20%, #2a62bc 90%);
+        color: #fff;
+    }
+
+    .chosen-results {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+    }
+
+        .chosen-results li {
+            margin-bottom: 1px;
+            padding: 5px;
+        }
+
+    .addrFilter {
+        padding: 5px;
+        margin: 0px;
+    }
+
+    .ddlHeader {
+        color: #444;
+    }
+
+
+    ul.source, ul.target {
+        min-height: 500px;
+        margin: 0px 25px 10px 0px;
+        padding: 2px;
+        border-width: 1px;
+        border-style: solid;
+        -webkit-border-radius: 3px;
+        -moz-border-radius: 3px;
+        border-radius: 3px;
+        list-style-type: none;
+        list-style-position: inside;
+        /*width: 20em;*/
+    }
+
+    ul.source {
+        border-color: #f8e0b1;
+    }
+
+    ul.target {
+        border-color: #add38d;
+    }
+
+    .source li, .target li {
+        margin: 2px;
+        padding: 8px 0px !important;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        border-radius: 4px;
+        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+        /*height: 2.5em;*/
+    }
+
+    .source li {
+        background-color: #fcf8e3;
+        border: 1px solid #fbeed5;
+        color: #c09853;
+    }
+
+    .target li {
+        background-color: #ebf5e6;
+        border: 1px solid #d6e9c6;
+        color: #468847;
+    }
+
+    .sortable-dragging {
+        border-color: #ccc !important;
+        background-color: #fafafa !important;
+        color: #bbb !important;
+    }
+
+    .sortable-placeholder {
+        height: 40px;
+    }
+
+    .source .sortable-placeholder {
+        border: 2px dashed #f8e0b1 !important;
+        background-color: #fefcf5 !important;
+    }
+
+    .target .sortable-placeholder {
+        border: 2px dashed #add38d !important;
+        background-color: #f6fbf4 !important;
+    }
+
+    .toast-top-center {
+        margin-top: -50px;
+    }
+
+    .sideBySide {
+        margin-top: 14px;
+    }
+
+    .exp-src {
+        text-align: center;
+    }
+
+    .exp-rep {
+        text-align: center;
+    }
+
+    
+</style>
+
+<style>
+    /********************************** IPHONE 5S PORTRAIT***************/
+    @@media (max-width:320px) {
+        .source li, .target li {
+            padding: 2px;
+            height: auto;
+        }
+
+        .rep_date {
+            margin-bottom: 5%;
+            margin-top: -3%;
+            margin-right: 8%;
+        }
+
+        .rep_date_inp {
+        }
+
+        .rep_todate {
+            margin-bottom: 5%;
+            margin-top: -3%;
+            margin-left: 12%;
+            margin-right: -10%;
+        }
+    }
+    /********************************** End IPHONE 5S PORTRAIT***************/
+
+    @@media only screen and (min-width: 321px) and (max-width: 359px) {
+        .source li, .target li {
+            padding: 2px;
+            height: auto;
+        }
+
+        .rep_date {
+            margin-bottom: 5%;
+            margin-top: -3%;
+            margin-right: 8%;
+        }
+
+        .rep_date_inp {
+        }
+
+        .rep_todate {
+            margin-bottom: 5%;
+            margin-top: -3%;
+            margin-left: 12%;
+            margin-right: -10%;
+        }
+    }
+
+    @@media only screen and (min-width: 360px) and (max-width: 410px) {
+        .source li, .target li {
+            padding: 2px;
+            height: auto;
+        }
+
+        .rep_date {
+            margin-bottom: 5%;
+            margin-top: -3%;
+            margin-right: 8%;
+        }
+
+        .rep_date_inp {
+        }
+
+        .rep_todate {
+            margin-bottom: 5%;
+            margin-top: -3%;
+            margin-left: 11%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+        }
+    }
+
+    @@media only screen and (min-width: 411px) and (max-width: 420px) {
+        .source li, .target li {
+            padding: 2px;
+            height: auto;
+        }
+
+        .rep_date {
+            margin-bottom: 5%;
+            margin-top: -3%;
+            margin-right: 8%;
+        }
+
+        .rep_date_inp {
+        }
+
+        .rep_todate {
+            margin-bottom: 5%;
+            margin-top: -3%;
+            margin-left: 11%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+        }
+    }
+
+    @@media only screen and (min-width: 421px) and (max-width: 430px) {
+        .source li, .target li {
+            padding: 2px;
+            height: auto;
+        }
+
+        .rep_date {
+            margin-bottom: 3%;
+            margin-top: -5%;
+            margin-right: 8%;
+        }
+
+        .rep_date_inp {
+        }
+
+        .rep_todate {
+            margin-bottom: 3%;
+            margin-top: -5%;
+            margin-left: 11%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+        }
+    }
+
+    @@media only screen and (min-width: 431px) and (max-width: 479px) {
+        .source li, .target li {
+            padding: 2px;
+            height: auto;
+        }
+
+        .rep_date {
+            margin-bottom: 5%;
+            margin-top: -9%;
+            margin-right: -4%;
+            margin-left: 20%;
+        }
+
+        .rep_date_inp {
+            width: 150%;
+        }
+
+        .rep_todate {
+            /*margin-bottom: 5%;
+                margin-top: -3%;*/
+            margin-left: 65%;
+            margin-right: -90%;
+        }
+
+        .rep_todate_inp {
+            width: 150%;
+        }
+    }
+
+    @@media only screen and (min-width: 480px) and (max-width: 530px) and (orientation:portrait) {
+        .source li, .target li {
+            padding: 2px;
+            height: auto;
+        }
+
+        .rep_date {
+            margin-bottom: 5%;
+            margin-top: -8%;
+            margin-right: 0%;
+            margin-left: 19%;
+        }
+
+        .rep_date_inp {
+            width: 150%;
+        }
+
+        .rep_todate {
+            margin-bottom: 7%;
+            margin-top: -16%;
+            margin-left: 129%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+            width: 150%;
+        }
+    }
+
+    @@media only screen and (min-width: 480px) and (max-width: 530px) and (orientation:landscape) {
+        .source li, .target li {
+            padding: 2px;
+            height: auto;
+        }
+
+        .rep_date {
+            margin-bottom: 5%;
+            margin-top: -8%;
+            margin-right: 0%;
+            margin-left: 19%;
+        }
+
+        .rep_date_inp {
+            width: 150%;
+        }
+
+        .rep_todate {
+            margin-bottom: 7%;
+            margin-top: -16%;
+            margin-left: 129%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+            width: 150%;
+        }
+
+        #ui-datepicker-div {
+            margin-top: 9%;
+        }
+    }
+    /*****************************Ihone 5s landscape************************************/
+    @@media only screen and (min-width:531px)and (max-width:567px) and (orientation:landscape) {
+        .source li, .target li {
+            padding: 2px;
+            height: auto;
+        }
+
+        .rep_date {
+            margin-bottom: 5%;
+            margin-top: -8%;
+            margin-right: 0%;
+            margin-left: 19%;
+        }
+
+        .rep_date_inp {
+            width: 150%;
+        }
+
+        .rep_todate {
+            margin-bottom: 7%;
+            margin-top: -16%;
+            margin-left: 129%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+            width: 150%;
+        }
+    }
+
+    @@media only screen and (min-width:531px)and (max-width:567px) and (orientation:portrait) {
+        .source li, .target li {
+            padding: 2px;
+            height: auto;
+        }
+
+        .rep_date {
+            margin-bottom: 5%;
+            margin-top: -6%;
+            margin-right: 0%;
+            margin-left: 19%;
+        }
+
+        .rep_date_inp {
+            width: 150%;
+        }
+
+        .rep_todate {
+            margin-top: -16%;
+            margin-left: 126%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+            width: 150%;
+            margin-top: 1%;
+        }
+    }
+    /*****************************End Ihone 5s landscape************************************/
+
+    @@media only screen and (min-width:568px)and (max-width:599px) {
+        .source li, .target li {
+            padding: 2px;
+            height: auto;
+        }
+
+        .rep_date {
+            margin-bottom: 5%;
+            margin-top: -8%;
+            margin-right: 0%;
+            margin-left: 23%;
+        }
+
+        .rep_date_inp {
+            width: 150%;
+        }
+
+        .rep_todate {
+            margin-bottom: 7%;
+            margin-top: -16%;
+            margin-left: 127%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+            width: 150%;
+        }
+
+        #ui-datepicker-div {
+            margin-top: 9%;
+        }
+    }
+
+    @@media only screen and (min-width:600px)and (max-width:640px) and (orientation:landscape) {
+        .source li, .target li {
+            padding: 2px;
+            height: auto;
+        }
+
+        .rep_date {
+            margin-bottom: 5%;
+            margin-top: -4%;
+            margin-right: 0%;
+            margin-left: 22%;
+        }
+
+        .rep_date_inp {
+            width: 150%;
+        }
+
+        .rep_todate {
+            margin-bottom: 5%;
+            margin-top: -13%;
+            margin-left: 125%;
+            margin-right: -12%;
+        }
+
+        .rep_todate_inp {
+            width: 150%;
+        }
+
+        #ui-datepicker-div {
+            margin-top: 9%;
+        }
+    }
+
+    @@media only screen and (min-width:600px)and (max-width:640px) and (orientation:portrait) {
+        .source li, .target li {
+            padding: 2px;
+            height: auto;
+        }
+
+        .rep_date {
+            margin-bottom: 5%;
+            margin-top: -4%;
+            margin-right: 0%;
+            margin-left: 19%;
+        }
+
+        .rep_date_inp {
+            width: 150%;
+        }
+
+        .rep_todate {
+            margin-bottom: 5%;
+            margin-top: -14%;
+            margin-left: 122%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+            width: 150%;
+        }
+    }
+
+    @@media only screen and (min-width:641px)and (max-width:719px) {
+        .source li, .target li {
+            padding: 2px;
+            height: auto;
+        }
+
+        .rep_date {
+            margin-bottom: 5%;
+            margin-top: -4%;
+            margin-right: 0%;
+            margin-left: 28%;
+        }
+
+        .rep_date_inp {
+            width: 150%;
+        }
+
+        .rep_todate {
+            margin-bottom: 5%;
+            margin-top: -13%;
+            margin-left: 132%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+            width: 150%;
+        }
+
+        #ui-datepicker-div {
+            margin-top: 9%;
+        }
+    }
+
+    @@media only screen and (min-width:720px)and (max-width:767px) {
+        .rep_date {
+            margin-bottom: 5%;
+            margin-top: -4%;
+            margin-right: 0%;
+            margin-left: 22%;
+        }
+
+        .rep_date_inp {
+            width: 150%;
+        }
+
+        .rep_todate {
+            margin-bottom: 5%;
+            margin-top: -12%;
+            margin-left: 122%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+            width: 150%;
+        }
+
+        #ui-datepicker-div {
+            margin-top: 9%;
+        }
+    }
+
+    @@media only screen and (min-width:430px)and (max-width:767px) {
+    }
+
+
+
+
+
+
+    @@media only screen and (min-width:768px)and (max-width:799px) {
+        .source li, .target li {
+            padding: 2px;
+            height: auto;
+        }
+
+        .rep_date {
+            margin-bottom: 5%;
+            margin-top: -4%;
+            margin-right: 0%;
+            margin-left: 18%;
+        }
+
+        .rep_date_inp {
+            width: 130%;
+        }
+
+        .rep_todate {
+            margin-bottom: 5%;
+            margin-top: -12%;
+            margin-left: 127%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+            width: 130%;
+        }
+    }
+
+    @@media only screen and (min-width:800px)and (max-width:840px) {
+        .rep_date {
+        }
+
+        .rep_date_inp {
+            width: 111%;
+        }
+
+        .rep_todate {
+            /*margin-bottom: 5%;
+                   margin-top: -12%;*/
+            margin-right: -10%;
+            margin-left: 4%;
+        }
+
+        .rep_todate_inp {
+            width: 111%;
+        }
+    }
+
+    @@media only screen and (min-width:841px) and (max-width:919px)and (orientation:landscape) {
+        .div-rep-date {
+            width: 40%;
+            margin-left: 8%;
+        }
+
+        .rep_date {
+            /*margin-bottom: 5%;
+                   margin-top: -4%;
+                   margin-right: 0%;
+                   margin-left: 22%;*/
+        }
+
+        .rep_date_inp {
+            width: 100%;
+        }
+
+        .rep_todate {
+            /*margin-bottom: 5%;
+                   margin-top: -12%;*/
+            /*margin-right: -10%;*/
+            margin-left: 4%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+            width: 100%;
+        }
+
+        #ui-datepicker-div {
+            /*margin-top: 9%;*/
+        }
+    }
+
+    @@media only screen and (min-width:841px) and (max-width:919px) and (orientation:portrait) {
+        .div-rep-date {
+            width: 40%;
+        }
+
+        .rep_date {
+            /*margin-bottom: 5%;
+                   margin-top: -4%;
+                   margin-right: 0%;
+                   margin-left: 22%;*/
+        }
+
+        .rep_date_inp {
+            width: 100%;
+        }
+
+        .rep_todate {
+            /*margin-bottom: 5%;
+                   margin-top: -12%;*/
+            /*margin-right: -10%;*/
+            margin-left: 4%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+            width: 100%;
+        }
+
+        #ui-datepicker-div {
+            /*margin-top: 9%;*/
+        }
+    }
+
+    @@media only screen and (min-width:920px)and (max-width:967px) {
+        .div-rep-date {
+            width: 40%;
+            margin-left: 8%;
+        }
+
+        .rep_date {
+            /*margin-bottom: 5%;
+                   margin-top: -4%;
+                   margin-right: 0%;
+                   margin-left: 22%;*/
+        }
+
+        .rep_date_inp {
+            width: 100%;
+        }
+
+        .rep_todate {
+            /*margin-bottom: 5%;
+                   margin-top: -12%;*/
+            /*margin-right: -10%;*/
+            margin-left: 4%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+            width: 100%;
+        }
+
+        #ui-datepicker-div {
+            /*margin-top: 9%;*/
+        }
+    }
+
+
+    @@media only screen and (min-width:968px)and (max-width:1023px) {
+        .div-rep-date {
+            width: 40%;
+            margin-left: 8%;
+        }
+
+        .rep_date {
+            /*margin-bottom: 5%;
+                   margin-top: -4%;
+                   margin-right: 0%;
+                   margin-left: 22%;*/
+        }
+
+        .rep_date_inp {
+            width: 100%;
+        }
+
+        .rep_todate {
+            /*margin-bottom: 5%;
+                   margin-top: -12%;*/
+            /*margin-right: -10%;*/
+            margin-left: 4%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+            width: 100%;
+        }
+    }
+
+    @@media only screen and (min-width:1024px) and (max-width:1100px) {
+        .div-rep-date {
+            width: 40%;
+            margin-left: 8%;
+        }
+
+        .rep_date {
+            /*margin-bottom: 5%;
+                   margin-top: -4%;
+                   margin-right: 0%;
+                   margin-left: 22%;*/
+        }
+
+        .rep_date_inp {
+            width: 100%;
+        }
+
+        .rep_todate {
+            /*margin-bottom: 5%;
+                   margin-top: -12%;*/
+            /*margin-right: -10%;*/
+            margin-left: 4%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+            width: 100%;
+        }
+    }
+</style>
+@*<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC6v5-2uaq_wusHDktM9ILcqIrlPtnZgEk&sensor=false"> </script>*@
+@{
+    var href = "https://maps.googleapis.com/maps/api/js?key=" + System.Configuration.ConfigurationManager.AppSettings["googleapiKey"].ToString() + "&sensor=false";
+}
+<script type="text/javascript" src="@href"></script>
+<div id="loading"> <div id="loadingcontent"> <p id="loadingspinner"> Searching things... </p> </div> </div>
+<section id="main-content">
+    <section class="wrapper instal-wrap">
+        <!-- page start-->
+        <div class="row">
+            <div class="col-sm-12" id="m">
+
+                <section class="panel" style="/*height: 461px;*/">
+
+                    <header class="panel-heading">
+                        <b>Export Report </b>
+
+                    </header>
+
+                    <div class="row" style="">
+
+                        <div class="col-lg-12">
+
+                            <div class="container-fluid con_fluid_new">
+                                <div class="panel-body">
+                                    <div class="row" style="margin-bottom: 5px;">
+                                        <div class="form-group">
+                                            <div class="col-lg-3 col-md-3 col-sm-10 col-xs-12 bx1">
+
+                                                <select id="ddlProjectStatus" data-placeholder="Select Project Status" class="form-control chosen-select ">
+                                                    <option value="0"></option>
+                                                    <option value="1">Active</option>
+                                                    <option value="2">Completed</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="col-lg-3 col-md-3 col-sm-10 col-xs-12 bx1">
+                                                <select id="ddlProject" data-placeholder="Select Project" class="form-control chosen-select "></select>
+                                            </div>
+
+                                            <div class="col-lg-3 col-md-3 col-sm-10 col-xs-12 bx2">
+                                                <select id="ddlformtype" data-placeholder="Select Form Type" class="form-control chosen-select"></select>
+                                            </div>
+
+                                            <div class="col-lg-3 col-md-3 col-sm-10 col-xs-12 bx3" style="display:none">
+                                                <select id="ddlform" data-placeholder="Select Form" class="form-control chosen-select"></select>
+                                            </div>
+
+
+                                        </div>
+
+                                    </div>
+                                    <div class="row" style="padding-top:8px;">
+                                        <div class="form-group">
+
+                                            <div class="col-lg-3 col-sm-6 col-xs-12 div-rep-date">
+                                                <div class="form-group col-lg-6 col-sm-6 col-xs-5 rep_date">
+                                                    <input type="text" name="FromDates" id="datepicker1" readonly="readonly" class="form-control rep_date_inp" />
+                                                </div>
+                                                <div class="form-group col-lg-6 col-sm-6 col-xs-5 rep_date rep_todate ">
+                                                    <input type="text" name="ToDates" id="datepicker2" readonly="readonly" class="rep_todate_inp form-control" />
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3 col-md-3 col-sm-10 col-xs-12 bx1">
+
+                                                @*<select id="ddlVisitStatus" data-placeholder="Select Visit Status" class="form-control chosen-select ">
+                                                        <option value="0"></option>
+                                                        <option value="6">All</option>
+                                                        <option value="5">Completed</option>
+                                                        <option value="1">Not Allocated</option>
+                                                        <option value="2">Pending</option>
+                                                        <option value="4">RTU</option>
+                                                        <option value="3">Skip</option>
+
+                                                    </select>*@
+
+                                                <div class="sel_route_btn " id="divVisitStatus">
+
+                                                    <div class="chosen-container chosen-container-single " style="width: 100%;" title="" id="ddlVisitStatus_chosen">
+                                                        <a class="chosen-single chosen-default" id="ancVisitStatus_chosen" tabindex="-1"><span class="" id="VisitStatusHeader">Select Visit Status</span><div><b></b></div></a>
+                                                        <div class="chosen-drop">
+                                                            <div class="chosen-search"><input type="text" name="ddRou" id="txtfilterRoute" class="txtfilterall" onkeyup="filterRoute(this)" autocomplete="off"></div>
+                                                            <div class="routeFilter row">
+                                                                <div class="col-lg-12">
+                                                                    <div class="">
+                                                                        <label style="margin-left: 7px;"><input type="checkbox" style="zoom:1.2;" class="chbSelectAll" id="ddlVisitStatus_SelectAll" autocomplete="off" value=" " name="chbRou"><span style="padding-top: -31px;">Select All</span></label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <ul id="ulVisitStatus" class="chosen-results " style="max-height: 118px;"></ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                            </div>
+
+                                            <div class="col-lg-3 col-md-3 col-sm-10 col-xs-12 bx2">
+                                                <select id="ddlLatLong" data-placeholder="Select lat lon required" class="form-control chosen-select">
+                                                    <option value="0"></option>
+                                                    <option value="1">No</option>
+                                                    <option value="2">Yes</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="col-lg-3 col-md-3 col-sm-10 col-xs-12 bx3">
+                                                <select id="ddlMedia" data-placeholder="Select Media Required" class="form-control chosen-select">
+                                                    <option value="0"></option>
+                                                    <option value="1">No</option>
+                                                    <option value="2">Yes</option>
+                                                </select>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <div class="row" style="padding-top:12px;">
+                                        <div class="form-group">
+
+                                            <div class="col-lg-12 col-sm-12 col-xs-12 bx4" style="text-align:center">
+
+                                                <button id="btnSave" class="btn btn-warning exp-sv-btn " type="button" style="background-color:green;border-color:green;">Save</button>
+                                                <button id="btnExport" class="btn btn-warning exprt-btn " type="button" style="background-color:skyblue;border-color:skyblue">Export</button>
+                                                @*<button id="btnCancel" class="btn btn-warning shw_map_btn " type="button" style="background-color:red">Cancel</button>*@
+                                                <button id="btnReset" class="btn btn-warning exp-res-btn " type="button" style="background-color:skyblue;border-color:skyblue">Reset</button>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <form id="form3" class="cmxform form-horizontal tasi-form">
+                                        <div class="col-lg-12 col-xs-12 col-sm-12 sideBySide" style="overflow:auto">
+                                            <div class="col-lg-2"></div>
+                                            <div class="col-lg-3 col-xs-6 col-sm-5 ">
+                                                <label class="control-label exp-src"> Source Fields</label>
+
+
+
+                                                @*<div class="col-lg-5 col-xs-5 col-sm-5 src_field">*@
+
+                                                <ul class="source connected exp-src-connect" id="sourceFields1"></ul>
+                                            </div>
+
+                                            <div class="col-lg-3 col-xs-6 col-sm-5 repfld-div " style="">
+                                                <label class="control-label exp-rep"> Report Fields </label>
+
+                                                <ul class="target connected exp-rep-conect" id="destinationFields1"></ul>
+                                            </div>
+                                            <div class="col-lg-2" style="height:10px;"></div>
+
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="clearfix"></div>
+
+                    </div>
+
+
+                </section>
+            </div>
+        </div>
+    </section>
+</section>
+
+<link href="~/Scripts/js/style.css" rel="stylesheet" />
+<link href="~/Scripts/js/jquery-ui.css" rel="stylesheet"
+      @*Switch CSS*@>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/css/bootstrap2/bootstrap-switch.css">
+
+<script src="~/Scripts/js/jquery-ui.js"></script>
+<script src="~/Scripts/js/fieldChooser.js"></script>
+
+
+<link href="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.css")" rel="stylesheet" />
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.jquery.min.js")"></script>
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.proto.min.js")"></script>
+
+
+
+@System.Web.Optimization.Scripts.RenderFormat(GarronT.CMS.UI.SiteKeys.ScriptVersion, "~/bundles/ExportReport_js")  

@@ -1,0 +1,52 @@
+﻿<header class="header white-bg">
+    <link rel="shortcut icon" href="~/images/logo_favicon.png" />
+    <div class="header_box">
+
+
+        <div class="sidebar-toggle-box">
+            <i class="fa fa-bars"></i>
+        </div>
+        <!--logo start-->
+        <a target="_self" href="@Url.Action("Index", "Dashboard", new { area = "Admin" }) " class="logo"><img src=@Url.Content("~/images/logo_03_2.png")></a> @if (@User.IsInRole("Super Admin"))
+        { <a target="_self" href="@Url.Action("Index", "Dashboard", new { area = "Admin" }) " class="logo"><img src=@Url.Content("~/images/logo_03_2.png")></a> }
+
+
+
+        <!--logo end-->
+        <div class="nauser login dropdown startv notify-row" id="top_menu"> </div>
+    </div>
+
+    <div class="top-nav">
+
+        <div class="heading_top"> </div>
+
+        <!--search & user info start-->
+        <ul class="nav pull-right top-menu" @*style="margin-top:19px; margin-right: 23px;*@>
+
+            <li class="dropdown">
+
+                <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                   <i class="fa fa-user"></i><span class="username"></span>
+                </a>
+                <ul class="dropdown-menu extended logout">
+                    <div class="log-arrow-up"></div>
+                    <div class="btn btn-info pull-right" style="width: 100%; padding: 6px;">
+                        <div class="col-lg-12" style="text-align:right"> Hi, <span class="username"> @Convert.ToString(User.Identity.Name)</span> <b class="caret"></b></div> @*Jhon Doue*@
+
+                    </div>
+                    <br />
+
+
+                    <li><a target="_self" href="@Url.Action("logoff", "Login" , new { @area="Global" })"><i class="fa fa-key"></i> Log Out</a></li>
+                </ul>
+            </li>
+
+            <!-- user login dropdown end -->
+        </ul>
+
+    </div>
+
+
+</header>
+
+

@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Depot - @ViewBag.Title</title>
+    @Styles.Render("~/Content/KSPLcss")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @*@Scripts.Render("~/bundles/KSPLbootstrap")*@
+    <link rel="shortcut icon" href="~/images/logo_favicon.png" />
+    
+  
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <link href="~/Content/MSTS/admin/css/style.css" rel="stylesheet" />
+    <link href="~/Content/MSTS/admin/css/style-responsive_new.css" rel="stylesheet" />
+    <script src="@Url.Content("~/Scripts/bootstrap.min.js")"></script>
+    <script src="@Url.Content("~/Content/MSTS/Admin/assets/toastr-master/toastr.js")"></script>
+
+    <script src="@Url.Content("~/Scripts/jquery.validate.js")"></script>
+    <script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")"></script>
+</head>
+<body class="login-body">
+    <div class="container">
+
+
+
+        @RenderBody()
+
+    </div>
+      
+
+        @RenderSection("scripts", required: false)
+
+
+        <link href="~/Content/MSTS/admin/css/slideshow.css" rel="stylesheet" />
+
+        <script src="~/Content/MSTS/admin/js/slideshow.js"></script>
+</body>
+</html>

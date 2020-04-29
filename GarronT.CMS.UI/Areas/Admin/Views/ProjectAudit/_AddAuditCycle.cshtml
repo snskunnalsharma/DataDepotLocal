@@ -1,0 +1,69 @@
+﻿@model GarronT.CMS.Model.BO.AuditCycleBO
+<div class="modal-dialog modal-md">
+    <div class="modal-content-wrap">
+        <div class="modal-content product_dialog ">
+            <div class="modal-header">
+                <button type="button" class="close" id="btnclose" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+                @if (@ViewBag.Status == "Create")
+                {
+                    <h4 class="modal-title">Add Installer Cycle</h4>
+                }
+                else
+                {
+                    <h4 class="modal-title">Edit Installer Cycle</h4>
+                }
+
+            </div>
+            <div class="modal-body">
+                <div class="panel-body">
+                    @*<form id="formAddEdit" class="cmxform form-horizontal tasi-form">*@
+                    @using (Html.BeginForm("", "", FormMethod.Get, new { @class = "form-horizontal", @id = "formAddEdit", role = "form" }))
+                    {
+                        <div class="form-group ">
+                            <input type="hidden" name="hdnCycleId" id="hdnCycleId" />
+                            @Html.EditorFor(model => model.Id, new { htmlAttributes = new { @class = "form-control", @type = "hidden" } })
+                            @Html.EditorFor(model => model.ProjectId, new { htmlAttributes = new { @class = "form-control", @type = "hidden" } })
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label">Installer<span style="color:red">*</span></label>
+                            <div class="col-lg-4  col-xs-12 col-sm-4 addrs-fld">
+                                @Html.DropDownListFor(model => model.InstallerId, (IEnumerable<SelectListItem>)ViewBag.ObjList, "Select Installer", new { @class = "inputclass form-control input_shadow" })
+                                @Html.ValidationMessageFor(model => model.InstallerId, "", new { @class = "text-danger" })
+                            </div>
+
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label cus-nm" style="white-space:nowrap;">Audit % <span style="color:red">*</span></label>
+                            <div class="col-lg-4 col-xs-12 col-sm-4 clnt-err">
+                                @Html.TextBoxFor(model => model.AuditPercentage, new { @class = "form-control", @style = "text-align:right", @autocomplete = "off" })
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label">Start Day<span style="color:red">*</span></label>
+                            <div class="col-lg-4  col-xs-12 col-sm-4 addrs-fld">
+                                @*<input type="text" name="startDay" id="txtStartDay" class="inputclass form-control " maxlength="3" />*@
+                                @Html.TextBoxFor(model => model.AuditStartDate, new { @class = "form-control", @style = "text-align:right", @autocomplete = "off" })
+                            </div>
+
+                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label addr-cus2">End Day<span style="color:red">*</span></label>
+                            <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
+                                @*<input type="text" name="endDay" id="txtEndDay" class="inputclass form-control " maxlength="3" />*@
+                                @Html.TextBoxFor(model => model.AuditEndDate, new { @class = "form-control", @style = "text-align:right", @autocomplete = "off" })
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                @if (@ViewBag.Status == "Create")
+                {
+                    <button id="btnAuditCycleSave" class="btn btn-success" type="button">Save</button>
+                }
+                else
+                {
+                    <button id="btnAuditCycleUpdate" class="btn btn-success" type="button">Update</button>
+                }
+                @*<button id="btnAuditCycleReset" class="btn btn-success" type="button">Reset</button>*@
+                <button id="btnAuditCycleCancel" class="btn btn-danger" type="button">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>

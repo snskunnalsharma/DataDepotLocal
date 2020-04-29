@@ -1,0 +1,44 @@
+﻿@model GarronT.CMS.Model.AspNetPermission
+<script type="text/javascript">
+    $(document).ready(function () {
+      
+        debugger;
+        $('#AddPermission').click(function () {          
+            var _roleId = $('#RoleId').val();
+            var _permissionId = $('#Permission_Id').val();
+
+
+            if (_permissionId == '') {
+                return false;
+            }
+            var urlrole2permission = $("#urlAddRole2PermissionReturnPartialView").val();
+            debugger;
+            var _parameters = { permissionId: _permissionId, roleId: _roleId };
+            $.ajax({
+                //url: "/Admin/AddRole2PermissionReturnPartialView",
+                url: urlrole2permission,
+                type: "GET",
+                data: _parameters,
+                success: function (data, textStatus, jqXHR) {
+                    $('#RolesTable').html(data);
+                    $('#RoleId').val("");
+                }
+            });
+        });        
+    });
+</script>
+@Html.HiddenFor(model => model.Permission_Id)
+<fieldset style="padding: 1em; font: 100%; color: Black; border-color: Black; border-style: solid;
+    border-width: thin; border-color: Silver; width: 850px">
+    <legend><strong>Add Permission To Role</strong></legend>
+    <br />
+    <label>
+        Role:
+    </label>
+    @Html.DropDownList("RoleId", null, string.Empty, new { style = "width:350px" })
+    <input type="button" id="AddPermission" value="Add Permission" />    
+</fieldset>
+
+
+
+

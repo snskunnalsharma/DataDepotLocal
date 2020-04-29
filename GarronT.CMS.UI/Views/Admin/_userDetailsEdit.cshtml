@@ -1,0 +1,29 @@
+﻿@model GarronT.CMS.Model.AspNetUser
+@{if (Model != null)
+  {     
+    <div id="expanderContent">
+        <table style='width: 100%'>     
+            <tr>
+                <td style='width: 10%; font-weight: bold' class='userTable'>
+                    @Html.LabelFor(model => model.UserName)
+                </td>
+            </tr>
+            <tr>
+                <td style='width: 10%; font-weight: bold' class='userTable'>
+                    @Html.LabelFor(model => model.Email)
+                </td>
+            </tr>
+            <tr>
+                <td style='width: 10%; font-weight: bold' class='userTable'>
+                    @Html.LabelFor(model => model.UserName)
+                </td>
+                <td style='width: 28%' class='userTable'>
+                    @Html.TextBoxFor(model => model.UserName, new { @class = "singlelinetextinput" })
+                    @Html.ValidationMessageFor(model => model.UserName)
+                </td>                        
+               <td></td>
+            </tr>
+        </table>
+    </div>
+  }
+}

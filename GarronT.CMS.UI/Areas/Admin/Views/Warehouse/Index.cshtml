@@ -1,0 +1,506 @@
+﻿@{
+    ViewBag.Title = "Warehouse Master";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@Html.Hidden("urlCreateRecord", Url.Action("AddNew", "Warehouse"))
+@Html.Hidden("urlEdit", Url.Action("Edit", "Warehouse"))
+@Html.Hidden("urlActiveDeactive", Url.Action("ActiveDeactive", "Warehouse"))
+@Html.Hidden("urlGetAllData", Url.Action("GetAllData", "Warehouse"))
+
+@Html.Hidden("urlGetCity", @Url.Action("GetCity", "Warehouse"))
+@Html.Hidden("urlGetUserList", @Url.Action("GetUserList", "Warehouse"))
+@Html.Hidden("GetUserBywarehouseId", @Url.Action("GetUserBywarehouseId", "Warehouse"))
+<style>
+
+    .chosen-results .ui-selected {
+         background-color: #3875d7;
+         background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, #3875d7), color-stop(90%, #2a62bc));
+         background-image: -webkit-linear-gradient(#3875d7 20%, #2a62bc 90%);
+         background-image: -moz-linear-gradient(#3875d7 20%, #2a62bc 90%);
+         background-image: -o-linear-gradient(#3875d7 20%, #2a62bc 90%);
+         background-image: linear-gradient(#3875d7 20%, #2a62bc 90%);
+         color: #fff;
+     }
+
+     .chosen-results .ui-selecting {
+         background-color: #3875d7;
+         background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, #3875d7), color-stop(90%, #2a62bc));
+         background-image: -webkit-linear-gradient(#3875d7 20%, #2a62bc 90%);
+         background-image: -moz-linear-gradient(#3875d7 20%, #2a62bc 90%);
+         background-image: -o-linear-gradient(#3875d7 20%, #2a62bc 90%);
+         background-image: linear-gradient(#3875d7 20%, #2a62bc 90%);
+         color: #fff;
+     }
+
+     .chosen-results {
+         list-style-type: none;
+         margin: 0;
+         padding: 0;
+         width: 100%;
+     }
+
+
+
+
+
+
+
+
+
+    .toast-top-center {
+        margin-top: -50px;
+    }
+
+    /*@@media (max-width:320px) {
+        .metrmke_dialog {
+            margin-left: -32%;
+            margin-right: -27%;
+        }
+
+        .deactv_rec_mter {
+            margin-left: -34%;
+            margin-right: -27%;
+        }
+    }
+
+    @@media only screen and (min-width:321px)and (max-width:359px) {
+        .metrmke_dialog {
+            margin-left: 8%;
+            margin-right: 8%;
+        }
+
+        .modal-dialog {
+            margin: 0 auto;
+        }
+
+        .iconic-input {
+
+        }
+    }
+
+    @@media only screen and (min-width:430px)and (max-width:767px) {
+        .metrmke_dialog {
+            margin-left: 20%;
+        }
+    }*/
+    /******************Ihone 5s Portrait Start*******************/
+    @@media (max-width:320px) {
+        .metrmke_dialog {
+            margin-left: -32%;
+            margin-right: -27%;
+        }
+
+        .deactv_rec_mter {
+            margin-left: -34%;
+            margin-right: -27%;
+        }
+
+        .dataTables_filter {
+            width: 67%;
+        }
+    }
+    /******************End Ihone 5s Portrait *******************/
+    @@media only screen and (min-width:321px)and (max-width:359px) {
+        .metrmke_dialog {
+            margin-left: 8%;
+            margin-right: 8%;
+        }
+
+        .modal-dialog {
+            margin: 0 auto;
+        }
+
+        .iconic-input {
+            margin-left: 5%;
+            margin-right: -8%;
+        }
+    }
+
+    @@media only screen and (min-width:360px)and (max-width:410px) {
+        .metrmke_dialog {
+            /*margin-left: 8%;
+            margin-right: 8%;*/
+        }
+
+        .modal-dialog {
+            margin: 0 auto;
+        }
+
+        .iconic-input {
+            margin-left: 5%;
+            margin-right: -8%;
+        }
+
+        .deactv_rec_mter {
+            margin-left: 6% !important;
+            width: 100%;
+        }
+    }
+
+    @@media only screen and (min-width:411px)and (max-width:429px) {
+        .metrmke_dialog {
+            margin-left: 8%;
+            margin-right: 8%;
+        }
+
+        .modal-dialog {
+            margin: 0 auto;
+        }
+
+        .iconic-input {
+            margin-left: 5%;
+            margin-right: -8%;
+        }
+
+        .deactv_rec_mter {
+            margin-left: 6% !important;
+            width: 100%;
+        }
+    }
+
+    @@media only screen and (min-width:430px)and (max-width:479px) {
+        .modal-dialog {
+            margin: 0 auto;
+        }
+
+        .metrmke_dialog {
+            margin-left: 15%;
+            margin-right: 12%;
+        }
+
+        .meter_txt {
+            margin-left: -79%;
+        }
+
+        .des_txt {
+            margin-left: -82%;
+            margin-top: 15px;
+        }
+
+        .meter_txtbox {
+            margin-top: 0%;
+        }
+
+        .des_txtbox {
+        }
+
+        .toast-top-center {
+            margin-top: 50%;
+        }
+
+        .toast-success {
+        }
+
+        .toast-message {
+        }
+    }
+
+    /*****************************Ihone 5s landscape************************************/
+    @@media only screen and (min-width:480px)and (max-width:530px) and (orientation:portrait) {
+        #main-content {
+            padding-top: 4% !important;
+        }
+        /*.deactivated_records {
+            padding-left: 29% !important;
+        }*/
+        .metrmke_dialog {
+            /*margin-left: 29% !important;*/
+            width: 100%;
+        }
+
+        .deactv_rec_mter {
+        }
+
+        .meter_txt {
+            margin-left: -78% !important;
+        }
+
+        .des_txt {
+            margin-left: -82%;
+        }
+
+        .deactv_rec_mter {
+            margin-left: 29% !important;
+            width: 100%;
+        }
+    }
+
+    @@media only screen and (min-width:480px)and (max-width:530px) and (orientation:landscape) {
+        #main-content {
+            padding-top: 4% !important;
+        }
+        /*.deactivated_records {
+            padding-left: 29% !important;
+        }*/
+        .metrmke_dialog {
+            /*margin-left: 29% !important;*/
+            width: 100%;
+        }
+
+        .deactv_rec_mter {
+        }
+
+        .meter_txt {
+            margin-left: -78% !important;
+        }
+
+        .des_txt {
+            margin-left: -82%;
+        }
+
+        .deactv_rec_mter {
+            margin-left: 29% !important;
+            width: 100%;
+        }
+    }
+
+    @@media only screen and (min-width:531px)and (max-width:567px) {
+        #main-content {
+            padding-top: 4% !important;
+        }
+        /*.deactivated_records {
+            padding-left: 29% !important;
+        }*/
+        .metrmke_dialog {
+            margin-left: 29% !important;
+            width: 100%;
+        }
+
+        .deactv_rec_mter {
+        }
+
+        .meter_txt {
+            margin-left: -78% !important;
+        }
+
+        .des_txt {
+            margin-left: -82%;
+        }
+
+        .deactv_rec_mter {
+            margin-left: 29% !important;
+            width: 100%;
+        }
+    }
+
+    @@media only screen and (min-width:568px)and (max-width:599px) {
+        #main-content {
+            padding-top: 4% !important;
+        }
+        /*.deactivated_records {
+            padding-left: 29% !important;
+        }*/
+        .metrmke_dialog {
+            margin-left: 29% !important;
+            width: 100%;
+        }
+
+        .deactv_rec_mter {
+        }
+
+        .meter_txt {
+            margin-left: -78% !important;
+        }
+
+        .des_txt {
+            margin-left: -82%;
+        }
+
+        .deactv_rec_mter {
+            margin-left: 29% !important;
+            width: 100%;
+        }
+    }
+
+    /****************************5S landscape end**********************************************/
+    @@media only screen and (min-width:600px)and (max-width:640px)and (orientation:portrait) {
+        .modal-dialog {
+            margin: 0 auto;
+        }
+
+        .metrmke_dialog {
+            /*margin-left: 15%;
+            margin-right: 26%;*/
+        }
+
+        .meter_txt {
+            margin-left: -79%;
+        }
+
+        .des_txt {
+            margin-left: -82%;
+            margin-top: 15px;
+        }
+
+        .meter_txtbox {
+            margin-top: 0%;
+        }
+
+        .des_txtbox {
+            /*margin-top: 14px;*/
+        }
+    }
+
+    @@media only screen and (min-width:600px)and (max-width:640px)and (orientation:landscape) {
+        .modal-dialog {
+            margin: 0 auto;
+        }
+
+        .metrmke_dialog {
+            /*margin-left: 15%;
+            margin-right: 26%;*/
+        }
+
+        .meter_txt {
+            margin-left: -79%;
+        }
+
+        .des_txt {
+            margin-left: -82%;
+            margin-top: 15px;
+        }
+
+        .meter_txtbox {
+            margin-top: 0%;
+        }
+
+        .des_txtbox {
+            margin-top: 14px;
+        }
+    }
+
+    /***************************** IPHONE 6S Landscape **********************************/
+    @@media only screen and (min-width:641px)and (max-width:710px) {
+        .metrmke_dialog {
+            margin-left: 36%;
+            width: 100%;
+        }
+
+        .deactv_rec_mter {
+            margin-left: 36%;
+            width: 100%;
+        }
+    }
+
+    @@media only screen and (min-width:711px)and (max-width:767px) {
+        .metrmke_dialog {
+            margin-left: 36%;
+            width: 100%;
+        }
+
+        .deactv_rec_mter {
+            margin-left: 58%;
+            width: 100%;
+        }
+    }
+
+    @@media only screen and (min-width:768px)and (max-width:798px) {
+        .modal-dialog {
+            margin: 0 auto;
+        }
+
+        .metrmke_dialog {
+            margin-top: -10%;
+        }
+    }
+
+    @@media only screen and (min-width:799px) and (max-width:850px) {
+        .modal-dialog {
+            margin: 0 auto;
+        }
+
+        .metrmke_dialog {
+            margin-top: -10%;
+        }
+    }
+
+    @@media only screen and (min-width:968px)and (max-width:1023px) {
+        .meter_txtbox {
+            width: 100%;
+        }
+
+        .des_txtbox {
+            width: 100%;
+        }
+    }
+
+    @@media only screen and (min-width:1024px)and (max-width:1100px) {
+        .iconic-input {
+            margin-left: 6%;
+            margin-right: -6%;
+        }
+    }
+</style>
+
+<div id="loading">
+    <div id="loadingcontent">
+        <p id="loadingspinner">
+            Searching things...
+        </p>
+    </div>
+</div>
+
+
+
+<!-- page start-->
+
+
+<section id="main-content">
+    <section class="wrapper">
+        <!-- page start-->
+        <div class="row">
+            <div class="col-sm-12">
+                <section class="panel">
+                    <header class="panel-heading">
+                        <b>Warehouse Master </b>
+
+                    </header>
+                    <div class="panel-body">
+
+                        <div class="row">
+                            <div class="col-lg-4 col-md-4 col-xs-4 add_newbtn">
+                                <a class="btn btn-success" id="btnAddWarehouse" data-backdrop="static">
+                                    Add New <i class="fa fa-plus"></i>
+                                </a>
+                            </div>
+                            <div class="col-lg-8 col-md-8 col-xs-8 show_deactive deactivated_records">
+                                <input type="checkbox" name="showDeactivate" id="chkShowDeactivate" />Show Deactivated Records
+                            </div>
+                        </div>
+                        <table id="dynamic-table" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                            <thead>
+                                <tr>
+                                    <th width="25%">Warehouse</th>
+                                    <th width="25%">Location</th>
+                                    <th width="20%">State</th>
+                                    <th width="20%">City</th>
+                                    <th width="10s%">Action</th>
+                                </tr>
+                            </thead>
+                        </table>
+
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</section>
+<!-- Modal for Add /Edit Dialog -->
+<div class="modal fade modal-dialog-center" id="AddEditModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+</div>
+<!-- modal -->
+
+
+<script src="~/Scripts/Admin/Warehouse.js"></script>
+
+
+@*<script src="@Url.Content("~/Scripts/jquery-1.10.2.min.js")"></script>*@
+<script src="@Url.Content("~/Scripts/jquery.validate.js")"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")"></script>
+
+
+<link href="~/jquery-confirm-master/css/jquery-confirm.css" rel="stylesheet" />
+<script src="~/jquery-confirm-master/js/jquery-confirm.js"></script>

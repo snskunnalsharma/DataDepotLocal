@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="dsReportExport" targetNamespace="http://tempuri.org/dsReportExport.xsd" xmlns:mstns="http://tempuri.org/dsReportExport.xsd" xmlns="http://tempuri.org/dsReportExport.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="dsReportExport" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_DataSetName="dsReportExport" msprop:Generator_UserDSName="dsReportExport">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="dtReport" msprop:Generator_TableClassName="dtReportDataTable" msprop:Generator_TableVarName="tabledtReport" msprop:Generator_TablePropName="dtReport" msprop:Generator_RowDeletingName="dtReportRowDeleting" msprop:Generator_RowChangingName="dtReportRowChanging" msprop:Generator_RowEvHandlerName="dtReportRowChangeEventHandler" msprop:Generator_RowDeletedName="dtReportRowDeleted" msprop:Generator_UserTableName="dtReport" msprop:Generator_RowChangedName="dtReportRowChanged" msprop:Generator_RowEvArgName="dtReportRowChangeEvent" msprop:Generator_RowClassName="dtReportRow">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="IDS" msprop:Generator_ColumnVarNameInTable="columnIDS" msprop:Generator_ColumnPropNameInRow="IDS" msprop:Generator_ColumnPropNameInTable="IDSColumn" msprop:Generator_UserColumnName="IDS" type="xs:long" minOccurs="0" />
+              <xs:element name="sectionName" msprop:Generator_ColumnVarNameInTable="columnsectionName" msprop:Generator_ColumnPropNameInRow="sectionName" msprop:Generator_ColumnPropNameInTable="sectionNameColumn" msprop:Generator_UserColumnName="sectionName" type="xs:string" minOccurs="0" />
+              <xs:element name="FieldId" msprop:Generator_ColumnVarNameInTable="columnFieldId" msprop:Generator_ColumnPropNameInRow="FieldId" msprop:Generator_ColumnPropNameInTable="FieldIdColumn" msprop:Generator_UserColumnName="FieldId" type="xs:long" minOccurs="0" />
+              <xs:element name="FieldName" msprop:Generator_ColumnVarNameInTable="columnFieldName" msprop:Generator_ColumnPropNameInRow="FieldName" msprop:Generator_ColumnPropNameInTable="FieldNameColumn" msprop:Generator_UserColumnName="FieldName" type="xs:string" minOccurs="0" />
+              <xs:element name="FieldValues" msprop:Generator_ColumnVarNameInTable="columnFieldValues" msprop:Generator_ColumnPropNameInRow="FieldValues" msprop:Generator_ColumnPropNameInTable="FieldValuesColumn" msprop:Generator_UserColumnName="FieldValues" type="xs:string" minOccurs="0" />
+              <xs:element name="Fieldlatitude" msprop:Generator_ColumnVarNameInTable="columnFieldlatitude" msprop:Generator_ColumnPropNameInRow="Fieldlatitude" msprop:Generator_ColumnPropNameInTable="FieldlatitudeColumn" msprop:Generator_UserColumnName="Fieldlatitude" type="xs:string" minOccurs="0" />
+              <xs:element name="Fieldlongitude" msprop:Generator_ColumnVarNameInTable="columnFieldlongitude" msprop:Generator_ColumnPropNameInRow="Fieldlongitude" msprop:Generator_ColumnPropNameInTable="FieldlongitudeColumn" msprop:Generator_UserColumnName="Fieldlongitude" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

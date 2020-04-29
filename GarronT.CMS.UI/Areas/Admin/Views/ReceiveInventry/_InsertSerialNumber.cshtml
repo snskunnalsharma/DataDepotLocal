@@ -1,0 +1,131 @@
+﻿
+
+
+<table id="dynamic-table" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+    <thead>
+        <tr>
+            <th width="2%">Sr No.</th>
+            <th>Serial Number</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 1; i <= @ViewBag.Quantity; i++)
+        {
+            <tr>
+
+                <td>@i</td>
+                <td><input type="text" id="@i" class="form-control serialNumber" name="SerialNumber" placeholder="Enter Serial No./Scan Barcode" value="" /></td>
+
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    // alfanumeric
+    $('.serialNumber').on({
+        keyup: function (e) {
+            if (e.keyCode == 13) 
+            {
+                debugger;
+                var str = $(this).val();
+                var scannedbarcods = str.split(" ");
+                if (scannedbarcods.length > 1) {
+                    myfunction(scannedbarcods)
+
+                }
+                else {
+
+                    var element = $(this).parent().parent().next().find("input")
+                    if (element[0] != undefined) {
+                        element.focus()
+                       
+                    }
+                    else {
+                        $(this).trigger("blur")
+                    }
+                }
+
+            }
+        },
+
+    });
+    var scannedbarcodeData;
+    function myfunction(scannedbarcods) {
+        debugger;
+        scannedbarcodeData = scannedbarcods;
+        //SplitBarcode(scannedbarcods)
+        var serialNoQuantity = $('.serialNumber').length;
+        if (scannedbarcods.length != serialNoQuantity) {
+           
+            $("#barcodeConfirm").modal({
+                show: true,
+                backdrop: 'static',
+                keyboard: false
+            });
+
+            //$.confirm({
+            //    icon: 'fa fa-warning',
+            //    columnClass: 'col-md-6 col-md-offset-3',
+            //    closeIcon: true,
+            //    animationBounce: 2,
+            //    title: 'Confirmation!',
+            //    content: 'Scanned barcode quantity mismatch.</br>Do you want to continue?',
+            //    buttons: {
+            //        Yes:
+            //            {
+            //                text: 'Ok', //
+            //                btnClass: 'btn-danger',
+            //                action: function () {
+            //                    SplitBarcode(scannedbarcods)
+            //                }
+            //            },
+            //        //No: {
+            //        //    text: 'No',
+            //        //    btnClass: 'btn-blue',
+            //        //    action: function () {
+
+            //        //    }
+            //        //}
+            //    }
+            //});
+        }
+        else {
+            SplitBarcode(scannedbarcods)
+        }
+
+    }
+
+    
+    $('#barcodeConfirmOk').click(function () {
+        SplitBarcode(scannedbarcodeData)
+    })
+
+
+    function SplitBarcode(scannedbarcods) {
+        debugger;
+        var lasttextbox = 0;
+        var serialTextboxes = $('.serialNumber');
+        for (var i = 0; i < serialTextboxes.length; i++) {
+            if (i == 0) {
+                $(serialTextboxes[i]).val("");
+            }
+            $(serialTextboxes[i]).val(scannedbarcods[i]);
+            lasttextbox = i;
+            if (scannedbarcods[i] == undefined) {
+                break;
+            }
+        }
+        var element = $(serialTextboxes[lasttextbox - 1]).parent().parent().next().find("input")
+        if (element[0] != undefined) {
+            element.focus()
+            tempField = element;
+            setTimeout("tempField.focus();", 1);
+            
+        }
+        else {
+            $(element).trigger("blur")
+        }
+    }
+
+</script>

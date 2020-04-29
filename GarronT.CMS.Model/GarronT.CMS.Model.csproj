@@ -1,0 +1,1182 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{31584002-7D1C-41AD-A9A9-0BC406F1CFD8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GarronT.CMS.Model</RootNamespace>
+    <AssemblyName>GarronT.CMS.Model</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AutoMapper">
+      <HintPath>..\packages\AutoMapper.4.1.1\lib\net45\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EPPlus, Version=4.0.4.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.4.0.4\lib\net20\EPPlus.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="GoogleMaps.LocationServices">
+      <HintPath>..\packages\GoogleMaps.LocationServices.0.9.8.5\lib\net40\GoogleMaps.LocationServices.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp, Version=5.5.9.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\iTextSharp.5.5.9\lib\itextsharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.0.0\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.0.0\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportViewer.Common.10.0.40219.1\lib\Microsoft.ReportViewer.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.DataVisualization, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportViewer.Common.10.0.40219.1\lib\Microsoft.ReportViewer.DataVisualization.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.ProcessingObjectModel, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportViewer.Common.10.0.40219.1\lib\Microsoft.ReportViewer.ProcessingObjectModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.WebForms, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportViewer.WebForms.10.0.40219.1\lib\Microsoft.ReportViewer.WebForms.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Linq.Dynamic, Version=1.0.6132.35681, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Linq.Dynamic.1.0.7\lib\net40\System.Linq.Dynamic.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Appointment.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="AspNetPermission.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="AspNetRole.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="AspNetRolePermission.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="AspNetUser.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="AspNetUserClaim.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="AspNetUserLogin.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="AspNetUserRolePermission.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ASPNET_GetUserRoles_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AuditData.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="AuditFailPercentage.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AuditInstallerPercentage.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="AuditMaster.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="AuditorMap.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="BO\AppointmentModel.cs" />
+    <Compile Include="BO\AuditBO.cs" />
+    <Compile Include="BO\AuditCycleBO.cs" />
+    <Compile Include="BO\AutoSynchInventory.cs" />
+    <Compile Include="BO\CategoryBO.cs" />
+    <Compile Include="BO\CustomerAuditPercentage.cs" />
+    <Compile Include="BO\DuplicateReportBO.cs" />
+    <Compile Include="BO\InstallerAuditCycleBO.cs" />
+    <Compile Include="BO\InstallerMapHistoryBO.cs" />
+    <Compile Include="BO\AlertModel.cs" />
+    <Compile Include="BO\BindDropDownListData.cs" />
+    <Compile Include="BO\CityModel.cs" />
+    <Compile Include="BO\EmailConfigureBO.cs" />
+    <Compile Include="BO\EmailConfigureUserDetailsBO.cs" />
+    <Compile Include="BO\ExportReportBO.cs" />
+    <Compile Include="BO\FormTypeModel.cs" />
+    <Compile Include="BO\InstallerStockReportSummaryBO.cs" />
+    <Compile Include="BO\MovementReportBO.cs" />
+    <Compile Include="BO\PermissionBo.cs" />
+    <Compile Include="BO\ProductMasterBO.cs" />
+    <Compile Include="BO\InventoryUploadBO.cs" />
+    <Compile Include="BO\InwardInventoryBo.cs" />
+    <Compile Include="BO\MobileOffline.cs" />
+    <Compile Include="BO\ReasonBO.cs" />
+    <Compile Include="BO\ReceiveInventry.cs" />
+    <Compile Include="BO\ReOpenMail.cs" />
+    <Compile Include="BO\ReportSkipRTUModel.cs" />
+    <Compile Include="BO\RoleBO.cs" />
+    <Compile Include="BO\StateCityLogoBO.cs" />
+    <Compile Include="BO\StatusMessage.cs" />
+    <Compile Include="BO\StockRequestModel.cs" />
+    <Compile Include="BO\Tab3BO.cs" />
+    <Compile Include="BO\UploadCityLogoModel.cs" />
+    <Compile Include="BO\UploadInventoryBO.cs" />
+    <Compile Include="BO\UserFormTypeModel.cs" />
+    <Compile Include="BO\ClientContactDetailsModel.cs" />
+    <Compile Include="BO\ClientMasterModel.cs" />
+    <Compile Include="BO\ClientModel.cs" />
+    <Compile Include="BO\CompletionModel.cs" />
+    <Compile Include="BO\VehicleModel.cs" />
+    <Compile Include="BO\CountryModel.cs" />
+    <Compile Include="BO\CurrentFieldsModel.cs" />
+    <Compile Include="BO\CustomFieldModel.cs" />
+    <Compile Include="BO\DeviceMasterModel.cs" />
+    <Compile Include="BO\ErrorModel.cs" />
+    <Compile Include="BO\ErrorUserModel.cs" />
+    <Compile Include="BO\ExcelSheetBO.cs" />
+    <Compile Include="BO\FieldsModel.cs" />
+    <Compile Include="BO\FileUploadModel.cs" />
+    <Compile Include="BO\FormDOL.cs" />
+    <Compile Include="BO\FormManagementModel.cs" />
+    <Compile Include="BO\InstallerMap.cs" />
+    <Compile Include="BO\InstallerMapModel.cs" />
+    <Compile Include="BO\MeterMakeModel.cs" />
+    <Compile Include="BO\MeterSizeModel.cs" />
+    <Compile Include="BO\MeterTypeModel.cs" />
+    <Compile Include="BO\MobileSectionBO.cs" />
+    <Compile Include="BO\ITextEvents.cs" />
+    <Compile Include="BO\PictureModel.cs" />
+    <Compile Include="BO\ProjectCustomeFieldReletion.cs" />
+    <Compile Include="BO\ProjectModel.cs" />
+    <Compile Include="BO\ProjectStandardFieldReletionBO.cs" />
+    <Compile Include="BO\ReportEditBO.cs" />
+    <Compile Include="BO\ReportJsonList.cs" />
+    <Compile Include="BO\ServiceAttachmentModel.cs" />
+    <Compile Include="BO\ServiceSmallModel.cs" />
+    <Compile Include="BO\ServicesModel.cs" />
+    <Compile Include="BO\ServicesPicture.cs" />
+    <Compile Include="BO\StateModel.cs" />
+    <Compile Include="BO\UploadedDataModel.cs" />
+    <Compile Include="BO\UserDAL.cs" />
+    <Compile Include="BO\UserDetailsDAL.cs" />
+    <Compile Include="BO\UserDetailsModel.cs" />
+    <Compile Include="BO\UserRoleModel.cs" />
+    <Compile Include="BO\UsersModel.cs" />
+    <Compile Include="BO\InventorySourceBO.cs" />
+    <Compile Include="BO\WarehouseBO.cs" />
+    <Compile Include="BO\WebServiceProductBO.cs" />
+    <Compile Include="Category.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Class1.cs" />
+    <Compile Include="clsMail.cs" />
+    <Compile Include="CommonFunction.cs" />
+    <Compile Include="Compass.Context.cs">
+      <DependentUpon>Compass.Context.tt</DependentUpon>
+      <SubType>Code</SubType>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Compass.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Compass1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Compass.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Compass1.Designer.cs">
+      <DependentUpon>Compass.edmx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="CustomerAuditFailureSetting.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CustomerAuditSetting.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="C__MigrationHistory.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DAL\AlertDAL.cs" />
+    <Compile Include="DAL\ApplicationUser.cs" />
+    <Compile Include="DAL\AppointmentAllocationDAL.cs" />
+    <Compile Include="DAL\AppointmentDAL.cs" />
+    <Compile Include="DAL\AuditDAL.cs" />
+    <Compile Include="DAL\CategoryDAL.cs" />
+    <Compile Include="DAL\DuplicateReportDAL.cs" />
+    <Compile Include="DAL\ExportReportDAL.cs" />
+    <Compile Include="DAL\FormTypeDAL.cs" />
+    <Compile Include="DAL\InventoryDAL.cs" />
+    <Compile Include="DAL\InventoryMasterDAL.cs" />
+    <Compile Include="DAL\InventoryWebServiceDAL.cs" />
+    <Compile Include="DAL\MobileOfflineDAL.cs" />
+    <Compile Include="DAL\PermissionBAL.cs" />
+    <Compile Include="DAL\ReasonDAL.cs" />
+    <Compile Include="DAL\InstallerMapHistoryDAL.cs" />
+    <Compile Include="DAL\AuditReportDAL.cs" />
+    <Compile Include="DAL\StockRequestDAL.cs" />
+    <Compile Include="DAL\WebServiceProductDAL.cs" />
+    <Compile Include="DAL\WebServiceRequestStockDal.cs" />
+    <Compile Include="DAL\WebServiceReturnInventoryDAL.cs" />
+    <Compile Include="DAL\UploadCityLogoDAL.cs" />
+    <Compile Include="DAL\VehicleDAL.cs" />
+    <Compile Include="DAL\CityDAL.cs" />
+    <Compile Include="DAL\ClientContactDetailsDAL.cs" />
+    <Compile Include="DAL\ClientDAL.cs" />
+    <Compile Include="DAL\ProjectStatusDAL.cs" />
+    <Compile Include="DAL\DashboardDAL.cs" />
+    <Compile Include="DAL\FormDAL.cs" />
+    <Compile Include="DAL\InstallerDAL.cs" />
+    <Compile Include="DAL\MeterMakeDAL.cs" />
+    <Compile Include="DAL\MeterSizeDAL.cs" />
+    <Compile Include="DAL\MeterTypeDAL.cs" />
+    <Compile Include="DAL\MobileDAL.cs" />
+    <Compile Include="DAL\PictureDAL.cs" />
+    <Compile Include="DAL\ProjectMasterDAL.cs" />
+    <Compile Include="DAL\ReportDAL.cs" />
+    <Compile Include="DAL\ServiceDAL.cs" />
+    <Compile Include="DAL\ServicePictureDAL.cs" />
+    <Compile Include="DAL\StateDAL.cs" />
+    <Compile Include="DAL\UserRoleDAL.cs" />
+    <Compile Include="DAL\VersionDAL.cs" />
+    <Compile Include="DAL\WareHouseDAL.cs" />
+    <Compile Include="DAL\WebServiceRunningInventoryDAL.cs" />
+    <Compile Include="DAL\WebServiceUserRoleDAL.cs" />
+    <Compile Include="InventoryMobileStockRequest.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="InventoryMobileStockRequestDetail.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="InventoryMobileStockReturn.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="InventoryMobileStockReturnDetail.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="InventoryMobileUpload.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="InventoryMobileUploadDetail.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="InventoryMobileUserStockRequest.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="InventoryMobileUserStockRequestDetail.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="InventoryRequestStatusMaster.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="InventorySourceMaster.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="InventoryStatusMaster.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="InventoryUpload.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="InventoryUserSignOffDetail.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="InvenTrasRequestConfig.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="InwardDetail.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="InwardDetails_RejectedData.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="InwardHeader.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="LowInventoryAlert.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="obj\Debug\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
+    <Compile Include="obj\Debug\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
+    <Compile Include="obj\Debug\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
+    <Compile Include="OutwardDetail.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OutwardTransferDetail.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_AppointmentAllocation_GetAllRecord_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_AuditMaster_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_Audit_GetInfo_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_Audit_GETWorkingDayDetails_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_Audit_PercentCalculation_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_CheckAuditProjectsAssignedToUser_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_CheckProjectsAssignedToUser_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_DashBoard_Audit_TotalAssignedAuditCount_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_DashBoard_Audit_TotalFailedAuditCount_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_DashBoard_Audit_TotalInstallationCount_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_DashBoard_Audit_TotalPassedAuditCount_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_Dashboard_CompVsPendingChart_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_Dashboard_InstallationsPerInstaller_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_DashBoard_ProjectCompletePercent_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_ExistingCycle_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_ExistingRoute_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_ExportReport_AttachmentData_Audit_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_ExportReport_AttachmentData_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_ExportReport_Service_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_GetAllImages_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_GetAllRequestOfManager_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_GetAutoSynchInventory_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_GetDuplicateMeterNo_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_GetDuplicateRadio_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Proc_GetInstallerFormStatusData_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_GetRunningInventory_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_Get_InstallerAddressDetails_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_Get_InstallerMapDataHistory_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_GET_ReceiveInvoiceSavedRecords_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_InstallStockDetailReportOldData_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_InstallStockDetailReport_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_InstallStockSummaryReport_Project_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_InstallStockSummaryReport_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_ListOfDeactivatesVisits_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_OfflineCountSP_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_PendingRoute_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_ProjectServiceProductlist_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_ProjectStatus_AllData_Auditor_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_ProjectStatus_AllData_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_ProjectStatus_auditorData_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_ProjectStatus_InstallerData_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_ReportHome_ReOpen_GetCurrentVisitByDate_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_ReportPDF_Audit_GetReportHeaderFields_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_ReportPDF_Audit_GetReportPDFFields_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_ReportPDF_GetReportHeaderFields_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_ReportPDF_GetReportPDFFields_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_Report_InventryStockReport_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_Report_InventryStockReport_Summary_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_Report_ProductMovementReport_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_Report_WarehouseStockReportSummary_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_Report_WarehouseStockReport_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_UserNotification_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_WebService_Auditor_OfflineDataSP1_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_WEBService_GetAllocatedInventoryRecords_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_WebService_GetFieldInfoForProject_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_WebService_Installer_OfflineDataSP1_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PROC_WebService_Installer_OfflineData_AppoinmentDetails_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProductMaster.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProductMasterField.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectAuditAllocation.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectAuditData.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectAuditDataHistory.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectAuditFieldDataAttachment.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectAuditFieldDataMaster.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectAuditFieldDataMasterHistory.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectServiceProductRelation.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectWarehouseRelation.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SP_GetFieldInfoForProject_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SP_GetFormDetails_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="StockDetail.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_DashboardCompVsPendingChart_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_DashboardInstallationsPerInstaller_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_DashboardInstallationsPerMonth_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_ExportReportData_Attachments_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_ExportReportData_Completed_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_ExportReportData_NotAllocated_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_ExportReportData_Pending_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_ExportReportData_SkipRtu_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_ExportReport_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_ExportReport_Service_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_GetAddressFromLatLon_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_GetAddress_AssignToInstaller_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_GetAddress_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_GetClient_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_GetExistedUserInstallationbyDate_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_GetInstaAllocExportData_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_GetInstallerMappedRecordsByProjectIDInstallerID_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_GetInstallerMappedRecordsByProjectID_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_GetInstallerNotMappedRecordsByProjectID_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_GetPendingInstallationsDashboard_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_GetProjectCityState_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_GetProjectWiseVisits_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_GetReportHeaderFields_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_GetReportPDFFields_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_GetReportTableNew_bak_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_GetReportTableNew_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_GetReportTable_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_GetUserWiseTodaysVisits_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_GetUserWiseVisits_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_GetVisitForProjectInstallation_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_GetVisitForUserInstallation_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_InstallationsPerInstaller_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_OfflineCountSP_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_OfflineDataSP1_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_OfflineDataSP2_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_OfflineDataSP3_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_OfflineDataSP4_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_OfflineDataSP5_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_OfflineDataSP_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_ProjectColorStatus_Installer_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_ProjectColorStatus_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_ProjectCompleteDetails_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_ProjectCompletePercent_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_ProjectMonthSummary_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_ProjectStatus_AllData_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_ProjectStatus_InstallerData_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="STP_ProjectVisit_Result.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TblAlertMaster.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TblCityMaster.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblClient.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblClientContactDetail.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TblEmailConfigure.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TblEmailConfigureUserDetail.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TblExportReport.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TblFieldDataTypeMaster.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblFormMaster.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblFormSectionFieldRelation.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblFormSectionRelation.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblFormType.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblFormTypeMap.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblInstallerMapData.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblInstallerMapDataHistory.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblInstallerServiceRate.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblInstallerSynchHistory.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblMeterMake.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblMeterSize.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblMeterType.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblPicture.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblProject.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TblProjectCustomeFieldReletion.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TblProjectExcelMapping.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TblProjectFieldData.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TblProjectFieldDataAttachment.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TblProjectFieldDataHistory.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblProjectFieldDataInventoryDetail.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblProjectFieldDataInventoryOutwardDetail.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblProjectFieldDataMaster.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblProjectFieldDataMasterHistory.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblProjectFieldDDLMaster.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblProjectFieldProperty.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TblProjectInstaller.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TblProjectMasterFieldRelation.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TblProjectStandardFieldRelation.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblService.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TblServicePicture.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblSkipReasonMaster.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblSkipReasonMaster_FormType.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblStandardFieldMaster.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TblStateCityLogo.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblStateMaster.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblUploadedData.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblUser.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblUserFormTypeRelation.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblVehicleMakeMaster.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblVehicleMaster.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblVehicleModelMaster.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblVersionMaster.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tblZipCodeMaster.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Tbl_InstallationStatusMaster.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UploadedExcelData.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UserIcard.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UtilityMaster.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="VW_AuditorList.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="VW_GetFormData.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="VW_GetPictures.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="VW_GetProductData.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="VW_GetProductDataProject.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="VW_GETTab6DropdownData.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="VW_InstallerList.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="VW_ManageStockRequest.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="VW_Project.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="WarehouseMaster.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="WarehouseUserRelation.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="GoogleMaps.LocationServices.readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.Config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="ClassDiagram1.cd" />
+    <None Include="Compass.Context.tt">
+      <DependentUpon>Compass.edmx</DependentUpon>
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Compass.Context.cs</LastGenOutput>
+    </None>
+    <None Include="Compass.edmx.diagram">
+      <DependentUpon>Compass.edmx</DependentUpon>
+    </None>
+    <None Include="Compass.tt">
+      <DependentUpon>Compass.edmx</DependentUpon>
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Compass1.cs</LastGenOutput>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="bin\Debug\" />
+    <Folder Include="bin\Release\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EntityDeploy Include="Compass.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>Compass1.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

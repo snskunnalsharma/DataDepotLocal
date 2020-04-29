@@ -1,0 +1,162 @@
+﻿@model GarronT.CMS.UI.Areas.Admin.Controllers.AspNetPermissionVM
+<style>
+    @@media screen and (max-width: 767px) {
+        #PermissionTable {
+            border: 1px solid #ddd;
+        }
+    }
+</style>
+@{
+    var vievmodel = Model;
+    var updatepermission = vievmodel.UpdatePermission;
+    var updatemessage = vievmodel.UpdateMessage;
+    if (updatepermission == false)
+    {
+
+        <fieldset>
+            <legend>
+                <h4>
+                    Permissions
+                </h4>
+            </legend>
+           
+            <div>
+                <input type="button" class="btn btn-success" value="Update Permission" id="btnUpdate" />
+            </div>
+            <br />
+            <div class="table-responsive">
+                <table id="PermissionTable" style="width: 100%" class="table table-advance table-condensed table-hover table-bordered ">
+                    
+                   
+                            <thead>
+                            <th>
+                                Permission
+                            </th>
+                            @foreach (GarronT.CMS.Model.AspNetRole role in Model.AspNetRoleList.Where(a => a.IsSysAdmin != true).ToList())
+                            {
+                                <th style="text-align:center">
+                                    @role.Name
+                                </th>
+                            }
+
+                            </thead>
+                            @foreach (GarronT.CMS.Model.AspNetPermission item in Model.AspNetPermissionList)
+                            {
+                                <tr>
+                                    <td permissionid="@item.Permission_Id" permissionname="@item.PermissionDescription.Trim()" name="Permission">
+                                        @item.PermissionName
+
+                                    </td>
+                                    @foreach (GarronT.CMS.Model.AspNetRole AspNetRole in Model.AspNetRoleList.Where(a => a.IsSysAdmin != true).ToList())
+                                    {
+
+
+                                        if (@item.AspNetRolePermissions.Where(a => a.Role_Id == @AspNetRole.Id).FirstOrDefault() != null)
+                                        {
+                                            <td style="text-align:center" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id">
+                                                <input type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" checked />
+
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td style="text-align:center" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id">
+                                                <input type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" />
+                                            </td>
+                                        }
+
+
+                                    }
+
+                                </tr>
+                            }
+                        </table>
+            </div>
+        </fieldset>
+
+    }
+    else
+    {
+
+    }
+
+}
+
+
+
+<script type="text/javascript">
+
+    $("#btnUpdate").live("click", function () {
+        //$('#btnUpdate').click(function () {
+
+        var _PermissionTable = $('#PermissionTable');
+        var PermissionList = [];
+        debugger;
+        var _alltr = _PermissionTable.find('tbody tr');
+
+        for (var i = 0; i < _alltr.length; i++) {
+
+            var _permissionID = $($(_alltr[i]).find("td[name='Permission']")[0]).attr("permissionid")
+            var _permissionName = $($(_alltr[i]).find("td[name='Permission']")[0]).attr("permissionname")
+
+            var _roleList = $($(_alltr[i]).find("td input[name='Role']"));
+            var RoleList = [];
+            for (var j = 0; j < _roleList.length; j++) {
+
+                _roleList[j]
+                var _Role_RoleName = $(_roleList[j]).attr("rolename");
+                var _Role_RoleID = $(_roleList[j]).attr("roleid");
+                var _Role_PermissionID = $(_roleList[j]).attr("permissionid");
+                var _rolechecked = _roleList[j].checked;
+
+                var Roles = {
+                    "RoleID": _Role_RoleID,
+                    "RoleName": _Role_RoleName,
+                    "PermissionID": _Role_PermissionID,
+                    "RoleChecked": _rolechecked,
+                };
+                RoleList.push(Roles)
+            }
+
+            var Permission = {
+                "PermissionID": _permissionID,
+                "PermissionName": _permissionName,
+                "RoleList": RoleList,
+            };
+
+            PermissionList.push(Permission)
+
+        }
+        debugger
+
+
+        //  var _parameters = { id: _id, permissionId: _permissionId };
+        var urlAssignPermissionsToRole = $('#urlAssignPermissionsToRole').val();
+
+        $.ajax({
+            url: urlAssignPermissionsToRole,
+            type: "POST",
+            // data: _parameters,
+            data: JSON.stringify(PermissionList),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            beforeSend: function () {
+                waitingDialog.show('Loading Please Wait...');
+            },
+            complete: function (data) {
+                if (data.statusText == "OK")
+                {
+                var $toast = toastr["success"]("Record Updated", "Success Notification");
+                }
+                else {
+                    var $toast = toastr["error"]("Unable to Update record", "Error Notification");
+                }
+                waitingDialog.hide();
+            },
+            success: function (data, textStatus, jqXHR) {
+                alert("success")
+                $('#PermissionsTable').html(data);
+            }
+        });
+    });
+</script>

@@ -1,0 +1,124 @@
+﻿@model GarronT.CMS.Model.BO.StockRequestDetailVM
+
+<style>
+
+    textarea { height: auto; width:100%;}
+    .modal-body label{
+        text-align:left;
+    }
+    .modal-body{
+        padding:15px 2px;
+    }
+</style>
+
+@*<div class="row">*@
+    <div class="form-group">
+        <div class="col-md-2 col-sm-3 col-xs-4">
+            <input type="hidden" id="hndRequestId" />
+            <label>Request Id :</label>
+        </div>
+        <div class="col-md-10 col-sm-9 col-xs-8">
+            <label id="lblFromName"><strong>@Model.StockRequestModel.RequestIdWeb</strong></label>
+        </div>
+
+
+    </div>
+    <div class="form-group">
+        <div class="col-md-2 col-sm-3 col-xs-4">
+            <input type="hidden" id="hndRequestId" />
+            <label>From :</label>
+        </div>
+        <div class="col-md-4 col-sm-9 col-xs-8">
+            <label id="lblFromName"><strong>@Model.StockRequestModel.RequestFrom</strong></label>
+        </div>
+
+        <div class="col-md-2 col-sm-3 col-xs-4">
+            <label>To :</label>
+        </div>
+        <div class="col-md-4 col-sm-9 col-xs-8">
+            <label id="lblToName"><strong>@Model.StockRequestModel.RequestTo</strong></label>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-2 col-sm-3 col-xs-4">
+            <label>Device Date :</label>
+        </div>
+        <div class="col-md-4 col-sm-9 col-xs-8">
+            <label id="lblFromDateTime"><strong>@Model.StockRequestModel.DeviceRequestDateTime</strong></label>
+        </div>
+        <div class="col-md-2 col-sm-3 col-xs-4">
+            <label>Device Ip :</label>
+        </div>
+        <div class="col-md-4 col-sm-9 col-xs-8">
+            <label id="lblDeviceIp"><strong>@Model.StockRequestModel.DeviceIPAddress</strong></label>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-2 col-sm-3 col-xs-4">
+            <label>GPS Location :</label>
+        </div>
+        <div class="col-md-10 col-sm-9 col-xs-8">
+            <label id="lblGPSLocation"><strong>@Model.StockRequestModel.DeviceGpsLocation</strong></label>
+        </div>
+
+
+    </div>
+    <div class="form-group">
+
+        <div class="col-md-2 col-sm-3 col-xs-4">
+            <label>User Comments :</label>
+        </div>
+        <div class="col-md-10 col-sm-9 col-xs-8">
+            <label id="lblUserComments"><strong>@Model.StockRequestModel.UserComment</strong></label>
+        </div>
+    </div>
+@*</div>*@
+
+
+
+@*<div class="row">*@
+    <div class="form-group">
+        <div id="divStockRequestDetails">
+            <div class="table-responsive col-lg-12 rep_dyn_table" id="inventryReceiveDiv" >
+                <table id="dynamic-table" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                    <thead>
+                        <tr>
+                            <th>Product Name</th>
+                            <th width="5%">Quantity</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.StockRequestDetailModelList)
+                        {
+                            <tr>
+
+                                <td>
+                                    @item.ProductName
+                                </td>
+                                <td style="text-align:center">
+                                    @item.Quantity
+                                </td>
+
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+@*</div>*@
+
+<div>&nbsp;</div>
+@*<div class="row approvereject">*@
+    <div class="form-group approvereject">
+        <div class="col-md-2  col-sm-3 col-xs-4">
+            <label>Comment</label>
+        </div>
+        <div class="col-md-10 col-sm-9 col-xs-8">
+            <textarea id="txtComment" rows="5" ></textarea>
+        </div>
+
+    </div>
+@*</div>*@

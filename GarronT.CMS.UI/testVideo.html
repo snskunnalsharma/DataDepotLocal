@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html xmlns="https://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+</head>
+<body>
+    <div>
+        <!--<form enctype="multipart/form-data" method="post" action="https://garrontprojects.com/Client/CMS/api/UploadFile/UploadServiceVideoFiles" id="ajaxUploadForm" novalidate="novalidate">-->
+        <form enctype="multipart/form-data" method="post" action="https://localhost:6069/api/UploadFile/UploadServiceVideoFiles" id="ajaxUploadForm" novalidate="novalidate">
+
+            <fieldset>
+                <legend>Upload Video Form</legend>
+                <ol>
+                    <li>
+                        <label>userId</label>
+                        <input type="text" style="width:317px" name="userId" id="userId">
+                    </li>
+                    <li>
+                        <label>accountInitialFieldId</label>
+                        <input type="text" style="width:317px" name="accountInitialFieldId" id="accountInitialFieldId">
+                    </li>
+                    <li>
+                        <label>formId</label>
+                        <input type="text" style="width:317px" name="formId" id="formId">
+                    </li>
+                    <li>
+                        <label>serviceInitialId</label>
+                        <input type="text" style="width:317px" name="serviceInitialId" id="serviceInitialId">
+                    </li>
+                    <li>
+                        <label>Upload</label>
+                        <input type="file" style="width:317px" name="file" id="fileInput" multiple>
+                    </li>
+                    <li>
+                        <input type="submit" value="Upload" id="ajaxUploadButton" class="btn">
+                    </li>
+                </ol>
+            </fieldset>
+
+
+        </form>
+    </div>
+</body>
+</html>

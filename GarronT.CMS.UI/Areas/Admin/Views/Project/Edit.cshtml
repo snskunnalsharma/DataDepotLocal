@@ -1,0 +1,7253 @@
+﻿
+@{
+    ViewBag.Title = "Project Edit";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<!--Form Wizard-->
+@Html.Hidden("getRowPartial", Url.Action("getRowPartial", "Project"))
+@Html.Hidden("getFileUploadPartialURL", Url.Action("getFileUploadPartial", "Project"))
+@Html.Hidden("StateListUrl", Url.Action("GetStateList", "Project"))
+@Html.Hidden("ContactByClientListUrl", Url.Action("GetContactList", "Project"))
+@Html.Hidden("CityByStateIDListUrl", Url.Action("GetCityList", "Project"))
+@Html.Hidden("GetPatialViewDataUrl", Url.Action("FileUploadFieldMapping", "Project"))
+@Html.Hidden("ClientListUrl", Url.Action("GetClientList", "Project"))
+@Html.Hidden("SaveTab1Url", Url.Action("SaveTab1", "Project"))
+@Html.Hidden("GetTab2Url", Url.Action("GetTab2AllList", "Project"))
+@Html.Hidden("GetTab2CurrentUrl", Url.Action("GetTab2CurrentListsForProject", "Project"))
+@Html.Hidden("SaveTab2Url", Url.Action("SaveTab2Data", "Project"))
+@Html.Hidden("SaveTab3Url", Url.Action("SaveTab3Data", "Project"))
+@Html.Hidden("GetTab4Url", Url.Action("GetTab4Data", "Project"))
+@Html.Hidden("SaveTab4Url", Url.Action("SaveTab4Data", "Project"))
+@Html.Hidden("GetTab3Url", Url.Action("GetTab3Data", "Project"))
+@Html.Hidden("GetTab5Url", Url.Action("getTab5Data", "Project"))
+@Html.Hidden("SaveTab5Url", Url.Action("SaveTab5Data", "Project"))
+@Html.Hidden("GetCustomFieldRecordUrl", Url.Action("GetCustomFieldRecord", "Project"))
+@Html.Hidden("DeactivateCustomFieldRecordUrl", Url.Action("DeactivateCustomFieldRecord", "Project"))
+@Html.Hidden("ActivateCustomFieldRecordUrl", Url.Action("ActivateCustomFieldRecord", "Project"))
+@Html.Hidden("getTab1Data", Url.Action("GetProjectDetails", "Project"))
+@Html.Hidden("getPMeterType", Url.Action("getCurrentMeterTypeList", "Project"))
+@Html.Hidden("getPMeterSize", Url.Action("getCurrentMeterSizeList", "Project"))
+@Html.Hidden("getPService", Url.Action("getCurrentServiceList", "Project"))
+@Html.Hidden("getPInstaller", Url.Action("getCurrentInstallerList", "Project"))
+@Html.Hidden("SaveTab6Url", Url.Action("SaveTab6Data", "Project"))
+@Html.Hidden("GetOldExcelData", Url.Action("GetOldExcelData", "Project"))
+@Html.Hidden("GetOldParitalViewData", Url.Action("GetOldParitalViewData", "Project"))
+@Html.Hidden("GetPictureListurl", Url.Action("GetPictureList", "Project"))
+
+@Html.Hidden("GetprojectIndex", Url.Action("Index", "Project"))
+
+@Html.Hidden("UrlGetProjectList", Url.Action("GetProjectList", "Project"))
+@Html.Hidden("UrlSaveServiceProduct", Url.Action("SaveServiceProduct", "Project"))
+
+@Html.Hidden("UrlGetServiceProduct", Url.Action("GetServiceProduct", "Project"))
+
+@Html.Hidden("UrlDeleteServiceProduct", Url.Action("DeleteServiceProduct", "Project"))
+
+@Html.Hidden("UrlGetWarehouseList", Url.Action("GetWarehouseList", "Project"))
+
+<style type="text/css">
+    .stepwizard-step p {
+        margin-top: 10px;
+        color: #fff;
+        width: 128px;
+        margin-left: -45px;
+    }
+
+    .stepwizard-row {
+        display: table-row;
+    }
+
+    .stepwizard {
+        display: table;
+        width: 100%;
+        position: relative;
+        background: #80B2DF;
+    }
+
+    .stepwizard-step button[disabled] {
+        opacity: 1 !important;
+        filter: alpha(opacity=100) !important;
+    }
+
+    .stepwizard-row:before {
+        top: 41px;
+        bottom: 0;
+        position: relative;
+        content: " ";
+        width: 100%;
+        height: 1px;
+        background-color: #f5f5f5;
+        z-index: 0;
+        position: absolute;
+        height: 6px;
+        border-right: none;
+        border-radius: 0;
+        border: 1px solid #d5d5da;
+        left: 0;
+    }
+
+    .stepwizard-step {
+        display: table-cell;
+        text-align: center;
+        position: relative;
+        /*width: 20%;*/
+        white-space: nowrap;
+        padding-bottom: 20px;
+    }
+
+    .stepwizard-step-circle {
+        display: block;
+        background: #eee;
+        width: 40px;
+        height: 40px;
+        border-radius: 40px;
+        border: 1px solid #d5d5da;
+        margin: 2% 4.5% 4% 6.7%;
+        float: left;
+    }
+
+    .open > .dropdown-menu {
+        /*display: block;
+        min-height: 220px;
+        overflow: auto;
+        height: 220px;
+        width: 100% !important;*/
+    }
+
+    .btn-circle {
+        width: 30px;
+        height: 30px;
+        text-align: center;
+        padding: 6px 0;
+        font-size: 12px;
+        line-height: 1.428571429;
+        border-radius: 15px;
+        /*margin-top: 4px;*/
+        margin-top: -21px;
+        color: #fff !important;
+    }
+
+    .multiselect {
+        width: 100%;
+        padding: 1px 5px;
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        z-index: 1000;
+        display: none;
+        float: left;
+        min-width: 160px !important;
+        padding: 5px 0;
+        margin: 2px 0 0;
+        font-size: 14px;
+        text-align: left;
+        list-style: none;
+        background-color: #fff;
+        -webkit-background-clip: padding-box;
+        background-clip: padding-box;
+        border: 1px solid #ccc;
+        border: 1px solid rgba(0,0,0,.15);
+        border-radius: 4px;
+        -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+        box-shadow: 0 6px 12px rgba(0,0,0,.175);
+    }
+
+    .labelcolor {
+        color: #fff;
+    }
+
+    .next, .prev {
+        background: #2196F3;
+    }
+    /*
+        Drag & drop css
+        */
+
+    .sideBySide {
+        /*margin-left: 254px !important;
+        margin-top: 7px !important;*/
+    }
+
+    ul.source, ul.target {
+        min-height: 500px;
+        margin: 0px 25px 10px 0px;
+        padding: 2px;
+        border-width: 1px;
+        border-style: solid;
+        -webkit-border-radius: 3px;
+        -moz-border-radius: 3px;
+        border-radius: 3px;
+        list-style-type: none;
+        list-style-position: inside;
+        /*width: 20em;*/
+    }
+
+    ul.source {
+        border-color: #f8e0b1;
+    }
+
+    ul.target {
+        border-color: #add38d;
+    }
+
+    .source li, .target li {
+        margin: 2px;
+        /*padding-top: 8px !important;*/
+        padding: 8px 0px !important;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        border-radius: 4px;
+        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+        /*height: 2.5em;*/
+    }
+
+    .source li {
+        background-color: #fcf8e3;
+        border: 1px solid #fbeed5;
+        color: #c09853;
+    }
+
+    .target li {
+        background-color: #ebf5e6;
+        border: 1px solid #d6e9c6;
+        color: #468847;
+    }
+
+    .sortable-dragging {
+        border-color: #ccc !important;
+        background-color: #fafafa !important;
+        color: #bbb !important;
+    }
+
+    .sortable-placeholder {
+        height: 40px;
+    }
+
+    .source .sortable-placeholder {
+        border: 2px dashed #f8e0b1 !important;
+        background-color: #fefcf5 !important;
+    }
+
+    .target .sortable-placeholder {
+        border: 2px dashed #add38d !important;
+        background-color: #f6fbf4 !important;
+    }
+
+    /*.sel_std {
+        padding-left: 16em;
+        padding-top: 7px;
+    }
+
+    .drp_std {
+        padding-left: 7.9em;
+        padding-top: 7px;
+    }
+
+    .src_field {
+        padding-left: 16em;
+    }
+
+    .des_field {
+    }
+
+    .mov_field {
+        margin-top: 0.5em;
+    }*/
+
+    .input-group-addon1 {
+        margin-left: 1% !important;
+    }
+
+    .proj_metr_btn {
+        width: 100% !important;
+    }
+
+    .task-content {
+        margin-top: 6px;
+    }
+
+    .site-min-height {
+        /*min-height: 542px;*/
+    }
+
+    .sel-serv {
+        padding-left: 5%;
+        margin-bottom: -3%;
+    }
+
+    .iconic-input {
+        margin-right: 18px;
+    }
+
+    .deact_rec_proj {
+        padding-left: 38%;
+    }
+    /*.nw-btn1{
+        margin-right:25px;
+        margin-left:-5px;
+    }
+    .nw-btn2{
+        margin-right:25px;
+    }
+    .nw-btn3{
+        margin-right:25px;
+    }
+    .nw-btn4{
+        margin-right:25px;
+    }
+    .nw-btn5{
+        margin-right:25px;
+    }*/
+    .nw_mtrsze_btn .allocation_m {
+        width: 100%;
+    }
+
+    /*.mobsn-hd {
+        font-size: 15px !important;
+        font-weight: 600 !important;
+        padding-left: 10px;
+    }
+     .conct_btn {
+    }
+
+    .conct_label {
+    }
+    .syn_label{
+        margin-left:-84px;
+        margin-right:6px;
+    }
+    .cre_synch{
+        width:70%;
+    }*/
+    /******************Ihone 5s Portrait Start*******************/
+    @@media (max-width:320px) {
+        .multiselect-container {
+            position: relative !important;
+        }
+
+        .input-group-addon1 {
+            margin-left: 0% !important;
+        }
+
+        .cre_prvs_btn {
+            margin-left: 9% !important;
+        }
+
+        .cre_prvs_btn1 {
+            margin-left: 9% !important;
+        }
+
+        .sel_std_flds {
+            margin-left: -22%;
+            white-space: normal;
+        }
+
+        .src_conn_std {
+            float: left;
+            margin-left: -40% !important;
+            width: 130%;
+        }
+
+            .src_conn_std > li {
+                height: 6em;
+                white-space: normal;
+                font-size: 10px;
+                padding-bottom: 34% !important;
+            }
+
+        .src_conn_drp {
+            margin-left: -1% !important;
+            margin-right: 16% !important;
+            width: 130%;
+        }
+
+        .mov_field {
+            margin-left: -12%;
+            margin-top: 26%;
+            width: 10%;
+            margin-right: 16%;
+        }
+
+            .mov_field > .btn-success {
+                margin-left: -31%;
+                font-size: 9px;
+                white-space: normal;
+                margin-top: 121% !important;
+            }
+
+
+        .drp_std_flds {
+            white-space: normal;
+        }
+
+        .src_conn_drp > li {
+            padding-bottom: 34% !important;
+            height: 6em !important;
+            font-size: 10px;
+        }
+
+        .sel-serv {
+            margin-left: -10% !important;
+            margin-bottom: -3%;
+        }
+
+        .deact_rec_proj {
+            padding-left: 5%;
+        }
+
+        .btn-success {
+            white-space: normal;
+        }
+
+        .iconic-input {
+            margin-left: 76%;
+            margin-top: -49%;
+        }
+
+        .dataTables_length > label {
+            white-space: normal;
+        }
+
+        .adv-table .dataTables_length select {
+            width: 83% !important;
+        }
+
+        .mobsn-hd {
+            padding-left: 6%;
+        }
+
+        .conct_btn {
+        }
+        /*.conct_label {
+                padding-left: 6%;
+            }
+            .syn_label{
+                   margin-left: 2%;
+                    margin-top: 2%;
+            }
+            .synctype_drpbtn{
+                margin-left: -5%;
+                width: 92%;
+            }
+            .div_cre_inp_syncinterval{
+                margin:0;
+                padding:0;
+            }
+            .cre_synch{
+                width:98%;
+            }*/
+    }
+    /******************End Ihone 5s Portrait *******************/
+
+    @@media only screen and (min-width:321px)and (max-width:359px) {
+        .multiselect-container {
+            position: relative !important;
+        }
+
+        .sideBySide {
+            overflow: hidden !important;
+        }
+
+        .sel_std {
+        }
+
+        .drp_std {
+        }
+
+        .src_field {
+        }
+
+        .des_field {
+        }
+
+        .mov_field {
+            margin-left: -14%;
+            margin-top: 26%;
+            margin-right: 11%;
+        }
+
+            .mov_field > .btn-success {
+                white-space: normal;
+                font-size: 9px;
+                margin-left: 102%;
+            }
+
+        .sel_std_flds {
+            margin-left: -23%;
+            float: none;
+            white-space: normal;
+            font-size: 11px;
+        }
+
+        .drp_std_flds {
+            margin-left: 33%;
+            white-space: normal;
+            font-size: 11px;
+            margin-right: -24% !important;
+        }
+
+        .src_conn_std {
+            font-size: 9px;
+            margin-top: 19% !important;
+        }
+
+            .src_conn_std > li {
+                height: 3.5em;
+                padding-bottom: 34% !important;
+                white-space: normal;
+            }
+
+        .src_conn_drp {
+            margin-left: 22% !important;
+            margin-top: 19% !important;
+            font-size: 9px;
+        }
+
+            .src_conn_drp > li {
+                padding-bottom: 34% !important;
+                height: 5em !important;
+            }
+
+        .nw_mtrsze_btn > .open > .dropdown-menu {
+        }
+
+        .nw_mtrsze_btn > .input-group-addon1 {
+        }
+
+        .has-switch {
+            margin-left: -45% !important;
+        }
+
+        .sel-serv {
+            padding-left: 0% !important;
+            margin-bottom: -3%;
+        }
+
+        .btn-success {
+            white-space: normal;
+        }
+
+        .deact_rec_proj {
+            padding-left: 8%;
+        }
+
+        .iconic-input {
+            margin-left: 27%;
+            margin-right: -18%;
+        }
+
+        .adv-table .dataTables_length select {
+            width: 100% !important;
+        }
+
+        .dataTables_length > label {
+            white-space: normal;
+        }
+
+        .mobsn-hd {
+            padding-left: 5%;
+        }
+
+        .conct_btn {
+        }
+
+        .conct_label {
+            padding-left: 5%;
+        }
+
+        .syn_label {
+            margin-left: 4%;
+            margin-top: 2%;
+        }
+
+        .cre_synch {
+            width: 98%;
+        }
+    }
+    /*************************IPHONE 6S PORTRAIT***********************************************/
+    @@media only screen and (min-width:360px) and (max-width:420px) {
+        .multiselect-container {
+            position: relative !important;
+        }
+
+        .input-group-addon1 {
+            margin-left: 0% !important;
+        }
+
+        .cre_prvs_btn {
+            margin-left: 8% !important;
+        }
+
+        .cre_prvs_btn1 {
+            margin-left: 8% !important;
+        }
+
+        .sel-serv {
+            padding-left: 0% !important;
+            margin-bottom: -3%;
+        }
+
+        .mov_field {
+            margin-left: -11%;
+            margin-top: 6%;
+            margin-right: 8%;
+        }
+
+            .mov_field > .btn-success {
+                margin-left: 0em;
+                margin-right: -5% !important;
+                white-space: normal;
+                margin-top: 121% !important;
+            }
+
+        .sel_std_flds {
+            margin-left: -23%;
+            white-space: normal;
+            font-size: 12px;
+        }
+
+        .drp_std_flds {
+            margin-left: 27%;
+            white-space: normal;
+            font-size: 12px;
+            margin-right: -20%;
+        }
+
+        .src_conn_std {
+            /*font-size: 11px;*/
+        }
+
+            .src_conn_std > li {
+                /*height: 3.5em;
+                padding-bottom: 34% !important;*/
+                padding: 10% 0% !important;
+                white-space: normal;
+            }
+
+        .src_conn_drp {
+            margin-left: 22% !important;
+            margin-right: -24% !important;
+            /*font-size: 11px;*/
+            padding: 0 !important;
+            /*margin-top: 19% !important;*/
+        }
+
+            .src_conn_drp > li {
+                /*padding-bottom: 34% !important;
+                height: 5em !important;*/
+                padding: 10% 0% !important;
+            }
+
+        .btn-success {
+            white-space: normal;
+        }
+
+        .deact_rec_proj {
+            padding-left: 4%;
+        }
+
+        .iconic-input {
+            margin-left: 21%;
+            width: 94%;
+        }
+
+        .adv-table .dataTables_length select {
+            width: 100% !important;
+        }
+
+        .dataTables_length > label {
+            white-space: normal;
+        }
+        /*.mobsn-hd {
+                padding-left: 5%;
+            }
+             .conct_btn {
+            }
+
+            .conct_label {
+                padding-left: 5%;
+            }
+            .syn_label{
+                   margin-left: 5%;
+                    margin-top: 2%;
+            }
+            .cre_synch{
+                width:98%;
+            }*/
+        .stepwizard-row:before {
+            top: 4px;
+            bottom: 0;
+            position: relative;
+            content: " ";
+            width: 100%;
+            height: 1px;
+            background-color: #f5f5f5;
+            z-index: 0;
+            position: absolute;
+            height: 6px;
+            border-right: none;
+            border-radius: 0;
+            border: 1px solid #d5d5da;
+            left: 0;
+        }
+        /* 3 Step Project*/
+        .has-switch span {
+            width: 49%;
+        }
+    }
+    /*******************6s Portrait End*********************************************************/
+
+    @@media only screen and (min-width:421px) and (max-width:430px) {
+        .multiselect-container {
+            position: relative !important;
+        }
+
+        .input-group-addon1 {
+            margin-left: 0% !important;
+        }
+
+        .cre_prvs_btn {
+            margin-left: 8% !important;
+        }
+
+        .cre_prvs_btn1 {
+            margin-left: 8% !important;
+        }
+
+        .sel-serv {
+            padding-left: 0% !important;
+            margin-bottom: -3%;
+        }
+
+        .mov_field {
+            margin-left: -11%;
+            margin-top: 6%;
+            margin-right: 8%;
+        }
+
+            .mov_field > .btn-success {
+                margin-left: 0em;
+                margin-right: -5% !important;
+                white-space: normal;
+                margin-top: 121% !important;
+            }
+        /*4th Step Project*/
+        .sel_std_flds {
+            margin-left: -23%;
+            white-space: normal;
+            font-size: 12px;
+        }
+
+        .drp_std_flds {
+            margin-left: 27%;
+            white-space: normal;
+            font-size: 12px;
+            margin-right: -20%;
+        }
+
+        .src_conn_std {
+            /*font-size: 11px;*/
+        }
+
+            .src_conn_std > li {
+                /*height: 3.5em;
+                padding-bottom: 34% !important;*/
+                padding: 10% 0% !important;
+                white-space: normal;
+            }
+
+        .source li, .target li {
+        }
+
+        .src_conn_drp {
+            margin-left: 22% !important;
+            margin-right: -24% !important;
+            /*font-size: 11px;*/
+            /*margin-top: 19% !important;*/
+        }
+
+            .src_conn_drp > li {
+                /*padding-bottom: 34% !important;
+                height: 5em !important;*/
+                padding: 10% 0% !important;
+            }
+
+        .conct_label {
+            margin-left: 4%;
+        }
+
+        .conct_btn {
+            width: 80%;
+        }
+
+        .syn_label {
+            margin-left: 1%;
+            margin-top: 2%;
+        }
+
+        .synctype_drpbtn {
+            margin-left: -4%;
+            width: 86%;
+        }
+
+        .cre_synch {
+            margin-top: 2%;
+        }
+
+        .div_cre_inp_syncinterval {
+            margin-left: -3%;
+            width: 50%;
+        }
+
+        .btn-success {
+            white-space: normal;
+        }
+
+        .deact_rec_proj {
+            padding-left: 4%;
+        }
+
+        .iconic-input {
+            margin-left: 21%;
+            width: 94%;
+        }
+
+        .adv-table .dataTables_length select {
+            width: 100% !important;
+        }
+
+        .dataTables_length > label {
+            white-space: normal;
+        }
+        /*.mobsn-hd {
+                padding-left: 5%;
+            }
+             .conct_btn {
+            }
+
+            .conct_label {
+                padding-left: 5%;
+            }
+            .syn_label{
+                   margin-left: 5%;
+                    margin-top: 2%;
+            }
+            .cre_synch{
+                width:98%;
+            }*/
+        .stepwizard-row:before {
+            top: 4px;
+            bottom: 0;
+            position: relative;
+            content: " ";
+            width: 100%;
+            height: 1px;
+            background-color: #f5f5f5;
+            z-index: 0;
+            position: absolute;
+            height: 6px;
+            border-right: none;
+            border-radius: 0;
+            border: 1px solid #d5d5da;
+            left: 0;
+        }
+        /* 3 Step Project*/
+        .has-switch span {
+            width: 49%;
+        }
+
+        footer > p {
+            width: auto !important;
+        }
+    }
+
+    @@media only screen and (min-width:421px) and (max-width:767px) {
+        /*.sel_std_flds {
+            margin-left: -8%;
+        }
+
+        .src_conn_std {
+        }
+
+        .mov_field {
+            margin-left: -7%;
+            margin-right: 7%;
+            margin-top: 7%;
+        }
+
+            .mov_field > .btn-success {
+                white-space: normal;
+            }
+
+        .des_field {
+        }
+
+        .drp_std_flds {
+        }
+
+        .src_conn_drp {
+        }
+
+            .src_conn_drp > li {
+                padding-bottom: 13% !important;
+            }
+
+        .sel-serv {
+            padding-left: 2%;
+            margin-bottom: -3%;
+        }*/
+    }
+
+    @@media only screen and (min-width:431px)and (max-width:479px) {
+        .multiselect-container {
+            /*position: relative !important;*/
+        }
+
+        .step2-div {
+        }
+
+        .input-group-addon1 {
+            margin-left: 1% !important;
+        }
+
+        .sideBySide {
+        }
+
+        .sel_std {
+        }
+
+        .drp_std {
+        }
+
+        .src_field {
+        }
+
+        .sel_std_flds {
+            margin-left: -13%;
+            white-space: normal;
+        }
+
+        .src_conn_std {
+            margin-right: 18% !important;
+            font-size: 11px;
+        }
+
+        .mov_field {
+            margin-right: 5%;
+            margin-left: -7%;
+            margin-top: 12%;
+        }
+
+            .mov_field > .btn-success {
+                font-size: 11px;
+                white-space: normal;
+            }
+
+        .des_field {
+            margin-left: 13% !important;
+        }
+
+        .drp_std_flds {
+            margin-left: 0%;
+            /*white-space: normal;*/
+            margin-right: 0%;
+        }
+
+        .src_conn_drp {
+            margin-left: 18% !important;
+            margin-right: -12em !important;
+            font-size: 11px;
+        }
+
+        .src_conn_std > li {
+            height: 4em !important;
+            padding-bottom: 23% !important;
+        }
+
+        .src_conn_drp > li {
+            height: 4em !important;
+            padding-bottom: 23% !important;
+        }
+
+        .nw_mtrsze_btn > .open > .dropdown-menu {
+            /*margin-bottom: 16%;*/
+        }
+
+        .has-switch {
+        }
+
+            .has-switch > div.switch-on {
+            }
+
+            .has-switch > div.switch-off {
+            }
+
+            .has-switch span.switch-left {
+            }
+
+            .has-switch > label {
+            }
+
+            .has-switch span.switch-right {
+            }
+
+        .deact_rec_proj {
+            padding-left: 6%;
+        }
+
+        .btn-success {
+            white-space: normal;
+        }
+
+        .iconic-input {
+            margin-left: 38%;
+            margin-right: -14%;
+        }
+
+        .adv-table .dataTables_length select {
+        }
+
+        .dataTables_length > label {
+        }
+
+        .mobsn-hd {
+            padding-left: 4%;
+        }
+
+        .conct_btn {
+            width: 80%;
+        }
+
+        .conct_label {
+            padding-left: 4%;
+        }
+
+        .syn_label {
+            margin-left: 4%;
+            margin-top: 2%;
+        }
+
+        .cre_synch {
+            width: 93%;
+        }
+
+        .nw_mtrsze_btn .multiselect-container {
+        }
+
+        .srv-alloc .multiselect-container {
+            /*position:relative !important;*/
+        }
+
+        .inst-alloc .multiselect-container {
+            /*position:relative !important;*/
+        }
+
+        .stepwizard-step-circle {
+        }
+
+        .open > .dropdown-menu {
+            width: 100% !important;
+            min-height: 5em !important;
+            height: 9em;
+            position: absolute !important;
+        }
+
+        .srv-alloc .multiselect-container > li > a > label {
+            white-space: normal;
+        }
+
+        .inst-alloc .open > .dropdown-menu {
+            position: relative !important;
+        }
+    }
+
+    /*****************************Ihone 5s landscape************************************/
+    @@media only screen and (min-width:480px)and (max-width:530px) {
+        .multiselect-container {
+            position: relative !important;
+        }
+
+        .input-group-addon1 {
+            margin-left: 0% !important;
+        }
+
+        .cre_prvs_btn {
+            margin-left: 5% !important;
+        }
+
+        .cre_prvs_btn1 {
+            margin-left: 5% !important;
+        }
+
+        .sel_std_flds {
+            margin-left: -13%;
+            white-space: normal;
+        }
+
+        .src_conn_std {
+            margin-right: 18% !important;
+            font-size: 11px;
+        }
+
+        .mov_field {
+            margin-right: 5%;
+            margin-left: -7%;
+            margin-top: 12%;
+        }
+
+            .mov_field > .btn-success {
+                font-size: 11px;
+                white-space: normal;
+            }
+
+        .des_field {
+            margin-left: 13% !important;
+        }
+
+        .drp_std_flds {
+            margin-left: 19%;
+            /*white-space: normal;*/
+            margin-right: 0%;
+        }
+
+        .src_conn_drp {
+            margin-left: 18% !important;
+            margin-right: -12em !important;
+            font-size: 11px;
+        }
+
+        .src_conn_std > li {
+            height: 4em !important;
+            padding-bottom: 23% !important;
+        }
+
+        .src_conn_drp > li {
+            height: 4em !important;
+            padding-bottom: 23% !important;
+        }
+
+        .deact_rec_proj {
+            padding-left: 8%;
+        }
+
+        .iconic-input {
+            margin-left: 21%;
+            width: 94%;
+        }
+
+        .adv-table .dataTables_length select {
+            width: 100% !important;
+        }
+
+        .dataTables_length > label {
+            white-space: normal;
+        }
+
+        .open > .dropdown-menu {
+            width: 100% !important;
+            min-height: 5em !important;
+            height: 9em;
+            position: absolute !important;
+        }
+
+        .inst-alloc .open > .dropdown-menu {
+            position: relative !important;
+        }
+    }
+    /****************************5S landscape end**********************************************/
+
+    @@media only screen and (min-width:531px)and (max-width:599px) {
+        .multiselect-container {
+            position: relative !important;
+        }
+
+        .input-group-addon1 {
+            margin-left: 0% !important;
+        }
+
+        .cre_prvs_btn {
+            margin-left: 5% !important;
+        }
+
+        .cre_prvs_btn1 {
+            margin-left: 5% !important;
+        }
+
+        .sel_std_flds {
+            margin-left: -13%;
+            white-space: normal;
+        }
+
+        .src_conn_std {
+            margin-right: 18% !important;
+            font-size: 11px;
+        }
+
+        .mov_field {
+            margin-right: 5%;
+            margin-left: -7%;
+            margin-top: 12%;
+        }
+
+            .mov_field > .btn-success {
+                font-size: 11px;
+                white-space: normal;
+            }
+
+        .des_field {
+            margin-left: 13% !important;
+        }
+
+        .drp_std_flds {
+            margin-left: 19%;
+            /*white-space: normal;*/
+            margin-right: 0%;
+        }
+
+        .src_conn_drp {
+            margin-left: 18% !important;
+            margin-right: -12em !important;
+            font-size: 11px;
+        }
+
+        .src_conn_std > li {
+            height: 4em !important;
+            padding-bottom: 23% !important;
+        }
+
+        .src_conn_drp > li {
+            height: 4em !important;
+            padding-bottom: 23% !important;
+        }
+
+        .deact_rec_proj {
+            padding-left: 8%;
+        }
+
+        .iconic-input {
+            margin-left: 21%;
+            width: 94%;
+        }
+
+        .adv-table .dataTables_length select {
+            width: 100% !important;
+        }
+
+        .dataTables_length > label {
+            white-space: normal;
+        }
+
+        .open > .dropdown-menu {
+            width: 100% !important;
+            min-height: 5em !important;
+            height: 9em;
+            position: absolute !important;
+        }
+
+        .srv-alloc .multiselect-container > li > a > label {
+            white-space: normal;
+        }
+
+        .inst-alloc .open > .dropdown-menu {
+            /*position:relative !important;*/
+            min-height: 2em !important;
+            max-height: 7em;
+        }
+    }
+
+    @@media only screen and (min-width:531px)and (max-width:599px) and (orientation:landscape) {
+        .multiselect-container {
+            position: relative !important;
+        }
+
+        .input-group-addon1 {
+            margin-left: 0% !important;
+        }
+
+        .cre_prvs_btn {
+            margin-left: 5% !important;
+        }
+
+        .cre_prvs_btn1 {
+            margin-left: 5% !important;
+        }
+
+        .sel_std_flds {
+            margin-left: -13%;
+            white-space: normal;
+        }
+
+        .src_conn_std {
+            margin-right: 18% !important;
+            font-size: 11px;
+        }
+
+        .mov_field {
+            margin-right: 5%;
+            margin-left: -7%;
+            margin-top: 12%;
+        }
+
+            .mov_field > .btn-success {
+                font-size: 11px;
+                white-space: normal;
+            }
+
+        .des_field {
+            margin-left: 13% !important;
+        }
+
+        .drp_std_flds {
+            margin-left: 19%;
+            /*white-space: normal;*/
+            margin-right: 0%;
+        }
+
+        .src_conn_drp {
+            margin-left: 18% !important;
+            margin-right: -12em !important;
+            font-size: 11px;
+        }
+
+        .src_conn_std > li {
+            height: 4em !important;
+            padding-bottom: 23% !important;
+        }
+
+        .src_conn_drp > li {
+            height: 4em !important;
+            padding-bottom: 23% !important;
+        }
+
+        .deact_rec_proj {
+            padding-left: 8%;
+        }
+
+        .iconic-input {
+            margin-left: 21%;
+            width: 94%;
+        }
+
+        .adv-table .dataTables_length select {
+            width: 100% !important;
+        }
+
+        .dataTables_length > label {
+            white-space: normal;
+        }
+
+        .open > .dropdown-menu {
+            width: 100% !important;
+            min-height: 5em !important;
+            height: 9em;
+            position: absolute !important;
+        }
+
+        .srv-alloc .multiselect-container > li > a > label {
+            white-space: normal;
+        }
+
+        .inst-alloc .open > .dropdown-menu {
+            position: relative !important;
+            /*min-height: 2em !important;
+            max-height: 7em;*/
+        }
+    }
+
+    @@media only screen and (min-width:600px)and (max-width:640px)and (orientation:portrait) {
+        .panel {
+            margin-top: 0%;
+        }
+
+        .multiselect-container {
+            position: relative !important;
+        }
+
+        .input-group-addon1 {
+            margin-left: -90% !important;
+        }
+
+        .proj_metr_btn > allocation_m {
+        }
+
+        .sideBySide {
+            overflow-x: hidden !important;
+        }
+
+        .sel_std_flds {
+            margin-left: -5%;
+            white-space: normal;
+        }
+
+        .src_conn_std {
+        }
+
+        .mov_field {
+            margin-right: -1%;
+            margin-left: -1%;
+            margin-top: 5%;
+        }
+
+            .mov_field > .btn-success {
+                font-size: 11px;
+                white-space: normal;
+            }
+
+        .des_field {
+            margin-left: 13% !important;
+        }
+
+        .drp_std_flds {
+            margin-left: 25%;
+            white-space: normal;
+            margin-right: 0%;
+        }
+
+        .src_conn_drp {
+            margin-left: 18% !important;
+            margin-right: -12em !important;
+        }
+
+        .src_conn_std > li {
+            height: 4em !important;
+            padding-bottom: 10% !important;
+        }
+
+        .src_conn_drp > li {
+            height: 4em !important;
+            padding-bottom: 10% !important;
+        }
+
+        .deact_rec_proj {
+            padding-left: 14%;
+        }
+
+        .nw_mtrsze_btn .multiselect {
+            width: 100% !important;
+        }
+
+        .open > .dropdown-menu {
+            width: 100% !important;
+            min-height: 5em !important;
+            height: 9em;
+            position: absolute !important;
+        }
+
+        .inst-alloc .open > .dropdown-menu {
+            /*position:relative !important;*/
+            min-height: 2em !important;
+            max-height: 7em;
+        }
+
+        .task-title-sp {
+            white-space: nowrap;
+        }
+
+        .task-title-sp1 {
+            white-space: nowrap;
+            padding-left: 4% !important;
+        }
+
+        .task-title-sp2 {
+            white-space: nowrap;
+            padding-left: 3% !important;
+        }
+    }
+
+    @@media only screen and (min-width:600px)and (max-width:640px) and (orientation:landscape) {
+        .panel {
+            margin-top: 0%;
+        }
+
+        .multiselect-container {
+            position: relative !important;
+        }
+
+        .input-group-addon1 {
+            margin-left: 1% !important;
+        }
+
+        .proj_metr_btn > allocation_m {
+        }
+
+        .sideBySide {
+            overflow-x: hidden !important;
+        }
+
+        .sel_std_flds {
+            margin-left: -5%;
+            white-space: normal;
+        }
+
+        .src_conn_std {
+        }
+
+        .mov_field {
+            margin-right: -1%;
+            margin-left: -1%;
+            margin-top: 5%;
+        }
+
+            .mov_field > .btn-success {
+                font-size: 11px;
+                white-space: normal;
+            }
+
+        .des_field {
+            margin-left: 13% !important;
+        }
+
+        .drp_std_flds {
+            margin-left: 25%;
+            white-space: normal;
+            margin-right: 0%;
+        }
+
+        .src_conn_drp {
+            margin-left: 18% !important;
+            margin-right: -12em !important;
+        }
+
+        .src_conn_std > li {
+            height: 4em !important;
+            padding-bottom: 10% !important;
+        }
+
+        .src_conn_drp > li {
+            height: 4em !important;
+            padding-bottom: 10% !important;
+        }
+
+        .deact_rec_proj {
+            padding-left: 14%;
+        }
+
+        .nw_mtrsze_btn .multiselect {
+            width: 100% !important;
+        }
+
+        .open > .dropdown-menu {
+            width: 100% !important;
+            min-height: 5em !important;
+            height: 9em;
+            position: absolute !important;
+        }
+
+        .inst-alloc .open > .dropdown-menu {
+            position: relative !important;
+            /*min-height: 2em !important;
+            max-height: 7em;*/
+        }
+    }
+    /***************************** IPHONE 6S Landscape **********************************/
+
+    @@media only screen and (min-width:641px)and (max-width:767px) {
+
+        .multiselect-container {
+            position: relative !important;
+        }
+
+        .input-group-addon1 {
+            margin-left: 2% !important;
+            padding-top: 5% !important;
+        }
+
+        .multiselect {
+            width: 100% !important;
+        }
+
+        .open > .dropdown-menu {
+            width: 100% !important;
+            min-height: 5em !important;
+            height: 9em;
+            position: absolute !important;
+        }
+
+        .cre_prvs_btn {
+            margin-left: 5% !important;
+        }
+
+        .cre_prvs_btn1 {
+            margin-left: 5% !important;
+        }
+
+        .sideBySide {
+            overflow-x: hidden !important;
+        }
+
+        .sel_std_flds {
+            margin-left: -5%;
+            white-space: normal;
+        }
+
+        .src_conn_std {
+        }
+
+        .mov_field {
+            margin-right: -1%;
+            margin-left: -1%;
+            margin-top: 5%;
+        }
+
+            .mov_field > .btn-success {
+                font-size: 11px;
+                white-space: normal;
+            }
+
+        .des_field {
+            margin-left: 13% !important;
+        }
+
+        .drp_std_flds {
+            margin-left: 25%;
+            white-space: normal;
+            margin-right: 0%;
+        }
+
+        .src_conn_drp {
+            margin-left: 18% !important;
+            margin-right: -12em !important;
+        }
+
+        .src_conn_std > li {
+            height: 3em !important;
+            padding-bottom: 14% !important;
+        }
+
+        .src_conn_drp > li {
+            height: 3em !important;
+            padding-bottom: 14% !important;
+        }
+
+        .deact_rec_proj {
+            padding-left: 17%;
+        }
+
+        .inst-alloc .open > .dropdown-menu {
+            position: relative !important;
+        }
+    }
+    /***************************** IPHONE 6S Landscape End **********************************/
+
+    @@media only screen and (min-width:768px)and (max-width:798px) {
+        .multiselect {
+            width: 78% !important;
+        }
+
+        .open > .dropdown-menu {
+            width: 98% !important;
+        }
+
+        .multiselect-container {
+            /*position: relative !important;*/
+        }
+
+        .input-group-addon1 {
+            margin-left: 1% !important;
+        }
+
+        .proj_metr_btn {
+            margin-left: 10%;
+            width: 100% !important;
+        }
+
+        .sideBySide {
+        }
+
+        .sel_std {
+        }
+
+        .drp_std {
+        }
+
+        .src_field {
+        }
+
+        .sel_std_flds {
+        }
+
+        .src_conn_std {
+        }
+
+        .mov_field {
+            margin-top: 5%;
+            margin-right: 3%;
+            margin-left: -3%;
+        }
+
+            .mov_field > .btn-success {
+                white-space: normal;
+            }
+
+        .des_field {
+            /*margin-left: 9%;
+            margin-top: -11%;*/
+        }
+
+        .drp_std_flds {
+            /*padding-left: 70%;*/
+        }
+
+        .src_conn_drp {
+            /*margin-left: 65% !important;
+            margin-right: -251% !important;*/
+        }
+
+        .src_conn_std > li {
+            height: 4em !important;
+        }
+
+        .src_conn_drp > li {
+            height: 4em !important;
+        }
+
+        .deact_rec_proj {
+            padding-left: 15%;
+        }
+
+        .chosen-results {
+            max-height: 10em !important;
+        }
+        /*.mobsn-hd {
+                padding-left: 2%;
+            }
+             .conct_btn {
+                 width:80%;
+            }
+
+            .conct_label {
+               margin-right: 80% !important;
+              width: 20% !important;
+              margin-left: 0%;
+            }
+            .syn_label{
+                    margin-right: 80% !important;
+              width: 20% !important;
+              margin-left: -2%;
+              margin-top: 1%;
+            }
+            .cre_synch{
+                width:93%;
+                 margin-left: 0.5%;
+            }*/
+        .nw_mtrsze_btn .multiselect-container {
+            min-height: 2em !important;
+            max-height: 11em;
+        }
+
+        .srv-alloc .multiselect-container {
+            min-height: 2em !important;
+            max-height: 11em;
+        }
+
+            .srv-alloc .multiselect-container > li > a > label {
+                white-space: normal;
+            }
+
+        .inst-alloc .multiselect-container {
+            min-height: 7em !important;
+            max-height: 7em;
+        }
+
+            .inst-alloc .multiselect-container > li > a > label {
+                white-space: normal;
+            }
+
+        .task-title-sp {
+            white-space: nowrap;
+        }
+
+        .task-title-sp1 {
+            white-space: nowrap;
+            padding-left: 6% !important;
+        }
+
+        .task-title-sp2 {
+            white-space: nowrap;
+            padding-left: 3% !important;
+        }
+    }
+
+    @@media only screen and (min-width:799px) and (max-width:850px) and (orientation:portrait) {
+        .multiselect {
+            width: 100% !important;
+        }
+
+        .open > .dropdown-menu {
+            width: 100% !important;
+        }
+
+        .multiselect-container {
+            /*position: relative !important;*/
+        }
+
+        .input-group-addon1 {
+            margin-left: 1% !important;
+        }
+
+        .proj_metr_btn {
+            margin-left: -18%;
+            margin-right: -20% !important;
+            width: 138% !important;
+        }
+
+        .state_drp_btn > .chosen-container {
+            width: 100% !important;
+        }
+
+        .cty_drp_btn > .chosen-container {
+            width: 100% !important;
+        }
+
+        .sideBySide {
+        }
+
+        .sel_std {
+        }
+
+        .drp_std {
+        }
+
+        .src_field {
+        }
+
+        .sel_std_flds {
+            margin-left: -60%;
+        }
+
+        .src_conn_std {
+            font-size: 11px !important;
+            width: 172%;
+        }
+
+            .src_conn_std > li {
+                height: 5em !important;
+            }
+
+        .mov_field {
+            margin-right: auto;
+            padding-left: 0%;
+        }
+
+            .mov_field > .btn-success {
+                white-space: normal;
+                margin-top: 10%;
+            }
+
+
+        .drp_std_flds {
+        }
+
+        .src_conn_drp {
+            font-size: 11px !important;
+            width: 172%;
+        }
+
+            .src_conn_drp > li {
+                height: 5em !important;
+            }
+
+        .deact_rec_proj {
+            padding-left: 18%;
+        }
+
+        .nw_mtrsze_btn .allocation_m {
+            width: 90%;
+            margin-left: 5%;
+        }
+
+        .srv-alloc .multiselect-container {
+            min-height: 2em !important;
+            max-height: 11em;
+        }
+
+            .srv-alloc .multiselect-container > li > a > label {
+                white-space: normal;
+            }
+
+        .inst-alloc .multiselect-container {
+            min-height: 2em !important;
+            max-height: 11em;
+        }
+
+            .inst-alloc .multiselect-container > li > a > label {
+                white-space: normal;
+            }
+
+        .task-title-sp {
+            white-space: nowrap;
+        }
+
+        .task-title-sp1 {
+            white-space: nowrap;
+        }
+
+        .task-title-sp2 {
+            white-space: nowrap;
+        }
+    }
+
+    @@media only screen and (min-width:799px) and (max-width:850px)and (orientation:landscape) {
+        .multiselect {
+            width: 100% !important;
+        }
+
+        .open > .dropdown-menu {
+            width: 100% !important;
+        }
+
+        .multiselect-container {
+            /*position: relative !important;*/
+        }
+
+        .input-group-addon1 {
+            margin-left: 1% !important;
+        }
+
+        .proj_metr_btn {
+            margin-left: -18%;
+            margin-right: -20% !important;
+            width: 138% !important;
+        }
+
+        .state_drp_btn > .chosen-container {
+            width: 100% !important;
+        }
+
+        .cty_drp_btn > .chosen-container {
+            width: 100% !important;
+        }
+
+        .sideBySide {
+        }
+
+        .sel_std {
+        }
+
+        .drp_std {
+        }
+
+        .src_field {
+        }
+
+        .sel_std_flds {
+            margin-left: -60%;
+        }
+
+        .src_conn_std {
+            font-size: 11px !important;
+            width: 172%;
+        }
+
+            .src_conn_std > li {
+                height: 5em !important;
+            }
+
+        .mov_field {
+            margin-right: auto;
+            padding-left: 0%;
+        }
+
+            .mov_field > .btn-success {
+                white-space: normal;
+                margin-top: 10%;
+            }
+
+
+        .drp_std_flds {
+        }
+
+        .src_conn_drp {
+            font-size: 11px !important;
+            width: 172%;
+        }
+
+            .src_conn_drp > li {
+                height: 5em !important;
+            }
+
+        .deact_rec_proj {
+            padding-left: 18%;
+        }
+
+        .nw_mtrsze_btn .allocation_m {
+            width: 90%;
+            margin-left: 5%;
+        }
+
+        .nw_mtrsze_btn .multiselect-container {
+            min-height: 4em;
+            max-height: 7em;
+        }
+
+        .srv-alloc .multiselect-container {
+            min-height: 4em;
+            max-height: 7em;
+        }
+
+            .srv-alloc .multiselect-container > li > a > label {
+                white-space: normal;
+            }
+
+        .inst-alloc .multiselect-container {
+            min-height: 4em;
+            max-height: 7em;
+        }
+
+            .inst-alloc .multiselect-container > li > a > label {
+                white-space: normal;
+            }
+
+        .task-title-sp {
+        }
+
+        .task-title-sp1 {
+        }
+
+        .task-title-sp2 {
+        }
+    }
+
+    @@media only screen and (min-width:851px)and (max-width:920px) {
+        .multiselect {
+            width: 100% !important;
+        }
+
+        .open > .dropdown-menu {
+            width: 100% !important;
+        }
+
+        .multiselect-container {
+        }
+
+        .input-group-addon1 {
+            margin-left: 1% !important;
+        }
+
+        .nw_mtrsze_btn .allocation_m {
+            width: 130% !important;
+            margin-left: -15%;
+        }
+
+        .sideBySide {
+        }
+
+        .sel_std {
+        }
+
+        .drp_std {
+        }
+
+        .sel_std_flds {
+            margin-left: -15%;
+        }
+
+        .src_conn_std {
+            width: 150%;
+        }
+
+            .src_conn_std > li {
+                height: 4em !important;
+                font-size: 11px;
+            }
+
+        .mov_field {
+            margin-right: auto;
+            padding-left: 0%;
+        }
+
+            .mov_field > .btn-success {
+                white-space: normal;
+            }
+
+
+        .drp_std_flds {
+        }
+
+        .src_conn_drp {
+            width: 150%;
+        }
+
+            .src_conn_drp > li {
+                height: 4em !important;
+                font-size: 11px;
+            }
+
+        .deact_rec_proj {
+            padding-left: 20%;
+        }
+
+        .srv-alloc .multiselect-container > li > a > label {
+            white-space: normal;
+        }
+
+        .task-title-sp {
+            white-space: nowrap;
+        }
+
+        .task-title-sp1 {
+            white-space: nowrap;
+        }
+
+        .task-title-sp2 {
+            white-space: nowrap;
+        }
+    }
+
+    @@media only screen and (min-width:921px)and (max-width:967px) {
+        .multiselect {
+            width: 100% !important;
+        }
+
+        .open > .dropdown-menu {
+            width: 100% !important;
+        }
+
+        .multiselect-container {
+        }
+
+        .input-group-addon1 {
+            margin-left: 1% !important;
+        }
+
+        .proj_metr_btn > allocation_m {
+        }
+
+        .sideBySide {
+        }
+
+        .sel_std {
+        }
+
+        .drp_std {
+        }
+
+        .sel_std_flds {
+            margin-left: -15%;
+        }
+
+        .src_conn_std {
+            width: 150%;
+        }
+
+            .src_conn_std > li {
+                height: 4em !important;
+                font-size: 11px;
+            }
+
+        .mov_field {
+            margin-right: auto;
+            padding-left: 0%;
+        }
+
+            .mov_field > .btn-success {
+                white-space: normal;
+            }
+
+
+        .drp_std_flds {
+        }
+
+        .src_conn_drp {
+            width: 150%;
+        }
+
+            .src_conn_drp > li {
+                height: 4em !important;
+                font-size: 11px;
+            }
+
+        .deact_rec_proj {
+            padding-left: 20%;
+        }
+
+        .task-title-sp {
+            white-space: nowrap;
+        }
+
+        .task-title-sp1 {
+            white-space: nowrap;
+        }
+
+        .task-title-sp2 {
+            white-space: nowrap;
+        }
+    }
+
+    @@media only screen and (min-width:968px)and (max-width:1023px) {
+        .multiselect {
+            width: 100% !important;
+        }
+
+        .open > .dropdown-menu {
+            width: 100% !important;
+        }
+
+        .multiselect-container {
+        }
+
+        .input-group-addon1 {
+            margin-left: 1% !important;
+        }
+
+        .proj_metr_btn > allocation_m {
+        }
+
+        .sideBySide {
+        }
+
+        .sel_std {
+        }
+
+        .drp_std {
+        }
+
+        .sel_std_flds {
+            margin-left: -24%;
+        }
+
+        .src_conn_std {
+            width: 150%;
+        }
+
+            .src_conn_std > li {
+                height: 3em !important;
+                padding-bottom: 10% !important;
+            }
+
+        .mov_field {
+            margin-right: auto;
+            padding-left: 0%;
+        }
+
+            .mov_field > .btn-success {
+                white-space: normal;
+            }
+
+
+        .drp_std_flds {
+        }
+
+        .src_conn_drp {
+            width: 150%;
+        }
+
+            .src_conn_drp > li {
+                height: 3em !important;
+                padding-bottom: 10% !important;
+            }
+
+        .deact_rec_proj {
+            padding-left: 24%;
+        }
+
+        .task-title-sp {
+            white-space: nowrap;
+        }
+
+        .task-title-sp1 {
+            white-space: nowrap;
+        }
+
+        .task-title-sp2 {
+            white-space: nowrap;
+        }
+    }
+
+    @@media only screen and (min-width:1024px)and (max-width:1149px) {
+        .multiselect {
+            width: 100% !important;
+        }
+
+        .open > .dropdown-menu {
+            width: 100% !important;
+        }
+
+        .multiselect-container {
+        }
+
+        .input-group-addon1 {
+            margin-left: 1% !important;
+        }
+
+        .proj_metr_btn > allocation_m {
+        }
+
+        .sel_std_flds {
+            margin-left: -24%;
+        }
+
+        .src_conn_std {
+            width: 150%;
+        }
+
+            .src_conn_std > li {
+                height: 2em !important;
+                padding-bottom: 10% !important;
+            }
+
+        .mov_field {
+            margin-right: auto;
+            padding-left: 0%;
+        }
+
+            .mov_field > .btn-success {
+                white-space: normal;
+            }
+
+
+        .drp_std_flds {
+        }
+
+        .src_conn_drp {
+            width: 150%;
+        }
+
+            .src_conn_drp > li {
+                height: 2em !important;
+                padding-bottom: 10% !important;
+            }
+
+        .deact_rec_proj {
+            padding-left: 27%;
+        }
+
+        .task-title-sp {
+        }
+
+        .task-title-sp1 {
+        }
+
+        .task-title-sp2 {
+            padding-left: 6% !important;
+        }
+
+        .has-switch {
+            width: 78px !important;
+        }
+    }
+
+    @@media only screen and (min-width:1150px)and (max-width:1280px) {
+        .multiselect {
+            width: 100% !important;
+        }
+
+        .multiselect-container {
+        }
+
+        .input-group-addon1 {
+            margin-left: 1% !important;
+        }
+
+        .proj_metr_btn > allocation_m {
+        }
+
+        .sel_std_flds {
+            margin-left: -24%;
+        }
+
+        .src_conn_std {
+            width: 150%;
+        }
+
+            .src_conn_std > li {
+                height: 2em !important;
+                padding-bottom: 10% !important;
+            }
+
+        .mov_field {
+            margin-right: auto;
+            padding-left: 0%;
+        }
+
+            .mov_field > .btn-success {
+                white-space: normal;
+            }
+
+
+        .drp_std_flds {
+        }
+
+        .src_conn_drp {
+            width: 150%;
+        }
+
+            .src_conn_drp > li {
+                height: 2em !important;
+                padding-bottom: 10% !important;
+            }
+
+        .deact_rec_proj {
+            padding-left: 26.5%;
+        }
+
+        .open > .dropdown-menu {
+            width: 100% !important;
+            min-height: 5em !important;
+            height: 9em;
+            position: absolute !important;
+        }
+
+        .nw_mtrsze_btn .multiselect-container {
+            /*min-height: 2em !important;
+             max-height: 11em;*/
+        }
+
+        .srv-alloc .multiselect-container {
+            min-height: 2em !important;
+            max-height: 11em;
+        }
+
+
+        .inst-alloc .multiselect-container {
+            min-height: 7em !important;
+            max-height: 7em;
+        }
+    }
+
+    @@media only screen and (min-width:1281px)and (max-width:1400px) {
+        .deact_rec_proj {
+            padding-left: 30.5%;
+        }
+
+        .open > .dropdown-menu {
+            /*width: 100% !important;
+            min-height: 5em !important;
+            height: 9em;
+            position: absolute !important;*/
+        }
+
+        .srv-alloc .open > .dropdown-menu {
+            /*position:relative !important;*/
+            height: 12em;
+        }
+
+        .inst-alloc .open > .dropdown-menu {
+            /*position:relative !important;*/
+            height: 12em;
+        }
+
+        .task-title-sp {
+        }
+
+        .task-title-sp1 {
+        }
+    }
+
+    @@media only screen and (max-width: 1023px) and (min-width: 968px) {
+        .create_label_des {
+            padding-left: 3%;
+        }
+
+        .conct_label {
+            padding-left: 2%;
+        }
+    }
+</style>
+
+<style>
+    /*************************************Bootstrap Css***********************************/
+    @@media (min-width:1200px) {
+        .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9 {
+            float: left;
+        }
+
+
+        .col-lg-12 {
+            width: 100%;
+        }
+
+        .col-lg-11 {
+            width: 91.66666667%;
+        }
+
+        .col-lg-10 {
+            width: 83.33333333%;
+        }
+
+        .col-lg-9 {
+            width: 75%;
+        }
+
+        .col-lg-8 {
+            width: 66.66666667%;
+        }
+
+        .col-lg-7 {
+            width: 58.33333333%;
+        }
+
+        .col-lg-6 {
+            width: 50% !important;
+        }
+
+        .col-lg-5 {
+            width: 41.66666667%;
+        }
+
+        .col-lg-4 {
+            width: 33.33333333%;
+        }
+
+        .col-lg-3 {
+            width: 25%;
+        }
+
+        .col-lg-2 {
+            width: 16.66666667%;
+        }
+
+        .col-lg-1 {
+            width: 8.33333333%;
+        }
+
+        .multiselect {
+            padding: 3px;
+        }
+
+        .lg-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .lg-nopaddingright {
+            padding-right: 0px;
+        }
+
+        .lg-nopadding {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+    }
+
+    @@media (min-width:992px) and (max-width:1199px) {
+        .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9 {
+            float: left;
+        }
+
+        .col-md-12 {
+            width: 100%;
+        }
+
+        .col-md-11 {
+            width: 91.66666667%;
+        }
+
+        .col-md-10 {
+            width: 83.33333333%;
+        }
+
+        .col-md-9 {
+            width: 75%;
+        }
+
+        .col-md-8 {
+            width: 66.66666667%;
+        }
+
+        .col-md-7 {
+            width: 58.33333333%;
+        }
+
+        .col-md-6 {
+            width: 50%;
+        }
+
+        .col-md-5 {
+            width: 41.66666667%;
+        }
+
+        .col-md-4 {
+            width: 33.33333333%;
+        }
+
+        .col-md-3 {
+            width: 25%;
+        }
+
+        .col-md-2 {
+            width: 16.66666667%;
+        }
+
+        .col-md-1 {
+            width: 8.33333333%;
+        }
+
+        .col-md-pull-12 {
+            right: 100%;
+        }
+
+        .col-md-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-md-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-md-pull-9 {
+            right: 75%;
+        }
+
+        .col-md-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-md-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-md-pull-6 {
+            right: 50%;
+        }
+
+        .col-md-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-md-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-md-pull-3 {
+            right: 25%;
+        }
+
+        .col-md-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-md-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-md-pull-0 {
+            right: auto;
+        }
+
+        .col-md-push-12 {
+            left: 100%;
+        }
+
+        .col-md-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-md-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-md-push-9 {
+            left: 75%;
+        }
+
+        .col-md-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-md-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-md-push-6 {
+            left: 50%;
+        }
+
+        .col-md-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-md-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-md-push-3 {
+            left: 25%;
+        }
+
+        .col-md-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-md-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-md-push-0 {
+            left: auto;
+        }
+
+        .col-md-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-md-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-md-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-md-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-md-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-md-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-md-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-md-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-md-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-md-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-md-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-md-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-md-offset-0 {
+            margin-left: 0;
+        }
+
+        .md-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .md-nopaddingright {
+            padding-right: 0px;
+        }
+
+        .md-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .md-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .md-clear {
+            clear: both;
+        }
+
+        .md-nopadding {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+
+        .Warehouse_label {
+            /*margin-left: -20px;
+                        margin-right: 2px;*/
+        }
+    }
+
+    @@media (min-width:768px) and (max-width:991px) {
+
+        .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9 {
+            float: left;
+        }
+
+        .col-sm-12 {
+            width: 100%;
+        }
+
+        .col-sm-11 {
+            width: 91.66666667%;
+        }
+
+        .col-sm-10 {
+            width: 83.33333333%;
+        }
+
+        .col-sm-9 {
+            width: 75%;
+        }
+
+        .col-sm-8 {
+            width: 66.66666667%;
+        }
+
+        .col-sm-7 {
+            width: 58.33333333%;
+        }
+
+        .col-sm-6 {
+            width: 50%;
+        }
+
+        .col-sm-5 {
+            width: 41.66666667%;
+        }
+
+        .col-sm-4 {
+            width: 33.33333333%;
+        }
+
+        .col-sm-3 {
+            width: 25%;
+        }
+
+        .col-sm-2 {
+            width: 16.66666667%;
+        }
+
+        .col-sm-1 {
+            width: 8.33333333%;
+        }
+
+        .col-sm-pull-12 {
+            right: 100%;
+        }
+
+        .col-sm-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-sm-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-sm-pull-9 {
+            right: 75%;
+        }
+
+        .col-sm-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-sm-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-sm-pull-6 {
+            right: 50%;
+        }
+
+        .col-sm-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-sm-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-sm-pull-3 {
+            right: 25%;
+        }
+
+        .col-sm-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-sm-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-sm-pull-0 {
+            right: auto;
+        }
+
+        .col-sm-push-12 {
+            left: 100%;
+        }
+
+        .col-sm-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-sm-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-sm-push-9 {
+            left: 75%;
+        }
+
+        .col-sm-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-sm-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-sm-push-6 {
+            left: 50%;
+        }
+
+        .col-sm-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-sm-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-sm-push-3 {
+            left: 25%;
+        }
+
+        .col-sm-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-sm-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-sm-push-0 {
+            left: auto;
+        }
+
+        .col-sm-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-sm-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-sm-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-sm-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-sm-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-sm-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-sm-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-sm-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-sm-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-sm-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-sm-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-sm-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-sm-offset-0 {
+            margin-left: 0;
+        }
+
+        .sm-clear {
+            clear: both;
+        }
+
+        .sm-center {
+            text-align: center;
+        }
+
+        .sm-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .sm-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .sm-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .sm-nopaddingright {
+            padding-right: 0px;
+        }
+
+        .sm-no-padding {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+    }
+
+    @@media (min-width:481px) and (max-width:767px) {
+        .xs-clear {
+            clear: both;
+        }
+
+        .col-xs-1, .col-xs-10, .col-xs-11, .col-xs-12, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9 {
+            float: left;
+        }
+
+        .col-xs-12 {
+            width: 100%;
+        }
+
+        .col-xs-11 {
+            width: 91.66666667%;
+        }
+
+        .col-xs-10 {
+            width: 83.33333333%;
+        }
+
+        .col-xs-9 {
+            width: 75%;
+        }
+
+        .col-xs-8 {
+            width: 66.66666667%;
+        }
+
+        .col-xs-7 {
+            width: 58.33333333%;
+        }
+
+        .col-xs-6 {
+            width: 50%;
+        }
+
+        .col-xs-5 {
+            width: 41.66666667%;
+        }
+
+        .col-xs-4 {
+            width: 33.33333333%;
+        }
+
+        .col-xs-3 {
+            width: 25%;
+        }
+
+        .col-xs-2 {
+            width: 16.66666667%;
+        }
+
+        .col-xs-1 {
+            width: 8.33333333%;
+        }
+
+        .col-xs-pull-12 {
+            right: 100%;
+        }
+
+        .col-xs-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-xs-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-xs-pull-9 {
+            right: 75%;
+        }
+
+        .col-xs-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-xs-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-xs-pull-6 {
+            right: 50%;
+        }
+
+        .col-xs-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-xs-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-xs-pull-3 {
+            right: 25%;
+        }
+
+        .col-xs-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-xs-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-xs-pull-0 {
+            right: auto;
+        }
+
+        .col-xs-push-12 {
+            left: 100%;
+        }
+
+        .col-xs-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-xs-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-xs-push-9 {
+            left: 75%;
+        }
+
+        .col-xs-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-xs-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-xs-push-6 {
+            left: 50%;
+        }
+
+        .col-xs-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-xs-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-xs-push-3 {
+            left: 25%;
+        }
+
+        .col-xs-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-xs-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-xs-push-0 {
+            left: auto;
+        }
+
+        .col-xs-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-xs-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-xs-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-xs-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-xs-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-xs-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-xs-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-xs-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-xs-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-xs-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-xs-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-xs-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-xs-offset-0 {
+            margin-left: 0;
+        }
+
+
+        .xs-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .xs-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .xs-block {
+            display: block;
+        }
+
+        .xs-nopadding {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+
+        .xs-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .xs-nopaddingright {
+            padding-right: 0px;
+        }
+
+        .xs-center {
+            text-align: center;
+        }
+    }
+
+    @@media (max-width:480px) {
+        .xxs-clear {
+            clear: both;
+        }
+
+        .col-xxs-1, .col-xxs-10, .col-xxs-11, .col-xxs-12, .col-xxs-2, .col-xxs-3, .col-xxs-4, .col-xxs-5, .col-xxs-6, .col-xxs-7, .col-xxs-8, .col-xxs-9 {
+            float: left;
+        }
+
+        .col-xxs-12 {
+            width: 100%;
+        }
+
+        .col-xxs-11 {
+            width: 91.66666667%;
+        }
+
+        .col-xxs-10 {
+            width: 83.33333333%;
+        }
+
+        .col-xxs-9 {
+            width: 75%;
+        }
+
+        .col-xxs-8 {
+            width: 66.66666667%;
+        }
+
+        .col-xxs-7 {
+            width: 58.33333333%;
+        }
+
+        .col-xxs-6 {
+            width: 50%;
+        }
+
+        .col-xxs-5 {
+            width: 41.66666667%;
+        }
+
+        .col-xxs-4 {
+            width: 33.33333333%;
+        }
+
+        .col-xxs-3 {
+            width: 25%;
+        }
+
+        .col-xxs-2 {
+            width: 16.66666667%;
+        }
+
+        .col-xxs-1 {
+            width: 8.33333333%;
+        }
+
+        .col-xxs-pull-12 {
+            right: 100%;
+        }
+
+        .col-xxs-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-xxs-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-xxs-pull-9 {
+            right: 75%;
+        }
+
+        .col-xxs-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-xxs-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-xxs-pull-6 {
+            right: 50%;
+        }
+
+        .col-xxs-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-xxs-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-xxs-pull-3 {
+            right: 25%;
+        }
+
+        .col-xxs-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-xxs-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-xxs-pull-0 {
+            right: auto;
+        }
+
+        .col-xxs-push-12 {
+            left: 100%;
+        }
+
+        .col-xxs-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-xxs-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-xxs-push-9 {
+            left: 75%;
+        }
+
+        .col-xxs-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-xxs-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-xxs-push-6 {
+            left: 50%;
+        }
+
+        .col-xxs-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-xxs-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-xxs-push-3 {
+            left: 25%;
+        }
+
+        .col-xxs-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-xxs-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-xxs-push-0 {
+            left: auto;
+        }
+
+        .col-xxs-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-xxs-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-xxs-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-xxs-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-xxs-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-xxs-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-xxs-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-xxs-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-xxs-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-xxs-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-xxs-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-xxs-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-xxs-offset-0 {
+            margin-left: 0;
+        }
+
+
+
+        .xxs-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .xxs-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .xxs-mbot3 {
+            margin-bottom: 3%;
+        }
+
+        .xxs-block {
+            display: block;
+        }
+
+        .xxs-nopadding {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+
+        .xxs-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .xxs-nopaddingright {
+            padding-right: 0px;
+        }
+
+        .xxs-center {
+            text-align: center;
+        }
+    }
+
+
+    /*New Css 11-Aug 2018*/
+    @@media (max-width: 320px) {
+        .xxs-paddingleft-5 {
+            padding-left: 7%;
+            margin-left: 0%;
+            margin-right: 0%;
+        }
+
+        .create_label {
+            padding-left: 7%;
+        }
+
+        .create_label_des {
+            padding-left: 7%;
+            margin-left: 0%;
+            margin-right: 0%;
+        }
+
+        .create_client_btn > .form-control {
+            width: 98%;
+        }
+
+        .form-control {
+            width: 98%;
+        }
+
+        .create_label_cust {
+            margin-left: 0%;
+            padding-left: 7%;
+        }
+
+        .cre_strt_dte {
+            margin-left: 0% !important;
+            margin-top: 2% !important;
+            padding-left: 3% !important;
+        }
+
+        .strt-date-div {
+            padding-left: 0%;
+            padding-right: 1%;
+        }
+
+        .cre_inp_date {
+            margin-left: 0%;
+            margin-top: 5%;
+        }
+
+        .end-date-div {
+            padding-left: 0%;
+            padding-right: 1%;
+        }
+
+        .cre_end_dte {
+            margin-left: 0% !important;
+            margin-top: 2%;
+            padding-left: 3%;
+        }
+
+        .cre_inp_enddate {
+            margin-left: 0%;
+            margin-top: 5%;
+        }
+
+        .xxs-right {
+            float: right;
+        }
+
+        .cre_sta_label {
+            margin-left: 0%;
+            margin-top: 2%;
+            padding-left: 3%;
+            margin-right: 0%;
+        }
+
+        .state_drp_btn {
+            margin-left: 0%;
+            padding-left: 3%;
+        }
+
+        .cre_cty_label {
+            margin-top: 1%;
+            margin-right: 0%;
+            padding-left: 3%;
+        }
+
+        .cty_drp_btn {
+            margin-left: 0%;
+            padding-left: 3%;
+        }
+
+        .cre_synch {
+            padding-left: 3%;
+            margin-right: 0%;
+            margin-top: 2%;
+        }
+
+        .synctype_drpbtn {
+            margin-left: 0%;
+            padding-left: 3%;
+        }
+
+        .div_cre_inp_syncinterval {
+            padding-left: 3%;
+            margin-bottom: 2%;
+        }
+
+        .cre_inp_syncinterval {
+            margin-left: 0%;
+        }
+
+        .proj_url_label {
+            padding-left: 3% !important;
+        }
+
+        .proj-url-div {
+            padding-left: 3%;
+            padding-right: 0%;
+            margin-bottom: 2%;
+        }
+
+        .man_inventory_label {
+            padding-left: 7%;
+        }
+
+        .Warehouse_label {
+            margin-left: 0%;
+            margin-right: 0%;
+            padding-left: 3%;
+            margin-top: 1%;
+            margin-bottom: 1%;
+        }
+
+        .Warehouse-div {
+            padding-left: 3%;
+        }
+
+        .mobsn-hd {
+            padding-left: 2%;
+        }
+    }
+
+    @@media only screen and (max-width: 359px) and (min-width: 321px) {
+
+        .wrapper {
+            padding: 3% 2%;
+        }
+
+        .xxs-paddingleft-5 {
+            padding-left: 5%;
+            margin-left: 0%;
+            margin-right: 0%;
+        }
+
+        .create_label {
+            padding-left: 5%;
+        }
+
+        .create_label_des {
+            padding-left: 5%;
+            margin-left: 0%;
+            margin-right: 0%;
+        }
+
+        .create_client_btn > .form-control {
+            width: 98%;
+        }
+
+        .form-control {
+            width: 98%;
+        }
+
+        .create_label_cust {
+            margin-left: 0%;
+            padding-left: 5%;
+        }
+
+        .cre_strt_dte {
+            margin-left: 0% !important;
+            margin-top: 2% !important;
+            padding-left: 2% !important;
+        }
+
+        .strt-date-div {
+            padding-left: 0%;
+            padding-right: 1%;
+        }
+
+        .cre_inp_date {
+            margin-left: 0%;
+            margin-top: 5%;
+        }
+
+        .end-date-div {
+            padding-left: 0%;
+            padding-right: 1%;
+        }
+
+        .cre_end_dte {
+            margin-left: 0% !important;
+            margin-top: 2%;
+            padding-left: 2%;
+        }
+
+        .cre_inp_enddate {
+            margin-left: 0%;
+            margin-top: 5%;
+        }
+
+        .xxs-right {
+            float: right;
+        }
+
+        .cre_sta_label {
+            margin-left: 0%;
+            margin-top: 2%;
+            padding-left: 2%;
+            margin-right: 0%;
+        }
+
+        .state_drp_btn {
+            margin-left: 0%;
+            padding-left: 2%;
+        }
+
+        .cre_cty_label {
+            margin-top: 1%;
+            margin-right: 0%;
+            padding-left: 2%;
+        }
+
+        .cty_drp_btn {
+            margin-left: 0%;
+            padding-left: 2%;
+        }
+
+        .cre_synch {
+            padding-left: 2%;
+            margin-right: 0%;
+            margin-top: 2%;
+        }
+
+        .synctype_drpbtn {
+            margin-left: 0%;
+            padding-left: 2%;
+        }
+
+        .div_cre_inp_syncinterval {
+            padding-left: 2%;
+        }
+
+        .cre_inp_syncinterval {
+            margin-left: 0%;
+        }
+
+        .proj_url_label {
+            padding-left: 2% !important;
+        }
+
+        .proj-url-div {
+            padding-left: 2%;
+            padding-right: 0%;
+        }
+
+        .man_inventory_label {
+            padding-left: 5%;
+        }
+
+        .Warehouse_label {
+            margin-left: 0%;
+            margin-right: 0%;
+            padding-left: 2%;
+            margin-top: 1%;
+            margin-bottom: 1%;
+        }
+
+        .Warehouse-div {
+            padding-left: 2%;
+        }
+
+        .mobsn-hd {
+            padding-left: 1%;
+        }
+    }
+
+    @@media only screen and (max-width: 420px) and (min-width: 360px) {
+        .wrapper {
+            padding: 3% 2%;
+        }
+
+        .xxs-paddingleft-5 {
+            padding-left: 5%;
+            margin-left: 0%;
+            margin-right: 0%;
+        }
+
+        .create_label {
+            padding-left: 5%;
+        }
+
+        .create_label_des {
+            padding-left: 5%;
+            margin-left: 0%;
+            margin-right: 0%;
+        }
+
+        .create_client_btn > .form-control {
+            width: 98%;
+        }
+
+        .form-control {
+            width: 98%;
+        }
+
+        .create_label_cust {
+            margin-left: 0%;
+            padding-left: 5%;
+        }
+
+        .cre_strt_dte {
+            margin-left: 0% !important;
+            margin-top: 2% !important;
+            padding-left: 2% !important;
+        }
+
+        .strt-date-div {
+            padding-left: 0%;
+            padding-right: 1%;
+        }
+
+        .cre_inp_date {
+            margin-left: 0%;
+            margin-top: 5%;
+        }
+
+        .end-date-div {
+            padding-left: 0%;
+            padding-right: 1%;
+        }
+
+        .cre_end_dte {
+            margin-left: 0% !important;
+            margin-top: 2%;
+            padding-left: 2%;
+        }
+
+        .cre_inp_enddate {
+            margin-left: 0%;
+            margin-top: 5%;
+        }
+
+        .xxs-right {
+            float: right;
+        }
+
+        .cre_sta_label {
+            margin-left: 0%;
+            margin-top: 2%;
+            padding-left: 2%;
+            margin-right: 0%;
+        }
+
+        .state_drp_btn {
+            margin-left: 0%;
+            padding-left: 2%;
+        }
+
+        .cre_cty_label {
+            margin-top: 1%;
+            margin-right: 0%;
+            padding-left: 2%;
+        }
+
+        .cty_drp_btn {
+            margin-left: 0%;
+            padding-left: 2%;
+        }
+
+        .cre_synch {
+            padding-left: 2%;
+            margin-right: 0%;
+            margin-top: 2%;
+        }
+
+        .synctype_drpbtn {
+            margin-left: 0%;
+            padding-left: 2%;
+        }
+
+        .div_cre_inp_syncinterval {
+            padding-left: 2%;
+            margin-bottom: 2%;
+        }
+
+        .cre_inp_syncinterval {
+            margin-left: 0%;
+        }
+
+        .proj_url_label {
+            padding-left: 2% !important;
+        }
+
+        .proj-url-div {
+            padding-left: 2%;
+            padding-right: 0%;
+            margin-bottom: 2%;
+        }
+
+        .man_inventory_label {
+            padding-left: 5%;
+        }
+
+        .Warehouse_label {
+            margin-left: 0%;
+            margin-right: 0%;
+            padding-left: 2%;
+            margin-top: 1%;
+            margin-bottom: 1%;
+        }
+
+        .Warehouse-div {
+            padding-left: 2%;
+        }
+
+        .mobsn-hd {
+            padding-left: 1%;
+        }
+    }
+
+    @@media only screen and (max-width: 479px) and (min-width: 421px) {
+        .create_label {
+            margin-left: 0%;
+            margin-right: 0px;
+            padding-left: 5%;
+        }
+
+        .cre_inp_box {
+            width: 98%;
+        }
+
+        .create_label_des {
+            margin-left: 0% !important;
+            margin-right: 0% !important;
+            padding-left: 5%;
+        }
+
+        .create_label_cust {
+            padding-left: 5% !important;
+            margin-left: 0%;
+            margin-right: 0%;
+        }
+
+        .cre_inp_date {
+            margin-left: 0% !important;
+            margin-top: 6%;
+        }
+
+        .cre_end_dte {
+            margin-left: 0%;
+            margin-top: 3%;
+        }
+
+        .cre_inp_enddate {
+            width: 100%;
+            margin-left: 0%;
+            margin-top: 6%;
+        }
+
+        .cre_cont_label {
+            padding-left: 5%;
+            margin-left: 0%;
+            margin-right: 0%;
+        }
+
+        .cre_sta_label {
+            margin-top: 2%;
+            margin-left: 0%;
+            padding-left: 2%;
+        }
+
+        .state_drp_btn {
+            margin-left: 0%;
+        }
+
+        .cre_cty_label {
+            margin-top: 2%;
+            margin-right: 0%;
+            margin-left: 0%;
+            padding-left: 2%;
+        }
+
+        .cty_drp_btn {
+            margin-left: 0%;
+        }
+
+        .cre_uti_label {
+            margin-left: 0%;
+            padding-left: 5%;
+        }
+
+        .conct_label {
+            padding-left: 5%;
+            margin-left: 0%;
+        }
+
+        .syn_label {
+            margin-left: 0%;
+            margin-top: 2%;
+            margin-right: 0%;
+            padding-left: 2%;
+        }
+
+        .cre_synch {
+            padding-left: 2%;
+            margin-right: 0%;
+            margin-left: 0%;
+        }
+
+        .synctype_drpbtn {
+            margin-left: 0%;
+        }
+
+        .div_cre_inp_syncinterval {
+            margin-left: 0%;
+        }
+
+        .proj_url_label {
+            padding-left: 2% !important;
+        }
+
+        .proj-url-div {
+            padding-right: 0%;
+        }
+
+        .man_inventory_label {
+            padding-left: 5%;
+        }
+
+        .Warehouse_label {
+            padding-left: 2%;
+            margin-left: 0%;
+            margin-right: 0%;
+            margin-top: 1%;
+        }
+
+        .xxs-paddingleft-2 {
+            padding-left: 2%;
+        }
+
+        .xxs-paddingleft-5 {
+            padding-left: 5%;
+        }
+
+        .form-control {
+            width: 98%;
+        }
+    }
+
+    @@media only screen and (max-width: 530px) and (min-width: 480px) and (orientation: landscape) {
+        .create_label {
+            margin-left: 0%;
+            margin-right: 0px;
+            padding-left: 4%;
+        }
+
+        .cre_inp_box {
+            width: 98%;
+        }
+
+        .create_label_des {
+            margin-left: 0% !important;
+            margin-right: 0% !important;
+            padding-left: 4%;
+        }
+
+        .create_label_cust {
+            padding-left: 4% !important;
+            margin-left: 0%;
+            margin-right: 0%;
+        }
+
+        .cre_strt_dte {
+            margin-left: 0% !important;
+            padding-right: 0%;
+            padding-left: 1%;
+        }
+
+        .strt-date-div {
+            padding-left: 4%;
+            padding-right: 0%;
+        }
+
+        .cre_inp_date {
+            margin-left: 0% !important;
+            margin-top: 6%;
+        }
+
+        .cre_end_dte {
+            margin-left: 0% !important;
+            margin-top: 2%;
+            padding-left: 2%;
+            margin-right: 0%;
+        }
+
+        .end-date-div {
+            padding-left: 1%;
+            padding-right: 2%;
+            float: right;
+        }
+
+        .cre_inp_enddate {
+            width: 100%;
+            margin-left: 0%;
+            margin-top: 7%;
+        }
+
+        .cre_cont_label {
+            padding-left: 4%;
+            margin-left: 0%;
+            margin-right: 0%;
+        }
+
+        .cre_cont_btn {
+            margin-left: 0%;
+            padding-left: 3.6%;
+        }
+
+        .cre_sta_label {
+            margin-top: 1%;
+            margin-left: 0%;
+            padding-left: 1%;
+            margin-right: 0%;
+        }
+
+        .state_drp_btn {
+            margin-left: 0%;
+            margin-top: 1%;
+            padding-left: 3.6%;
+            padding-right: 0%;
+        }
+
+        .cre_cty_label {
+            margin-top: 1%;
+            margin-right: 0%;
+            margin-left: 0%;
+            padding-left: 1%;
+        }
+
+        .cty_drp_btn {
+            margin-left: 0%;
+            padding-left: 3.6%;
+            margin-top: 1%;
+        }
+
+        .cre_uti_label {
+            margin-left: 0%;
+            padding-left: 4%;
+        }
+
+        .conct_label {
+            padding-left: 4%;
+            margin-left: 0%;
+            margin-right: 0%;
+        }
+
+        .syn_label {
+            margin-left: 0%;
+            margin-top: 1%;
+            margin-right: 0%;
+            padding-left: 1%;
+        }
+
+        .cre_synch {
+            padding-left: 1%;
+            margin-right: 0%;
+            margin-left: 0%;
+        }
+
+        .synctype_drpbtn {
+            margin-left: 0%;
+            padding-left: 3.6%;
+            margin-top: 0%;
+            padding-right: 0%;
+            margin-top: 1%;
+        }
+
+        .cre_inp_syncinterval {
+            margin-top: 0%;
+        }
+
+        .div_cre_inp_syncinterval {
+            padding-left: 3.6%;
+            margin-top: 1%;
+        }
+
+        .proj_url_label {
+            padding-left: 1% !important;
+        }
+
+        .proj-url-div {
+            padding-right: 0%;
+            padding-left: 3.6%;
+        }
+
+        .man_inventory_label {
+            padding-left: 4%;
+        }
+
+        .man_inventory_div {
+            padding-right: 3%;
+        }
+
+        .Warehouse_label {
+            padding-left: 1%;
+            margin-left: 0%;
+            margin-right: 0%;
+            margin-top: 1%;
+        }
+
+        .Warehouse-div {
+            padding-left: 3%;
+            padding-right: 0%;
+        }
+
+        .xxs-paddingleft-5 {
+            padding-left: 5%;
+        }
+
+        .form-control {
+            width: 98%;
+        }
+
+        .mobsn-hd {
+            padding-left: 1%;
+        }
+    }
+
+    @@media only screen and (max-width: 530px) and (min-width: 480px) and (orientation: portrait) {
+        .create_label {
+            margin-right: 0px;
+            margin-left: 0%;
+            padding-right: 0%;
+        }
+
+        .create_label_des {
+            margin-left: 0%;
+            margin-right: 0%;
+            padding-left: 5%;
+            padding-right: 0%;
+        }
+
+        .create_label_cust {
+            margin-left: 0% !important;
+            margin-right: 0%;
+            padding-left: 5%;
+            padding-right: 0%;
+        }
+
+        .cre_strt_dte {
+            margin-left: 0% !important;
+            margin-top: 1%;
+            margin-right: 0%;
+            padding-left: 2% !important;
+            padding-right: 0%;
+        }
+
+        .cre_inp_date {
+            margin-left: -2%;
+            margin-top: 4%;
+        }
+
+        .cre_end_dte {
+            margin-left: 0% !important;
+            margin-top: 1%;
+            margin-right: 0%;
+        }
+
+        .cre_inp_enddate {
+            margin-top: 5%;
+            margin-left: 0% !important;
+        }
+
+        .cre_cont_label {
+            margin-left: 0%;
+            margin-right: 0%;
+            padding-left: 5%;
+            padding-right: 0%;
+        }
+
+        .cre_cont_btn {
+            margin-left: 0%;
+        }
+
+        .cre_sta_label {
+            margin-left: -1%;
+            margin-top: 1%;
+            padding-left: 3%;
+            margin-right: 1%;
+            padding-right: 0%;
+        }
+
+        .state_drp_btn {
+            margin-top: 0%;
+            margin-left: 0%;
+        }
+
+        .cre_cty_label {
+            margin-left: 0%;
+            margin-top: 1%;
+            padding-left: 3%;
+            margin-right: 0%;
+        }
+
+        .cty_drp_btn {
+            margin-left: 0% !important;
+            margin-top: 0%;
+        }
+
+        .cre_uti_label {
+            margin-top: 0%;
+            padding-left: 5%;
+            margin-right: 0%;
+            padding-right: 0%;
+        }
+
+        .mobsn-hd {
+            padding-left: 2%;
+        }
+
+        .conct_label {
+            margin-left: 0%;
+            margin-right: 0%;
+            padding-left: 5%;
+            padding-right: 0%;
+        }
+
+        .syn_label {
+            margin-left: 0%;
+            margin-top: 1%;
+            margin-right: 0%;
+            padding-left: 3%;
+            padding-right: 0%;
+        }
+
+        .synctype_drpbtn {
+            margin-left: 0%;
+            margin-top: 0%;
+            margin-right: 0%;
+            padding-left: 0%;
+        }
+
+        .cre_synch {
+            margin-left: 0%;
+            padding-left: 3%;
+            margin-right: 0%;
+            margin-top: 1%;
+            padding-right: 0%;
+        }
+
+        .cre_inp_syncinterval {
+            margin-top: 0%;
+        }
+
+        .div_cre_inp_syncinterval {
+            margin-top: 0%;
+            margin-left: 0% !important;
+            margin-bottom: 2%;
+        }
+
+        .proj_url_label {
+            margin-left: 0%;
+            margin-right: 0%;
+        }
+
+        .man_inventory_label {
+            padding-right: 0%;
+            padding-left: 5%;
+        }
+
+        .Warehouse_label {
+            margin-left: 0%;
+            margin-right: 4%;
+            padding-right: 0%;
+        }
+
+        .xxs-paddingleft-2 {
+            padding-left: 2%;
+        }
+
+        .xxs-paddingleft-5 {
+            padding-left: 5%;
+        }
+    }
+
+    @@media only screen and (max-width: 567px) and (min-width: 531px) and (orientation: portrait) {
+        .create_label {
+            margin-left: 0%;
+            margin-right: 0px;
+            padding-left: 4%;
+        }
+
+        .cre_inp_box {
+            width: 98%;
+        }
+
+        .create_label_des {
+            margin-left: 0% !important;
+            margin-right: 0% !important;
+            padding-left: 4%;
+        }
+
+        .create_label_cust {
+            padding-left: 4% !important;
+            margin-left: 0% !important;
+            margin-right: 0%;
+        }
+
+        .create_client_btn {
+            margin-left: 0%;
+            margin-top: 0%;
+            padding-right: 3%;
+        }
+
+        .cre_strt_dte {
+            margin-left: 0% !important;
+            padding-right: 0%;
+            padding-left: 1% !important;
+        }
+
+        .strt-date-div {
+            padding-left: 2%;
+            padding-right: 0%;
+        }
+
+        .cre_inp_date {
+            margin-left: 0% !important;
+            margin-top: 6%;
+        }
+
+        .cre_end_dte {
+            margin-left: 0% !important;
+            margin-top: 2% !important;
+            padding-left: 1%;
+            margin-right: 0%;
+        }
+
+        .end-date-div {
+            padding-left: 0%;
+            padding-right: 0%;
+            margin-left: -3%;
+        }
+
+        .cre_inp_enddate {
+            width: 100%;
+            margin-left: 0% !important;
+            margin-top: 7%;
+        }
+
+        .cre_cont_label {
+            padding-left: 4%;
+            margin-left: 0%;
+            margin-right: 0%;
+        }
+
+        .cre_cont_btn {
+            margin-left: 0%;
+            margin-top: 0%;
+        }
+
+        .cre_sta_label {
+            margin-top: 1%;
+            margin-left: 0%;
+            padding-left: 1%;
+            margin-right: 0%;
+        }
+
+        .state_drp_btn {
+            margin-left: 0%;
+            margin-top: 1%;
+            padding-left: 3.6%;
+            padding-right: 0%;
+        }
+
+        .cre_cty_label {
+            margin-top: 1%;
+            margin-right: 0%;
+            margin-left: 0%;
+            padding-left: 1%;
+            text-align: left !important;
+        }
+
+        .cty_drp_btn {
+            margin-left: 0% !important;
+            padding-left: 3.6%;
+            margin-top: 1%;
+        }
+
+        .cre_uti_label {
+            margin-left: 0%;
+            padding-left: 4%;
+        }
+
+        .conct_label {
+            padding-left: 4%;
+            margin-left: 0%;
+            margin-right: 0%;
+        }
+
+        .conct_btn {
+            margin-left: 0%;
+            margin-top: 0%;
+        }
+
+        .syn_label {
+            margin-left: 0%;
+            margin-top: 1%;
+            margin-right: 0%;
+            padding-left: 1%;
+        }
+
+        .cre_synch {
+            padding-left: 1%;
+            margin-right: 0%;
+            margin-left: 0%;
+        }
+
+        .synctype_drpbtn {
+            margin-left: 0%;
+            padding-left: 3.6%;
+            margin-top: 0%;
+            padding-right: 0%;
+            margin-top: 1%;
+        }
+
+        .cre_inp_syncinterval {
+            margin-top: 0%;
+        }
+
+        .div_cre_inp_syncinterval {
+            padding-left: 3.6%;
+            margin-top: 1%;
+            margin-left: 0%;
+        }
+
+        .proj_url_label {
+            padding-left: 1% !important;
+        }
+
+        .proj-url-div {
+            padding-right: 0%;
+            padding-left: 3.6%;
+        }
+
+        .man_inventory_label {
+            padding-left: 4%;
+        }
+
+        .man_inventory_div {
+            padding-right: 3%;
+        }
+
+        .Warehouse_label {
+            padding-left: 1%;
+            margin-left: 0%;
+            margin-right: 0%;
+            margin-top: 1%;
+        }
+
+        .Warehouse-div {
+            padding-left: 3%;
+            padding-right: 0%;
+        }
+
+        .xxs-paddingleft-5 {
+            padding-left: 5%;
+        }
+
+        .form-control {
+            width: 98%;
+        }
+
+        .mobsn-hd {
+            padding-left: 1%;
+        }
+    }
+
+    @@media only screen and (max-width: 567px) and (min-width: 531px) and (orientation: landscape) {
+        .create_label {
+            margin-left: 0%;
+            margin-right: 0px;
+            padding-left: 4%;
+        }
+
+        .cre_inp_box {
+            width: 98%;
+        }
+
+        .create_label_des {
+            margin-left: 0% !important;
+            margin-right: 0% !important;
+            padding-left: 4%;
+        }
+
+        .create_label_cust {
+            padding-left: 4% !important;
+            margin-left: 0%;
+            margin-right: 0%;
+        }
+
+        .cre_strt_dte {
+            margin-left: 0% !important;
+            padding-right: 0%;
+            padding-left: 1%;
+        }
+
+        .strt-date-div {
+            padding-left: 4%;
+            padding-right: 0%;
+        }
+
+        .cre_inp_date {
+            margin-left: 0% !important;
+            margin-top: 6%;
+        }
+
+        .cre_end_dte {
+            margin-left: 0% !important;
+            margin-top: 2%;
+            padding-left: 2%;
+            margin-right: 0%;
+        }
+
+        .end-date-div {
+            padding-left: 1%;
+            padding-right: 2%;
+            float: right;
+        }
+
+        .cre_inp_enddate {
+            width: 100%;
+            margin-left: 0%;
+            margin-top: 7%;
+        }
+
+        .cre_cont_label {
+            padding-left: 4%;
+            margin-left: 0%;
+            margin-right: 0%;
+        }
+
+        .cre_cont_btn {
+            margin-left: 0%;
+            padding-left: 3.6%;
+        }
+
+        .cre_sta_label {
+            margin-top: 1%;
+            margin-left: 0%;
+            padding-left: 1%;
+            margin-right: 0%;
+        }
+
+        .state_drp_btn {
+            margin-left: 0%;
+            margin-top: 1%;
+            padding-left: 3.6%;
+            padding-right: 0%;
+        }
+
+        .cre_cty_label {
+            margin-top: 1%;
+            margin-right: 0%;
+            margin-left: 0%;
+            padding-left: 1%;
+        }
+
+        .cty_drp_btn {
+            margin-left: 0%;
+            padding-left: 3.6%;
+            margin-top: 1%;
+        }
+
+        .cre_uti_label {
+            margin-left: 0%;
+            padding-left: 4%;
+        }
+
+        .conct_label {
+            padding-left: 4%;
+            margin-left: 0%;
+            margin-right: 0%;
+        }
+
+        .syn_label {
+            margin-left: 0%;
+            margin-top: 1%;
+            margin-right: 0%;
+            padding-left: 1%;
+        }
+
+        .cre_synch {
+            padding-left: 1%;
+            margin-right: 0%;
+            margin-left: 0%;
+        }
+
+        .synctype_drpbtn {
+            margin-left: 0%;
+            padding-left: 3.6%;
+            margin-top: 0%;
+            padding-right: 0%;
+            margin-top: 1%;
+        }
+
+        .cre_inp_syncinterval {
+            margin-top: 0%;
+        }
+
+        .div_cre_inp_syncinterval {
+            padding-left: 3.6%;
+            margin-top: 1%;
+        }
+
+        .proj_url_label {
+            padding-left: 1% !important;
+        }
+
+        .proj-url-div {
+            padding-right: 0%;
+            padding-left: 3.6%;
+        }
+
+        .man_inventory_label {
+            padding-left: 4%;
+        }
+
+        .man_inventory_div {
+            padding-right: 3%;
+        }
+
+        .Warehouse_label {
+            padding-left: 1%;
+            margin-left: 0%;
+            margin-right: 0%;
+            margin-top: 1%;
+        }
+
+        .Warehouse-div {
+            padding-left: 3%;
+            padding-right: 0%;
+        }
+
+        .xxs-paddingleft-5 {
+            padding-left: 5%;
+        }
+
+        .form-control {
+            width: 98%;
+        }
+
+        .mobsn-hd {
+            padding-left: 1%;
+        }
+    }
+
+    @@media only screen and (max-width: 599px) and (min-width: 568px) {
+        .create_label {
+            margin-right: 0px;
+            text-align: right !important;
+            margin-left: 0%;
+            padding-right: 0%;
+        }
+
+        .create_label_des {
+            margin-left: 0%;
+            margin-right: 0%;
+            text-align: right !important;
+            padding-left: 3%;
+            padding-right: 0%;
+        }
+
+        .create_label_cust {
+            margin-left: 0%;
+            margin-right: 0%;
+            padding-left: 0%;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .cre_strt_dte {
+            margin-left: -1% !important;
+            margin-top: 1%;
+            margin-right: 0%;
+            padding-left: 0% !important;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .cre_inp_date {
+            margin-left: -2%;
+            margin-top: 4%;
+        }
+
+        .cre_end_dte {
+            margin-left: 0% !important;
+            margin-top: 1%;
+            margin-right: 0%;
+            text-align: right !important;
+        }
+
+        .end-date-div {
+            padding-right: 0%;
+        }
+
+        .cre_inp_enddate {
+            margin-top: 5%;
+            margin-left: 0%;
+        }
+
+        .cre_cont_label {
+            margin-left: 0%;
+            margin-right: 0%;
+            padding-left: 0%;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .cre_sta_label {
+            margin-left: 0%;
+            margin-top: 1%;
+            padding-left: 0%;
+            margin-right: 0%;
+            text-align: right !important;
+            padding-right: 1%;
+        }
+
+        .state_drp_btn {
+            margin-top: 1%;
+            margin-left: 0%;
+            padding-left: 1%;
+            padding-right: 0%;
+        }
+
+        .cre_cty_label {
+            margin-left: 0%;
+            margin-top: 1%;
+            padding-left: 0%;
+            margin-right: 0%;
+            text-align: right !important;
+            padding-right: 1%;
+        }
+
+        .cty_drp_btn {
+            margin-left: 0%;
+            margin-top: 1%;
+            padding-left: 1%;
+        }
+
+        .cre_uti_label {
+            margin-left: 0%;
+            margin-top: 1%;
+            padding-left: 0%;
+            margin-right: 0%;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .cre_cont_btn {
+            margin-left: 0%;
+            margin-top: 1%;
+            padding-left: 2.3%;
+        }
+
+        .conct_label {
+            margin-left: 0%;
+            margin-right: 0%;
+            padding-left: 0%;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .conct_btn {
+            padding-left: 2.3%;
+        }
+
+        .sync-head-div {
+            padding-left: 0%;
+            padding-right: 0%;
+        }
+
+        .syn_label {
+            margin-left: 0%;
+            margin-top: 1%;
+            margin-right: 0%;
+            padding-left: 0%;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .synctype_drpbtn {
+            margin-top: 1%;
+            padding-right: 3%;
+            padding-left: 2.3%;
+            margin-right: 0%;
+        }
+
+        .cre_synch {
+            margin-left: 0%;
+            padding-left: 0%;
+            margin-right: 0%;
+            margin-top: 1%;
+            padding-right: 0%;
+            text-align: right !important;
+        }
+
+        .div_cre_inp_syncinterval {
+            padding-left: 2.3%;
+            padding-right: 3%;
+        }
+
+        .cre_inp_syncinterval {
+            margin-top: 1%;
+        }
+
+        .proj-url_head-div {
+            padding-left: 0%;
+            padding-right: 0%;
+        }
+
+        .proj_url_label {
+            margin-left: 0%;
+            margin-right: 0%;
+        }
+
+        .proj-url-div {
+            padding-right: 2%;
+        }
+
+        .man_inventory_label {
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .man_inventory_div {
+            padding-right: 2%;
+        }
+
+        .Warehouse_label {
+            margin-left: 0%;
+            margin-right: 0%;
+            text-align: right !important;
+            padding-right: 1%;
+        }
+
+        .Warehouse-div {
+            padding-right: 0%;
+            padding-left: 1%;
+        }
+
+        .form-control {
+            width: 98%;
+        }
+    }
+
+    @@media only screen and (max-width: 640px) and (min-width: 600px) and (orientation: portrait) {
+        .create_label {
+            margin-right: 0px;
+            text-align: right !important;
+            margin-left: 0% !important;
+            padding-right: 0%;
+        }
+
+        .create_label_des {
+            margin-left: 0%;
+            margin-right: 0%;
+            text-align: right !important;
+            padding-left: 3%;
+            padding-right: 0%;
+        }
+
+        .create_label_cust {
+            margin-left: 0% !important;
+            margin-right: 0%;
+            padding-left: 0%;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .create_client_btn {
+            margin-left: 0%;
+            margin-top: 0%;
+        }
+
+        .cre_strt_dte {
+            margin-left: -1% !important;
+            margin-top: 1%;
+            margin-right: 0%;
+            padding-left: 0% !important;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .cre_inp_date {
+            margin-left: -2%;
+            margin-top: 4%;
+        }
+
+        .cre_end_dte {
+            margin-left: 0% !important;
+            margin-top: 1%;
+            margin-right: 0%;
+            text-align: right !important;
+        }
+
+        .cre_inp_enddate {
+            margin-top: 5%;
+            margin-left: 0% !important;
+        }
+
+        .cre_cont_label {
+            margin-left: 0%;
+            margin-right: 0%;
+            padding-left: 0%;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .cre_sta_label {
+            margin-left: -1%;
+            margin-top: 1%;
+            padding-left: 0%;
+            margin-right: 1%;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .state_drp_btn {
+            margin-top: 1%;
+            margin-left: -2%;
+        }
+
+        .cre_cty_label {
+            margin-left: 0%;
+            margin-top: 1%;
+            padding-left: 0%;
+            margin-right: 0%;
+            text-align: right !important;
+        }
+
+        .cre_cont_btn {
+            margin-left: 0%;
+            margin-top: 0%;
+            padding-left: 2%;
+            margin-right: 0%;
+        }
+
+        .cty_drp_btn {
+            margin-left: 0% !important;
+            margin-top: 1%;
+        }
+
+        .cre_uti_label {
+            margin-top: 0%;
+            padding-left: 0%;
+            margin-right: 0%;
+            padding-right: 0%;
+        }
+
+        .conct_label {
+            margin-left: 0%;
+            margin-right: 0%;
+            padding-left: 0%;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .conct_btn {
+            margin-left: 0%;
+            margin-top: 0%;
+        }
+
+        .syn_label {
+            margin-left: -1%;
+            margin-top: 1%;
+            margin-right: 0%;
+            padding-left: 0%;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .synctype_drpbtn {
+            margin-left: 0%;
+            margin-top: 1%;
+            margin-right: 0%;
+        }
+
+        .cre_synch {
+            margin-left: -1%;
+            padding-left: 1%;
+            margin-right: 1%;
+            margin-top: 1%;
+            padding-right: 0%;
+        }
+
+        .cre_inp_syncinterval {
+            margin-top: 5%;
+        }
+
+        .div_cre_inp_syncinterval {
+            margin-top: 0%;
+        }
+
+        .proj_url_label {
+            margin-left: -1%;
+            margin-right: 0%;
+        }
+
+        .man_inventory_label {
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .Warehouse_label {
+            margin-left: 0%;
+            margin-right: 4%;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .form-control {
+            width: 98%;
+        }
+    }
+
+    @@media only screen and (max-width: 640px) and (min-width: 600px) and (orientation: landscape) {
+        .create_label {
+            margin-right: 0px;
+            text-align: right !important;
+            margin-left: 0%;
+            padding-right: 0%;
+        }
+
+        .create_label_des {
+            margin-left: 0%;
+            margin-right: 0%;
+            text-align: right !important;
+            padding-left: 3%;
+            padding-right: 0%;
+        }
+
+        .create_label_cust {
+            margin-left: 0%;
+            margin-right: 0%;
+            padding-left: 0%;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .cre_strt_dte {
+            margin-left: -1% !important;
+            margin-top: 1%;
+            margin-right: 0%;
+            padding-left: 0% !important;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .cre_inp_date {
+            margin-left: -2%;
+            margin-top: 4%;
+        }
+
+        .end-date-div {
+            padding-right: 0%;
+        }
+
+        .cre_end_dte {
+            margin-left: 0% !important;
+            margin-top: 1%;
+            margin-right: 0%;
+            text-align: right !important;
+        }
+
+        .cre_inp_enddate {
+            margin-top: 5%;
+            margin-left: 0%;
+        }
+
+        .cre_cont_label {
+            margin-left: 0%;
+            margin-right: 0%;
+            padding-left: 0%;
+            text-align: right !important;
+            padding-right: 0%;
+            margin-top: 1%;
+        }
+
+        .cre_cont_btn {
+            margin-left: 0%;
+            margin-top: 1%;
+        }
+
+        .location-head-div {
+            padding-left: 0%;
+            padding-right: 0%;
+        }
+
+        .cre_sta_label {
+            margin-left: 0%;
+            margin-top: 1%;
+            padding-left: 0%;
+            margin-right: 0%;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .state_drp_btn {
+            margin-top: 1%;
+            margin-left: 0%;
+            padding-left: 2.4%;
+        }
+
+        .cre_cty_label {
+            margin-left: 0%;
+            margin-top: 1%;
+            padding-left: 0%;
+            margin-right: 0%;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .cty_drp_btn {
+            margin-left: 0%;
+            margin-top: 1%;
+            padding-left: 2.4%;
+            padding-right: 2.4%;
+        }
+
+        .cre_uti_label {
+            margin-left: 0%;
+            margin-top: 1%;
+            padding-left: 0%;
+            margin-right: 0%;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .cre_cont_btn {
+            margin-left: 0%;
+            margin-top: 1%;
+            padding-left: 2.3%;
+        }
+
+        .conct_label {
+            margin-left: 0%;
+            margin-right: 0%;
+            padding-left: 0%;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .conct_btn {
+            padding-left: 2.3%;
+        }
+
+        .sync-head-div {
+            padding-left: 0%;
+            padding-right: 0%;
+        }
+
+        .syn_label {
+            margin-left: 0%;
+            margin-top: 1%;
+            margin-right: 0%;
+            padding-left: 0%;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .synctype_drpbtn {
+            margin-top: 1%;
+            padding-right: 3%;
+            padding-left: 2.3%;
+            margin-right: 0%;
+        }
+
+        .cre_synch {
+            margin-left: 0%;
+            padding-left: 0%;
+            margin-right: 0%;
+            margin-top: 1%;
+            padding-right: 0%;
+            text-align: right !important;
+        }
+
+        .div_cre_inp_syncinterval {
+            padding-left: 2.3%;
+            padding-right: 3%;
+        }
+
+        .cre_inp_syncinterval {
+            margin-top: 1%;
+        }
+
+        .proj-url_head-div {
+            padding-left: 0%;
+            padding-right: 0%;
+        }
+
+        .proj_url_label {
+            margin-left: 0%;
+            margin-right: 0%;
+        }
+
+        .proj-url-div {
+            padding-right: 2%;
+        }
+
+        .man_inventory_label {
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .man_inventory_div {
+            padding-right: 2%;
+        }
+
+        .Warehouse_label {
+            margin-left: 0%;
+            margin-right: 0%;
+            text-align: right !important;
+            padding-right: 1%;
+        }
+
+        .Warehouse-div {
+            padding-right: 0%;
+            padding-left: 1%;
+        }
+
+        .form-control {
+            width: 98%;
+        }
+    }
+
+    @@media only screen and (max-width: 720px) and (min-width: 641px) {
+        .create_label {
+            margin-right: 0px;
+            text-align: right !important;
+            margin-left: 0%;
+            padding-right: 0%;
+        }
+
+        .create_label_des {
+            margin-left: 0%;
+            margin-right: 0%;
+            text-align: right !important;
+            padding-left: 3%;
+            padding-right: 0%;
+        }
+
+        .create_label_cust {
+            margin-left: 0%;
+            margin-right: 0%;
+            padding-left: 0%;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .cre_strt_dte {
+            margin-left: -1% !important;
+            margin-top: 1%;
+            margin-right: 0%;
+            padding-left: 0% !important;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .cre_inp_date {
+            margin-left: -2%;
+            margin-top: 4%;
+        }
+
+        .end-date-div {
+            padding-right: 0%;
+        }
+
+        .cre_end_dte {
+            margin-left: 0% !important;
+            margin-top: 1%;
+            margin-right: 0%;
+            text-align: right !important;
+        }
+
+        .cre_inp_enddate {
+            margin-top: 5%;
+            margin-left: 0%;
+        }
+
+        .cre_cont_label {
+            margin-left: 0%;
+            margin-right: 0%;
+            padding-left: 0%;
+            text-align: right !important;
+            padding-right: 0%;
+            margin-top: 1%;
+        }
+
+        .cre_cont_btn {
+            margin-left: 0%;
+            margin-top: 1%;
+        }
+
+        .location-head-div {
+            padding-left: 0%;
+            padding-right: 0%;
+        }
+
+        .cre_sta_label {
+            margin-left: 0%;
+            margin-top: 1%;
+            padding-left: 0%;
+            margin-right: 0%;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .state_drp_btn {
+            margin-top: 1%;
+            margin-left: 0%;
+            padding-left: 2.4%;
+        }
+
+        .cre_cty_label {
+            margin-left: 0%;
+            margin-top: 1%;
+            padding-left: 0%;
+            margin-right: 0%;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .cty_drp_btn {
+            margin-left: 0%;
+            margin-top: 1%;
+            padding-left: 2.4%;
+            padding-right: 2.4%;
+        }
+
+        .cre_uti_label {
+            margin-left: 0%;
+            margin-top: 1%;
+            padding-left: 0%;
+            margin-right: 0%;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .cre_cont_btn {
+            margin-left: 0%;
+            margin-top: 1%;
+            padding-left: 2.3%;
+        }
+
+        .conct_label {
+            margin-left: 0%;
+            margin-right: 0%;
+            padding-left: 0%;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .conct_btn {
+            padding-left: 2.3%;
+        }
+
+        .sync-head-div {
+            padding-left: 0%;
+            padding-right: 0%;
+        }
+
+        .syn_label {
+            margin-left: 0%;
+            margin-top: 1%;
+            margin-right: 0%;
+            padding-left: 0%;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .synctype_drpbtn {
+            margin-top: 1%;
+            padding-right: 3%;
+            padding-left: 2.3%;
+            margin-right: 0%;
+        }
+
+        .cre_synch {
+            margin-left: 0%;
+            padding-left: 0%;
+            margin-right: 0%;
+            margin-top: 1%;
+            padding-right: 0%;
+            text-align: right !important;
+        }
+
+        .div_cre_inp_syncinterval {
+            padding-left: 2.3%;
+            padding-right: 3%;
+        }
+
+        .cre_inp_syncinterval {
+            margin-top: 1%;
+        }
+
+        .proj-url_head-div {
+            padding-left: 0%;
+            padding-right: 0%;
+        }
+
+        .proj_url_label {
+            margin-left: 0%;
+            margin-right: 0%;
+        }
+
+        .proj-url-div {
+            padding-right: 2%;
+        }
+
+        .man_inventory_label {
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .man_inventory_div {
+            padding-right: 2%;
+        }
+
+        .Warehouse_label {
+            margin-left: 0%;
+            margin-right: 0%;
+            text-align: right !important;
+            padding-right: 1%;
+        }
+
+        .Warehouse-div {
+            padding-right: 0%;
+            padding-left: 1%;
+        }
+
+        .form-control {
+            width: 98%;
+        }
+    }
+
+    @@media only screen and (max-width: 767px) and (min-width: 721px) {
+        .create_label {
+            margin-right: 0px;
+            text-align: right !important;
+            margin-left: 0%;
+            padding-right: 0%;
+        }
+
+        .create_label_des {
+            margin-left: 0%;
+            margin-right: 0%;
+            text-align: right !important;
+            padding-left: 3%;
+            padding-right: 0%;
+        }
+
+        .create_label_cust {
+            margin-left: 0%;
+            margin-right: 0%;
+            padding-left: 0%;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .cre_strt_dte {
+            margin-left: -1% !important;
+            margin-top: 1%;
+            margin-right: 0%;
+            padding-left: 0% !important;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .cre_inp_date {
+            margin-left: -2%;
+            margin-top: 4%;
+        }
+
+        .end-date-div {
+            padding-right: 0%;
+        }
+
+        .cre_end_dte {
+            margin-left: 0% !important;
+            margin-top: 1%;
+            margin-right: 0%;
+            text-align: right !important;
+        }
+
+        .cre_inp_enddate {
+            margin-top: 5%;
+            margin-left: 0%;
+        }
+
+        .cre_cont_label {
+            margin-left: 0%;
+            margin-right: 0%;
+            padding-left: 0%;
+            text-align: right !important;
+            padding-right: 0%;
+            margin-top: 1%;
+        }
+
+        .cre_cont_btn {
+            margin-left: 0%;
+            margin-top: 1%;
+        }
+
+        .location-head-div {
+            padding-left: 0%;
+            padding-right: 0%;
+        }
+
+        .cre_sta_label {
+            margin-left: 0%;
+            margin-top: 1%;
+            padding-left: 0%;
+            margin-right: 0%;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .state_drp_btn {
+            margin-top: 1%;
+            margin-left: 0%;
+            padding-left: 2.4%;
+        }
+
+        .cre_cty_label {
+            margin-left: 0%;
+            margin-top: 1%;
+            padding-left: 0%;
+            margin-right: 0%;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .cty_drp_btn {
+            margin-left: 0%;
+            margin-top: 1%;
+            padding-left: 2.4%;
+            padding-right: 2.4%;
+        }
+
+        .cre_uti_label {
+            margin-left: 0%;
+            margin-top: 1%;
+            padding-left: 0%;
+            margin-right: 0%;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .cre_cont_btn {
+            margin-left: 0%;
+            margin-top: 1%;
+            padding-left: 2.3%;
+        }
+
+        .conct_label {
+            margin-left: 0%;
+            margin-right: 0%;
+            padding-left: 0%;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .conct_btn {
+            padding-left: 2.3%;
+        }
+
+        .sync-head-div {
+            padding-left: 0%;
+            padding-right: 0%;
+        }
+
+        .syn_label {
+            margin-left: 0%;
+            margin-top: 1%;
+            margin-right: 0%;
+            padding-left: 0%;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .synctype_drpbtn {
+            margin-top: 1%;
+            padding-right: 3%;
+            padding-left: 2.3%;
+            margin-right: 0%;
+        }
+
+        .cre_synch {
+            margin-left: 0%;
+            padding-left: 0%;
+            margin-right: 0%;
+            margin-top: 1%;
+            padding-right: 0%;
+            text-align: right !important;
+        }
+
+        .div_cre_inp_syncinterval {
+            padding-left: 2.3%;
+            padding-right: 3%;
+        }
+
+        .cre_inp_syncinterval {
+            margin-top: 1%;
+        }
+
+        .proj-url_head-div {
+            padding-left: 0%;
+            padding-right: 0%;
+        }
+
+        .proj_url_label {
+            margin-left: 0%;
+            margin-right: 0%;
+        }
+
+        .proj-url-div {
+            padding-right: 2%;
+        }
+
+        .man_inventory_label {
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .man_inventory_div {
+            padding-right: 2%;
+        }
+
+        .Warehouse_label {
+            margin-left: 0%;
+            margin-right: 0%;
+            text-align: right !important;
+            padding-right: 1%;
+        }
+
+        .Warehouse-div {
+            padding-right: 0%;
+            padding-left: 1%;
+        }
+
+        .form-control {
+            width: 98%;
+        }
+    }
+
+    @@media only screen and (max-width: 799px) and (min-width: 768px) and (orientation: portrait) {
+        .create_label {
+            margin-right: 0px;
+            text-align: right !important;
+            margin-left: 0%;
+            padding-right: 1%;
+        }
+
+        .proj-name-div {
+            margin-bottom: 1%;
+        }
+
+        .create_label_des {
+            margin-left: 0%;
+            margin-right: 0%;
+            text-align: right !important;
+            padding-left: 3%;
+            padding-right: 1%;
+        }
+
+        .proj-des-div {
+            margin-top: 0.5%;
+        }
+
+        .create_label_cust {
+            margin-left: 0% !important;
+            margin-right: 0%;
+            padding-left: 0%;
+            text-align: right !important;
+            padding-right: 1%;
+            margin-top: 1%;
+        }
+
+        .create_client_btn {
+            margin-left: 0%;
+            margin-top: 1%;
+            margin-right: 0%;
+        }
+
+        .date-head-div {
+            padding-left: 0%;
+            padding-right: 0%;
+        }
+
+        .cre_strt_dte {
+            margin-left: 0% !important;
+            margin-top: 0%;
+            margin-right: 0% !important;
+            padding-left: 0% !important;
+            text-align: right !important;
+            padding-right: 1%;
+            width: 25% !important;
+        }
+
+        .strt-date-div {
+            padding-left: 0%;
+        }
+
+        .cre_inp_date {
+            margin-left: 0%;
+            margin-top: 0%;
+        }
+
+        .end-date-div {
+            padding-right: 3%;
+            padding-left: 1%;
+        }
+
+        .cre_end_dte {
+            margin-left: 0% !important;
+            margin-top: 0% !important;
+            margin-right: 0%;
+            text-align: right !important;
+        }
+
+        .cre_inp_enddate {
+            margin-top: 1%;
+            margin-left: 0% !important;
+        }
+
+        .cre_cont_label {
+            margin-left: -1%;
+            margin-right: 1%;
+            padding-left: 0%;
+            padding-right: 0%;
+            margin-top: 0%;
+        }
+
+        .cre_cont_btn {
+            margin-left: 0%;
+            margin-top: 0%;
+            margin-right: 0%;
+        }
+
+        .location-head-div {
+            padding-left: 0%;
+            padding-right: 0%;
+        }
+
+        .cre_sta_label {
+            margin-left: 0%;
+            margin-top: 0%;
+            padding-left: 0%;
+            margin-right: 0% !important;
+            padding-right: 1%;
+            width: 25% !important;
+        }
+
+        .state_drp_btn {
+            margin-top: 0%;
+            margin-left: 0%;
+            padding-left: 0%;
+            margin-right: 0%;
+        }
+
+        .cre_cty_label {
+            margin-left: 0% !important;
+            margin-top: 0%;
+            padding-left: 0%;
+            margin-right: 0% !important;
+            padding-right: 2%;
+            width: 16.66666667% !important;
+        }
+
+        .cty_drp_btn {
+            margin-left: 0% !important;
+            margin-top: 0%;
+            padding-left: 0%;
+            padding-right: 3%;
+        }
+
+        .cre_uti_label {
+            margin-left: 0%;
+            margin-top: 0%;
+            padding-left: 0%;
+            margin-right: 0%;
+            padding-right: 1%;
+            width: 25% !important;
+        }
+
+        .conct_label {
+            margin-left: 0%;
+            margin-right: 0%;
+            padding-left: 0%;
+            text-align: right !important;
+            padding-right: 1%;
+        }
+
+        .conct_btn {
+            padding-left: 0%;
+            margin-left: 0%;
+            margin-top: 0%;
+        }
+
+        .sync-head-div {
+            padding-left: 0%;
+            padding-right: 0%;
+        }
+
+        .syn_label {
+            margin-left: 0%;
+            margin-top: 1%;
+            margin-right: 0%;
+            padding-left: 0%;
+            text-align: right !important;
+            padding-right: 1%;
+        }
+
+        .synctype_drpbtn {
+            margin-top: 1%;
+            padding-right: 0%;
+            padding-left: 0%;
+            margin-right: 0%;
+            margin-left: 0%;
+        }
+
+        .cre_synch {
+            margin-left: 0%;
+            padding-left: 0%;
+            margin-right: 0%;
+            margin-top: 1%;
+            padding-right: 2%;
+            text-align: right !important;
+        }
+
+        .div_cre_inp_syncinterval {
+            padding-left: 0%;
+            padding-right: 3%;
+        }
+
+        .cre_inp_syncinterval {
+            margin-top: 1%;
+        }
+
+        .proj-url_head-div {
+            padding-left: 0%;
+            padding-right: 0%;
+        }
+
+        .proj_url_label {
+            margin-left: 0%;
+            margin-right: 0%;
+        }
+
+        .proj-url-div {
+            padding-right: 2%;
+        }
+
+        .man_inventory_label {
+            text-align: right !important;
+            padding-right: 1%;
+        }
+
+        .man_inventory_div {
+            padding-right: 2%;
+        }
+
+        .Warehouse_label {
+            margin-left: 0%;
+            margin-right: 0%;
+            text-align: right !important;
+            padding-right: 8%;
+        }
+
+        .Warehouse-div {
+            padding-right: 1%;
+            padding-left: 0%;
+        }
+
+        .form-control {
+            width: 98%;
+        }
+    }
+
+    @@media only screen and (max-width: 799px) and (min-width: 768px) and (orientation: landscape) {
+        .create_label {
+            margin-right: 0px;
+            text-align: right !important;
+            margin-left: 0%;
+            padding-right: 1%;
+        }
+
+        .create_label_des {
+            margin-left: 0%;
+            margin-right: 0%;
+            text-align: right !important;
+            padding-left: 3%;
+            padding-right: 1%;
+        }
+
+        .create_label_cust {
+            margin-left: 0% !important;
+            margin-right: 0%;
+            padding-left: 0%;
+            text-align: right !important;
+            padding-right: 1%;
+            margin-top: 1%;
+        }
+
+        .create_client_btn {
+            margin-left: 0%;
+            margin-top: 1%;
+        }
+
+        .date-head-div {
+            padding-left: 0%;
+            padding-right: 0%;
+        }
+
+        .cre_strt_dte {
+            margin-left: -1% !important;
+            margin-top: 0%;
+            margin-right: 0%;
+            padding-left: 0% !important;
+            text-align: right !important;
+            padding-right: 0%;
+        }
+
+        .strt-date-div {
+            padding-left: 1%;
+        }
+
+        .cre_inp_date {
+            margin-left: 0%;
+            margin-top: 0%;
+        }
+
+        .end-date-div {
+            padding-right: 2%;
+            padding-left: 1%;
+        }
+
+        .cre_end_dte {
+            margin-left: 0% !important;
+            margin-top: 0% !important;
+            margin-right: 0%;
+            text-align: right !important;
+        }
+
+        .cre_inp_enddate {
+            margin-top: 1%;
+            margin-left: 0% !important;
+        }
+
+        .cre_cont_label {
+            margin-left: -1%;
+            margin-right: 1%;
+            padding-left: 0%;
+            padding-right: 0%;
+            margin-top: 0%;
+        }
+
+        .cre_cont_btn {
+            margin-left: 0%;
+            margin-top: 0%;
+        }
+
+        .location-head-div {
+            padding-left: 0%;
+            padding-right: 0%;
+        }
+
+        .cre_sta_label {
+            margin-left: 0%;
+            margin-top: 0%;
+            padding-left: 0%;
+            margin-right: 0%;
+            text-align: right !important;
+            padding-right: 1%;
+        }
+
+        .state_drp_btn {
+            margin-top: 0%;
+            margin-left: 0%;
+            padding-left: 0%;
+        }
+
+        .cre_cty_label {
+            margin-left: 0% !important;
+            margin-top: 0%;
+            padding-left: 0%;
+            margin-right: 0%;
+            text-align: right !important;
+            padding-right: 1%;
+        }
+
+        .cty_drp_btn {
+            margin-left: 0% !important;
+            margin-top: 0%;
+            padding-left: 0%;
+            padding-right: 3%;
+        }
+
+        .cre_uti_label {
+            margin-left: 0%;
+            margin-top: 1%;
+            padding-left: 0%;
+            margin-right: 0%;
+            text-align: right !important;
+            padding-right: 1%;
+        }
+
+        .conct_label {
+            margin-left: 0%;
+            margin-right: 0%;
+            padding-left: 0%;
+            text-align: right !important;
+            padding-right: 1%;
+        }
+
+        .conct_btn {
+            padding-left: 0%;
+            margin-left: 0%;
+            margin-top: 0%;
+        }
+
+        .sync-head-div {
+            padding-left: 0%;
+            padding-right: 0%;
+        }
+
+        .syn_label {
+            margin-left: 0%;
+            margin-top: 1%;
+            margin-right: 0%;
+            padding-left: 0%;
+            text-align: right !important;
+            padding-right: 1%;
+        }
+
+        .synctype_drpbtn {
+            margin-top: 1%;
+            padding-right: 0%;
+            padding-left: 0%;
+            margin-right: 0%;
+            margin-left: 0%;
+        }
+
+        .cre_synch {
+            margin-left: 0%;
+            padding-left: 0%;
+            margin-right: 0%;
+            margin-top: 1%;
+            padding-right: 2%;
+            text-align: right !important;
+        }
+
+        .div_cre_inp_syncinterval {
+            padding-left: 0%;
+            padding-right: 3%;
+        }
+
+        .cre_inp_syncinterval {
+            margin-top: 1%;
+        }
+
+        .proj-url_head-div {
+            padding-left: 0%;
+            padding-right: 0%;
+        }
+
+        .proj_url_label {
+            margin-left: 0%;
+            margin-right: 0%;
+        }
+
+        .proj-url-div {
+            padding-right: 2%;
+        }
+
+        .man_inventory_label {
+            text-align: right !important;
+            padding-right: 1%;
+        }
+
+        .man_inventory_div {
+            padding-right: 2%;
+        }
+
+        .Warehouse_label {
+            margin-left: 0%;
+            margin-right: 0%;
+            text-align: right !important;
+            padding-right: 8%;
+        }
+
+        .Warehouse-div {
+            padding-right: 1%;
+            padding-left: 0%;
+        }
+
+        .form-control {
+            width: 98%;
+        }
+    }
+
+    @@media only screen and (max-width: 850px) and (min-width: 800px) {
+        .create_label {
+            margin-left: 0%;
+        }
+
+        .cre_inp_box {
+            margin-top: 0%;
+            margin-left: 0%;
+            width: 98%;
+        }
+
+        .create_label_des {
+            margin-left: 0%;
+            padding-left: 4%;
+            margin-right: 0%;
+        }
+
+        .create_label_cust {
+            margin-left: 0% !important;
+            margin-right: 0%;
+        }
+
+        .create_client_btn {
+            margin-left: 0%;
+            margin-top: 0%;
+        }
+
+        .cre_strt_dte {
+            margin-top: 0%;
+            margin-left: -1%;
+            margin-right: 1%;
+        }
+
+        .cre_inp_date {
+            margin-left: -3%;
+            margin-top: 0%;
+            width: 98%;
+        }
+
+        .cre_end_dte {
+            margin-top: 0% !important;
+            margin-left: 0%;
+            margin-right: -1%;
+        }
+
+        .cre_inp_enddate {
+            margin-left: -3% !important;
+            margin-top: 0px;
+            width: 100%;
+        }
+
+        .cre_cont_label {
+            margin-left: 0%;
+            padding-left: 0%;
+            margin-top: 0%;
+            margin-right: 0%;
+        }
+
+        .cre_cont_btn {
+            margin-left: 0%;
+            margin-top: 0%;
+        }
+
+        .cre_sta_label {
+            margin-left: -1%;
+            margin-top: 0%;
+            margin-right: 0%;
+        }
+
+        .state_drp_btn {
+            margin-top: 0%;
+            margin-left: 0%;
+        }
+
+        .cre_cty_label {
+            margin-right: 0% !important;
+            margin-left: 0%;
+            margin-top: 0%;
+            padding-left: 9%;
+        }
+
+        .cty_drp_btn {
+            margin-left: 0% !important;
+            margin-top: 0%;
+        }
+
+        .cre_uti_label {
+            margin-left: 0%;
+            margin-top: 0%;
+        }
+
+        .conct_label {
+            margin-left: 0%;
+        }
+
+        .conct_btn {
+            margin-left: 0%;
+            margin-top: 0%;
+        }
+
+        .syn_label {
+            margin-left: -1%;
+            margin-top: 0%;
+            margin-right: 0%;
+            padding-left: 0%;
+        }
+
+        .synctype_drpbtn {
+            margin-left: 0%;
+            margin-top: 0%;
+        }
+
+        .cre_synch {
+            margin-right: 0%;
+            padding-left: 0%;
+        }
+
+        .div_cre_inp_syncinterval {
+            margin-top: 0%;
+            margin-right: 0%;
+        }
+    }
+
+    @@media only screen and (max-width: 910px) and (min-width: 851px) {
+        .cre_inp_date {
+            width: 100% !important;
+            margin-left: 0%;
+        }
+
+        .cre_inp_enddate {
+            margin-left: 0%;
+            width: 100% !important;
+        }
+
+        .cre_inp_box {
+            margin-left: 0%;
+            width: 100%;
+        }
+
+        .create_client_btn {
+            margin-left: 0%;
+            margin-right: 0%;
+        }
+
+        .cre_strt_dte {
+            margin-right: 0%;
+            margin-left: -1% !important;
+        }
+
+        .cre_cont_btn {
+            margin-left: 0%;
+            margin-right: 0%;
+        }
+
+        .cre_sta_label {
+            padding-left: 0% !important;
+            margin-right: 0%;
+            margin-left: -1%;
+        }
+
+        .state_drp_btn {
+            margin-left: 0%;
+        }
+
+        .cty_drp_btn {
+            margin-right: 0% !important;
+            margin-left: 0%;
+        }
+
+        .cre_cty_label {
+            padding-left: 10%;
+            margin-right: 0%;
+        }
+
+        .conct_btn {
+            margin-left: 0%;
+            margin-right: 0%;
+        }
+
+        .syn_label {
+            margin-left: 0%;
+            margin-right: -1%;
+        }
+
+        .cre_synch {
+            margin-left: 0%;
+            margin-right: 0%;
+            padding-left: 2%;
+        }
+
+        .create_label_des {
+            padding-left: 6%;
+        }
+
+        .cre_inp_syncinterval {
+            margin-left: 0%;
+        }
+
+        .proj_url_label {
+            margin-right: 1%;
+        }
+
+        .man_inventory_label {
+        }
+
+        .sm-right-4 {
+            padding-right: 4%;
+        }
+    }
+
+    @@media only screen and (max-width: 967px) and (min-width: 911px) {
+        .cre_inp_date, .cre_inp_enddate {
+            width: 100%;
+        }
+
+        .cre_strt_dte {
+            margin-right: 0%;
+            margin-left: -1%;
+        }
+
+        .cre_end_dte {
+            margin-left: 0%;
+            margin-right: 0%;
+            padding-left: 7%;
+        }
+
+        .cre_sta_label {
+            padding-left: 0% !important;
+            margin-right: 1%;
+            margin-left: -1%;
+        }
+
+        .state_drp_btn {
+            margin-left: -1%;
+        }
+
+        .cty_drp_btn {
+            padding-left: 0%;
+            margin-right: -2% !important;
+            margin-left: 0%;
+        }
+
+        .syn_label {
+            margin-left: -1%;
+            margin-right: 0%;
+        }
+
+        .cre_synch {
+            margin-left: 0%;
+            margin-right: 0%;
+        }
+
+        .cre_inp_syncinterval {
+            width: 100%;
+        }
+    }
+
+    @@media only screen and (max-width: 1023px) and (min-width: 968px) {
+        .syn_label {
+            margin-left: -3%;
+            margin-right: 1%;
+        }
+
+        .man_inventory_label {
+            margin-left: 1%;
+            margin-right: -1%;
+            padding-left: 2%;
+        }
+    }
+
+    @@media only screen and (max-width: 1100px) and (min-width: 1024px) {
+        .conct_label {
+            margin-left: 0%;
+            margin-right: 0%;
+            padding-left: 3%;
+        }
+
+        .create_label_des {
+            padding-left: 3%;
+        }
+
+        .syn_label {
+            margin-left: -1%;
+            margin-right: -1%;
+        }
+
+        .cre_synch {
+            margin-right: 0px;
+            padding-left: 0%;
+        }
+    }
+
+
+
+    .man_inventory_label {
+    }
+
+    .cre_nxt_btn1 {
+        margin-right: 0%;
+    }
+
+    .multiselect {
+        width: 98% !important;
+    }
+
+    .Warehouse-div .chosen-drop {
+        margin-bottom: 15%;
+    }
+
+    .Warehouse-div .chosen-results {
+        max-height: 10em !important;
+        margin-bottom: 5%;
+        overflow: auto;
+    }
+</style>
+<div id="loading">
+    <div id="loadingcontent">
+        <p id="loadingspinner"> Searching things... </p>
+    </div>
+</div>
+
+<!--main content start-->
+<section id="main-content">
+    <section class="wrapper site-min-height">
+        @*<div class="row">
+            <div class="col-lg-12">
+        *@
+        <!--progress bar start-->
+        <section class="panel">
+            <header class="panel-heading"> <b> Project Management <label id="lblProjectName"></label> </b> </header>
+            <div class="panel-body panel_top">
+                <div class="stepwizard ">
+                    <div class="stepwizard-row setup-panel">
+                        <div class="stepwizard-step stepwizard-step-circle">
+                            <br />
+                            <a href="#step-1" id="st1" type="button" class="btn btn-primary btn-circle">1</a>
+                            <p>Create Project</p>
+                        </div>
+                        <div class="stepwizard-step stepwizard-step-circle">
+                            <br />
+                            <a href="#step-2" id="st2" type="button" class="btn btn-default btn-circle" disabled="disabled">2</a>
+                            <p>Master Fields</p>
+                        </div>
+                        <div class="stepwizard-step stepwizard-step-circle">
+                            <br />
+                            <a href="#step-3" id="st3" type="button" class="btn btn-default btn-circle" disabled="disabled">3</a>
+                            <p>Configure Services</p>
+                        </div>
+                        <div class="stepwizard-step stepwizard-step-circle">
+                            <br />
+                            <a href="#step-4" id="st4" type="button" class="btn btn-default btn-circle" disabled="disabled">4</a>
+                            <p>Standard Fields</p>
+                        </div>
+                        <div class="stepwizard-step stepwizard-step-circle">
+                            <br />
+                            <a href="#step-5" type="button" class="btn btn-default btn-circle" disabled="disabled">5</a>
+                            <p>Custom Fields</p>
+                        </div>
+                        <div class="stepwizard-step stepwizard-step-circle">
+                            <br />
+                            <a href="#step-6" type="button" class="btn btn-default btn-circle" disabled="disabled">6</a>
+                            <p>Upload Customer Data</p>
+                        </div>
+                    </div>
+                </div>
+                <form role="form" action="" id="fromsave" method="post" style="background: rgb(190, 210, 230);" class="form-horizontal">
+                    <div class="setup-content" id="step-1">
+                        @*<div class="col-xs-12 ">
+                            <div class="col-md-12 creproj_form_box">
+                        *@
+
+                        <div class="row mbot05" style="padding:10px 0px 0px 0px">
+                            @*<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xxs-12 lg-nopadding md-nopadding">
+                            *@
+                            <label class="col-lg-2 col-sm-3 col-xs-3 col-xxs-12 labelcolor_name control-label  create_label " style="white-space:nowrap;">Project Name<span style="color:red">*</span></label>
+                            <div class="col-lg-10 col-sm-9 col-xs-9 col-xxs-12 sm-right-4 sm-nopaddingleft xxs-paddingleft-5 proj-name-div">
+                                <input type="hidden" name="ProjectId" id="txtProjectId" />
+                                <input type="hidden" name="CloneId" id="txtCloneId" />
+                                <input maxlength="200" type="text" id="txtProjectName" name="ProjectName" class="form-control allowalphanumeric checkalphanumeric input_shadow cre_inp_box" placeholder="Enter Project Name" />
+                            </div>
+                            @*
+                                </div>*@
+                        </div>
+
+                        <div class="row mbot05">
+                            @*<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xxs-12 lg-nopadding ">
+                            *@
+                            <label class="col-lg-2 col-sm-3 col-xs-3 col-xxs-12 labelcolor_name control-label  create_label_des" style="white-space: nowrap;">Project Description</label>
+                            <div class="col-lg-10 col-sm-9 col-xs-9  col-xxs-12 sm-right-4 sm-nopaddingleft xxs-paddingleft-5 proj-des-div">
+                                <input maxlength="500" type="text" class="form-control input_shadow cre_inp_box" id="txtProDes" name="ProjectDescription" placeholder="Project Description" />
+                            </div>
+                            @*
+                                </div>*@
+                        </div>
+                        <div class="row mbot05">
+
+                            <label for="name" class="col-lg-2 col-sm-3 col-xs-3 col-xxs-12 labelcolor_name control-label  create_label_cust sm-mbot1">Customer Name<span style="color:red">*</span></label>
+                            <div class="col-lg-3 col-sm-9 col-xs-9 col-xxs-12 internal create_client_btn sm-mbot1 sm-nopaddingleft xxs-paddingleft-5">
+                                <select name="ClientId" id="ddlClient" data-placeholder="Select Customer Name" type="text" class="required form-control input_shadow "></select>
+                            </div>
+                            <div class="col-lg-7 col-md-7 col-sm-12 col-xs-12 col-xxs-12 sm-mbot1 date-head-div">
+
+                                <label class="col-lg-2 col-md-2 col-sm-3 col-xs-3 col-xxs-4 labelcolor_name md  control-label cre_strt_dte xxs-paddingleft-2">Start Date<span style="color:red">*</span></label>
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 col-xxs-6 sm-nopaddingleft xxs-nopaddingright xxs-right strt-date-div">
+                                    <input type="text" name="FromDate" id="txtFromDate" readonly="true" class="inputclass form-control input_shadow cre_inp_date" />
+                                </div>
+
+                                <label class="col-lg-2 col-md-2 col-sm-2 col-xs-2 col-xxs-4 labelcolor_name  xxs-clear  control-label cre_end_dte xxs-paddingleft-2">End Date<span style="color:red">*</span></label>
+                                <div class="col-lg-4 col-md-4 col-sm-3 col-xs-3 col-xxs-6 sm-nopaddingright xs-nopaddingleft xxs-nopaddingright xxs-right end-date-div">
+                                    <input type="text" name="ToDate" id="txtToDate" readonly="true" class="inputclass form-control input_shadow cre_inp_enddate" />
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="row mbot05">
+                            <label for="name" class="col-lg-2 col-sm-3 col-xs-3 col-xxs-12 labelcolor_name control-label cre_cont_label sm-mbot1 ">Contact Person</label>
+
+                            <div class="col-lg-3 col-sm-9 col-xs-9 col-xxs-12 internal cre_cont_btn sm-mbot1 sm-nopaddingleft xxs-paddingleft-5">
+
+                                <select id="ddlCPerson" name="ContactId" data-placeholder="Select Contact Person" class="inputclass form-control input_shadow"></select>
+
+                            </div>
+
+                            <div class="col-lg-7 col-md-7 col-sm-12  col-xs-12 col-xxs-12 sm-mbot1 location-head-div">
+
+                                <label for="name" class="col-lg-2 col-sm-3 col-xs-3 col-xxs-12 labelcolor_name control-label cre_sta_label">State<span style="color:red">*</span></label>
+                                <div class="col-lg-4 col-sm-4 col-xs-9 col-xxs-12 state_drp_btn sm-nopaddingleft xxs-paddingleft-2 xxs-nopaddingright">
+                                    <select id="ddlState" data-placeholder="Select State" name="StateID" class="inputclass form-control input_shadow"></select>
+                                </div>
+
+                                <label class="col-lg-2 col-sm-2 col-xs-3 col-xxs-12 labelcolor_name  control-label cre_cty_label xs-clear">City<span style="color:red">*</span></label>
+                                <div class="col-lg-4 col-sm-3 col-xs-9 col-xxs-12 cty_drp_btn sm-nopaddingleft sm-nopaddingright xs-nopaddingleft xs-nopaddingright xxs-paddingleft-2 xxs-nopaddingright">
+                                    <select id="ddlCity" data-placeholder="Select City" name="CityId" class="inputclass form-control input_shadow"></select>
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+                        <div class="row mbot05">
+                            <label for="name" class="col-lg-2 col-sm-3 col-xs-3 col-xxs-12 labelcolor_name control-label cre_uti_label">Utility type<span style="color:red">*</span></label>
+
+                            <div class="col-lg-3 col-sm-9 col-xs-9 col-xxs-12 internal cre_cont_btn sm-nopaddingleft xxs-paddingleft-5">
+                                <select id="ddlUtilitytype" name="Utilitytype" data-placeholder="Select Utility type" class="inputclass form-control input_shadow">
+                                    <option value="0"></option>
+                                    <option value="1">Electric</option>
+                                    <option value="2">Gas</option>
+                                    <option value="3">Water</option>
+                                </select>
+                            </div>
+
+
+                        </div>
+
+                        <div class="form-group">
+                        </div>
+                        <div class="row mbot05">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xxs-12 ">
+                                <label for="name" class="labelcolor_name control-label mobsn-hd" style="text-align: left !important; ">Mobile Auto Sync Settings-</label>
+                            </div>
+                        </div>
+                        <div class="row mbot05">
+
+                            <label for="name" class="col-lg-2 col-md-2 col-sm-3 col-xs-3 col-xxs-12 labelcolor_name control-label conct_label sm-mbot1">Connection Type<span style="color:red">*</span></label>
+                            <div class="col-lg-3 col-md-3 col-sm-9 col-xs-9 col-xxs-12 conct_btn sm-mbot1 sm-nopaddingleft xxs-paddingleft-5">
+                                <select id="ddlConnectionType" name="ConnectionType" class="inputclass form-control input_shadow">
+                                    <option value="0"></option>
+                                    <option value="1">Wi-Fi Only</option>
+                                    <option value="2">Mobile Data</option>
+                                    <option value="3">Both Wi-Fi & Mobile Data</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-7 col-md-7 col-sm-12 col-xs-12 col-xxs-12 sync-head-div">
+                                <label for="name" class="col-lg-2 col-md-2 col-sm-3 col-xs-3 col-xxs-12 labelcolor_name control-label syn_label ">Sync Type<span style="color:red">*</span></label>
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-9 col-xxs-12 synctype_drpbtn md-nopaddingleft sm-nopaddingleft xxs-paddingleft-2 xxs-nopaddingright">
+                                    <select id="ddlSyncType" name="SyncType" class="inputclass form-control input_shadow">
+                                        <option value="0"></option>
+                                        <option value="1">Basic Info Only</option>
+                                        <option value="2">Basic Info & Media Data</option>
+                                    </select>
+                                </div>
+                                <label for="name" class="col-lg-2 col-md-2 col-sm-2 col-xs-3 col-xxs-12 labelcolor_name  control-label cre_synch xs-clear">Sync Interval<span style="color:red">*</span></label>
+                                <div class="col-lg-4 col-md-4 col-sm-3 col-xs-9 col-xxs-12 div_cre_inp_syncinterval xs-nopaddingleft xs-nopaddingright xxs-paddingleft-2 xxs-nopaddingright">
+                                    <input type="text" style="text-align:right;" placeholder="(in mins)" name="dataSynch" id="txtdataSynch" pattern="\d+" class="inputclass form-control input_shadow cre_inp_syncinterval" maxlength="3" />
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mbot05">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xxs-12 ">
+                                <label for="name" class="labelcolor_name control-label mobsn-hd" style="text-align: left !important; ">Project Appointment Url Settings-</label>
+                            </div>
+                        </div>
+                        <div class="row mbot05">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xxs-12 lg-nopadding md-nopadding proj-url_head-div">
+                                <label class="col-lg-2 col-sm-3 col-xs-3 col-xxs-12 labelcolor_name control-label  create_label_des proj_url_label" style="white-space: nowrap;">Project Url</label>
+                                <div class="col-lg-10 col-xs-9  col-sm-9 col-xxs-12 sm-right-4 sm-nopaddingleft xxs-paddingleft-2 xs-nopaddingright proj-url-div">
+                                    <input maxlength="500" type="text" class="form-control input_shadow cre_inp_box" id="txtProjUrl" name="ProjectAppointmentUrl" placeholder="Project Appointment Url" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mbot05">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xxs-12 ">
+                                <label for="name" class="col-lg-12 col-sm-12 col-xs-12 labelcolor_name control-label mobsn-hd" style="text-align: left !important; ">Project Inventory Settings-</label>
+                            </div>
+                        </div>
+                        <div class="row mbot05">
+                            @*<div class="col-lg-5 col-md-5 col-sm-7 col-xs-6 col-xxs-12 ">
+                            *@
+                            <label class="col-lg-2 col-md-2 col-sm-3 col-xs-3 col-xxs-12 labelcolor_name control-label  man_inventory_label xs-mbot1" style="white-space: nowrap;">Manage Inventory</label>
+                            @*<div class="col-lg-3 col-md-3 col-sm-3 col-xs-6 col-xxs-12 div_cre_inp_syncinterval ">
+                            *@
+                            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-9 col-xxs-12  sm-nopaddingleft xs-mbot1 xs-nopaddingright xxs-paddingleft-5 man_inventory_div">
+                                <select id="ManageInventory" name="ManageInventory" class="inputclass form-control input_shadow">
+                                    <option value="0"></option>
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            @*
+                                </div>*@
+                            <div class="col-lg-7 col-md-6 col-sm-5 col-xs-12 col-xxs-12 xs-clear">
+                                <label for="name" class="col-lg-2 col-md-2 col-sm-5 col-xs-3 col-xxs-12 labelcolor_name control-label Warehouse_label ">Warehouse</label>
+
+                                <div class="col-lg-4 col-md-6 col-sm-7 col-xs-9 col-xxs-12 sm-nopaddingright sm-nopaddingleft xs-nopaddingleft xxs-paddingleft-2 xxs-nopaddingright Warehouse-div">
+                                    <div id="divddlWarehouse">
+                                        <div class="chosen-container chosen-container-single " style="width: 100%;" title="" id="ddlWarehouse_chosen">
+                                            <a class="chosen-single chosen-default" id="ancddlWarehouse_chosen" tabindex="-1"><span class="" id="ddlWarehouseHeader">Select Warehouse</span><div><b></b></div></a>
+                                            <div class="chosen-drop">
+                                                <div class="chosen-search"><input type="text" name="ddlWarehouse" class="txtfilterall" onkeyup="filterddlWarehouse(this)" autocomplete="off"></div>
+                                                <div class="ddlWarehouseFilter row">
+                                                    <div class="col-lg-12">
+                                                        <div class="">
+                                                            <label style="margin-left: 7px;"><input type="checkbox" style="zoom:1.2;" class="chbSelectAll" id="ddlWarehouse_SelectAll" autocomplete="off" value=" " name="chbddlWarehouse"><span style="padding-top: -31px;">Select All</span></label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <ul id="ulddlWarehouse" class="chosen-results " style="max-height: 118px;"></ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        @*<div class="form-group">
+                                <label class="col-lg-2 col-sm-2 labelcolor_name control-label  create_label_des" style="white-space: nowrap;">Manage Inventory</label>
+                                <div class="col-lg-4 col-sm-5 col-xs-10 div_cre_inp_syncinterval">
+                                    <select id="ManageInventory" name="ManageInventory" class="inputclass form-control input_shadow">
+                                        <option value="0"></option>
+                                        <option value="Yes">Yes</option>
+                                        <option value="No">No</option>
+                                    </select>
+                                </div>
+                                <label for="name" class="col-lg-2 col-sm-2 labelcolor_name control-label cre_uti_label">Warehouse</label>
+
+                                <div class="col-lg-4 col-sm-5 col-xs-10 div_cre_inp_syncinterval">
+                                    <div id="divddlWarehouse">
+                                        <div class="chosen-container chosen-container-single " style="width: 100%;" title="" id="ddlWarehouse_chosen">
+                                            <a class="chosen-single chosen-default" id="ancddlWarehouse_chosen" tabindex="-1"><span class="" id="ddlWarehouseHeader">Select Warehouse</span><div><b></b></div></a>
+                                            <div class="chosen-drop">
+                                                <div class="chosen-search"><input type="text" name="ddlWarehouse" class="txtfilterall" onkeyup="filterddlWarehouse(this)" autocomplete="off"></div>
+                                                <div class="ddlWarehouseFilter row">
+                                                    <div class="col-lg-12">
+                                                        <div class="">
+                                                            <label style="margin-left: 7px;"><input type="checkbox" style="zoom:1.2;" class="chbSelectAll" id="ddlWarehouse_SelectAll" autocomplete="off" value=" " name="chbddlWarehouse"><span style="padding-top: -31px;">Select All</span></label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <ul id="ulddlWarehouse" class="chosen-results " style="max-height: 118px;"></ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>*@
+
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xxs-12 text-right">
+                                <button class="btn btn-primary nextBtn btn-lg pull-right cre_nxt_btn" type="button">Next</button>
+                            </div>
+                        </div>
+
+                    </div>
+                    @*
+                            </div>
+                        </div>*@
+
+                    <div class="setup-content" id="step-2" style="display:none">
+                        <div class="row ">
+                            <div class="col-lg-12 step2-div">
+
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6 col-xxs-12">
+
+                                    @*<label class="labelcolorsize control-label col-lg-12 col-xs-12 col-sm-12" style="text-align:center !important;">New Meter Size<span style="color:red">*</span> &nbsp; </label>*@
+                                    <label class="control-label "><strong>New Meter Size<span style="color:red">*</span></strong></label>
+
+                                    @*<div class="col-lg-6 col-xs-9 proj_metr_btn nw_mtrsze_btn">*@
+                                    <div>
+                                        <select id="ddlMetersize" name="MeterSize" style="display:none;" multiple="multiple" class="form-control"></select>
+                                    </div>
+                                </div>
+
+                                @*<div class="col-lg-4 col-xs-12 col-sm-6 " style="margin-bottom: 1%; margin-top: 1%;">*@
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6 col-xxs-12">
+                                    @*<label class="labelcolorsize control-label col-lg-12 col-xs-12 col-sm-12" style="text-align:center !important;">New Meter Make<span style="color:red">*</span> &nbsp; </label>*@
+                                    <label class="control-label "><strong>New Meter Make<span style="color:red">*</span></strong></label>
+
+                                    @*<div class="col-lg-6 col-xs-9 proj_metr_btn nw_mtrsze_btn">*@
+                                    <div>
+                                        <select id="ddlMeterMake" name="MeterMake" style="display:none;" multiple="multiple" class="form-control"></select>
+                                    </div>
+                                </div>
+
+                                @*<div class="col-lg-4 col-xs-12 col-sm-6 " style="margin-bottom: 1%; margin-top: 1%;">
+                                        <label class="labelcolorsize control-label col-lg-12 col-xs-12 col-sm-12" style="text-align:center !important;">New Meter Type<span style="color:red">*</span> </label>
+
+                                        <div class="col-lg-6 col-xs-9 proj_metr_btn nw_mtrsze_btn  ">
+
+                                            <select id="ddlMetertype" name="Metertype" style="display:none;" multiple="multiple"></select>
+                                        </div>
+                                    </div>*@
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6 col-xxs-12">
+                                    <label class="control-label "><strong>New Meter Type<span style="color:red">*</span></strong> </label>
+
+                                    <div>
+                                        <select id="ddlMetertype" name="Metertype" style="display:none;" multiple="multiple" class="form-control"></select>
+                                    </div>
+                                </div>
+                                @*<div class="col-lg-4 col-xs-12 col-sm-6 " style="margin-bottom: 1%; margin-top: 1%;">
+                                        <label class="labelcolorsize control-label col-lg-12 col-xs-12 col-sm-12" style="text-align:center !important;"> Services<span style="color:red">*</span> &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;  </label>
+
+
+                                        <div class="col-lg-6 col-xs-9 proj_metr_btn nw_mtrsze_btn srv-alloc">
+                                            <select id="ddlService" name="Service" style="display:none;" multiple="multiple"></select>
+                                        </div>
+
+
+                                    </div>*@
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6 col-xxs-12">
+                                    <label class="control-label"><strong>Services <span style="color:red">*</span></strong></label>
+                                    <div>
+                                        <select id="ddlService" name="Service" style="display:none;" multiple="multiple" class="form-control"></select>
+                                    </div>
+
+                                </div>
+
+                                @*<div class="col-lg-4 col-xs-12 col-sm-6 " style="margin-bottom: 1%; margin-top: 1%;">
+                                        <label class="labelcolorsize control-label col-lg-12 col-xs-12 col-sm-12" style="text-align:center !important;"> Users <span style="color:red">*</span>&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; </label>
+
+                                        <div class="col-lg-6 col-xs-9 proj_metr_btn nw_mtrsze_btn inst-alloc">
+                                            <select id="ddlInstaller" name="Installer" style="display:none;" multiple="multiple"></select>
+                                        </div>
+                                    </div>*@
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6 col-xxs-12">
+                                    <label class="control-label "><strong>Users <span style="color:red">*</span></strong></label>
+
+                                    <div>
+                                        <select id="ddlInstaller" name="Installer" style="display:none;" multiple="multiple" class="form-control"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xxs-12">
+                                @*<button class="btn btn-primary previous btn-lg pull-left cre_prvs_btn1" style="" type="button">Previous</button>
+                                    <button class="btn btn-primary nextBtn btn-lg pull-right cre_nxt_btn1" type="button">Next</button>*@
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 col-xxs-12">
+                                    <button class="btn btn-primary previous btn-lg pull-left " style="" type="button">Previous</button>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 col-xxs-12">
+                                    <button class="btn btn-primary nextBtn btn-lg pull-right cre_nxt_btn1" type="button">Next</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row setup-content" id="step-3" style="padding-top: 1%; display: none">
+
+                        <div class="container-fluid">
+                            <div class="col-lg-12 col-sm-12 col-xs-12 " style="padding-left: 5%; background-color: #64b5f6"><b>Selected Services</b></div>
+                            <div class="col-xs-12 ">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <div class="task-content col-md-offset-1">
+                                            <br>
+                                            <ul class="task-list" id="ulServicePrice"></ul>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="col-lg-12 col-sm-12 col-xs-12 " style="padding-left: 5%; background-color: #64b5f6"><b>Additional Services</b></div>
+                            <div class="col-xs-12 ">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <div class="task-content col-md-offset-1">
+                                            <br>
+                                            <ul class="task-list" id="ulAdditionalServicePrice"></ul>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary previous btn-lg pull-left cre_prvs_btn" type="button" style="margin-left: 2.3%;">Previous</button>
+                            <button class="btn btn-primary nextBtn btn-lg pull-right" type="button">Next</button>
+
+                        </div>
+
+                    </div>
+
+                    <div class="row setup-content" id="step-4" style="display: none">
+                        <div class="col-xs-12 ">
+                            <div class="col-md-12">
+                                <div class="form-group">
+
+
+                                    <div class="col-lg-12 col-xs-12 col-sm-12 sideBySide" style="overflow:auto">
+                                        <div class="col-lg-2"></div>
+                                        <div class="col-lg-3 col-xs-5 col-sm-5 ">
+                                            <label class="sel_std_flds"> Select Standard Fields</label>
+
+
+                                            <ul class="source connected src_conn_std" id="sourceFields1"></ul>
+                                        </div>
+                                        <div class="col-lg-2 col-xs-2 col-sm-2 mov_field add-task-row " style="">
+
+                                            <button class="btn btn-success btn-sm pull-left" type="button" id="btnMoveAll">Move All Standard Fields</button>
+                                        </div>
+
+
+                                        <div class="col-lg-3 col-xs-5 col-sm-5  " style="">
+                                            <label class="drp_std_flds"> Drop Standard Fields Here</label>
+
+                                            <ul class="target connected src_conn_drp" id="destinationFields1"></ul>
+                                        </div>
+                                        <div class="col-lg-2"></div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary previous btn-lg pull-left" type="button">Previous</button>
+                                <button class="btn btn-primary nextBtn btn-lg pull-right" type="button">Next</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row setup-content" id="step-5" style="display: none">
+                        <div class="col-xs-12 ">
+                            <div class="col-md-12">
+                                <div class="form-group" style="margin-top:10px;">
+                                    <div class="panel-body">
+                                        <div class="adv-table">
+                                            <div class="row">
+                                                <div class="col-lg-6 col-md-6 col-xs-5 col-sm-6">
+                                                    <a class="btn btn-success" id="btnAddCustField" data-toggle="modal" data-backdrop="static" href="#myModalCustomField">
+                                                        Add New Custom Field <i class="fa fa-plus"></i>
+                                                    </a>
+                                                </div>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-7 show_deactive deact_rec_proj" style="float:right;">
+                                                    <input type="checkbox" name="showDeactivate" id="chkShowDeactivate" />Show Deactivated Records
+                                                </div>
+                                            </div>
+
+                                            <table id="dynamic-table" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                                                <thead>
+                                                    <tr>
+                                                        <th width="25%">Custom Field Name</th>
+                                                        <th width="5%">Action</th>
+                                                    </tr>
+                                                </thead>
+                                            </table>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <button class="btn btn-primary previous btn-lg pull-left" type="button">Previous</button>
+                                <button class="btn btn-primary nextBtn btn-lg pull-right" type="button">Next</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row setup-content" id="step-6" style="display: none">
+                        <div class="col-xs-12 ">
+                            <div class="col-md-12">
+
+                                <div class="col-md-1"></div>
+                                <div class="col-md-11">
+                                    <span style="font-size:10px;">*Note - Only .xlsx files are supported for upload.</span>
+                                    @{
+                                        var href = System.Configuration.ConfigurationManager.AppSettings["ProjectSampleFile"].ToString();
+                                    }
+                                    <a href="@href" target="_blank">Download Sample File</a>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+
+                                <div class="col-md-1"></div>
+                                <div class="col-md-11">
+                                    <div class="form-group" style="margin-top:15px;">
+                                        <label class="control-label col-lg-4">Upload Data<span style="color:red">*</span></label>
+                                        <input maxlength="200" type="file" id="fileInput" required="required" placeholder="Upload Customer Data" class=" col-lg-3 col-sm-4 col-xs-12" />
+                                        <input class="btn btn-success " type="button" id="btn_Upload" value="Upload" style="margin-left:10px;" />
+                                    </div>
+                                </div>
+                                <div class="form-group col-lg-12" id="divPartialFileUpload" style="margin:0 auto; "> </div>
+
+                                <button class="btn btn-primary previous btn-lg pull-left cre_prvs_btn" type="button">Previous</button>
+                                <button class="btn btn-success  btn btn-primary nextBtn btn-lg pull-right" type="button" id="btn_Submit" style="">Submit</button>
+
+
+                            </div>
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+        @*
+                </div>
+            </div>*@
+    </section>
+</section>
+
+<div class="modal fade modal-dialog-center" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content-wrap">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Images taken for the current service.</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="panel-body">
+                        <form id="form3" class="cmxform form-horizontal tasi-form">
+                            <div id="divPictureList">
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div class="modal fade modal-dialog-center" id="myModalCustomField" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content-wrap">
+            <div class="modal-content create_cus_mod">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Custom Field.</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="panel-body">
+                        <div class="form-group ">
+
+                            <div class="col-lg-12">
+                                <label for="name" class="col-lg-3 create_fld_nm">Field Name :<span style="color:red">*</span></label>
+                                <input type="hidden" name="newCustomFieldId" id="txtnewCustomFieldId" />
+                                <input type="text" name="newCustomFieldName" id="txtnewCustomFieldName" class="col-lg-9 allowalphanumeric checkalphanumeric fld_txt" maxlength="200" />
+                            </div>
+
+                        </div>
+                        <br />
+                        <div class="form-group col-lg-10 cust_btn" style="">
+
+                            <button id="btnAddNewCustomField" class="btn btn-success" type="button">Save</button>
+                            <button id="btnAddNewCustomFieldCancel" class="btn btn-danger" type="button">Cancel</button>
+                            <button id="btnAddNewCustomFieldReset" class="btn btn-default" type="button">Reset</button>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade modal-dialog-center" id="confirmDeactivatedialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content-wrap">
+            <div class="modal-content metrmke_dialog deact_mter">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Default Modal Tittle</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="deactivationID" />
+                    <p>Are you sure to deactivate this record?</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnDeactivateYes" class="btn btn-success" type="button">Yes</button>
+                    <button class="btn btn-danger" id="btnDeactivatNo" type="button">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal -->
+<!-- Modal for confirmActivatedialog -->
+<div class="modal fade modal-dialog-center" id="confirmActivatedialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content-wrap">
+            <div class="modal-content metrmke_dialog deact_mter">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Default Modal Tittle</h4>
+                </div>
+                <div class="modal-body">
+
+
+                    <input type="hidden" id="activationID" />
+                    <p>Are you sure to Activate this record ?</p>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button id="btnActivateYes" class="btn btn-success" type="button">Yes</button>
+                    <button class="btn btn-danger" id="btnActivatNo" type="button">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<!-- Modal for serviceAddProject -->
+<div class="modal fade modal-dialog-center" id="serviceAddProject" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content-wrap">
+            <div class="modal-content modal-md">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Add Product</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-md-6">
+                                <input type="hidden" name="ProjectServiceId" id="hndProjectServiceId" value="" />
+                                <select id="ddlProductList" class="form-control chosen-select" title="Select Warehouse"></select>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" placeholder="Enter Quantity" maxlength="4" title="Enter Quantity" class="form-control numeric-only" id="txtQuantity" name="Quantity" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group" style="padding:5px 0px;">
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group" style="text-align:center">
+                            <button id="btnSaveServiceProduct" class="btn btn-success" type="button">Add</button>
+                            <button class="btn btn-danger" id="btnResetServiceProduct" type="button">Reset</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group" style="padding:5px 0px;">
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-md-12" id="tblServiceProduct">
+                                <table id="dynamic-table" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                                    <thead>
+                                        <tr>
+                                            <th width="5%">Product Name</th>
+                                            <th width="5%">Make</th>
+                                            <th width="5%">Type</th>
+                                            <th width="5%">Size</th>
+                                            <th width="5%">Quantity</th>
+                                            <th width="5%">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbodyServiceProduct"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="modal-footer" style="text-align:center">
+
+                    <button data-dismiss="modal" class="btn btn-danger" id="btnActivatNo" type="button">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<link href="~/Scripts/js/style.css" rel="stylesheet" />
+<link href="~/Scripts/js/jquery-ui.css" rel="stylesheet"
+      @*Switch CSS*@>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/css/bootstrap2/bootstrap-switch.css">
+
+<script src="~/Scripts/js/jquery-ui.js"></script>
+<script src="~/Scripts/js/fieldChooser.js"></script>
+<link href="~/Content/MSTS/admin/css/bootstrap-multiselect.css" rel="stylesheet" />
+<script src="~/Content/MSTS/admin/js/bootstrap-multiselect.js"></script>
+<link href="@Url.Content(" ~/Content/MSTS/admin/chosenddl/chosen.css")" rel="stylesheet" />
+
+
+@System.Web.Optimization.Scripts.RenderFormat(GarronT.CMS.UI.SiteKeys.ScriptVersion, "~/bundles/Chosen")
+
+<link href="~/jquery-confirm-master/css/jquery-confirm.css" rel="stylesheet" />
+<script src="~/jquery-confirm-master/js/jquery-confirm.js"></script>
+
+<script src="~/Scripts/Admin/ProjectCreate.js"></script>
+
+<script src="~/Content/MSTS/admin/js/bootstrap-switch.js"></script>
+

@@ -1,0 +1,486 @@
+﻿
+
+<ul class="sidebar-menu" id="nav-accordion">
+    @{
+        if (ViewContext.Controller.IsSysAdmin())
+        {
+            <li class="dcjq-parent-li">
+                <a id="UserRights" class="nav-bg nav-main dcjq-parent" target="_self" href="@Url.Action("Index", "Permission", new { area = "Admin" })">
+                    <i class="fa fa-users"></i>
+                    <span>User Role Rights</span>
+                </a>
+            </li>
+        }
+    }
+    <li class="dcjq-parent-li">
+        <a id="Dashboard" class="nav-bg nav-main dcjq-parent actv-colr" target="_self" href="@Url.Action("Index", "Dashboard", new { area = "Admin" })">
+            <i class="fa fa-dashboard"></i>
+            <span>Dashboard</span>
+        </a>
+    </li>
+
+    <li class="dcjq-parent-li">
+        <a id="ProjectStatus" class="nav-bg nav-main dcjq-parent actv-colr" target="_self" href="@Url.Action("Index", "ProjectStatus", new { area = "Admin" })">
+            <i class="fa fa-th-large"></i>
+            <span>Project Status</span>
+        </a>
+    </li>
+
+    <li class="dcjq-parent-li">
+        <a id="Administration" class="nav-bg nav-main dcjq-parent" href="javascript:void(0);">
+            <i class="fa fa-user"></i>
+            <span>Administration</span>
+            <span class="dcjq-icon"></span>
+        </a>
+        <ul id="subAdministration" class="sub" style="display: none;">
+            <li id="liUploadCityLogoMaster">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "UploadCityLogo", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+
+                    <span>City Logo Master</span>
+                </a>
+            </li>
+            <li id="liFormType">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "FormType", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    <span>Form Type Master</span>
+                </a>
+            </li>
+
+            <li id="liMetermake">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "MeterMake", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    <span>Meter Make Master</span>
+                </a>
+            </li>
+            <li id="liMeterType">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "MeterType", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    <span>Meter Type Master</span>
+
+                </a>
+            </li>
+            <li id="liMeterSize">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "MeterSize", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    <span>Meter Size Master</span>
+
+                </a>
+            </li>
+
+            <li id="liPicture">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Picture", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    <span>Picture Master</span>
+
+                </a>
+            </li>
+
+            <li id="liReasonMaster">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Reason", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+
+                    <span>Reason Master</span>
+                </a>
+            </li>
+            @*<li id="liRoleMaster">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Role", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+
+                    <span>Role Master</span>
+                </a>
+            </li>*@
+            <li id="liServices">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Services", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    <span>Service Master</span>
+
+                </a>
+            </li>
+            <li id="liUserMaster">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Users", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+
+                    <span>User Master</span>
+                </a>
+            </li>
+
+        </ul>
+    </li>
+
+    <li class="dcjq-parent-li">
+        <a id="InventoryManagement" class="nav-bg nav-main dcjq-parent" href="javascript:void(0);">
+            <i class="fa fa-user"></i>
+            <span>Inventory</span>
+            <span class="dcjq-icon"></span>
+        </a>
+        <ul id="subInventoryManagement" class="sub" style="display: none;">
+
+
+            <li id="liWarehouseMaster">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Warehouse", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+
+                    <span>Warehouse Master</span>
+                </a>
+            </li>
+
+
+            <li id="liCategoryMaster">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Category", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+
+                    <span>Category Master</span>
+                </a>
+            </li>
+
+            <li id="liProductMaster">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Product", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+
+                    <span>Product Master</span>
+                </a>
+            </li>
+
+            <li id="liUploadInventory">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "UploadInventory", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+
+                    <span>Inventory Upload</span>
+                </a>
+            </li>
+            <li id="liWebInvenotryRecieve">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "ReceiveInventry", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+
+                    <span>Inventory Receive</span>
+                </a>
+            </li>
+
+            <li id="liviewInventry">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "ViewUploadRecords", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+
+                    <span>Inventory View</span>
+                </a>
+            </li>
+
+
+            <li id="liInventoryStockRequest">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "StockRequest", new { area = "Admin"})">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    <span>View Stock Request</span>
+                </a>
+            </li>
+
+            @*<li id="liInventoryAlert">
+                    <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Product", new { area = "Admin" })">
+                        <span class="icon">
+                            <i class="fa fa-check-square-o"></i>
+                        </span>
+
+                        <span>Inventory Alert</span>
+                    </a>
+                </li>*@
+
+           
+
+
+
+
+
+
+
+            @*<li id="liInventroy">
+                    <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Inventory", new { area = "Admin" })">
+                        <span class="icon">
+                            <i class="fa fa-check-square-o"></i>
+                        </span>
+                        <span>Inventory Upload Old</span>
+                    </a>
+                </li>*@
+
+
+
+        </ul>
+    </li>
+
+    <li class="dcjq-parent-li">
+        <a id="Operations" class="nav-bg nav-main dcjq-parent" href="javascript:void(0);">
+            <i class="fa fa-list"></i>
+            <span>Operations</span>
+
+            <span class="dcjq-icon"></span>
+        </a>
+        <ul id="subOperations" class="sub" style="display: none;">
+            <li id="liAlertMaster">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Alert", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    <span>Alert Master</span>
+                </a>
+            </li>
+            <li id="liAudit">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "ProjectAudit", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    <span>Audit</span>
+                </a>
+            </li>
+            <li id="liClient">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Customer", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    <span>Customer</span>
+                </a>
+            </li>
+            <li id="liProject">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Project", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    <span>Project</span>
+                </a>
+            </li>
+
+            <li id="liInstaller">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "InstallerAllocation", new { area = "Admin" })">
+
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    <span>Installer Allocation</span>
+                </a>
+            </li>
+            <li id="liAppointment">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "AppointmentAllocation", new { area = "Admin" })">
+
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    <span>Appointment</span>
+                </a>
+            </li>
+
+
+
+        </ul>
+    </li>
+
+    <li class="dcjq-parent-li">
+        <a id="FormManagement" target="_self" class="nav-bg nav-main dcjq-parent actv-colr" href="@Url.Action("Index", "FormManagement", new { area = "" }) ">
+            <i class="fa fa-clipboard">
+            </i>
+            <span>Form Management</span>
+        </a>
+
+    </li>
+
+    <li class="dcjq-parent-li">
+        <a id="Reports" target="_self" class="nav-bg nav-main  dcjq-parent" href="javascript:void(0);">
+            <i class="fa fa-file">
+            </i>
+            <span>Reports</span>
+        </a>
+        <ul id="subReports" class="sub" style="display: none;">
+            <li id="liDuplicateReport">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "DuplicateReport", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    <span>Duplicate Report</span>
+                </a>
+            </li>
+            <li id="liExportReport">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "ExportReport", new { area = "Admin"})">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    <span>Export Report</span>
+                </a>
+            </li>
+            <li id="liReport">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Reports", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    <span>Installer Report</span>
+                </a>
+            </li>
+            <li id="liAuditorReport">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "AuditorReports", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    <span>Auditor Report</span>
+                </a>
+            </li>
+            <li id="liInstallerMapHistory">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "InstallerMapDataHistory", new { area = "Admin" })">
+
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    <span>Skip History Report</span>
+                </a>
+            </li>
+        </ul>
+
+    </li>
+
+
+
+    <li class="dcjq-parent-li">
+        <a id="InventoryReports" target="_self" class="nav-bg nav-main  dcjq-parent" href="javascript:void(0);">
+            <i class="fa fa-file">
+            </i>
+            <span>Inventory Reports</span>
+        </a>
+        <ul id="subReports" class="sub" style="display: none;">
+            <li id="liWarehouseStockReport">
+                <a target="_self" class="AdminMenu" href="@Url.Action("StockReport", "WarehouseStockReport", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    <span>Warehouse Stock</span>
+                </a>
+            </li>
+            <li id="liInventoryStockReport">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "InventryStockReport", new { area = "Admin"})">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    <span>Inventory Stock</span>
+                </a>
+            </li>
+            <li id="liInventoryMovementReport">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "ProcuctMovementReport", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+
+                    <span>Movement Report</span>
+                </a>
+            </li>
+        </ul>
+
+    </li>
+
+
+
+    <li class="dcjq-parent-li">
+        <a id="Help" target="_blank" class="nav-bg nav-main  dcjq-parent" href="~/CMSHelpManual/quick/toc.html">
+            <i class="fa fa-file">
+            </i>
+            <span>Help Manual</span>
+        </a>
+    </li>
+
+</ul>
+
+<div class="nav_btm_ht" style="height:30px;"></div>
+
+
+
+
+
+
+<!-- Right Slidebar start -->
+
+
+
+<script>
+
+    //    sidebar dropdown menu
+    $(document).ready(function () {
+
+        //jQuery('#sidebar > ul > li > ul.sub').removeAttr("style")
+        //jQuery('#sidebar > ul > li > ul.sub').css("display", "none")
+
+        //$._data($('#nav-accordion')[0], 'events');
+
+        //$._data($('.sidebar-menu')[0], 'events');
+    })
+    //jQuery('#sidebar .sub-menu > a').click(function () {
+
+    //    var last = jQuery('.sub-menu.open', $('#sidebar'));
+
+    //    last.removeClass("open");
+
+    //    jQuery('.arrow', last).removeClass("open");
+
+    //    jQuery('.sub', last).slideUp(200);
+
+    //    var sub = jQuery(this).next();
+
+    //    if (sub.is(":visible")) {
+
+    //        jQuery('.arrow', jQuery(this)).removeClass("open");
+
+    //        jQuery(this).parent().removeClass("open");
+
+    //        sub.slideUp(200);
+
+    //    } else {
+
+    //        jQuery('.arrow', jQuery(this)).addClass("open");
+
+    //        jQuery(this).parent().addClass("open");
+
+    //        sub.slideDown(200);
+
+    //    }
+
+    //    var o = ($(this).offset());
+
+    //    diff = 200 - o.top;
+
+    //    if (diff > 0)
+
+    //        $("#sidebar").scrollTo("-=" + Math.abs(diff), 500);
+
+    //    else
+
+    //        $("#sidebar").scrollTo("+=" + Math.abs(diff), 500);
+
+    //});
+
+
+</script>

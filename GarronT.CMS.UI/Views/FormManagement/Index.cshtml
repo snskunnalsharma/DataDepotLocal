@@ -1,0 +1,62 @@
+﻿
+@{
+    ViewBag.Title = "Form Management";
+}
+@Html.Hidden("urlGetProjectList", Url.Action("GetProjectList", "FormManagement", new { area = "" }))
+@Html.Hidden("GetFormListURL", Url.Action("GetFormList", "FormManagement", new { area = "" }))
+
+@Html.Hidden("GetDataTypeMaster", Url.Action("GetDataTypeMaster", "FormManagement", new { area = "" }))
+
+@Html.Hidden("GetGetDynamicDivData", Url.Action("GetDynamicDivData", "FormManagement", new { area = "" }))
+
+@Html.Hidden("urlsaveFormFields", Url.Action("saveFormFields", "FormManagement", new { area = "" }))
+
+@Html.Hidden("urlgetRecordsforEdit", Url.Action("getRecordsforEdit", "FormManagement", new { area = "" }))
+
+@Html.Hidden("urlDeactivateRecords", Url.Action("DeactivateRecords", "FormManagement", new { area = "" }))
+
+@Html.Hidden("urlActivateRecords", Url.Action("ActivateRecords", "FormManagement", new { area = "" }))
+
+@Html.Hidden("urlGetFormsbyProjectID", Url.Action("GetFormsbyProjectID", "FormManagement", new { area = "" }))
+
+
+@Html.Hidden("urlCheckFormUsed", Url.Action("CheckFormUsed", "FormManagement", new { area = "" }))
+@Html.Hidden("urlGetFormTypeList", Url.Action("GetFormTypeList", "Users", new { area = "" }))
+
+@Html.Hidden("urlCheckUserPermission", Url.Action("CheckUserPermission", "FormManagement", new { area = "" }))
+
+
+
+<style>
+    strong {
+        font-weight: 700;
+        color: #000 !important;
+    }
+
+
+    .checkbox label span {
+        font-weight: 700;
+        color: #000 !important;
+    }
+</style>
+
+<div ng-view></div>
+
+
+
+
+<link href="@Url.Content("~/Scripts/js/style.css")" rel="stylesheet">
+<link href="@Url.Content("~/Scripts/js/jquery-ui.css")" rel="stylesheet">
+
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery-ui.js")"></script>
+
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery.ddslick.min.js")"></script>
+
+<script type="text/javascript" src="@Url.Content("~/Content/MSTS/admin/js/bootstrap-multiselect.js")"></script>
+
+<link href="@Url.Content("~/Content/MSTS/admin/css/bootstrap-multiselect.css")" rel="stylesheet" />
+
+
+<link href="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.css")" rel="stylesheet" />
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.jquery.js")"></script>
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.proto.min.js")"></script>

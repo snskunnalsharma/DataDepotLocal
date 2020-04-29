@@ -1,0 +1,92 @@
+﻿@{
+    ViewBag.Title = "Skip History Report";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+@Html.Hidden("urlGetInstallerMapList", Url.Action("GetInstMapHistoryList", "InstallerMapDataHistory"))
+@Html.Hidden("urlGetProject", Url.Action("GetPoject", "InstallerMapDataHistory"))
+@Html.Hidden("urlGetInstallerList", Url.Action("GetInstallerList", "InstallerMapDataHistory"))
+
+
+@Html.Hidden("urlStoreSkippedID", Url.Action("StoreSkippedID", "InstallerMapDataHistory"))
+@Html.Hidden("urlViewMultiSkippedRecords", Url.Action("ViewMultiSkippedRecords", "InstallerMapDataHistory"))
+<style>
+    .instal-dat-hist{
+        margin-top:50px;
+    }
+
+</style>
+<!-- page start-->
+<section id="main-content">
+    <section class="wrapper instal-dat-hist">
+        <!-- page start-->
+        <div class="row">
+            <div class="col-sm-12" id="m">
+                <section class="panel">
+                    <header class="panel-heading">
+                        <b>Skip History Report</b>
+                    </header>
+                    <div class="row" style="">
+                        <div class="col-lg-12">
+                            <div class="container-fluid con_fluid_new">
+                                <div class="panel-body">
+                                    <div class="row" style="margin-bottom: 5px;">
+                                        <div class="form-group">
+                                            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 reasgn_bx1">
+                                                <select id="ddlProjectStatus" data-placeholder="Select Project Status" class="form-control chosen-select ">
+                                                    <option value="0"></option>
+                                                    <option value="Active">Active</option>
+                                                    <option value="Complete">Completed</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 reasgn_bx2">
+                                                <select id="ddlProject" data-placeholder="Select Project" class="form-control chosen-select "></select>
+                                            </div>
+
+                                            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 reasgn_bx3">
+                                                <select id="ddlInstaller" data-placeholder="Select Installer" class="form-control chosen-select"></select>
+                                            </div>
+
+                                            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 reasgn-bx4">
+                                                <button id="btnSearch" class="btn btn-warning reasgn-srch-btn" type="button" style="background-color:green;border-color:green;">Search</button>
+                                                <button id="btnReset" class="btn btn-warning reasgn-res-btn" type="button" style="background-color:grey;border-color:grey;">Reset</button>
+                                            </div>
+                                            @*<div class="col-lg-3 col-md-3 col-sm-10 col-xs-12 bx3">
+                                                <button id="btnSearch" class="btn btn-warning exp-sv-btn " type="button" style="background-color:green;border-color:green;">Search</button>
+                                            </div>
+                                            <div class="col-lg-3 col-md-3 col-sm-10 col-xs-12 bx4">
+                                                <button id="btnReset" class="btn btn-warning exp-sv-btn " type="button" style="background-color:grey;border-color:grey;">Reset</button>
+                                            </div>*@
+                                        </div>
+
+                                    </div>
+                                    <div class="table-responsive col-lg-12 rep_dyn_table">
+                                        <table id="dynamic-table" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                                            <thead>
+                                                <tr>
+                                                    <th width="15%">Visited Date</th>
+                                                    <th width="">Project Name</th>
+                                                    <th width="">Installer Name</th>
+                                                    <th width="">Account</th>
+                                                    <th width="">Street</th>
+                                                    <th width="">Cycle</th>
+                                                    <th width="">Route</th>
+                                                    <th width="">Skipped Reason</th>
+                                                    <th width="">Skip Comment</th>
+                                                    <th width="">Action</th>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</section>
+<!-- page end-->
+
+<script src='@Url.Content("~/Scripts/Admin/InstallerMapDataHistory.js")'></script>

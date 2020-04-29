@@ -1,0 +1,76 @@
+﻿@model GarronT.CMS.Model.AspNetUser
+@{
+    ViewBag.Title = "User - " + Model.UserName;
+    if ((Model.UserName != null) && (Model.UserName != ""))
+    {
+        ViewBag.Title = ViewBag.Title + " (" + Model.UserName + ")";
+    }
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+@*<script src="~/Content/jquery-1.10.2.js"></script>*@
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(":input[type='button']").button();
+        $(":input[type='submit']").button();
+    });
+</script>
+
+@Html.Hidden("urlAddUserRoleReturnPartialView", Url.Action("AddUserRoleReturnPartialView", "Admin"))
+
+
+<section id="main-content">
+    <section class="wrapper">
+        <!-- page start-->
+        <div class="row">
+            <div class="col-sm-12">
+                <section class="panel">
+                    <header class="panel-heading">
+                        <b>User Edit</b>
+
+                    </header>
+                    <div class="panel-body">
+                        <div class="adv-table">
+                         @using (Html.BeginForm("UserEdit", "Admin", FormMethod.Post))
+                         {
+                            @Html.ValidationSummary(true)
+                            <input name='User_Id' id='User_Id' type="hidden" value="@ViewBag.UserId" />
+                            <fieldset>
+                                <legend>
+                                    <h3>
+                                        User Details
+                                    </h3>
+                                </legend>
+                                @Html.Partial("_userDetailsEdit", Model)
+                                <br />
+                                <input type="submit" value="Save" class="btn btn-success" />
+                            </fieldset>
+
+                            <fieldset>
+                                <legend>
+                                    <h3>
+                                        Roles Associated with this User
+                                    </h3>
+                                </legend>
+                                <div class="panel" id="RolesTable">
+                                    @Html.Partial("_ListUserRoleTable", Model)
+                                </div>
+                                @Html.Partial("_ListEditableUserRoleTable")
+                                <br />
+                                <div>
+                                    @Html.ActionLink("Go to Roles", "RoleIndex", "Admin", new { @class = "btn btn-success" })
+                                </div>
+                            </fieldset>
+                         }
+                        <br />
+                        <div>
+                            @Html.ActionLink("Go to Users", "Index", "Admin",new { @class= "btn btn-success" })
+                        </div>
+
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</section>

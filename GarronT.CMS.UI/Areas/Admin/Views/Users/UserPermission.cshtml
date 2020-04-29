@@ -1,0 +1,1647 @@
+﻿@model GarronT.CMS.Model.BO.UserAspNetPermissionVM
+@{
+    ViewBag.Title = "User Permission";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+
+
+@Html.Hidden("urlAssignPermissionsToRole", Url.Action("AssignPermissionRole", "Users"))
+
+<style>
+    .gang-name {
+        font-size: 15px;
+        font-family: cursive;
+        background-color: lightgray;
+        cursor: pointer;
+        width: 100%;
+    }
+
+
+    .alternetColumn {
+        background-color: #afb0b34d;
+    }
+
+    #PermissionTable thead > tr > th {
+        padding: 3px;
+    }
+
+    @@media (min-width:1200px) {
+        .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9 {
+            float: left;
+        }
+
+        .col-lg-12 {
+            width: 100%;
+        }
+
+        .col-lg-11 {
+            width: 91.66666667%;
+        }
+
+        .col-lg-10 {
+            width: 83.33333333%;
+        }
+
+        .col-lg-9 {
+            width: 75%;
+        }
+
+        .col-lg-8 {
+            width: 66.66666667%;
+        }
+
+        .col-lg-7 {
+            width: 58.33333333%;
+        }
+
+        .col-lg-6 {
+            width: 50% !important;
+        }
+
+        .col-lg-5 {
+            width: 41.66666667%;
+        }
+
+        .col-lg-4 {
+            width: 33.33333333%;
+        }
+
+        .col-lg-3 {
+            width: 25%;
+        }
+
+        .col-lg-2 {
+            width: 16.66666667%;
+        }
+
+        .col-lg-1 {
+            width: 8.33333333%;
+        }
+
+        .multiselect {
+            padding: 3px;
+        }
+
+        .lg-none {
+            display: none;
+        }
+
+        .lg-clear {
+            clear: both;
+        }
+    }
+
+    @@media (min-width:992px) and (max-width:1199px) {
+        .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9 {
+            float: left;
+        }
+
+        .col-md-12 {
+            width: 100%;
+        }
+
+        .col-md-11 {
+            width: 91.66666667%;
+        }
+
+        .col-md-10 {
+            width: 83.33333333%;
+        }
+
+        .col-md-9 {
+            width: 75%;
+        }
+
+        .col-md-8 {
+            width: 66.66666667%;
+        }
+
+        .col-md-7 {
+            width: 58.33333333%;
+        }
+
+        .col-md-6 {
+            width: 50%;
+        }
+
+        .col-md-5 {
+            width: 41.66666667%;
+        }
+
+        .col-md-4 {
+            width: 33.33333333%;
+        }
+
+        .col-md-3 {
+            width: 25%;
+        }
+
+        .col-md-2 {
+            width: 16.66666667%;
+        }
+
+        .col-md-1 {
+            width: 8.33333333%;
+        }
+
+        .col-md-pull-12 {
+            right: 100%;
+        }
+
+        .col-md-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-md-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-md-pull-9 {
+            right: 75%;
+        }
+
+        .col-md-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-md-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-md-pull-6 {
+            right: 50%;
+        }
+
+        .col-md-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-md-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-md-pull-3 {
+            right: 25%;
+        }
+
+        .col-md-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-md-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-md-pull-0 {
+            right: auto;
+        }
+
+        .col-md-push-12 {
+            left: 100%;
+        }
+
+        .col-md-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-md-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-md-push-9 {
+            left: 75%;
+        }
+
+        .col-md-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-md-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-md-push-6 {
+            left: 50%;
+        }
+
+        .col-md-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-md-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-md-push-3 {
+            left: 25%;
+        }
+
+        .col-md-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-md-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-md-push-0 {
+            left: auto;
+        }
+
+        .col-md-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-md-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-md-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-md-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-md-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-md-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-md-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-md-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-md-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-md-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-md-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-md-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-md-offset-0 {
+            margin-left: 0;
+        }
+
+        .md-clear {
+            clear: both;
+        }
+
+        .md-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .md-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .md-none {
+            display: none;
+        }
+
+        .md-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .md-nopaddingright {
+            padding-right: 0px;
+        }
+    }
+
+    @@media (min-width:768px) and (max-width:991px) {
+        /*.show_deactive {
+        padding-left: 40px;
+    }*/
+        .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9 {
+            float: left;
+        }
+
+        .col-sm-12 {
+            width: 100%;
+        }
+
+        .col-sm-11 {
+            width: 91.66666667%;
+        }
+
+        .col-sm-10 {
+            width: 83.33333333%;
+        }
+
+        .col-sm-9 {
+            width: 75%;
+        }
+
+        .col-sm-8 {
+            width: 66.66666667%;
+        }
+
+        .col-sm-7 {
+            width: 58.33333333%;
+        }
+
+        .col-sm-6 {
+            width: 50%;
+        }
+
+        .col-sm-5 {
+            width: 41.66666667%;
+        }
+
+        .col-sm-4 {
+            width: 33.33333333%;
+        }
+
+        .col-sm-3 {
+            width: 25%;
+        }
+
+        .col-sm-2 {
+            width: 16.66666667%;
+        }
+
+        .col-sm-1 {
+            width: 8.33333333%;
+        }
+
+        .col-sm-pull-12 {
+            right: 100%;
+        }
+
+        .col-sm-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-sm-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-sm-pull-9 {
+            right: 75%;
+        }
+
+        .col-sm-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-sm-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-sm-pull-6 {
+            right: 50%;
+        }
+
+        .col-sm-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-sm-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-sm-pull-3 {
+            right: 25%;
+        }
+
+        .col-sm-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-sm-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-sm-pull-0 {
+            right: auto;
+        }
+
+        .col-sm-push-12 {
+            left: 100%;
+        }
+
+        .col-sm-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-sm-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-sm-push-9 {
+            left: 75%;
+        }
+
+        .col-sm-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-sm-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-sm-push-6 {
+            left: 50%;
+        }
+
+        .col-sm-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-sm-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-sm-push-3 {
+            left: 25%;
+        }
+
+        .col-sm-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-sm-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-sm-push-0 {
+            left: auto;
+        }
+
+        .col-sm-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-sm-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-sm-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-sm-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-sm-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-sm-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-sm-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-sm-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-sm-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-sm-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-sm-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-sm-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-sm-offset-0 {
+            margin-left: 0;
+        }
+
+        .sm-clear {
+            clear: both;
+        }
+
+        .sm-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .sm-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .sm-block {
+            display: block;
+        }
+
+        .sm-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .sm-nopaddingright {
+            padding-right: 0px;
+        }
+    }
+
+    @@media (min-width:481px) and (max-width:767px) {
+
+        .col-xs-1, .col-xs-10, .col-xs-11, .col-xs-12, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9 {
+            float: left;
+        }
+
+        .col-xs-12 {
+            width: 100%;
+        }
+
+        .col-xs-11 {
+            width: 91.66666667%;
+        }
+
+        .col-xs-10 {
+            width: 83.33333333%;
+        }
+
+        .col-xs-9 {
+            width: 75%;
+        }
+
+        .col-xs-8 {
+            width: 66.66666667%;
+        }
+
+        .col-xs-7 {
+            width: 58.33333333%;
+        }
+
+        .col-xs-6 {
+            width: 50%;
+        }
+
+        .col-xs-5 {
+            width: 41.66666667%;
+        }
+
+        .col-xs-4 {
+            width: 33.33333333%;
+        }
+
+        .col-xs-3 {
+            width: 25%;
+        }
+
+        .col-xs-2 {
+            width: 16.66666667%;
+        }
+
+        .col-xs-1 {
+            width: 8.33333333%;
+        }
+
+        .col-xs-pull-12 {
+            right: 100%;
+        }
+
+        .col-xs-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-xs-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-xs-pull-9 {
+            right: 75%;
+        }
+
+        .col-xs-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-xs-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-xs-pull-6 {
+            right: 50%;
+        }
+
+        .col-xs-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-xs-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-xs-pull-3 {
+            right: 25%;
+        }
+
+        .col-xs-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-xs-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-xs-pull-0 {
+            right: auto;
+        }
+
+        .col-xs-push-12 {
+            left: 100%;
+        }
+
+        .col-xs-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-xs-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-xs-push-9 {
+            left: 75%;
+        }
+
+        .col-xs-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-xs-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-xs-push-6 {
+            left: 50%;
+        }
+
+        .col-xs-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-xs-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-xs-push-3 {
+            left: 25%;
+        }
+
+        .col-xs-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-xs-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-xs-push-0 {
+            left: auto;
+        }
+
+        .col-xs-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-xs-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-xs-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-xs-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-xs-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-xs-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-xs-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-xs-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-xs-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-xs-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-xs-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-xs-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-xs-offset-0 {
+            margin-left: 0;
+        }
+
+        .cre_uti_label {
+            margin-left: 0%;
+            text-align: right !important;
+        }
+
+        .create_label {
+            margin-right: 0px;
+        }
+
+        .xs-clear {
+            clear: both;
+        }
+
+        .xs-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .xs-block {
+            display: block;
+        }
+
+        .xs-nopadding {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+
+        .xs-none {
+            display: none;
+        }
+
+        .xs-clear-none {
+            clear: none;
+        }
+
+        .xs-right {
+            float: right;
+        }
+
+        .form-control {
+            width: 95%;
+        }
+    }
+
+    @@media (max-width:480px) {
+
+
+        .col-xxs-1, .col-xxs-10, .col-xxs-11, .col-xxs-12, .col-xxs-2, .col-xxs-3, .col-xxs-4, .col-xxs-5, .col-xxs-6, .col-xxs-7, .col-xxs-8, .col-xxs-9 {
+            float: left;
+        }
+
+        .col-xxs-12 {
+            width: 100%;
+        }
+
+        .col-xxs-11 {
+            width: 91.66666667%;
+        }
+
+        .col-xxs-10 {
+            width: 83.33333333%;
+        }
+
+        .col-xxs-9 {
+            width: 75%;
+        }
+
+        .col-xxs-8 {
+            width: 66.66666667%;
+        }
+
+        .col-xxs-7 {
+            width: 58.33333333%;
+        }
+
+        .col-xxs-6 {
+            width: 50%;
+        }
+
+        .col-xxs-5 {
+            width: 41.66666667%;
+        }
+
+        .col-xxs-4 {
+            width: 33.33333333%;
+        }
+
+        .col-xxs-3 {
+            width: 25%;
+        }
+
+        .col-xxs-2 {
+            width: 16.66666667%;
+        }
+
+        .col-xxs-1 {
+            width: 8.33333333%;
+        }
+
+        .col-xxs-pull-12 {
+            right: 100%;
+        }
+
+        .col-xxs-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-xxs-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-xxs-pull-9 {
+            right: 75%;
+        }
+
+        .col-xxs-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-xxs-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-xxs-pull-6 {
+            right: 50%;
+        }
+
+        .col-xxs-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-xxs-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-xxs-pull-3 {
+            right: 25%;
+        }
+
+        .col-xxs-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-xxs-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-xxs-pull-0 {
+            right: auto;
+        }
+
+        .col-xxs-push-12 {
+            left: 100%;
+        }
+
+        .col-xxs-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-xxs-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-xxs-push-9 {
+            left: 75%;
+        }
+
+        .col-xxs-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-xxs-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-xxs-push-6 {
+            left: 50%;
+        }
+
+        .col-xxs-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-xxs-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-xxs-push-3 {
+            left: 25%;
+        }
+
+        .col-xxs-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-xxs-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-xxs-push-0 {
+            left: auto;
+        }
+
+        .col-xxs-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-xxs-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-xxs-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-xxs-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-xxs-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-xxs-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-xxs-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-xxs-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-xxs-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-xxs-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-xxs-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-xxs-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-xxs-offset-0 {
+            margin-left: 0;
+        }
+
+        .create_label {
+            margin-left: 0%;
+            margin-right: 0px;
+        }
+
+        .xxs-clear {
+            clear: both;
+        }
+
+        .xxs-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .xxs-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .xxs-mbot3 {
+            margin-bottom: 3%;
+        }
+
+        .xxs-block {
+            display: block;
+        }
+
+        .xxs-nopadding {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+
+        .xxs-none {
+            display: none;
+        }
+
+        .xxs-center {
+            text-align: center;
+        }
+
+        .wrapper {
+            margin-top: 1%;
+            padding: 0px 2%;
+        }
+
+        .form-control {
+            width: 95%;
+        }
+
+        #PermissionTable {
+            width: 100%;
+        }
+    }
+</style>
+
+
+<section id="main-content">
+    <section class="wrapper">
+        <!-- page start-->
+
+        <section class="panel">
+            <header class="panel-heading">
+                <b>Rights</b>
+
+            </header>
+            <div class="panel-body">
+
+                @{
+                    var vievmodel = Model;
+                    var updatepermission = vievmodel.UpdatePermission;
+                    var updatemessage = vievmodel.UpdateMessage;
+                    if (updatepermission == false)
+                    {
+
+
+                        <legend>
+                            <h4>
+                                Permissions
+                            </h4>
+                        </legend>
+
+
+                        <div class="row">
+                            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 col-xxs-12 xxs-mbot2">
+                                <input type="hidden" name="userId" id="txtUserId" value="@ViewBag.UserId" />
+                                <input type="button" class="btn btn-success" value="Update Permission" id="btnUpdate" />
+                                <a class="btn btn-success" target="_self" id="btnback" href="@Url.Action("Index", "Users", new { area = "Admin" })">
+                                    Back
+                                </a>
+                            </div>
+                            <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8 col-xxs-12 text-right">
+                                <span class="permission-icon-info">
+                                    <i class="fa fa-eye"></i> View
+                                    &nbsp;&nbsp;<i class="fa fa-plus"></i>  Add
+                                    &nbsp;&nbsp;<i class="fa fa-pencil"></i>  Edit
+                                    &nbsp;&nbsp; <i class="fa fa-trash" aria-hidden="true"></i> Delete
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div style="text-align:center">
+                                User Name- @ViewBag.userName
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 col-xxs-3"></div>
+                            <div class="col-lg-6 col-md-8 col-sm-10 col-xs-10 col-xxs-12">
+                                <div class="table-responsive">
+                                    <table id="PermissionTable" style="" class="table table-advance table-condensed table-hover table-bordered ">
+
+
+                                        <thead>
+                                        <th>
+                                            Permission
+                                        </th>
+                                        @{
+
+                        var obj = (GarronT.CMS.Model.BO.UserAspNetPermissionVM)Model;
+                        foreach (GarronT.CMS.Model.AspNetRole role in obj.AspNetRoleList.Where(a => a.IsSysAdmin != true).ToList())
+                        {
+                            <th style="text-align:center">
+                                <div class="RName">@role.Name</div>
+
+                                <table class="table-bordered">
+                                    <thead>
+                                    <th style="width:3%;text-align:center;"><i class="fa fa-eye"></i></th>
+                                    <th style="width:3%;text-align:center;"><i class="fa fa-plus"></i></th>
+                                    <th style="width:3%;text-align:center;"><i class="fa fa-pencil"></i></th>
+                                    <th style="width:5%;text-align:center;"><i class="fa fa-trash"></i></th>
+                                    </thead>
+
+                                </table>
+                            </th>
+                        }
+
+                                        }
+
+                                        </thead>
+                                        @foreach (GarronT.CMS.Model.AspNetPermission item in Model.AspNetPermissionList)
+                                        {
+
+                                            string[] str1 = { "Project Status" };
+                                            string[] str2 = { "Dashboard" };
+                                            string[] str3 = { "City Logo Master", "Form Type Master", "Meter Make Master", "Meter Type Master", "Meter Size Master", "Picture Master", "Reason Master", "Service Master", "User Master" };
+                                            string[] str4 = { "Warehouse Master", "Category Master", "Product Master", "Inventory Upload", "Inventory Receive", "Inventory View", "View Stock Request" };
+                                            string[] str5 = { "Alert Master", "Audit", "Customer", "Project", "Installer Allocation", "Appointment" };
+                                            string[] str6 = { "Form Management" };
+                                            string[] str7 = { "Duplicate Report", "Export Report", "Installer Report", "Auditor Report", "Skip History Report" };
+                                            string[] str8 = { "Warehouse Stock Report", "Inventory Stock Report", "Product Movement Report" };
+
+
+
+
+                                            if (item.PermissionName == "Project Status" || item.PermissionName == "Dashboard" ||
+                                                item.PermissionName == "City Logo Master" || item.PermissionName == "Warehouse Master" ||
+                                                item.PermissionName == "Alert Master" || item.PermissionName == "Form Management" ||
+                                                item.PermissionName == "Duplicate Report" || item.PermissionName == "Warehouse Stock Report")
+                                            {
+                                                var aMenuName = "";
+                                                if (item.PermissionName == "City Logo Master")
+                                                {
+                                                    aMenuName = "Administration";
+                                                }
+                                                else if (item.PermissionName == "Warehouse Master")
+                                                {
+                                                    aMenuName = "Inventory";
+                                                }
+                                                else if (item.PermissionName == "Alert Master")
+                                                {
+                                                    aMenuName = "Operations";
+                                                }
+                                                else if (item.PermissionName == "Duplicate Report")
+                                                {
+                                                    aMenuName = "Reports";
+                                                }
+                                                else if (item.PermissionName == "Warehouse Stock Report")
+                                                {
+                                                    aMenuName = "Inventory Reports";
+                                                }
+                                                else
+                                                {
+                                                    aMenuName = @item.PermissionName;
+                                                }
+
+
+                                                <tr class="gang-name">
+                                                    <td style="border-top: none; width: 100%; " colspan="2">@aMenuName</td>
+                                                </tr>
+                                            }
+
+
+                                            if (item.PermissionName == "Inventory Upload" || item.PermissionName == "Inventory Receive")
+                                            {
+                                                <tr class="members">
+
+                                                    <td permissionid="@item.Permission_Id" permissionname="@item.PermissionDescription" name="Permission">
+                                                        @item.PermissionName
+                                                    </td>
+                                                    @foreach (GarronT.CMS.Model.AspNetRole AspNetRole in Model.AspNetRoleList.Where(a => a.IsSysAdmin != true).ToList())
+                                                    {
+
+                                                        var RolePermissionData = Model.ObjAccessPermissionBoList.Where(a => a.PermissionID == item.Permission_Id.ToString()).FirstOrDefault();
+
+                                                        var AData = Model.objUserAccessPermissionBo.Where(a => a.PermissionID == item.Permission_Id.ToString()).FirstOrDefault();
+                                                        var IsChecked2 = "";
+
+                                                        if (AData != null)
+                                                        {
+                                                            IsChecked2 = AData.RoleAddChecked ? "checked='checked'" : "";
+                                                        }
+
+
+                                                        <td style="text-align:center" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id">
+                                                            <table class="table-bordered">
+                                                                <tr>
+                                                                    <td style="width:4%">
+                                                                        <input class="ViewPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" style="display:none" />
+                                                                        <i class="fa fa-ban" aria-hidden="true" style="color:red"></i>
+                                                                    </td>
+                                                                    <td style="width:3%" class="alternetColumn">
+                                                                        <input class="AddPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" @IsChecked2 />
+                                                                    </td>
+                                                                    <td style="width:3%">
+                                                                        <input class="EditPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" style="display:none" />
+                                                                        <i class="fa fa-ban" aria-hidden="true" style="color:red"></i>
+                                                                    </td>
+                                                                    <td style="width:7%" class="alternetColumn">
+                                                                        <input class="DeletePermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" style="display:none" />
+                                                                        <i class="fa fa-ban" aria-hidden="true" style="color:red"></i>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+
+                                                    }
+
+                                                </tr>
+
+                                            }
+                                            else if (item.PermissionName == "Alert Master")
+                                            {
+                                                <tr class="members">
+
+                                                    <td permissionid="@item.Permission_Id" permissionname="@item.PermissionDescription" name="Permission">
+                                                        @item.PermissionName
+                                                    </td>
+                                                    @foreach (GarronT.CMS.Model.AspNetRole AspNetRole in Model.AspNetRoleList.Where(a => a.IsSysAdmin != true).ToList())
+                                                    {
+
+                                                        var RolePermissionData = Model.ObjAccessPermissionBoList.Where(a => a.PermissionID == item.Permission_Id.ToString()).FirstOrDefault();
+
+                                                        var AData = Model.objUserAccessPermissionBo.Where(a => a.PermissionID == item.Permission_Id.ToString()).FirstOrDefault();
+                                                        var IsChecked2 = "";
+
+                                                        if (AData != null)
+                                                        {
+                                                            IsChecked2 = AData.RoleEditChecked ? "checked='checked'" : "";
+                                                        }
+
+
+                                                        <td style="text-align:center" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id">
+                                                            <table class="table-bordered">
+                                                                <tr>
+                                                                    <td style="width:4%">
+                                                                        <input class="ViewPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" style="display:none" />
+                                                                        <i class="fa fa-ban" aria-hidden="true" style="color:red"></i>
+                                                                    </td>
+                                                                    <td style="width:3%" class="alternetColumn">
+                                                                        <input class="AddPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" style="display:none" />
+                                                                        <i class="fa fa-ban" aria-hidden="true" style="color:red"></i>
+                                                                    </td>
+                                                                    <td style="width:3%">
+                                                                        <input class="EditPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" @IsChecked2 />
+                                                                    </td>
+                                                                    <td style="width:7%" class="alternetColumn">
+                                                                        <input class="DeletePermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" style="display:none" />
+                                                                        <i class="fa fa-ban" aria-hidden="true" style="color:red"></i>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+
+                                                    }
+
+                                                </tr>
+
+                                            }
+                                            else if (item.PermissionName == "Installer Allocation")
+                                            {
+                                                <tr class="members">
+
+                                                    <td permissionid="@item.Permission_Id" permissionname="@item.PermissionDescription" name="Permission">
+                                                        @item.PermissionName
+                                                    </td>
+                                                    @foreach (GarronT.CMS.Model.AspNetRole AspNetRole in Model.AspNetRoleList.Where(a => a.IsSysAdmin != true).ToList())
+                                                    {
+
+                                                        var RolePermissionData = Model.ObjAccessPermissionBoList.Where(a => a.PermissionID == item.Permission_Id.ToString()).FirstOrDefault();
+
+                                                        var AData = Model.objUserAccessPermissionBo.Where(a => a.PermissionID == item.Permission_Id.ToString()).FirstOrDefault();
+                                                        var IsChecked1 = "";
+                                                        var IsChecked2 = "";
+                                                        var IsChecked3 = "";
+
+                                                        if (AData != null)
+                                                        {
+                                                            IsChecked1 = AData.RoleViewChecked ? "checked='checked'" : "";
+                                                            IsChecked2 = AData.RoleAddChecked ? "checked='checked'" : "";
+                                                            IsChecked3 = AData.RoleEditChecked ? "checked='checked'" : "";
+                                                        }
+
+
+                                                        <td style="text-align:center" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id">
+                                                            <table class="table-bordered">
+                                                                <tr>
+                                                                    <td style="width:4%">
+                                                                        <input class="ViewPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" @IsChecked1 />
+                                                                    </td>
+                                                                    <td style="width:3%" class="alternetColumn">
+                                                                        <input class="AddPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" @IsChecked2 />
+                                                                    </td>
+                                                                    <td style="width:3%">
+                                                                        <input class="EditPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" @IsChecked3 />
+                                                                    </td>
+                                                                    <td style="width:7%" class="alternetColumn">
+                                                                        <input class="DeletePermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" style="display:none" />
+                                                                        <i class="fa fa-ban" aria-hidden="true" style="color:red"></i>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+
+                                                    }
+
+                                                </tr>
+
+                                            }
+                                            else if (item.PermissionName == "View Stock Request" || item.PermissionName == "Installer Report" || item.PermissionName == "Auditor Report")
+                                            {
+                                                <tr class="members">
+
+                                                    <td permissionid="@item.Permission_Id" permissionname="@item.PermissionDescription" name="Permission">
+                                                        @item.PermissionName
+                                                    </td>
+                                                    @foreach (GarronT.CMS.Model.AspNetRole AspNetRole in Model.AspNetRoleList.Where(a => a.IsSysAdmin != true).ToList())
+                                                    {
+
+                                                        var RolePermissionData = Model.ObjAccessPermissionBoList.Where(a => a.PermissionID == item.Permission_Id.ToString()).FirstOrDefault();
+
+                                                        var AData = Model.objUserAccessPermissionBo.Where(a => a.PermissionID == item.Permission_Id.ToString()).FirstOrDefault();
+                                                        var IsChecked2 = "";
+                                                        var IsChecked1 = "";
+                                                        if (AData != null)
+                                                        {
+                                                            IsChecked1 = AData.RoleViewChecked ? "checked='checked'" : "";
+                                                            IsChecked2 = AData.RoleEditChecked ? "checked='checked'" : "";
+                                                        }
+
+
+                                                        <td style="text-align:center" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id">
+                                                            <table class="table-bordered">
+                                                                <tr>
+                                                                    <td style="width:4%">
+                                                                        <input class="ViewPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" @IsChecked1 />
+                                                                    </td>
+                                                                    <td style="width:3%" class="alternetColumn">
+                                                                        <input class="AddPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" style="display:none" />
+                                                                        <i class="fa fa-ban" aria-hidden="true" style="color:red"></i>
+                                                                    </td>
+                                                                    <td style="width:3%">
+                                                                        <input class="EditPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" @IsChecked2 />
+                                                                    </td>
+                                                                    <td style="width:7%" class="alternetColumn">
+                                                                        <input class="DeletePermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" style="display:none" />
+                                                                        <i class="fa fa-ban" aria-hidden="true" style="color:red"></i>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+
+                                                    }
+
+                                                </tr>
+                                            }
+                                            else if (item.PermissionName == "Project Status" || item.PermissionName == "Dashboard" ||
+                                                                item.PermissionName == "Inventory View" || item.PermissionName == "Inventory Stock Report" || item.PermissionName == "Duplicate Report" ||
+                                                                item.PermissionName == "Product Movement Report" || item.PermissionName == "Skip History Report")
+                                            {
+                                                <tr class="members">
+
+                                                    <td permissionid="@item.Permission_Id" permissionname="@item.PermissionDescription" name="Permission">
+                                                        @item.PermissionName
+                                                    </td>
+                                                    @foreach (GarronT.CMS.Model.AspNetRole AspNetRole in Model.AspNetRoleList.Where(a => a.IsSysAdmin != true).ToList())
+                                                    {
+
+                                                        var RolePermissionData = Model.ObjAccessPermissionBoList.Where(a => a.PermissionID == item.Permission_Id.ToString()).FirstOrDefault();
+
+                                                        var AData = Model.objUserAccessPermissionBo.Where(a => a.PermissionID == item.Permission_Id.ToString()).FirstOrDefault();
+                                                        var IsChecked2 = "";
+
+                                                        if (AData != null)
+                                                        {
+                                                            IsChecked2 = AData.RoleViewChecked ? "checked='checked'" : "";
+                                                        }
+
+
+                                                        <td style="text-align:center" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id">
+                                                            <table class="table-bordered">
+                                                                <tr>
+                                                                    <td style="width:4%">
+                                                                        <input class="ViewPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" @IsChecked2 />
+                                                                    </td>
+                                                                    <td style="width:3%" class="alternetColumn">
+                                                                        <input class="AddPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" style="display:none" />
+                                                                        <i class="fa fa-ban" aria-hidden="true" style="color:red"></i>
+                                                                    </td>
+                                                                    <td style="width:3%">
+                                                                        <input class="EditPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" style="display:none" />
+                                                                        <i class="fa fa-ban" aria-hidden="true" style="color:red"></i>
+                                                                    </td>
+                                                                    <td style="width:7%" class="alternetColumn">
+                                                                        <input class="DeletePermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" style="display:none" />
+                                                                        <i class="fa fa-ban" aria-hidden="true" style="color:red"></i>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+
+                                                    }
+
+                                                </tr>
+                                            }
+                                            else
+                                            {
+
+                                                <tr class="members">
+
+                                                    <td permissionid="@item.Permission_Id" permissionname="@item.PermissionDescription" name="Permission">
+                                                        @item.PermissionName
+                                                    </td>
+                                                    @foreach (GarronT.CMS.Model.AspNetRole AspNetRole in Model.AspNetRoleList.Where(a => a.IsSysAdmin != true).ToList())
+                                                    {
+
+                                                        var RolePermissionData = Model.ObjAccessPermissionBoList.Where(a => a.PermissionID == item.Permission_Id.ToString()).FirstOrDefault();
+
+                                                        var AData = Model.objUserAccessPermissionBo.Where(a => a.PermissionID == item.Permission_Id.ToString()).FirstOrDefault();
+                                                        var IsChecked1 = "";
+                                                        var IsChecked2 = "";
+                                                        var IsChecked3 = "";
+                                                        var IsChecked4 = "";
+
+                                                        if (AData != null)
+                                                        {
+                                                            IsChecked1 = AData.RoleViewChecked ? "checked='checked'" : "";
+                                                            IsChecked2 = AData.RoleAddChecked ? "checked='checked'" : "";
+                                                            IsChecked3 = AData.RoleEditChecked ? "checked='checked'" : "";
+                                                            IsChecked4 = AData.RoleDeleteChecked ? "checked='checked'" : "";
+                                                        }
+
+
+                                                        <td style="text-align:center" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id">
+                                                            <table class="table-bordered">
+                                                                <tr>
+                                                                    <td style="width:4%">
+                                                                        <input class="ViewPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" @IsChecked1 />
+                                                                    </td>
+                                                                    <td style="width:3%" class="alternetColumn">
+                                                                        <input class="AddPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" @IsChecked2 />
+                                                                    </td>
+                                                                    <td style="width:3%">
+                                                                        <input class="EditPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" @IsChecked3 />
+                                                                    </td>
+                                                                    <td style="width:7%" class="alternetColumn">
+                                                                        <input class="DeletePermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" @IsChecked4 />
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+
+                                                    }
+
+                                                </tr>
+
+                                            }
+
+
+
+                                        }
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 col-xxs-3"></div>
+                        </div>
+
+
+
+                    }
+
+
+                }
+
+
+
+            </div>
+        </section>
+
+    </section>
+
+</section>
+
+
+<script>
+    $(document).ready(function () {
+        $("#UserRights").addClass('active').css('background-color', '#EF6C00').css('border-radius', '6px');
+        $("#UserRights").children().css('color', '#fff');
+    });
+
+    $('.gang-name').click(function () {
+        if ($(this).hasClass("collapsed")) {
+            //$(this).nextUntil('tr.gang-name').attr('Style', 'display:block');
+            $(this).nextUntil('tr.gang-name').removeAttr('Style');
+            $(this).removeClass("collapsed");
+        } else {
+            $(this).nextUntil('tr.gang-name').attr('Style', 'display:none');
+            $(this).addClass("collapsed");
+        }
+    });
+
+
+    $("#btnUpdate").live("click", function () {
+
+        var PermissionList = [];
+
+        var _permissionID = "";
+        var _permissionName = "";
+
+        var table = document.getElementById("PermissionTable");
+        for (var i = 0, row; row = table.rows[i]; i++) {
+            //iterate through rows
+            //rows would be accessed using the "row" variable assigned in the for loop
+
+            if (i > 0) {
+                for (var j = 0, col; col = row.cells[j]; j++) {
+                    //iterate through columns
+                    //columns would be accessed using the "col" variable assigned in the for loop
+
+
+                    if (j === 0) {
+                        _permissionID = $(col).attr("permissionid")
+                        _permissionName = $(col).attr("permissionname")
+                    }
+
+                    if (j > 0) {
+
+                        var _RoleID = $(col).attr("roleid")
+                        // input[name = 'Role']
+                        var ViewV = $(col).find(".ViewPermission")[0].checked;
+                        var ViewA = $(col).find(".AddPermission")[0].checked;
+                        var ViewE = $(col).find(".EditPermission")[0].checked;
+                        var ViewD = $(col).find(".DeletePermission")[0].checked;
+
+
+                        var Permission = {
+                            "PermissionID": _permissionID,
+                            "PermissionName": _permissionName,
+                            "UserId": $("#txtUserId").val(),
+                            "RoleViewChecked": ViewV,
+                            "RoleAddChecked": ViewA,
+                            "RoleEditChecked": ViewE,
+                            "RoleDeleteChecked": ViewD
+                        };
+
+
+                        PermissionList.push(Permission)
+                    }
+
+                }
+
+            }
+
+        }
+
+
+
+
+
+
+        var urlAssignPermissionsToRole = $('#urlAssignPermissionsToRole').val();
+
+        $.ajax({
+            url: urlAssignPermissionsToRole,
+            type: "POST",
+            // data: _parameters,
+            data: JSON.stringify(PermissionList),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            beforeSend: function () {
+                waitingDialog.show('Loading Please Wait...');
+            },
+            complete: function (data) {
+                if (data.statusText == "OK") {
+                    var $toast = toastr["success"]("Record Updated", "Success Notification");
+                }
+                else {
+                    var $toast = toastr["error"]("Unable to Update record", "Error Notification");
+                }
+                waitingDialog.hide();
+            },
+            success: function (data, textStatus, jqXHR) {
+                // alert("success")
+                // $('#PermissionsTable').html(data);
+            }
+        });
+    });
+
+</script>
+

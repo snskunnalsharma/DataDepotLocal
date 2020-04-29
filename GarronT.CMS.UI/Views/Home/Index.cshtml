@@ -1,0 +1,278 @@
+﻿@{
+    ViewBag.Title = "Home";
+
+}
+
+
+<link href="~/Content/MSTS/admin/css/bootstrap.css" rel="stylesheet" />
+<link href="~/Content/MSTS/admin/css/bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/MSTS/admin/css/style-responsive.css" rel="stylesheet" />
+
+<style type="text/css">
+    .indent-small {
+        margin-left: 5px;
+    }
+
+    .form-group.internal {
+        margin-bottom: 0;
+    }
+
+    .dialog-panel {
+        margin: 10px;
+    }
+
+    .datepicker-dropdown {
+        z-index: 200 !important;
+    }
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="container">
+    <div class="panel panel-primary dialog-panel">
+        <div class="panel-heading">
+            <h5>Almaguin Campground - Reservation</h5>
+        </div>
+        <div class="panel-body">
+            <form class="form-horizontal" role="form">
+                <div class="form-group">
+                    <label class="control-label col-md-2 " for="id_accomodation">Accomodation</label>
+                    <div class="col-md-2">
+                        <select class="form-control" id="id_accomodation">
+                            <option>RV</option>
+                            <option>Tent</option>
+                            <option>Cabin/Lodging</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-2 " for="id_title">Name</label>
+                    <div class="col-md-8">
+                        <div class="col-md-2">
+                            <div class="form-group internal">
+                                <select class="form-control" id="id_title">
+                                    <option>Mr</option>
+                                    <option>Ms</option>
+                                    <option>Mrs</option>
+                                    <option>Miss</option>
+                                    <option>Dr</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3 indent-small">
+                            <div class="form-group internal">
+                                <input class="form-control" id="id_first_name" placeholder="First Name" type="text">
+                            </div>
+                        </div>
+                        <div class="col-md-3 indent-small">
+                            <div class="form-group internal">
+                                <input class="form-control" id="id_last_name" placeholder="Last Name" type="text">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
+                <div class="form-group" style="padding: 10px 0px;">
+                    <label class="control-label col-md-2 labelcolor_name" style="white-space:nowrap;  ">Project Name</label>
+                    <div class="col-lg-10">
+                        <input type="hidden" name="ProjectId" id="txtProjectId" />
+                        <input maxlength="100" type="text" id="txtProjectName" name="ProjectName" class="form-control" placeholder="Enter Project Name" />
+                    </div>
+                </div>
+
+
+
+                <div class="form-group">
+                    <label class="control-label col-md-2 labelcolor_name" style="white-space:nowrap;  ">Project Name</label>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <div class="col-md-11">
+                                <input type="hidden" name="ProjectId" id="txtProjectId" />
+                                <input maxlength="100" type="text" id="txtProjectName" name="ProjectName" class="form-control" placeholder="Enter Project Name" />
+                            </div>
+                        </div>
+                      
+                    </div>
+                </div>
+
+
+
+
+
+
+
+                <div class="form-group">
+                    <label class="control-label col-md-2 " for="id_adults">Guests</label>
+                    <div class="col-md-8">
+                        <div class="col-md-2">
+                            <div class="form-group internal">
+                                <input class="form-control col-md-8" id="id_adults" placeholder="18+ years" type="number">
+                            </div>
+                        </div>
+                        <div class="col-md-3 indent-small">
+                            <div class="form-group internal">
+                                <input class="form-control" id="id_children" placeholder="2-17 years" type="number">
+                            </div>
+                        </div>
+                        <div class="col-md-3 indent-small">
+                            <div class="form-group internal">
+                                <input class="form-control" id="id_children_free" placeholder="&lt; 2 years" type="number">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-2 " for="id_email">Contact</label>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <div class="col-md-11">
+                                <input class="form-control" id="id_email" placeholder="E-mail" type="text">
+                            </div>
+                        </div>
+                        <div class="form-group internal">
+                            <div class="col-md-11">
+                                <input class="form-control" id="id_phone" placeholder="Phone: (xxx) - xxx xxxx" type="text">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-2 " for="id_checkin">Checkin</label>
+                    <div class="col-md-8">
+                        <div class="col-md-3">
+                            <div class="form-group internal input-group">
+                                <input class="form-control datepicker" id="id_checkin">
+                                <span class="input-group-addon"> <i class="glyphicon glyphicon-calendar"></i> </span>
+                            </div>
+                        </div>
+                        <label class="control-label col-md-2" for="id_checkout">Checkout</label>
+                        <div class="col-md-3">
+                            <div class="form-group internal input-group">
+                                <input class="form-control datepicker" id="id_checkout">
+                                <span class="input-group-addon"> <i class="glyphicon glyphicon-calendar"></i> </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+               
+
+
+
+
+
+
+
+                <div class="form-group">
+                    <label for="name" class="col-lg-2 labelcolor_name">State<span style="color:red">*</span></label>
+                    <div class="col-md-8">
+                        <div class="col-md-3">
+                            <div class="form-group internal">
+                                <select id="ddlState" name="StateID" class="inputclass form-control"></select>
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="form-group internal">
+                                <label class="control-label col-md-3 labelcolor_name">City <span style="color:red">*</span></label>
+                                <div class="col-md-3">
+                                    <div class="form-group internal">
+                                        <select id="ddlCity" name="CityId" class="inputclass form-control"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
+                <div class="form-group">
+                    <label for="name" class="col-lg-2 labelcolor_name">State<span style="color:red">*</span></label>
+                    <div class="col-md-8">
+                        <div class="col-md-3">
+                            <div class="form-group internal">
+                                <select id="ddlState" name="StateID" class="inputclass form-control"></select>
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="form-group internal">
+                                <label class="control-label col-md-3 labelcolor_name">City <span style="color:red">*</span></label>
+                                <div class="col-md-3">
+                                    <div class="form-group internal">
+                                        <select id="ddlCity" name="CityId" class="inputclass form-control"></select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group internal">
+                                <label class="control-label col-md-3 labelcolor_name">City <span style="color:red">*</span></label>
+                                <div class="col-md-3">
+                                    <div class="form-group internal">
+                                        <select id="ddlCity" name="CityId" class="inputclass form-control"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
+
+
+
+
+
+                <div class="form-group">
+                    <label class="control-label col-md-2 " for="id_service">Required Service</label>
+                    <div class="col-md-8">
+                        <select class="multiselect" id="id_service" multiple="multiple">
+                            <option value="hydro">Hydro</option>
+                            <option value="water">Water</option>
+                            <option value="sewer">Sewer</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-2 " for="id_pets">Pets</label>
+                    <div class="col-md-8">
+                        <div class="make-switch" data-off-label="NO" data-on-label="YES" id="id_pets_switch">
+                            <input id="id_pets" type="checkbox" value="chk_hydro">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-2 " for="id_comments">Comments</label>
+                    <div class="col-md-6">
+                        <textarea class="form-control" id="id_comments" placeholder="Additional comments" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-4 col-md-3">
+                        <button class="btn-lg btn-primary" type="submit">Request Reservation</button>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn-lg btn-danger" style="float:right" type="submit">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,368 @@
+﻿@{
+    ViewBag.Title = "Meter Size Master";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@Html.Hidden("urlCreateRecord", Url.Action("Create", "MeterSize"))
+@Html.Hidden("UrlGetMeterSizeList", Url.Action("GetMeterSizeList", "MeterSize"))
+@Html.Hidden("urlEditData", Url.Action("Create", "MeterSize"))
+@Html.Hidden("urlDeleteData", Url.Action("Delete", "MeterSize"))
+@Html.Hidden("urlDeActiveRecords", Url.Action("GetDeActiveRecords", "MeterSize"))
+@Html.Hidden("urlGetData", Url.Action("Edit", "MeterSize"))
+
+<style>
+    .toast-top-center {
+        margin-top: -50px;
+    }
+   
+     /******************Ihone 5s Portrait Start*******************/
+    @@media (max-width:320px) {
+        .metrmke_dialog {
+            margin-left: -32%;
+            margin-right: -27%;
+        }
+
+        .deactv_rec_mter {
+            margin-left: -34%;
+            margin-right: -27%;
+        }
+    }
+    /******************End Ihone 5s Portrait *******************/
+    @@media only screen and (min-width:321px)and (max-width:359px) {
+        .metrmke_dialog {
+            margin-left: 8%;
+            margin-right: 8%;
+        }
+
+        .modal-dialog {
+            margin: 0 auto;
+        }
+
+        .iconic-input {
+            margin-left: 5%;
+            margin-right: -8%;
+        }
+    }
+
+     @@media only screen and (min-width:360px)and (max-width:420px) {
+        .metrmke_dialog {
+            margin-left: 8%;
+            margin-right: 8%;
+        }
+
+        .modal-dialog {
+            margin: 0 auto;
+        }
+
+        .iconic-input {
+            margin-left: 5%;
+            margin-right: -8%;
+        } 
+        .deactv_rec_mter {
+            margin-left: 6% !important;
+            width: 100%;
+        }
+    }
+    @@media only screen and (min-width:421px)and (max-width:500px) {
+        .modal-dialog {
+            margin: 0 auto;
+        }
+
+        .metrmke_dialog {
+            margin-left: 15%;
+            margin-right: 12%;
+        }
+
+        .meter_txt {
+            margin-left: -79%;
+        }
+
+        .des_txt {
+            margin-left: -82%;
+            margin-top: 15px;
+        }
+
+        .meter_txtbox {
+            margin-top: 0%;
+        }
+
+        .des_txtbox {
+            
+        }
+
+        .toast-top-center {
+            margin-top: 50%;
+        }
+
+        .toast-success {
+        }
+
+        .toast-message {
+        }
+    }
+
+    /*****************************Ihone 5s landscape************************************/
+    @@media only screen and (min-width:501px)and (max-width:599px) {
+        #main-content {
+            padding-top: 4% !important;
+        }
+
+        /*.deactivated_records {
+            padding-left: 29% !important;
+        }*/
+
+        .metrmke_dialog {
+            margin-left: 29% !important;
+            width: 100%;
+        }
+
+        .deactv_rec_mter {
+        }
+
+        .meter_txt {
+            margin-left: -78% !important;
+        }
+
+        .des_txt {
+            margin-left: -82%;
+        }
+
+        .deactv_rec_mter {
+            margin-left: 29% !important;
+            width: 100%;
+        }
+    }
+        /****************************5S landscape end**********************************************/
+    @@media only screen and (min-width:600px)and (max-width:640px) {
+        .modal-dialog {
+            margin: 0 auto;
+        }
+
+        .metrmke_dialog {
+            /*margin-left: 15%;
+            margin-right: 26%;*/
+        }
+
+        .meter_txt {
+            margin-left: -79%;
+        }
+
+        .des_txt {
+            margin-left: -82%;
+            margin-top: 15px;
+        }
+
+        .meter_txtbox {
+            margin-top: 0%;
+        }
+
+        .des_txtbox {
+            margin-top: 14px;
+        }
+    }
+    
+        /***************************** IPHONE 6S Landscape **********************************/
+        @@media only screen and (min-width:641px)and (max-width:710px) {
+            .metrmke_dialog {
+                margin-left:36%;
+                width:100%;
+            }
+            .deactv_rec_mter{
+                margin-left:36%;
+                width:100%;
+            }
+        }
+     @@media only screen and (min-width:711px)and (max-width:767px) {
+            .metrmke_dialog {
+                margin-left:36%;
+                width:100%;
+            }
+            .deactv_rec_mter{
+                 margin-left:58%;
+                width:100%;
+            }
+        }
+     @@media only screen and (min-width:768px)and (max-width:798px) {
+        .modal-dialog {
+            margin: 0 auto;
+        }
+
+        .metrmke_dialog {
+            margin-top: -10%;
+        }
+    }
+
+        @@media only screen and (min-width:799px) and (max-width:850px) {
+            .modal-dialog {
+                margin: 0 auto;
+            }
+
+            .metrmke_dialog {
+                margin-top: -10%;
+            }
+        }
+
+        @@media only screen and (min-width:968px)and (max-width:1023px) {
+            .meter_txtbox {
+                width: 100%;
+            }
+
+            .des_txtbox {
+                width: 100%;
+            }
+        }
+
+        @@media only screen and (min-width:1024px)and (max-width:1100px) {
+            .iconic-input {
+                margin-left: 6%;
+                margin-right: -6%;
+            }
+        }
+</style>
+
+<div id="loading">
+    <div id="loadingcontent">
+        <p id="loadingspinner">
+            Searching things...
+        </p>
+    </div>
+</div>
+
+
+
+<!-- page start-->
+
+
+<section id="main-content">
+    <section class="wrapper">
+        <!-- page start-->
+        <div class="row">
+            <div class="col-sm-12">
+                <section class="panel">
+                    <header class="panel-heading">
+                        <b>Meter Size Master </b>
+
+                    </header>
+                    <div class="panel-body">
+                        
+                            <div class="row">
+                                <div class="col-lg-4 col-md-4 col-xs-4 add_newbtn">
+                                    <a class="btn btn-success" id="btnAddMeterSize" data-backdrop="static" >
+                                        Add New <i class="fa fa-plus"></i>
+                                    </a>
+                                </div>
+                                <div class="col-lg-8 col-md-8 col-xs-8 show_deactive deactivated_records">
+                                    <input type="checkbox" name="showDeactivate" id="chkShowDeactivate" />Show Deactivated Records
+                                </div>
+                            </div>
+                            <table id="dynamic-table" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                                <thead>
+                                    <tr>
+                                        <th width="90%">Meter Size</th>
+                                        <th width="10%">Action</th>
+                                    </tr>
+                                </thead>                            
+                            </table>
+                    
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</section>
+<!-- Modal for Add /Edit Dialog -->
+<div class="modal fade modal-dialog-center" id="myModal" role="dialog" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">  
+        <div class="modal-content-wrap">
+            <div class="modal-content metrmke_dialog">
+                <div class="modal-header">
+                    <button type="button" class="close" id="btnclose" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Add New Meter Size</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="panel-body">
+                        <form id="form3" class="cmxform form-horizontal tasi-form">
+                            <div class="form-group ">
+                                <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label ">Meter Size<span style="color:red">*</span></label>
+                               
+                                <div class="col-lg-8 col-sm-8 col-xs-8">
+                                   
+                                    <input type="hidden" name="ID" id="txtMeterSizeId" class="inputclass form-control" />
+                                    <input type="text" name="MeterSize" maxlength="200" id="txtMeterSize" class="inputclass form-control " />
+
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label">Description </label>
+                                <div class="col-lg-8 col-sm-8 col-xs-8">
+                                  
+                                    <input type="text" name="Description" maxlength="500" id="txtMeterSizeDescription" class="inputclass form-control " />
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnSave" class="btn btn-success" type="button">Save</button>
+                    <button class="btn btn-danger" id="btnCancel" type="button">Cancel</button>
+                    <button class="btn btn-default" id="btnReset" type="button">Reset</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal -->
+<!-- Modal for deactivation -->
+<div class="modal fade modal-dialog-center" id="confirmDeactivatedialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content-wrap">
+            @*<div class="modal-content metrmke_dialog deact_mter">*@
+                <div class="modal-content deactv_rec_mter">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Default Modal Tittle</h4>
+                    </div>
+                    <div class="modal-body">
+
+                        <input type="hidden" id="deactivationID" />
+                        <p>Are you sure to deactivate this record ?</p>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button id="btnDeactivateYes" class="btn btn-success" type="button">Yes</button>
+                        <button class="btn btn-danger" id="btnDeactivatNo" type="button">No</button>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+<!-- modal -->
+<!-- Modal for confirmActivatedialog -->
+<div class="modal fade modal-dialog-center" id="confirmActivatedialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content-wrap">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Default Modal Tittle</h4>
+                </div>
+                <div class="modal-body">
+
+
+                    <input type="hidden" id="activationID" />
+                    <p>Are you sure to Activate this record ?</p>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button id="btnActivateYes" class="btn btn-success" type="button">Yes</button>
+                    <button class="btn btn-danger" id="btnActivatNo" type="button">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src='@Url.Content("~/Scripts/Admin/MeterSizeMaster.js")'></script>

@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="https://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="https://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="01be039b1b274b94a6b514daec053df3" Name="Diagram1" ZoomLevel="64">
+        <EntityTypeShape EntityType="CompassModel.C__MigrationHistory" Width="1.5" PointX="5.75" PointY="6.75" />
+        <EntityTypeShape EntityType="CompassModel.AspNetUserClaim" Width="1.5" PointX="5.25" PointY="3.625" />
+        <EntityTypeShape EntityType="CompassModel.AspNetUserLogin" Width="1.5" PointX="5.25" PointY="1" />
+        <EntityTypeShape EntityType="CompassModel.AspNetUser" Width="1.5" PointX="3" PointY="1.375" />
+        <EntityTypeShape EntityType="CompassModel.TblCityMaster" Width="1.5" PointX="8.375" PointY="0.75" />
+        <EntityTypeShape EntityType="CompassModel.tblMeterMake" Width="1.5" PointX="9.75" PointY="4.75" />
+        <EntityTypeShape EntityType="CompassModel.tblMeterSize" Width="1.5" PointX="9.75" PointY="8.75" />
+        <EntityTypeShape EntityType="CompassModel.tblMeterType" Width="1.5" PointX="11.5" PointY="1.25" />
+        <EntityTypeShape EntityType="CompassModel.tblPicture" Width="1.5" PointX="2.75" PointY="11.75" />
+        <EntityTypeShape EntityType="CompassModel.TblProjectCustomeFieldReletion" Width="1.5" PointX="4.75" PointY="11.75" />
+        <EntityTypeShape EntityType="CompassModel.TblProjectStandardFieldRelation" Width="1.875" PointX="8.75" PointY="12.75" />
+        <EntityTypeShape EntityType="CompassModel.TblServicePicture" Width="1.5" PointX="13.75" PointY="5.75" />
+        <EntityTypeShape EntityType="CompassModel.tblStandardFieldMaster" Width="1.5" PointX="13.75" PointY="9.75" />
+        <EntityTypeShape EntityType="CompassModel.tblStateMaster" Width="1.5" PointX="10.75" PointY="13.75" />
+        <AssociationConnector Association="CompassModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" />
+        <AssociationConnector Association="CompassModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" />
+        <EntityTypeShape EntityType="CompassModel.tblService" Width="1.5" PointX="3.375" PointY="15.75" />
+        <EntityTypeShape EntityType="CompassModel.tblFormMaster" Width="1.5" PointX="17.75" PointY="11.75" />
+        <EntityTypeShape EntityType="CompassModel.tblFormSectionFieldRelation" Width="1.5" PointX="17.75" PointY="15.75" />
+        <EntityTypeShape EntityType="CompassModel.tblFormSectionRelation" Width="1.5" PointX="18.75" PointY="0.75" />
+        <EntityTypeShape EntityType="CompassModel.TblProjectInstaller" Width="1.5" PointX="18.75" PointY="4.75" />
+        <EntityTypeShape EntityType="CompassModel.VW_GetFormData" Width="1.5" PointX="0.75" PointY="19.75" />
+        <EntityTypeShape EntityType="CompassModel.tblClientContactDetail" Width="1.5" PointX="3" PointY="7.5" />
+        <EntityTypeShape EntityType="CompassModel.VW_GetPictures" Width="1.5" PointX="18.375" PointY="8.75" />
+        <EntityTypeShape EntityType="CompassModel.tblClient" Width="1.5" PointX="0.75" PointY="5.875" />
+        <AssociationConnector Association="CompassModel.FK_tblClientContactDetails_tblClient" />
+        <EntityTypeShape EntityType="CompassModel.tblProjectFieldDDLMaster" Width="3.375" PointX="5.375" PointY="20.75" />
+        <EntityTypeShape EntityType="CompassModel.TblFieldDataTypeMaster" Width="1.5" PointX="9.375" PointY="16.75" />
+        <EntityTypeShape EntityType="CompassModel.Tbl_InstallationStatusMaster" Width="1.5" PointX="14.375" PointY="20.75" />
+        <EntityTypeShape EntityType="CompassModel.tblProjectFieldDataMaster" Width="1.5" PointX="16.375" PointY="20.75" />
+        <EntityTypeShape EntityType="CompassModel.TblProjectMasterFieldRelation" Width="1.5" PointX="22.375" PointY="21.75" />
+        <EntityTypeShape EntityType="CompassModel.tblInstallerServiceRate" Width="1.5" PointX="21.375" PointY="0.75" />
+        <EntityTypeShape EntityType="CompassModel.tblVehicleMakeMaster" Width="1.5" PointX="24.375" PointY="8.75" />
+        <EntityTypeShape EntityType="CompassModel.tblVehicleMaster" Width="1.5" PointX="24.375" PointY="12.75" />
+        <EntityTypeShape EntityType="CompassModel.tblVehicleModelMaster" Width="1.5" PointX="13.375" PointY="24.75" />
+        <EntityTypeShape EntityType="CompassModel.tblUserFormTypeRelation" Width="1.5" PointX="24.375" PointY="17.75" />
+        <EntityTypeShape EntityType="CompassModel.tblFormType" Width="1.5" PointX="21.25" PointY="4.75" />
+        <EntityTypeShape EntityType="CompassModel.tblFormTypeMap" Width="1.5" PointX="24.375" PointY="21.75" />
+        <EntityTypeShape EntityType="CompassModel.tblZipCodeMaster" Width="1.5" PointX="3.375" PointY="25.75" />
+        <EntityTypeShape EntityType="CompassModel.tblInstallerSynchHistory" Width="1.5" PointX="15.375" PointY="25.75" />
+        <EntityTypeShape EntityType="CompassModel.tblProjectFieldDataMasterHistory" Width="1.5" PointX="24.375" PointY="25.75" />
+        <EntityTypeShape EntityType="CompassModel.tblVersionMaster" Width="1.5" PointX="26.375" PointY="10.75" />
+        <EntityTypeShape EntityType="CompassModel.TblAlertMaster" Width="1.5" PointX="15.625" PointY="29.75" />
+        <EntityTypeShape EntityType="CompassModel.TblEmailConfigure" Width="1.5" PointX="17.875" PointY="29.5" />
+        <AssociationConnector Association="CompassModel.FK_TblAdminEmailID_TblAlertMaster" />
+        <EntityTypeShape EntityType="CompassModel.TblEmailConfigureUserDetail" Width="1.5" PointX="20.125" PointY="29.75" />
+        <AssociationConnector Association="CompassModel.FK_TblEamilConfigureUserDetails_TblEamilConfigure" />
+        <EntityTypeShape EntityType="CompassModel.TblProjectFieldDataAttachment" Width="1.5" PointX="27.375" PointY="0.75" />
+        <EntityTypeShape EntityType="CompassModel.VW_GETTab6DropdownData" Width="1.5" PointX="26.375" PointY="20.75" />
+        <EntityTypeShape EntityType="CompassModel.TblProjectExcelMapping" Width="1.5" PointX="14.375" PointY="0.75" />
+        <EntityTypeShape EntityType="CompassModel.tblUploadedData" Width="1.5" PointX="5.375" PointY="25.75" />
+        <EntityTypeShape EntityType="CompassModel.TblProjectFieldDataHistory" Width="1.5" PointX="26.375" PointY="14.75" />
+        <EntityTypeShape EntityType="CompassModel.UploadedExcelData" Width="1.5" PointX="7.375" PointY="28.75" />
+        <EntityTypeShape EntityType="CompassModel.CustomerAuditSetting" Width="1.5" PointX="28.375" PointY="15.75" />
+        <EntityTypeShape EntityType="CompassModel.AuditMaster" Width="1.5" PointX="28.375" PointY="19.75" />
+        <EntityTypeShape EntityType="CompassModel.VW_AuditorList" Width="1.5" PointX="20.375" PointY="26.75" />
+        <EntityTypeShape EntityType="CompassModel.AuditorMap" Width="1.5" PointX="28.375" PointY="23.75" />
+        <EntityTypeShape EntityType="CompassModel.ProjectAuditAllocation" Width="1.5" PointX="30.375" PointY="8.75" />
+        <EntityTypeShape EntityType="CompassModel.ProjectAuditData" Width="1.5" PointX="30.375" PointY="14.75" />
+        <EntityTypeShape EntityType="CompassModel.ProjectAuditFieldDataAttachment" Width="1.5" PointX="30.375" PointY="20.75" />
+        <EntityTypeShape EntityType="CompassModel.ProjectAuditFieldDataMaster" Width="1.5" PointX="30.375" PointY="25.75" />
+        <EntityTypeShape EntityType="CompassModel.tblInstallerMapData" Width="1.5" PointX="28.375" PointY="30.75" />
+        <EntityTypeShape EntityType="CompassModel.Appointment" Width="1.5" PointX="9.375" PointY="28.75" />
+        <EntityTypeShape EntityType="CompassModel.tblSkipReasonMaster_FormType" Width="1.5" PointX="29.375" PointY="0.75" />
+        <EntityTypeShape EntityType="CompassModel.ProjectAuditDataHistory" Width="1.5" PointX="30.375" PointY="30.75" />
+        <EntityTypeShape EntityType="CompassModel.ProjectAuditFieldDataMasterHistory" Width="1.5" PointX="31.375" PointY="0.75" />
+        <EntityTypeShape EntityType="CompassModel.VW_InstallerList" Width="1.5" PointX="17.375" PointY="26.75" />
+        <EntityTypeShape EntityType="CompassModel.tblInstallerMapDataHistory" Width="1.5" PointX="23.375" PointY="0.75" />
+        <EntityTypeShape EntityType="CompassModel.tblSkipReasonMaster" Width="1.5" PointX="11.375" PointY="19.75" />
+        <EntityTypeShape EntityType="CompassModel.TblExportReport" Width="1.5" PointX="26.375" PointY="5.75" />
+        <EntityTypeShape EntityType="CompassModel.CustomerAuditFailureSetting" Width="1.5" PointX="22.375" PointY="31.75" />
+        <EntityTypeShape EntityType="CompassModel.AuditInstallerPercentage" Width="1.5" PointX="24.375" PointY="31.75" />
+        <EntityTypeShape EntityType="CompassModel.AuditData" Width="1.5" PointX="18.375" PointY="21.75" />
+        <EntityTypeShape EntityType="CompassModel.TblStateCityLogo" Width="2.125" PointX="32.375" PointY="6.75" />
+        <EntityTypeShape EntityType="CompassModel.UserIcard" Width="1.5" PointX="32.375" PointY="10.75" />
+        <EntityTypeShape EntityType="CompassModel.InventorySourceMaster" Width="1.5" PointX="11.455446431159716" PointY="15.271487928587705" />
+        <EntityTypeShape EntityType="CompassModel.UtilityMaster" Width="1.5" PointX="3.2203850854283127" PointY="19.367423528510809" />
+        <EntityTypeShape EntityType="CompassModel.WarehouseMaster" Width="1.5" PointX="11.068824011398863" PointY="25.026117112965377" />
+        <AssociationConnector Association="CompassModel.FK_WarehouseMaster_TblCityMaster" />
+        <AssociationConnector Association="CompassModel.FK_WarehouseMaster_tblStateMaster" />
+        <EntityTypeShape EntityType="CompassModel.InvenTrasRequestConfig" Width="1.5" PointX="6.0017005065463946" PointY="20.352738330304966" />
+        <EntityTypeShape EntityType="CompassModel.Category" Width="1.5" PointX="8.3751750944066679" PointY="16.781750567621437" />
+        <EntityTypeShape EntityType="CompassModel.InventoryStatusMaster" Width="1.5" PointX="3.9246406703836474" PointY="31.034638478902465" />
+        <EntityTypeShape EntityType="CompassModel.InwardDetail" Width="1.5" PointX="8.5225149041612234" PointY="12.015888949863561" />
+        <AssociationConnector Association="CompassModel.FK_InwardDetails_InventoryStatusMaster" />
+        <EntityTypeShape EntityType="CompassModel.InventoryMobileStockRequestDetail" Width="1.5" PointX="6.5712799516372762" PointY="26.876861525176494" />
+        <AssociationConnector Association="CompassModel.FK_InventoryMobileStockRequestDetail_InventoryStatusMaster" />
+        <AssociationConnector Association="CompassModel.FK_InwardDetails_UtilityMaster" />
+        <EntityTypeShape EntityType="CompassModel.InwardDetails_RejectedData" Width="1.5" PointX="10.825718420942183" PointY="26.155417230983925" />
+        <AssociationConnector Association="CompassModel.FK_InwardDetails_RejectedData_InventoryStatusMaster" />
+        <AssociationConnector Association="CompassModel.FK_InwardDetails_RejectedData_UtilityMaster" />
+        <AssociationConnector Association="CompassModel.FK_InventoryMobileStockRequestDetail_InventorySourceMaster" />
+        <EntityTypeShape EntityType="CompassModel.ProjectServiceProductRelation" Width="1.5" PointX="6.2023592340770923" PointY="24.24526893731452" />
+        <AssociationConnector Association="CompassModel.FK_ProjectServiceProductRelation_tblService" />
+        <EntityTypeShape EntityType="CompassModel.tblProjectFieldDataInventoryDetail" Width="1.5" PointX="10.301033209218193" PointY="13.440811536014458" />
+        <AssociationConnector Association="CompassModel.FK_tblProjectFieldDataInventoryDetails_tblProjectFieldDataMaster" />
+        <AssociationConnector Association="CompassModel.FK_tblProjectFieldDataInventoryDetails_tblService" />
+        <EntityTypeShape EntityType="CompassModel.VW_GetProductData" Width="1.5" PointX="2.4904692706141942" PointY="3.010667087049534" />
+        <EntityTypeShape EntityType="CompassModel.ProductMaster" Width="1.5" PointX="10.280324326027337" PointY="26.778771800351688" />
+        <AssociationConnector Association="CompassModel.FK_ProductMaster_Category" />
+        <AssociationConnector Association="CompassModel.FK_InventoryMobileStockRequestDetail_ProductMaster" />
+        <AssociationConnector Association="CompassModel.FK_InwardDetails_ProductMaster" />
+        <AssociationConnector Association="CompassModel.FK_InwardDetails_RejectedData_ProductMaster" />
+        <AssociationConnector Association="CompassModel.FK_ProductMaster_tblMeterMake" />
+        <AssociationConnector Association="CompassModel.FK_ProductMaster_tblMeterSize" />
+        <AssociationConnector Association="CompassModel.FK_ProductMaster_tblMeterType" />
+        <AssociationConnector Association="CompassModel.FK_ProjectServiceProductRelation_ProductMaster" />
+        <AssociationConnector Association="CompassModel.FK_tblProjectFieldDataInventoryDetails_ProductMaster" />
+        <EntityTypeShape EntityType="CompassModel.InventoryRequestStatusMaster" Width="1.5" PointX="3.2002206962556672" PointY="17.451572605153348" />
+        <EntityTypeShape EntityType="CompassModel.InventoryMobileStockReturn" Width="1.5" PointX="4.4201947731991273" PointY="22.70054241581845" />
+        <EntityTypeShape EntityType="CompassModel.InventoryMobileStockReturnDetail" Width="1.5" PointX="0.30464160084009245" PointY="9.255373035210825" />
+        <AssociationConnector Association="CompassModel.FK_InventoryMobileStockReturnDetail_InventorySourceMaster" />
+        <AssociationConnector Association="CompassModel.FK_InventoryMobileStockReturnDetail_InventoryStatusMaster" />
+        <AssociationConnector Association="CompassModel.FK_InventoryMobileStockReturnDetail_ProductMaster" />
+        <EntityTypeShape EntityType="CompassModel.tblProjectFieldDataInventoryOutwardDetail" Width="1.5" PointX="6.7511685186769661" PointY="5.5991783466186273" />
+        <AssociationConnector Association="CompassModel.FK_tblProjectFieldDataInventoryOutwardDetails_tblProjectFieldDataInventoryOutwardDetails" />
+        <EntityTypeShape EntityType="CompassModel.InventoryMobileUserStockRequestDetail" Width="1.5" PointX="0.17829340145843728" PointY="2.8573348684503395" />
+        <AssociationConnector Association="CompassModel.FK_InventoryMobileUserStockRequestDetails_ProductMaster" />
+        <EntityTypeShape EntityType="CompassModel.tblUser" Width="1.5" PointX="2.2315513092240091" PointY="14.333074293254443" />
+        <AssociationConnector Association="CompassModel.FK_InvenTrasRequestConfig_tblUsers" />
+        <AssociationConnector Association="CompassModel.FK_InvenTrasRequestConfig_tblUsers1" />
+        <EntityTypeShape EntityType="CompassModel.WarehouseUserRelation" Width="1.5" PointX="7.4457853787791848" PointY="28.851634456241332" />
+        <AssociationConnector Association="CompassModel.FK_WarehouseUserRelation_tblUsers" />
+        <AssociationConnector Association="CompassModel.FK_WarehouseUserRelation_WarehouseMaster" />
+        <EntityTypeShape EntityType="CompassModel.LowInventoryAlert" Width="1.5" PointX="3.7712777535297337" PointY="1.6337752498843592" />
+        <EntityTypeShape EntityType="CompassModel.InventoryUserSignOffDetail" Width="1.5" PointX="2.0599645590688866" PointY="25.552693214990523" />
+        <EntityTypeShape EntityType="CompassModel.OutwardDetail" Width="1.5" PointX="8.54773592788155" PointY="27.377647844784729" />
+        <AssociationConnector Association="CompassModel.FK_OutwardDetails_InventoryMobileStockRequestDetail" />
+        <AssociationConnector Association="CompassModel.FK_tblProjectFieldDataInventoryOutwardDetails_OutwardDetails" />
+        <EntityTypeShape EntityType="CompassModel.tblProjectFieldProperty" Width="1.5" PointX="3.0251259016921397" PointY="1.9488255092635869" />
+        <AssociationConnector Association="CompassModel.FK_ProductMaster_UtilityMaster" />
+        <EntityTypeShape EntityType="CompassModel.InventoryUpload" Width="1.5" PointX="0.486293239745448" PointY="7.915208999028061" />
+        <AssociationConnector Association="CompassModel.FK_InventoryUpload_WarehouseMaster" />
+        <EntityTypeShape EntityType="CompassModel.InventoryMobileUpload" Width="1.5" PointX="7.8689470178768719" PointY="31.212159007420837" />
+        <EntityTypeShape EntityType="CompassModel.InventoryMobileUploadDetail" Width="1.5" PointX="3.296775225222472" PointY="27.098865715367193" />
+        <EntityTypeShape EntityType="CompassModel.ProductMasterField" Width="1.5" PointX="11.292381629018291" PointY="2.1804502318522196" />
+        <AssociationConnector Association="CompassModel.FK_InventoryMobileUpload_WarehouseMaster" />
+        <AssociationConnector Association="CompassModel.FK_InventoryMobileUploadDetails_InventoryMobileUpload" />
+        <AssociationConnector Association="CompassModel.FK_InventoryMobileUploadDetails_InventoryStatusMaster" />
+        <AssociationConnector Association="CompassModel.FK_InventoryMobileUploadDetails_ProductMaster" />
+        <AssociationConnector Association="CompassModel.FK_InventoryMobileUploadDetails_UtilityMaster" />
+        <AssociationConnector Association="CompassModel.FK_ProductMasterFields_ProductMaster" />
+        <EntityTypeShape EntityType="CompassModel.TblProjectFieldData" Width="1.5" PointX="11.982400082043558" PointY="7.8891247100611794" />
+        <EntityTypeShape EntityType="CompassModel.ProjectWarehouseRelation" Width="1.5" PointX="6.6476111219486267" PointY="6.3856070071391793" />
+        <AssociationConnector Association="CompassModel.FK_ProjectWarehouseRelation_WarehouseMaster" />
+        <EntityTypeShape EntityType="CompassModel.StockDetail" Width="1.5" PointX="9.7903724023096128" PointY="30.592581077754769" />
+        <AssociationConnector Association="CompassModel.FK_StockDetails_InwardDetails" />
+        <AssociationConnector Association="CompassModel.FK_OutwardDetails_StockDetails" />
+        <AssociationConnector Association="CompassModel.FK_StockDetails_ProductMaster" />
+        <AssociationConnector Association="CompassModel.FK_StockDetails_WarehouseMaster" />
+        <EntityTypeShape EntityType="CompassModel.InwardHeader" Width="1.5" PointX="1.2443715675009281" PointY="23.811747174622372" />
+        <AssociationConnector Association="CompassModel.FK_InwardDetails_InwardHeader" />
+        <AssociationConnector Association="CompassModel.FK_InwardDetails_RejectedData_InwardHeader" />
+        <AssociationConnector Association="CompassModel.FK_InwardHeader_WarehouseMaster" />
+        <EntityTypeShape EntityType="CompassModel.VW_GetProductDataProject" Width="1.5" PointX="1.3448086554858874" PointY="13.454276910728904" />
+        <EntityTypeShape EntityType="CompassModel.InventoryMobileStockRequest" Width="1.5" PointX="5.0272808657154817" PointY="10.540072684427758" />
+        <EntityTypeShape EntityType="CompassModel.InventoryMobileUserStockRequest" Width="1.5" PointX="4.0624046698503218" PointY="20.325316364097091" />
+        <AssociationConnector Association="CompassModel.FK_InventoryMobileStockRequestDetail_InventoryMobileStockRequest" />
+        <AssociationConnector Association="CompassModel.FK_InventoryMobileUserStockRequest_InventoryRequestStatusMaster" />
+        <AssociationConnector Association="CompassModel.FK_InventoryMobileUserStockRequest_InventorySourceMaster" />
+        <AssociationConnector Association="CompassModel.FK_InventoryMobileUserStockRequest_tblUsers" />
+        <AssociationConnector Association="CompassModel.FK_InventoryMobileUserStockRequest_tblUsers1" />
+        <AssociationConnector Association="CompassModel.FK_InventoryMobileUserStockRequestDetails_InventoryMobileUserStockRequest" />
+        <EntityTypeShape EntityType="CompassModel.AuditFailPercentage" Width="1.5" PointX="7.7648739999927923" PointY="1.7421136506563582" />
+        <EntityTypeShape EntityType="CompassModel.OutwardTransferDetail" Width="1.5" PointX="9.5208279702443761" PointY="12.17117460638805" />
+        <AssociationConnector Association="CompassModel.FK_OutwardTransferDetails_OutwardDetails" />
+        <EntityTypeShape EntityType="CompassModel.AspNetRolePermission" Width="1.5" PointX="7.5958221888150188" PointY="10.931901072585909" />
+        <EntityTypeShape EntityType="CompassModel.VW_ManageStockRequest" Width="1.5" PointX="10.723161052317899" PointY="5.7160927679930316" />
+        <EntityTypeShape EntityType="CompassModel.AspNetPermission" Width="1.5" PointX="6.4360127367246953" PointY="29.342439218118059" />
+        <EntityTypeShape EntityType="CompassModel.AspNetRole" Width="1.5" PointX="1.4150291836890527" PointY="14.172179899258623" />
+        <EntityTypeShape EntityType="CompassModel.AspNetUserRolePermission" Width="1.5" PointX="1.4294532991151574" PointY="17.293154813951418" />
+        <AssociationConnector Association="CompassModel.FK_AspNetRolePermissions_AspNetPermissions" />
+        <AssociationConnector Association="CompassModel.FK_AspNetRolePermissions_AspNetRoles" />
+        <AssociationConnector Association="CompassModel.FK_AspNetUserRolePermissions_AspNetUserRolePermissions" />
+        <AssociationConnector Association="CompassModel.FK_AspNetUserRolePermissions_tblUsers" />
+        <AssociationConnector Association="CompassModel.AspNetUserRoles" />
+        <EntityTypeShape EntityType="CompassModel.tblProject" Width="1.5" PointX="8.675148316042101" PointY="19.425364235148468" />
+        <AssociationConnector Association="CompassModel.FK_ProjectServiceProductRelation_tblProject" />
+        <AssociationConnector Association="CompassModel.FK_ProjectWarehouseRelation_tblProject" />
+        <AssociationConnector Association="CompassModel.FK_StockDetails_tblProject" />
+        <AssociationConnector Association="CompassModel.FK_TblAlertMaster_TblProject" />
+        <EntityTypeShape EntityType="CompassModel.VW_Project" Width="1.5" PointX="1.9019843479162009" PointY="23.3019888062505" />
+        <EntityTypeShape EntityType="CompassModel.tblAssignedCycleRoute" Width="1.5" PointX="8.112687017821095" PointY="21.833042229448" />
+        </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

@@ -1,0 +1,52 @@
+﻿@model GarronT.CMS.UI.Areas.Admin.Controllers.AspNetPermissionVM
+@{
+    ViewBag.Title = "Permissions";
+
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+
+
+@Html.Hidden("urlAssignPermissionsToRole", Url.Action("AssignPermissionRole", "Admin"))
+
+
+
+
+
+<section id="main-content">
+    <section class="wrapper">
+        <!-- page start-->
+        <div class="row">
+            <div class="col-sm-12">
+                <section class="panel">
+                    <header class="panel-heading">
+                        <b>Rights</b>
+
+                    </header>
+                    <div class="panel-body">
+                        <div class="adv-table">
+                            <div>
+                                @Html.Partial("_AddRolesToPermissions")
+                            </div>
+                            <div id="PermissionsTable">
+                                @Html.Partial("_ListPermissionsRolesGrid", Model)
+                                <br />
+                            </div>
+                          
+                          
+                            <br />
+                            @*@Html.ActionLink("Go to Roles", "RoleIndex", "Admin", new { @class = "btn btn-success" })*@
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</section>
+
+<script>
+$(document).ready(function () {
+    $("#UserRights").addClass('active').css('background-color', '#EF6C00').css('border-radius', '6px');
+    $("#UserRights").children().css('color', '#fff');
+});
+</script>

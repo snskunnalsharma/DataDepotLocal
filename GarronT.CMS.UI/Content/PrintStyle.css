@@ -1,0 +1,21 @@
+﻿.logo-div{
+    width:100%;
+     margin-right:5px;
+}
+.logo-img{
+    margin-left:-5px;
+}
+.all_print_div{
+    display:inline-block;
+
+}
+.print-profile{
+    margin-left:10px;float:left;margin-right:10px;
+}
+.print-empl{
+    width: 75%;
+    float: right;
+}
+.mt5{
+    margin-top:5px;
+}

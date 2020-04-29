@@ -1,0 +1,63 @@
+﻿@model GarronT.CMS.Model.BO.AuditProjectFailBO
+<div class="modal-dialog modal-md">
+    <div class="modal-content-wrap">
+        <div class="modal-content product_dialog ">
+            <div class="modal-header">
+                <button type="button" class="close" id="btnclose" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+                @if (@ViewBag.Status == "Create")
+                {
+                    <h4 class="modal-title">Add Fail Percentage</h4>
+                }
+                else
+                {
+                    <h4 class="modal-title">Edit Fail Percentage</h4>
+                }
+
+            </div>
+            <div class="modal-body">
+                <div class="panel-body">
+                    @*<form id="formAddEdit" class="cmxform form-horizontal tasi-form">*@
+                    @using (Html.BeginForm("", "", FormMethod.Get, new { @class = "form-horizontal", @id = "formAddEdit", role = "form" }))
+                    {
+                       
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-12 control-label cus-nm" style="white-space:nowrap;">Fail % From <span style="color:red">*</span></label>
+                            <div class="col-lg-6 col-xs-12 col-sm-6 clnt-err">
+                                <input type="hidden" name="hdnFailCycleId" id="hdnFailCycleId" />
+                                @*@Html.EditorFor(model => model.Id, new { htmlAttributes = new { @class = "form-control", @type = "hidden" } })*@
+                                @Html.TextBoxFor(model => model.FailPercentageFrom, new { @class = "form-control", @style = "text-align:right", @autocomplete = "off", @maxlength = "7" })
+
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-12 control-label cus-nm" style="white-space:nowrap;">Fail % To<span style="color:red">*</span></label>
+                            <div class="col-lg-6 col-xs-12 col-sm-6 clnt-err">
+                                @Html.TextBoxFor(model => model.FailPercentageTo, new { @class = "form-control", @style = "text-align:right", @autocomplete = "off", @maxlength = "7" })
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label for="name" class="col-lg-4 col-sm-4 col-xs-12 control-label cus-nm" style="white-space:nowrap;">Increase Audit Days By <span style="color:red">*</span></label>
+                            <div class="col-lg-6 col-xs-12 col-sm-6 clnt-err">
+                                @Html.TextBoxFor(model => model.IncreaseByDays, new { @class = "form-control", @style = "text-align:right", @autocomplete = "off", @maxlength = "7" })
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                @if (@ViewBag.Status == "Create")
+                {
+                    <button id="btnFailSave" class="btn btn-success" type="button">Save</button>
+                }
+                else
+                {
+                    <button id="btnFailUpdate" class="btn btn-success" type="button">Update</button>
+                }
+                <button id="btnFailCancel" class="btn btn-danger" type="button">Cancel</button>
+            </div>
+
+        </div>
+    </div>
+</div>

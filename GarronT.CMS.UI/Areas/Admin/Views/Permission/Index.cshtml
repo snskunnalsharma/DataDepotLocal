@@ -1,0 +1,668 @@
+﻿@model GarronT.CMS.Model.BO.AspNetPermissionVM
+@{
+    ViewBag.Title = "User Role Rights";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+
+
+@Html.Hidden("urlAssignPermissionsToRole", Url.Action("AssignPermissionRole", "Permission"))
+
+<style>
+    /*ssfsdfsdfsdfsd*/
+    .gang-name {
+        font-size: 15px;
+        font-family: cursive;
+        background-color: lightgray;
+        cursor: pointer;
+        width: 100%;
+        float: left;
+        border-bottom: 1px solid #000;
+    }
+
+    .members {
+        font-family: helvetica;
+    }
+
+    .tdheader {
+        padding-right: 10px;
+        padding-left: 10px;
+        background-color: transparent;
+        min-width: 160px;
+        border: 1px solid #222;
+        border-top: none;
+        /*width: 100%;*/
+        float: left;
+        padding-bottom: 9px;
+    }
+
+
+    .tdcells {
+        padding-right: 10px;
+        padding-left: 10px;
+        background-color: transparent;
+        min-width: 146px;
+        border: 1px solid #222;
+        text-align: center;
+    }
+
+
+    thead {
+        position: relative;
+        display: block;
+        /*width: 1150px;*/
+        overflow: visible;
+    }
+
+    th {
+        background-color: #99a;
+        min-width: 116px;
+        height: 32px;
+        border: 1px solid #222;
+    }
+
+    thead th:nth-child(1) {
+        position: relative;
+        display: block;
+    }
+
+    thead th:nth-last-child(1) {
+        /*width: 183px;*/
+    }
+
+    tbody {
+        position: relative;
+        display: block;
+        /*width: 1150px;*/
+        /*height: 400px;*/
+        overflow: auto;
+    }
+</style>
+
+
+
+<section id="main-content">
+    <section class="wrapper">
+        <!-- page start-->
+        <div class="row">
+            <div class="col-sm-12">
+                <section class="panel">
+                    <header class="panel-heading">
+                        <b>Rights</b>
+
+                    </header>
+                    <div class="panel-body">
+
+                        @{
+                            var vievmodel = Model;
+                            var updatepermission = vievmodel.UpdatePermission;
+                            var updatemessage = vievmodel.UpdateMessage;
+                            if (updatepermission == false)
+                            {
+
+
+                                <legend>
+                                    <h4>
+                                        User Role Rights
+                                    </h4>
+                                </legend>
+
+                                <div class="row">
+                                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 col-xxs-12 xxs-mbot2">
+                                        <input type="button" class="btn btn-success" value="Update Permission" id="btnUpdate" />
+                                    </div>
+                                    <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8 col-xxs-12 text-right">
+                                        <span class="permission-icon-info">
+                                            <i class="fa fa-eye"></i> View
+                                            &nbsp;&nbsp;<i class="fa fa-plus"></i>  Add
+                                            &nbsp;&nbsp;<i class="fa fa-pencil"></i>  Edit
+                                            &nbsp;&nbsp; <i class="fa fa-trash" aria-hidden="true"></i> Delete
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <br />
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xxs-12" style="overflow-x:scroll">
+
+
+
+                                        @{
+                                            var NoOfColumns = Model.AspNetRoleList.Where(a => a.IsSysAdmin != true).Count();
+                                            NoOfColumns = NoOfColumns + 1;
+                                        }
+
+                                        @*class="table table-advance table-condensed table-hover  abcdTable"*@
+                                        <table id="PermissionTable" style="width: 100%">
+
+
+                                            <thead>
+                                                @*<th style="width: 160px; left: 0px; height: 70px;z-index:1001;">*@
+                                            <th style="width:160px; height:67px;">
+                                                Permission
+                                            </th>
+                                            @foreach (GarronT.CMS.Model.AspNetRole role in Model.AspNetRoleList.Where(a => a.IsSysAdmin != true).ToList())
+                                            {
+                                                <th style="text-align:center">
+                                                    <div class="RName" style="width:135px;">@role.Name</div>
+                                                    <br>
+                                                    <div style="border: 1px solid #ccc;display: flex;">
+                                                        <div style="width:23%; float:left;border-right: 1px solid #ccc;">
+                                                            <i class="fa fa-eye"></i>
+                                                        </div>
+                                                        <div style="width: 23%; float:left;border-right: 1px solid #ccc;">
+                                                            <i class="fa fa-plus"></i>
+                                                        </div>
+                                                        <div style="width: 23%; float:left;border-right: 1px solid #ccc;">
+                                                            <i class="fa fa-pencil"></i>
+                                                        </div>
+                                                        <div style="width: 25%; float:left;">
+                                                            <i class="fa fa-trash" aria-hidden="true"></i>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                            }
+
+                                            </thead>
+                                            <tbody id="tbody_width">
+
+
+
+                                                @foreach (GarronT.CMS.Model.AspNetPermission item in Model.AspNetPermissionList)
+                                                {
+
+
+                                                    string[] str1 = { "Project Status" };
+                                                    string[] str2 = { "Dashboard" };
+                                                    string[] str3 = { "City Logo Master", "Form Type Master", "Meter Make Master", "Meter Type Master", "Meter Size Master", "Picture Master", "Reason Master", "Service Master", "User Master" };
+                                                    string[] str4 = { "Warehouse Master", "Category Master", "Product Master", "Inventory Upload", "Inventory Receive", "Inventory View", "View Stock Request" };
+                                                    string[] str5 = { "Alert Master", "Audit", "Customer", "Project", "Installer Allocation", "Appointment" };
+                                                    string[] str6 = { "Form Management" };
+                                                    string[] str7 = { "Duplicate Report", "Export Report", "Installer Report", "Auditor Report", "Skip History Report" };
+                                                    string[] str8 = { "Warehouse Stock Report", "Inventory Stock Report", "Product Movement Report" };
+
+
+
+
+                                                    if (item.PermissionName == "Project Status" || item.PermissionName == "Dashboard" ||
+                                                        item.PermissionName == "City Logo Master" || item.PermissionName == "Warehouse Master" ||
+                                                        item.PermissionName == "Alert Master" || item.PermissionName == "Form Management" ||
+                                                        item.PermissionName == "Duplicate Report" || item.PermissionName == "Warehouse Stock Report")
+                                                    {
+                                                        var aMenuName = "";
+                                                        if (item.PermissionName == "City Logo Master")
+                                                        {
+                                                            aMenuName = "Administration";
+                                                        }
+                                                        else if (item.PermissionName == "Warehouse Master")
+                                                        {
+                                                            aMenuName = "Inventory";
+                                                        }
+                                                        else if (item.PermissionName == "Alert Master")
+                                                        {
+                                                            aMenuName = "Operations";
+                                                        }
+                                                        else if (item.PermissionName == "Duplicate Report")
+                                                        {
+                                                            aMenuName = "Reports";
+                                                        }
+                                                        else if (item.PermissionName == "Warehouse Stock Report")
+                                                        {
+                                                            aMenuName = "Inventory Reports";
+                                                        }
+                                                        else
+                                                        {
+                                                            aMenuName = @item.PermissionName;
+                                                        }
+
+                                                        <tr class="gang-name">
+                                                            <td style=" " colspan="@NoOfColumns">@aMenuName</td>
+                                                        </tr>
+                                                    }
+
+
+
+                                                    <tr class="members">
+                                                        <td class="tdheader" permissionid="@item.Permission_Id" permissionname="@item.PermissionDescription.Trim()" name="Permission">
+                                                            @item.PermissionName
+                                                        </td>
+
+                                                        @foreach (GarronT.CMS.Model.AspNetRole AspNetRole in Model.AspNetRoleList.Where(a => a.IsSysAdmin != true).ToList())
+                                                        {
+
+                                                            if (item.PermissionName == "Inventory Upload" || item.PermissionName == "Inventory Receive")
+                                                            {
+
+
+                                                                var AData = Model.ObjAccessPermissionBoList.Where(a => a.RoleID == AspNetRole.Id && a.PermissionID == item.Permission_Id.ToString()).FirstOrDefault();
+                                                                var IsChecked2 = "";
+
+                                                                if (AData != null)
+                                                                {
+
+                                                                    IsChecked2 = AData.RoleAddChecked ? "checked='checked'" : "";
+                                                                }
+
+                                                                <td class="tdcells" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id">
+                                                                    <div style="width: 100%;">
+
+                                                                        <div style="width:23%; float:left">
+                                                                            <input class="ViewPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" style="display:none" />
+                                                                            <i class="fa fa-ban" aria-hidden="true" style="color:red"></i>
+                                                                        </div>
+
+                                                                        <div style="width: 23%; float: left;">
+                                                                            <input class="AddPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" @IsChecked2 />
+                                                                        </div>
+
+                                                                        <div style="width: 23%; float: left;">
+                                                                            <input class="EditPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" style="display:none" />
+                                                                            <i class="fa fa-ban" aria-hidden="true" style="color:red"></i>
+                                                                        </div>
+
+                                                                        <div style="width: 25%; float: left;">
+                                                                            <input class="DeletePermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" style="display:none" />
+                                                                            <i class="fa fa-ban" aria-hidden="true" style="color:red"></i>
+                                                                        </div>
+
+                                                                    </div>
+
+                                                                </td>
+
+                                                            }
+                                                            else if (item.PermissionName == "Alert Master")
+                                                            {
+
+
+                                                                var AData = Model.ObjAccessPermissionBoList.Where(a => a.RoleID == AspNetRole.Id && a.PermissionID == item.Permission_Id.ToString()).FirstOrDefault();
+                                                                var IsChecked2 = "";
+
+                                                                if (AData != null)
+                                                                {
+
+                                                                    IsChecked2 = AData.RoleEditChecked ? "checked='checked'" : "";
+                                                                }
+
+
+                                                                <td class="tdcells" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id">
+                                                                    <div style="width: 100%;">
+
+                                                                        <div style="width: 23%; float: left;">
+                                                                            <input class="ViewPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" style="display:none" />
+                                                                            <i class="fa fa-ban" aria-hidden="true" style="color:red"></i>
+                                                                        </div>
+
+                                                                        <div style="width: 23%; float: left;">
+                                                                            <input class="AddPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" style="display:none" />
+                                                                            <i class="fa fa-ban" aria-hidden="true" style="color:red"></i>
+                                                                        </div>
+
+                                                                        <div style="width: 23%; float: left;">
+                                                                            <input class="EditPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" @IsChecked2 />
+                                                                        </div>
+
+                                                                        <div style="width: 25%; float: left;">
+                                                                            <input class="DeletePermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" style="display:none" />
+                                                                            <i class="fa fa-ban" aria-hidden="true" style="color:red"></i>
+                                                                        </div>
+
+                                                                    </div>
+
+                                                                </td>
+
+                                                            }
+                                                            else if (item.PermissionName == "Installer Allocation")
+                                                            {
+
+
+                                                                var AData = Model.ObjAccessPermissionBoList.Where(a => a.RoleID == AspNetRole.Id && a.PermissionID == item.Permission_Id.ToString()).FirstOrDefault();
+                                                                var IsChecked1 = "";
+                                                                var IsChecked2 = "";
+                                                                var IsChecked3 = "";
+
+                                                                if (AData != null)
+                                                                {
+                                                                    IsChecked1 = AData.RoleViewChecked ? "checked='checked'" : "";
+                                                                    IsChecked2 = AData.RoleAddChecked ? "checked='checked'" : "";
+                                                                    IsChecked3 = AData.RoleEditChecked ? "checked='checked'" : "";
+                                                                }
+
+
+                                                                <td class="tdcells" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id">
+                                                                    <div style="width: 100%;">
+
+                                                                        <div style="width: 23%; float: left;">
+                                                                            <input class="ViewPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" @IsChecked1 />
+                                                                        </div>
+                                                                        <div style="width: 23%; float: left;">
+                                                                            <input class="AddPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" @IsChecked2 />
+                                                                        </div>
+                                                                        <div style="width: 23%; float: left;">
+                                                                            <input class="EditPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" @IsChecked3 />
+                                                                        </div>
+
+                                                                        <div style="width: 25%; float: left;">
+                                                                            <input class="DeletePermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" style="display:none" />
+                                                                            <i class="fa fa-ban" aria-hidden="true" style="color:red"></i>
+                                                                        </div>
+
+                                                                    </div>
+
+                                                                </td>
+
+                                                            }
+                                                            else if (item.PermissionName == "View Stock Request" || item.PermissionName == "Installer Report" || item.PermissionName == "Auditor Report")
+                                                            {
+
+
+                                                                var AData = Model.ObjAccessPermissionBoList.Where(a => a.RoleID == AspNetRole.Id && a.PermissionID == item.Permission_Id.ToString()).FirstOrDefault();
+
+                                                                var IsChecked1 = "";
+                                                                var IsChecked2 = "";
+                                                                if (AData != null)
+                                                                {
+                                                                    IsChecked1 = AData.RoleViewChecked ? "checked='checked'" : "";
+                                                                    IsChecked2 = AData.RoleEditChecked ? "checked='checked'" : "";
+                                                                }
+
+                                                                <td class="tdcells" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id">
+                                                                    <div style="width: 100%;">
+                                                                        <div style="width: 23%; float: left;">
+                                                                            <input class="ViewPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" @IsChecked1 />
+                                                                        </div>
+                                                                        <div style="width: 23%; float: left;">
+                                                                            <input class="AddPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" style="display:none" />
+                                                                            <i class="fa fa-ban" aria-hidden="true" style="color:red"></i>
+                                                                        </div>
+                                                                        <div style="width: 23%; float: left;">
+                                                                            <input class="EditPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" @IsChecked2 />
+                                                                        </div>
+                                                                        <div style="width: 25%; float: left;">
+                                                                            <input class="DeletePermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" style="display:none" />
+                                                                            <i class="fa fa-ban" aria-hidden="true" style="color:red"></i>
+                                                                        </div>
+                                                                    </div>
+
+                                                                </td>
+
+                                                            }
+                                                            else
+                                                            {
+
+
+
+                                                                if (item.PermissionName == "Project Status" || item.PermissionName == "Dashboard" ||
+                                                                item.PermissionName == "Inventory View" || item.PermissionName == "Inventory Stock Report" || item.PermissionName == "Duplicate Report" ||
+                                                                item.PermissionName == "Product Movement Report" || item.PermissionName == "Skip History Report")
+                                                                {
+
+
+                                                                    var AData = Model.ObjAccessPermissionBoList.Where(a => a.RoleID == AspNetRole.Id && a.PermissionID == item.Permission_Id.ToString()).FirstOrDefault();
+
+                                                                    var IsChecked1 = "";
+
+                                                                    if (AData != null)
+                                                                    {
+                                                                        IsChecked1 = AData.RoleViewChecked ? "checked='checked'" : "";
+
+                                                                    }
+                                                                    if (item.PermissionName == "Dashboard")
+                                                                    {
+                                                                        IsChecked1 = "checked='checked'";
+                                                                    }
+
+                                                                    <td class="tdcells" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id">
+                                                                        <div style="width: 100%;">
+                                                                            <div style="width: 23%; float: left;">
+                                                                                <input class="ViewPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" @IsChecked1 />
+                                                                            </div>
+                                                                            <div style="width: 23%; float: left;">
+                                                                                <input class="AddPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" style="display:none" />
+                                                                                <i class="fa fa-ban" aria-hidden="true" style="color:red"></i>
+                                                                            </div>
+                                                                            <div style="width: 23%; float: left;">
+                                                                                <input class="EditPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" style="display:none" />
+                                                                                <i class="fa fa-ban" aria-hidden="true" style="color:red"></i>
+                                                                            </div>
+                                                                            <div style="width: 25%; float: left;">
+                                                                                <input class="DeletePermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" style="display:none" />
+                                                                                <i class="fa fa-ban" aria-hidden="true" style="color:red"></i>
+                                                                            </div>
+                                                                        </div>
+
+                                                                    </td>
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    var AData = Model.ObjAccessPermissionBoList.Where(a => a.RoleID == AspNetRole.Id && a.PermissionID == item.Permission_Id.ToString()).FirstOrDefault();
+
+                                                                    var IsChecked1 = "";
+                                                                    var IsChecked2 = "";
+                                                                    var IsChecked3 = "";
+                                                                    var IsChecked4 = "";
+                                                                    if (AData != null)
+                                                                    {
+                                                                        IsChecked1 = AData.RoleViewChecked ? "checked='checked'" : "";
+                                                                        IsChecked2 = AData.RoleAddChecked ? "checked='checked'" : "";
+                                                                        IsChecked3 = AData.RoleEditChecked ? "checked='checked'" : "";
+                                                                        IsChecked4 = AData.RoleDeleteChecked ? "checked='checked'" : "";
+                                                                    }
+
+                                                                    <td class="tdcells" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id">
+                                                                        <div style="width: 100%;">
+                                                                            <div style="width: 23%; float: left;">
+                                                                                <input class="ViewPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" @IsChecked1 />
+                                                                            </div>
+                                                                            <div style="width: 23%; float: left;">
+                                                                                <input class="AddPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" @IsChecked2 />
+                                                                            </div>
+                                                                            <div style="width: 23%; float: left;">
+                                                                                <input class="EditPermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" @IsChecked3 />
+                                                                            </div>
+                                                                            <div style="width: 25%; float: left;">
+                                                                                <input class="DeletePermission" type="checkbox" roleid="@AspNetRole.Id" permissionid="@item.Permission_Id" rolename="@AspNetRole.Name" name="Role" @IsChecked4 />
+                                                                            </div>
+                                                                        </div>
+
+                                                                    </td>
+
+                                                                }
+
+
+
+                                                            }
+
+                                                        }
+
+                                                    </tr>
+
+                                                }
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                                </div>
+
+
+                            }
+
+
+                        }
+
+
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+
+</section>
+<script>
+
+    $('.gang-name').click(function () {
+        if ($(this).hasClass("collapsed")) {
+            $(this).nextUntil('tr.gang-name').attr('Style', 'display:block');
+            $(this).removeClass("collapsed");
+        } else {
+            $(this).nextUntil('tr.gang-name').attr('Style', 'display:none');
+            $(this).addClass("collapsed");
+        }
+    });
+
+
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        $("#UserRights").addClass('active').css('background-color', '#EF6C00').css('border-radius', '6px');
+        $("#UserRights").children().css('color', '#fff');
+
+
+
+        //$('tbody').scroll(function (e) { //detect a scroll event on the tbody
+        //    /*
+        //    Setting the thead left value to the negative valule of tbody.scrollLeft will make it track the movement
+        //    of the tbody element. Setting an elements left value to that of the tbody.scrollLeft left makes it maintain 			it's relative position at the left of the table.
+        //    */
+        //    $('thead').css("left", -$("tbody").scrollLeft()); //fix the thead relative to the body scrolling
+        //    $('thead th:nth-child(1)').css("left", $("tbody").scrollLeft()); //fix the first cell of the header
+        //    $('tbody td:nth-child(1)').css("left", $("tbody").scrollLeft()); //fix the first column of tdbody
+        //});
+
+
+    });
+
+
+
+    $("#btnUpdate").live("click", function () {
+
+        var PermissionList = [];
+
+        var _permissionID = "";
+        var _permissionName = "";
+
+
+
+        var table = document.getElementById("PermissionTable");
+        for (var i = 0, row; row = table.rows[i]; i++) {
+            //iterate through rows
+            //rows would be accessed using the "row" variable assigned in the for loop
+
+            if (i > 0) {
+                for (var j = 0, col; col = row.cells[j]; j++) {
+                    //iterate through columns
+                    //columns would be accessed using the "col" variable assigned in the for loop
+
+
+                    if (j === 0) {
+                        _permissionID = $(col).attr("permissionid")
+                        _permissionName = $(col).attr("permissionname")
+                    }
+
+                    if (j > 0) {
+
+                        var _RoleID = $(col).attr("roleid")
+                        // input[name = 'Role']
+                        //var ViewV = $(col).find(".ViewPermission")[0].checked;
+                        //var ViewA = $(col).find(".EditPermission")[0].checked;
+                        //var ViewE = $(col).find(".DeletePermission")[0].checked;
+                        //var ViewD = $(col).find(".AddPermission")[0].checked;
+                        var ViewV = $(col).find(".ViewPermission")[0].checked;
+                        var ViewA = $(col).find(".AddPermission")[0].checked;
+                        var ViewE = $(col).find(".EditPermission")[0].checked;
+                        var ViewD = $(col).find(".DeletePermission")[0].checked;
+
+
+                        var Permission = {
+                            "PermissionID": _permissionID,
+                            "PermissionName": _permissionName,
+                            "RoleID": _RoleID,
+                            "RoleViewChecked": ViewV,
+                            "RoleAddChecked": ViewA,
+                            "RoleEditChecked": ViewE,
+                            "RoleDeleteChecked": ViewD
+                        };
+
+
+                        PermissionList.push(Permission)
+                    }
+
+                }
+
+            }
+
+        }
+
+
+        debugger;
+
+
+
+        var urlAssignPermissionsToRole = $('#urlAssignPermissionsToRole').val();
+
+        $.ajax({
+            url: urlAssignPermissionsToRole,
+            type: "POST",
+            // data: _parameters,
+            data: JSON.stringify(PermissionList),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            beforeSend: function () {
+                waitingDialog.show('Loading Please Wait...');
+            },
+            complete: function (data) {
+                if (data.statusText == "OK") {
+                    var $toast = toastr["success"]("Record Updated", "Success Notification");
+                }
+                else {
+                    var $toast = toastr["error"]("Unable to Update record", "Error Notification");
+                }
+                waitingDialog.hide();
+            },
+            success: function (data, textStatus, jqXHR) {
+                // alert("success")
+                // $('#PermissionsTable').html(data);
+            }
+        });
+    });
+
+</script>
+<script type="text/javascript">
+    //$('.sidebar-toggle-box').click(function () {
+    //    debugger;
+    //    if ($('#sidebar > ul').is(":visible") === true) {
+    //        $('#main-content').css({
+    //            'margin-left': '0px'
+    //        });
+    //        debugger;
+
+    //        $("#tbody_width").width(1328);
+    //        //$('#tbody_width').width('100%');
+    //        $('#sidebar').css({
+    //            //'margin-left': '-210px'
+    //            'margin-left': '-170px'
+    //        });
+
+    //        $('#sidebar > ul').hide();
+    //        $("#container").addClass("sidebar-closed");
+    //    } else {
+    //        $('#main-content').css({
+    //            //'margin-left': '210px'
+    //            'margin-left': '160px'
+    //        });
+
+    //        $("#tbody_width").width(1150);
+    //        //$('#tbody_width').width('100%');
+    //        $('#sidebar > ul').show();
+    //        $('#sidebar').css({
+    //            'margin-left': '0'
+    //        });
+
+    //        $("#container").removeClass("sidebar-closed");
+    //    }
+    //    var owl = $("#owl-demo").data("owlCarousel");
+    //    owl.reinit();
+    //});
+</script>

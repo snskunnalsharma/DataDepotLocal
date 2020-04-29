@@ -1,0 +1,453 @@
+﻿
+@{
+    ViewBag.Title = "Demo";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminMenuLayout.cshtml";
+}
+
+
+<style type="text/css">
+    .stepwizard-step p {
+        margin-top: 10px;
+    }
+
+    .stepwizard-row {
+        display: table-row;
+    }
+
+    .stepwizard {
+        display: table;
+        width: 100%;
+        position: relative;
+        background: #c0d7e5;
+    }
+
+    .stepwizard-step button[disabled] {
+        opacity: 1 !important;
+        filter: alpha(opacity=100) !important;
+    }
+
+    .stepwizard-row:before {
+        top: 32px;
+        bottom: 0;
+        position: absolute;
+        content: " ";
+        width: 100%;
+        height: 1px;
+        background-color: #ccc;
+        z-order: 0;
+    }
+
+    .stepwizard-step {
+        display: table-cell;
+        text-align: center;
+        position: relative;
+    }
+
+    .btn-circle {
+        width: 30px;
+        height: 30px;
+        text-align: center;
+        padding: 6px 0;
+        font-size: 12px;
+        line-height: 1.428571429;
+        border-radius: 15px;
+    }
+
+    .multiselect {
+        width: 200px;
+        padding: 3px;
+    }
+</style>
+<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+
+
+<link href="~/Scripts/js/style.css" rel="stylesheet" />
+<link href="~/Scripts/js/jquery-ui.css" rel="stylesheet" />
+<script src="~/Scripts/js/jquery-ui.js"></script>
+<script src="~/Scripts/js/fieldChooser.js"></script>
+
+<script>
+    $(document).ready(function () {
+        var $sourceFields = $("#sourceFields");
+        var $destinationFields = $("#destinationFields");
+        var $chooser = $("#fieldChooser").fieldChooser(sourceFields, destinationFields);
+    });
+</script>
+
+
+
+
+
+
+
+<!--main content start-->
+<section id="main-content">
+    <section class="wrapper site-min-height">
+
+        <div class="row">
+            <div class="col-lg-12">
+                <!--progress bar start-->
+                <section class="panel">
+                    <header class="panel-heading">
+                        Wizard with Validation
+                    </header>
+                    <div class="panel-body">
+
+
+                        <div class="stepwizard ">
+                            <div class="stepwizard-row setup-panel">
+
+                                <div class="stepwizard-step">
+                                    <br />
+                                    <a href="#step-1" type="button" class="btn btn-primary btn-circle">1</a>
+                                    <p>Step 1</p>
+                                </div>
+                                <div class="stepwizard-step">
+                                    <br />
+                                    <a href="#step-2" type="button" class="btn btn-default btn-circle" disabled="disabled">2</a>
+                                    <p>Step 2</p>
+                                </div>
+                                <div class="stepwizard-step">
+                                    <br />
+                                    <a href="#step-3" type="button" class="btn btn-default btn-circle" disabled="disabled">3</a>
+                                    <p>Step 3</p>
+                                </div>
+                                <div class="stepwizard-step">
+                                    <br />
+                                    <a href="#step-4" type="button" class="btn btn-default btn-circle" disabled="disabled">4</a>
+                                    <p>Customized Field</p>
+                                </div>
+                                <div class="stepwizard-step">
+                                    <br />
+                                    <a href="#step-5" type="button" class="btn btn-default btn-circle" disabled="disabled">5</a>
+                                    <p>Step 5</p>
+                                </div>
+                            </div>
+                        </div>
+                        <form role="form" action="" method="post" style=" background: #dbf0fd ;">
+                            <div class="row setup-content" id="step-1">
+                                <div class="col-xs-12 ">
+                                    <div class="col-md-12">
+
+                                        <div class="form-group" style="padding:10px;">
+                                            <label class="col-lg-2" style="white-space:nowrap; ">Project Name </label>
+                                            <div class="col-lg-10">
+                                                <input maxlength="100" type="text" required="required" class="form-control" placeholder="Enter First Name" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group" style="padding:10px;">
+                                            <label class="col-lg-2" style="white-space:nowrap; ">Project Description</label>
+                                            <div class="col-lg-10">
+                                                <input maxlength="100" type="text" required="required" class="form-control" placeholder="Enter Last Name" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group" style="padding:10px;">
+                                            <label for="name" class="col-lg-2">Client Name <span style="color:red">*</span></label>
+                                            <div class="col-lg-4">
+                                                <select name="ddlClient" type="text" class="required form-control">
+                                                    <option value="Sample1 Client">Sample1 Client</option>
+                                                    <option value="Sample2 Client">Sample2 Client</option>
+                                                </select>
+                                            </div>
+                                            <label for="name" class="col-lg-1" style="white-space:nowrap; padding-left:5px;">From Date<span style="color:red">*</span></label>
+                                            <div class="col-lg-2">
+                                                <input type="text" name="FromDate" id="txtFromDate" class="inputclass form-control" />
+                                            </div>
+                                            <label for="name" class="col-lg-1" style="white-space:nowrap; ">To Date<span style="color:red">*</span></label>
+                                            <div class="col-lg-2">
+                                                <input type="text" name="ToDate" id="txtToDate" class="inputclass form-control" />
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-primary nextBtn btn-lg pull-right" type="button">Next</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row setup-content" id="step-2">
+                                <div class="col-xs-12 ">
+                                    <div class="col-md-12">
+                                        <div class="example">
+                                            <select id="example-getting-started" multiple="multiple">
+                                                <option value="cheese">Cheese</option>
+                                                <option value="tomatoes">Tomatoes</option>
+                                                <option value="Mozzarella">Mozzarella</option>
+                                                <option value="Mushrooms">Mushrooms</option>
+                                                <option value="Pepperoni">Pepperoni</option>
+                                                <option value="Onions">Onions</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="example">
+                                            <select id="example-getting-started1" multiple="multiple">
+                                                <option value="cheese">Cheese</option>
+                                                <option value="tomatoes">Tomatoes</option>
+                                                <option value="Mozzarella">Mozzarella</option>
+                                                <option value="Mushrooms">Mushrooms</option>
+                                                <option value="Pepperoni">Pepperoni</option>
+                                                <option value="Onions">Onions</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="example">
+                                            <select id="example-getting-started2" multiple="multiple">
+                                                <option value="cheese">Cheese</option>
+                                                <option value="tomatoes">Tomatoes</option>
+                                                <option value="Mozzarella">Mozzarella</option>
+                                                <option value="Mushrooms">Mushrooms</option>
+                                                <option value="Pepperoni">Pepperoni</option>
+                                                <option value="Onions">Onions</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="example">
+                                            <select id="example-getting-started3" multiple="multiple">
+                                                <option value="cheese">Cheese</option>
+                                                <option value="tomatoes">Tomatoes</option>
+                                                <option value="Mozzarella">Mozzarella</option>
+                                                <option value="Mushrooms">Mushrooms</option>
+                                                <option value="Pepperoni">Pepperoni</option>
+                                                <option value="Onions">Onions</option>
+                                            </select>
+                                        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                        <button class="btn btn-primary nextBtn btn-lg pull-right" type="button">Next</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row setup-content" id="step-3">
+                                <div class="col-xs-12 ">
+                                    <div class="col-md-12">
+
+                                        <div class="form-group">
+                                            <div id="fieldChooser" tabindex="1">
+                                                <div id="sourceFields">
+                                                    <div>First name</div>
+                                                    <div>Last name</div>
+                                                    <div>Home</div>
+                                                    <div>Work</div>
+                                                    <div>Direct</div>
+                                                    <div>Cell</div>
+                                                    <div>Fax</div>
+                                                    <div>Work email</div>
+                                                    <div>Personal email</div>
+                                                    <div>Website</div>
+                                                </div>
+                                                <div id="destinationFields">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-primary nextBtn btn-lg pull-right" type="button">Next</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row setup-content" id="step-4">
+                                <div class="col-xs-12 ">
+                                    <div class="col-md-12">
+
+                                        @*<div class="form-group">
+                                                <label class="control-label">Company Name</label>
+                                                <input maxlength="200" type="text" required="required" class="form-control" placeholder="Enter Company Name" />
+                                            </div>
+                                            <button class="btn btn-success btn-lg pull-right" type="submit">Submit</button>*@
+                                        <div class="form-group" style="margin-top:10px;">
+                                            <div class="col-lg-5" style="min-height: 100px; border: 1px solid #000; padding-left: 0px; padding-right: 0px; margin-left: 6px; padding-left: 0px; margin-top: 6px; ">
+
+                                                <div class="col-lg-6" style=" padding-left: 0px; padding-right: 0px; margin-top: 6px; ">
+                                                    <div style="background-color: silver;  ">
+                                                        <label class="control-label">Fields </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-5" style=" padding-left: 0px; ">
+                                                    <div style="background-color: silver; min-height: 22px; margin-top: 6px; /* float: right; */ text-align: right; padding-right: 7px; ">
+                                                        <button type="submit" id="btnAddCustomized">
+                                                            <img src="~/images/add.png" />
+                                                        </button>
+                                                        <button type="submit" id="btnDeleteCustomized">
+                                                            <img src="~/images/delete.png" />
+                                                        </button>
+                                                        <button type="submit" id="btnCopyCustomized">
+                                                            <img src="~/images/copy.png" />
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-lg-4"><input type="text" name="TextLabel" class="form-control" /></div>
+                                                <div class="col-lg-4"><input type="text" name="TextLabel" class="form-control" /></div>
+
+                                                <div class="col-lg-4"><input type="text" name="TextLabel" class="form-control" /></div>
+                                            </div>
+                                            <div class="col-lg-4" style="min-height: 100px; border: 1px solid #000; padding-left: 0px; margin-left: 10px; margin-top: 6px;  ">
+                                                @Html.Partial("_SingleText")
+
+                                                @Html.Partial("_SingleLine_Numeric")
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row setup-content" id="step-5">
+                                <div class="col-xs-12 ">
+                                    <div class="col-md-12">
+
+                                        <div class="form-group">
+                                            <label class="control-label">Company Name</label>
+                                            <input maxlength="200" type="text" required="required" class="form-control" placeholder="Enter Company Name" />
+                                        </div>
+                                        <button class="btn btn-success btn-lg pull-right" type="submit">Submit</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+
+
+
+
+
+
+
+
+
+                    </div>
+                </section>
+
+
+            </div>
+
+
+        </div>
+        <!-- page end-->
+    </section>
+</section>
+<!--main content end-->
+<!-- Modal for Add /Edit Dialog -->
+<div class="modal fade modal-dialog-center" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content-wrap">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Click the fields that you'd like to add to your form.</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="panel-body">
+                        <form id="form3" class="cmxform form-horizontal tasi-form">
+                            <div class="form-group">
+                                <div class="col-lg-3">
+                                    <button type="submit" id="btnAddPopup">
+                                        <img src="~/images/add.png" />
+                                    </button>
+                                </div>
+                                <div class="col-lg-9">
+                                    <label>
+                                        Single-Line Text <br /><br />
+                                        Capture single line alpha-numeric data. This field supports any alpha and<br /> numeric input values. (E.g., First Name)
+                                    </label>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var navListItems = $('div.setup-panel div a'),
+                allWells = $('.setup-content'),
+                allNextBtn = $('.nextBtn');
+
+        allWells.hide();
+
+        navListItems.click(function (e) {
+            e.preventDefault();
+            var $target = $($(this).attr('href')),
+                    $item = $(this);
+
+            if (!$item.hasClass('disabled')) {
+                navListItems.removeClass('btn-primary').addClass('btn-default');
+                $item.addClass('btn-primary');
+                allWells.hide();
+                $target.show();
+                $target.find('input:eq(0)').focus();
+            }
+        });
+
+        allNextBtn.click(function () {
+            var curStep = $(this).closest(".setup-content"),
+                curStepBtn = curStep.attr("id"),
+                nextStepWizard = $('div.setup-panel div a[href="#' + curStepBtn + '"]').parent().next().children("a"),
+                curInputs = curStep.find("input[type='text'],input[type='url'],textarea[textarea]"),
+                isValid = true;
+
+            $(".form-group").removeClass("has-error");
+            for (var i = 0; i < curInputs.length; i++) {
+                if (!curInputs[i].validity.valid) {
+                    isValid = false;
+                    $(curInputs[i]).closest(".form-group").addClass("has-error");
+                }
+            }
+
+            if (isValid)
+                nextStepWizard.removeAttr('disabled').trigger('click');
+        });
+
+        $('div.setup-panel div a.btn-primary').trigger('click');
+    });
+</script>
+
+
+
+<link href="~/Content/MSTS/admin/css/bootstrap-multiselect.css" rel="stylesheet" />
+<script src="~/Content/MSTS/admin/js/bootstrap-multiselect.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#example-getting-started').multiselect();
+    });
+
+
+    $(document).ready(function () {
+        $('#example-getting-started1').multiselect();
+    });
+
+    $(document).ready(function () {
+        $('#example-getting-started2').multiselect();
+    });
+
+
+    $(document).ready(function () {
+        $('#example-getting-started3').multiselect();
+    });
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
