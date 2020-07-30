@@ -1856,6 +1856,7 @@ namespace GarronT.CMS.Model.DAL
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.Add("@installerId", userId);
                         cmd.Parameters.Add("@strCurrentDate", strCurrentDate);
+                        cmd.CommandTimeout = 600;
                         using (SqlDataAdapter da = new SqlDataAdapter(cmd))
                         {
                             da.Fill(dt);
@@ -1870,6 +1871,7 @@ namespace GarronT.CMS.Model.DAL
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.Add("@installerId", userId);
                         cmd.Parameters.Add("@strCurrentDate", strCurrentDate);
+                        cmd.CommandTimeout = 600;
                         using (SqlDataAdapter da = new SqlDataAdapter(cmd))
                         {
                             da.Fill(countDT);
@@ -1892,6 +1894,7 @@ namespace GarronT.CMS.Model.DAL
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.Add("@installerId", userId);
                         cmd.Parameters.Add("@strCurrentDate", strCurrentDate);
+                        cmd.CommandTimeout = 600;
                         using (SqlDataAdapter da = new SqlDataAdapter(cmd))
                         {
                             da.Fill(dt);
@@ -1995,6 +1998,27 @@ namespace GarronT.CMS.Model.DAL
                             objNewMobileOffline.autoDataSyncInterval = !string.IsNullOrEmpty(Convert.ToString(item.AutoDataSyncInterval)) ? int.Parse(item.AutoDataSyncInterval.ToString()) : 5;
                             objNewMobileOffline.synchBasicInfoOnly = !string.IsNullOrEmpty(Convert.ToString(projectData.PartialSynch)) ?
                                 (int.Parse(projectData.PartialSynch.ToString()) == 1 ? true : false) : false;
+
+                            /*if (!checkRecordAvilableForNextTrip)
+                            {
+                                var lastLocation = getLastCompleteLocation(userId, item.ProjectId);
+                                if(lastLocation.Count > 0)
+                                {
+                                    objNewMobileOffline.lastCompleteLat = lastLocation["Latitude"];
+                                    objNewMobileOffline.lastCompleteLong = lastLocation["Longitude"];
+                                }
+                                else
+                                {
+                                    objNewMobileOffline.lastCompleteLat = "";
+                                    objNewMobileOffline.lastCompleteLong = "";
+                                }
+                                
+                            }
+                            else
+                            {
+                                objNewMobileOffline.lastCompleteLat = "";
+                                objNewMobileOffline.lastCompleteLong = "";
+                            }*/
 
                             long projectId = item.ProjectId;
 
@@ -2295,6 +2319,8 @@ namespace GarronT.CMS.Model.DAL
                                         objMenuVisits.visitId = row["VisitId"].ToString();
                                         objMenuVisits.groupId = row["GroupId"].ToString();
                                         objMenuVisits.hasAppointment = false;
+                                        objMenuVisits.latitude = Convert.ToString(row["AddressLatitude"]);
+                                        objMenuVisits.longitude = Convert.ToString(row["AddressLongitude"]);
 
                                         List<Accounts3> objListAccounts = new List<Accounts3>();
                                         foreach (DataRow row1 in getStreetNameData.Rows)
@@ -2466,6 +2492,10 @@ namespace GarronT.CMS.Model.DAL
                                                     if (objForms.isSkipped)
                                                     {
                                                         long _iddd = (long)adata1["Id"];
+                                                        if(_iddd == 114004)
+                                                        {
+                                                            var FK_UploadedExcelData_Id = _iddd;
+                                                        }
                                                         long _formidd = (long)item3.FormId;
                                                         var skipOrRtuFlag = objCompassEntities.PROC_WebService_CheckRecordStatus_SkipOrRtu(_iddd, _formidd).FirstOrDefault();
                                                         //var aFieldDataRecord = objCompassEntities.TblProjectFieldDatas.Where(o => o.FormId == _formidd
@@ -2904,13 +2934,23 @@ namespace GarronT.CMS.Model.DAL
                         objInstallerMap.SynchCheckSumString = m2;
                         objInstallerMap.SynchWithMobileFlag = 1;
                         objInstallerMap.SynchWithMobileDate = new CommonFunctions().ServerDate();
+                        //objCompassEntities.SaveChanges();
+                    }
+                    if(ProjectVisitDataChunk.Rows.Count > 0)
+                    {
                         objCompassEntities.SaveChanges();
                     }
-
-
-
                     #endregion
-
+                    //get last complete position of user project's
+                    if (!checkRecordAvilableForNextTrip)
+                    {                     
+                        var projectLastLocation = getLastCompleteLocation(userId);
+                        if(projectLastLocation.Count > 0)
+                        {
+                            mobileOfflineResult.projectLastLocation = projectLastLocation;
+                        }
+                    }
+                    
                     return mobileOfflineResult;
 
 
@@ -3036,8 +3076,12 @@ namespace GarronT.CMS.Model.DAL
                         objInstallerMap.SynchWithMobileDate = null;
                         objInstallerMap.MobileResponse = null;
                         objInstallerMap.MobileResponseDate = null;
-                        objCompassEntities.SaveChanges();
+                        //objCompassEntities.SaveChanges();
                     }
+                }
+                if(dt.Rows.Count > 0)
+                {
+                    objCompassEntities.SaveChanges();
                 }
 
 
@@ -3064,7 +3108,11 @@ namespace GarronT.CMS.Model.DAL
         private void GetBatchNo1(long userId, long batchNumber, ref long BatchNumber, ref bool sendAlreadySentRecord, ref bool WrongBatchNumber)
         {
             CompassEntities objCompassEntities = new CompassEntities();
-            /// Check current batch number-1 present in database for the installer.                        
+            /// Check current batch number-1 present in database for the installer.
+            if (batchNumber == 15)
+            {
+                var debug = true;
+            }
             var objInstallerMapList = objCompassEntities.tblInstallerMapDatas.Where(o => o.InstallerId == userId
                 && o.BatchNumber == (batchNumber - 1) && o.SynchWithMobileFlag == 1 && o.MobileResponse != 1).ToList();
 
@@ -3076,8 +3124,9 @@ namespace GarronT.CMS.Model.DAL
                 {
                     instItemList.MobileResponse = 1;
                     instItemList.MobileResponseDate = new CommonFunctions().ServerDate();
-                    objCompassEntities.SaveChanges();
+                    //objCompassEntities.SaveChanges();
                 }
+                objCompassEntities.SaveChanges();
                 // set new batch number value.
                 BatchNumber = batchNumber;
             }
@@ -3593,6 +3642,9 @@ namespace GarronT.CMS.Model.DAL
                                         objMenuVisits.street = row[StreetDynamicColumnName].ToString();
                                         objMenuVisits.visitId = row["VisitId"].ToString();
                                         objMenuVisits.groupId = row["GroupId"].ToString();
+                                        //added by sns for get latitude and longitude
+                                        objMenuVisits.latitude = Convert.ToString(row["AddressLatitude"]);
+                                        objMenuVisits.longitude = Convert.ToString(row["AddressLongitude"]);
 
 
 
@@ -4407,6 +4459,39 @@ namespace GarronT.CMS.Model.DAL
 
             return objList;
 
+        }
+
+        public List<LastCompleteLocation> getLastCompleteLocation(long installerId)
+        {
+            List<LastCompleteLocation> resultDict = new List<LastCompleteLocation>();
+            CompassEntities objCompassEntities = new CompassEntities();
+            DataTable dt = new DataTable();
+            using (SqlConnection sqlcon = new SqlConnection(objCompassEntities.Database.Connection.ConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand("PROC_GetLatestCompletPosition", sqlcon))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@InstallerId", installerId);
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    {
+                        da.Fill(dt);
+                    }
+                    if (dt != null)
+                    {
+                        resultDict = dt.AsEnumerable().
+                        Select(o => new LastCompleteLocation
+                        {
+                            projectId = o.Field<long>("ProjectId"),
+                            lastCompleteLat = o.Field<string>("AddressLatitude"),
+                            lastCompleteLong = o.Field<string>("AddressLongitude")
+                        }).Distinct().ToList();
+
+                        
+                    }
+                }
+            }
+
+            return resultDict;
         }
 
     }

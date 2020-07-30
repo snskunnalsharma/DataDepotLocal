@@ -211,7 +211,9 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 statusMessage.Success = false;
                 statusMessage.Message = "Unable to get report data";
             }
-
+            var jsonResult = Json(new { statusMessage, WarehouseStockReportList }, JsonRequestBehavior.AllowGet);
+            jsonResult.MaxJsonLength = int.MaxValue;
+            return jsonResult;
             return Json(new { statusMessage, WarehouseStockReportList }, JsonRequestBehavior.AllowGet);
         }
 

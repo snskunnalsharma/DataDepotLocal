@@ -959,8 +959,8 @@ $('#ddlInstaller').unbind().change(function () {
                         "bDeferRender": true,
                         "sScrollY": "500px",
                         "sScrollX": "100%",
-                        "sScrollXInner": "110%",
-                        "sScrollYInner": "110%",
+                        "sScrollXInner": "100%",
+                        "sScrollYInner": "100%",
 
                         "bScrollCollapse": true,
                         //"sAjaxDataProp": 'aData',
@@ -970,7 +970,7 @@ $('#ddlInstaller').unbind().change(function () {
                         //"sAjaxSource": msg.result,
                         "aaData": installerdata.lat_by_ProjectInstaller,
                         "aoColumns": [
-                            { "sTitle": "Project Name", "mData": "ProjectName", "sWidth": "30%"  },
+                            { "sTitle": "Project Name", "mData": "ProjectName", "sWidth": "25%"  },
                             { "sTitle": "Installer Name", "mData": "UserName", "sWidth": "15%"  },
                             { "sTitle": "Cycle", "mData": "Cycle", "sWidth": "5%"  },
                             { "sTitle": "Route", "mData": "Route", "sWidth": "20%"  },
@@ -3212,7 +3212,121 @@ function Edit(data) {
     $("#InstallerAddrExist").modal("hide");
 }
 
+$('#chkIncludeSkip').change(function () {
+    console.log('skip changed');
+    var ProjectID = $('#ddlProject').val();
+    var InstallerID = $('#ddlInstaller').val();
+    var fromDate = $('#datepicker1').val();
+    var toDate = $('#datepicker2').val();
+    var incSkip = "0";
+    if ($("#chkIncludeSkip").is(
+        ":checked")) {
+        console.log("checked");
+        incSkip = "1";
+    } else {
+        incSkip = "0";
+    }
 
+    // getAddressList()
+
+    var projectId = $('#ddlProject').val();
+
+    var ddlRootvalues = [];
+    var value = $('#ulroute li.highlighted')
+    value.each(function (index, item) { ddlRootvalues.push($(this).val()) });
+
+
+    var ddlCyclevalues = [];
+    var cyclevalue = $('#ulCycle li.highlighted')
+    cyclevalue.each(function (index, item) { ddlCyclevalues.push($(this).text()) });
+
+
+    var urlStateData = $('#GetAddressUrl').val();
+    var installerid = $('#ddlInstaller').val();
+    var fromDate = $('#datepicker1').val();
+    var toDate = $('#datepicker2').val();
+
+
+    $('#ulAddress').empty();
+
+    if (ddlRootvalues != null && ddlRootvalues.length > 0) {
+        waitingDialog.show('Loading Please Wait...');
+
+        $.ajax({
+            url: urlStateData,
+            async: true,
+            type: "POST",
+            dataType: "json",
+            data: { Root: ddlRootvalues, Cycle: ddlCyclevalues, Address: null, ProjectID: projectId, installerId: installerid, fromDate: fromDate, toDate: toDate, includeSkip: incSkip },
+            success: function (jsonResult) {
+                if (jsonResult.success === undefined) {
+
+                    // here
+                    $('#ulAddress').empty();
+                    $.each(jsonResult.AllAddress, function (index, item) { $('#ulAddress').append($('<li></li>').val(item.ID).addClass("liAddress active-result").html(item.Street)); });
+
+                    $.each(jsonResult.InstallerAddress, function (index, item) {
+
+                        if (item.StreetDisabled == true) {
+
+                            $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted disabledli")
+                        }
+                        else if (item.Appointmentflag == "1") {
+                            $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted Appointmentdisabledli")
+                        }
+                        else {
+
+                            $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted ")
+                        }
+                    });
+
+
+                    //selectAddress()
+
+                    var selectedlivalue = $('#ulAddress li.highlighted').map(function (i, el) { return $(el)[0].value; });
+
+                    var selectedlilength = selectedlivalue.length;
+                    if (selectedlilength == 0) {
+                        $("#addrHeader").removeClass("ddlHeader").text("Select Address")
+                        $('#btnShowMap').prop("disabled", true);
+                        $('#btnSave').prop("disabled", false);
+                        $('#btnExport').prop("disabled", true);
+                    } else {
+                        $("#addrHeader").addClass("ddlHeader").text(selectedlilength + " Address Selected")
+                        $('#btnShowMap').prop("disabled", false);
+                        $('#btnSave').prop("disabled", false);
+                        $('#btnExport').prop("disabled", true);
+                    }
+                    debugger
+                    //#region SelectAll checked/unchecked
+                    if ($('#ulAddress .liAddress:visible').length > 0 && $('#ulAddress .highlighted:visible').length == $('#ulAddress .liAddress:visible').length) {
+                        $('#Address_SelectAll').prop('checked', true);
+                    } else {
+                        $('#Address_SelectAll').prop('checked', false);
+                    }
+
+
+                    waitingDialog.hide();
+                }
+                else {
+                    waitingDialog.hide();
+                    var $toast = toastr["error"](jsonResult.message, "Notification");
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                waitingDialog.hide();
+                var $toast = toastr["error"](textStatus + "</br>" + errorThrown, "Notification");
+                console.log('jqXHR:');
+                console.log(jqXHR);
+                console.log('textStatus:');
+                console.log(textStatus);
+                console.log('errorThrown:');
+                console.log(errorThrown);
+            }
+        });
+    }
+});
 
 $("#btnCycleFilter").click(function () {
     debugger;

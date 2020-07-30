@@ -598,6 +598,7 @@
           <Property Name="TransferredQty" Type="int" Nullable="false" />
           <Property Name="ReturnToWarehouseQty" Type="int" Nullable="false" />
           <Property Name="RemovedQty" Type="int" Nullable="false" />
+          <Property Name="AllocatedByReopen" Type="int" Nullable="false" />
           <Property Name="AllStockUtilized" Type="bit" Nullable="false" />
           <Property Name="MobileResponse" Type="int" Nullable="false" />
           <Property Name="MobileResponseDatetime" Type="datetime" />
@@ -607,6 +608,7 @@
           <Property Name="CreatedOn" Type="datetime" Nullable="false" />
           <Property Name="ModifiedBy" Type="bigint" />
           <Property Name="ModifiedOn" Type="datetime" />
+          <Property Name="ReAllocatedOn" Type="datetime" />
         </EntityType>
         <EntityType Name="OutwardTransferDetails">
           <Key>
@@ -1879,6 +1881,7 @@
           <Property Name="Street12" Type="varchar" MaxLength="500" />
           <Property Name="Account12" Type="varchar" MaxLength="500" />
           <Property Name="Active" Type="int" />
+          <Property Name="SyncEnable" Type="int" />
           <Property Name="CreatedOn" Type="datetime" />
           <Property Name="CreatedBy" Type="bigint" />
           <Property Name="ModifiedOn" Type="datetime" />
@@ -2166,6 +2169,23 @@ warning 6002: The table/view 'CMSMeter.dbo.VW_Project' does not have a primary k
           <Property Name="Active" Type="int" />
           <Property Name="ProjectStatus" Type="varchar" MaxLength="50" />
           <Property Name="IsCloned" Type="bit" />
+        </EntityType>
+        <EntityType Name="SerialNumberSummary">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SerialNumber" Type="varchar" MaxLength="50" Nullable="false"/>
+          <Property Name="StockStatus" Type="varchar" MaxLength="100" />
+          <Property Name="Location" Type="varchar" MaxLength="100" />
+          <Property Name="StockMovementDate" Type="datetime" />
+          <Property Name="UserName" Type="varchar" MaxLength="100" />
+          <Property Name="LatLong" Type="varchar" MaxLength="100" />
+          <Property Name="Account" Type="varchar" MaxLength="100" />
+          <Property Name="Street" Type="varchar" MaxLength="100" />
+          <Property Name="ProjectName" Type="varchar" MaxLength="100" />
+          <Property Name="Active" Type="int" />
+          <Property Name="CreatedOn" Type="datetime" />
         </EntityType>
         <Association Name="FK_AspNetRolePermissions_AspNetPermissions">
           <End Role="AspNetPermissions" Type="Self.AspNetPermissions" Multiplicity="1" />
@@ -3602,6 +3622,7 @@ warning 6002: The table/view 'CMSMeter.dbo.VW_Project' does not have a primary k
           <EntitySet Name="UtilityMaster" EntityType="Self.UtilityMaster" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WarehouseMaster" EntityType="Self.WarehouseMaster" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WarehouseUserRelation" EntityType="Self.WarehouseUserRelation" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SerialNumberSummary" EntityType="Self.SerialNumberSummary" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="VW_AuditorList" EntityType="Self.VW_AuditorList" store:Type="Views" store:Schema="dbo">
             <DefiningQuery>SELECT 
     [VW_AuditorList].[UserID] AS [UserID], 
@@ -4893,6 +4914,7 @@ warning 6002: The table/view 'CMSMeter.dbo.VW_Project' does not have a primary k
             <End Role="TblAlertMaster" EntitySet="TblAlertMasters" />
           </AssociationSet>
           <EntitySet Name="VW_Project" EntityType="CompassModel.VW_Project" />
+          <EntitySet Name="SerialNumberSummary" EntityType="CompassModel.SerialNumberSummary" />
           </EntityContainer>
         <EntityType Name="C__MigrationHistory">
           <Key>
@@ -6650,6 +6672,7 @@ warning 6002: The table/view 'CMSMeter.dbo.VW_Project' does not have a primary k
           <Property Name="Street12" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
           <Property Name="Account12" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
           <Property Name="Active" Type="Int32" />
+          <Property Name="SyncEnable" Type="Int32" />
           <Property Name="CreatedOn" Type="DateTime" Precision="3" />
           <Property Name="CreatedBy" Type="Int64" />
           <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
@@ -8242,6 +8265,7 @@ warning 6002: The table/view 'CMSMeter.dbo.VW_Project' does not have a primary k
           <Property Name="TransferredQty" Type="Int32" Nullable="false" />
           <Property Name="ReturnToWarehouseQty" Type="Int32" Nullable="false" />
           <Property Name="RemovedQty" Type="Int32" Nullable="false" />
+          <Property Name="AllocatedByReopen" Type="Int32" Nullable="false" />
           <Property Name="AllStockUtilized" Type="Boolean" Nullable="false" />
           <Property Name="MobileResponse" Type="Int32" Nullable="false" />
           <Property Name="MobileResponseDatetime" Type="DateTime" Precision="3" />
@@ -8251,6 +8275,7 @@ warning 6002: The table/view 'CMSMeter.dbo.VW_Project' does not have a primary k
           <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="ModifiedBy" Type="Int64" />
           <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
+          <Property Name="ReAllocatedOn" Type="DateTime" Precision="3" />
           <NavigationProperty Name="InventoryMobileStockRequestDetail" Relationship="CompassModel.FK_OutwardDetails_InventoryMobileStockRequestDetail" FromRole="OutwardDetail" ToRole="InventoryMobileStockRequestDetail" />
           <NavigationProperty Name="tblProjectFieldDataInventoryOutwardDetails" Relationship="CompassModel.FK_tblProjectFieldDataInventoryOutwardDetails_OutwardDetails" FromRole="OutwardDetail" ToRole="tblProjectFieldDataInventoryOutwardDetail" />
           <NavigationProperty Name="StockDetail" Relationship="CompassModel.FK_OutwardDetails_StockDetails" FromRole="OutwardDetail" ToRole="StockDetail" />
@@ -9098,6 +9123,9 @@ warning 6002: The table/view 'CMSMeter.dbo.VW_Project' does not have a primary k
           <Property Type="Int64" Name="id" Nullable="false" />
           <Property Type="Int64" Name="FKProductId" Nullable="false" />
           <Property Type="String" Name="ProductName" Nullable="false" MaxLength="250" />
+          <Property Type="Int64" Name="MeterMakeId" Nullable="false" />
+          <Property Type="Int64" Name="MeterSizeId" Nullable="false" />
+          <Property Type="Int64" Name="MeterTypeId" Nullable="false" />
           <Property Type="String" Name="SerialNumber" Nullable="true" MaxLength="50" />
           <Property Type="Int32" Name="BalanceQty" Nullable="true" />
         </ComplexType>
@@ -9500,6 +9528,23 @@ warning 6002: The table/view 'CMSMeter.dbo.VW_Project' does not have a primary k
           <Property Name="Active" Type="Int32" />
           <Property Name="ProjectStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="IsCloned" Type="Boolean" />
+        </EntityType>
+        <EntityType Name="SerialNumberSummary">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SerialNumber" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="StockStatus" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Location" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="StockMovementDate" Type="DateTime" Precision="3" />
+          <Property Name="UserName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="LatLong" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Account" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Street" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="ProjectName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Active" Type="Int32" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -11471,6 +11516,7 @@ warning 6002: The table/view 'CMSMeter.dbo.VW_Project' does not have a primary k
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
                 <ScalarProperty Name="Active" ColumnName="Active" />
+                <ScalarProperty Name="SyncEnable" ColumnName="SyncEnable" />
                 <ScalarProperty Name="Account12" ColumnName="Account12" />
                 <ScalarProperty Name="Street12" ColumnName="Street12" />
                 <ScalarProperty Name="CommonStreet" ColumnName="CommonStreet" />
@@ -12720,6 +12766,7 @@ warning 6002: The table/view 'CMSMeter.dbo.VW_Project' does not have a primary k
           <EntitySetMapping Name="OutwardDetails">
             <EntityTypeMapping TypeName="CompassModel.OutwardDetail">
               <MappingFragment StoreEntitySet="OutwardDetails">
+                <ScalarProperty Name="ReAllocatedOn" ColumnName="ReAllocatedOn" />
                 <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
                 <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
@@ -12730,6 +12777,7 @@ warning 6002: The table/view 'CMSMeter.dbo.VW_Project' does not have a primary k
                 <ScalarProperty Name="MobileResponse" ColumnName="MobileResponse" />
                 <ScalarProperty Name="AllStockUtilized" ColumnName="AllStockUtilized" />
                 <ScalarProperty Name="RemovedQty" ColumnName="RemovedQty" />
+                <ScalarProperty Name="AllocatedByReopen" ColumnName="AllocatedByReopen" />
                 <ScalarProperty Name="ReturnToWarehouseQty" ColumnName="ReturnToWarehouseQty" />
                 <ScalarProperty Name="TransferredQty" ColumnName="TransferredQty" />
                 <ScalarProperty Name="InstalledQty" ColumnName="InstalledQty" />
@@ -13331,6 +13379,9 @@ warning 6002: The table/view 'CMSMeter.dbo.VW_Project' does not have a primary k
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="FKProductId" ColumnName="FKProductId" />
                 <ScalarProperty Name="ProductName" ColumnName="ProductName" />
+                <ScalarProperty Name="MeterMakeId" ColumnName="MeterMakeId" />
+                <ScalarProperty Name="MeterSizeId" ColumnName="MeterSizeId" />
+                <ScalarProperty Name="MeterTypeId" ColumnName="MeterTypeId" />
                 <ScalarProperty Name="SerialNumber" ColumnName="SerialNumber" />
                 <ScalarProperty Name="BalanceQty" ColumnName="BalanceQty" />
               </ComplexTypeMapping>
@@ -13652,6 +13703,24 @@ warning 6002: The table/view 'CMSMeter.dbo.VW_Project' does not have a primary k
                 <ScalarProperty Name="ClientName" ColumnName="ClientName" />
                 <ScalarProperty Name="ProjectName" ColumnName="ProjectName" />
                 <ScalarProperty Name="ProjectId" ColumnName="ProjectId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SerialNumberSummary">
+            <EntityTypeMapping TypeName="CompassModel.SerialNumberSummary">
+              <MappingFragment StoreEntitySet="SerialNumberSummary">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="SerialNumber" ColumnName="SerialNumber" />
+                <ScalarProperty Name="StockStatus" ColumnName="StockStatus" />
+                <ScalarProperty Name="Location" ColumnName="Location" />
+                <ScalarProperty Name="StockMovementDate" ColumnName="StockMovementDate" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="LatLong" ColumnName="LatLong" />
+                <ScalarProperty Name="Account" ColumnName="Account" />
+                <ScalarProperty Name="Street" ColumnName="Street" />
+                <ScalarProperty Name="ProjectName" ColumnName="ProjectName" />
+                <ScalarProperty Name="Active" ColumnName="Active" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

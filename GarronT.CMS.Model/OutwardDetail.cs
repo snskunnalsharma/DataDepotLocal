@@ -29,6 +29,7 @@ namespace GarronT.CMS.Model
         public int TransferredQty { get; set; }
         public int ReturnToWarehouseQty { get; set; }
         public int RemovedQty { get; set; }
+        public int AllocatedByReopen { get; set; }
         public bool AllStockUtilized { get; set; }
         public int MobileResponse { get; set; }
         public Nullable<System.DateTime> MobileResponseDatetime { get; set; }
@@ -38,6 +39,7 @@ namespace GarronT.CMS.Model
         public System.DateTime CreatedOn { get; set; }
         public Nullable<long> ModifiedBy { get; set; }
         public Nullable<System.DateTime> ModifiedOn { get; set; }
+        public Nullable<System.DateTime> ReAllocatedOn { get; set; }
     
         public virtual InventoryMobileStockRequestDetail InventoryMobileStockRequestDetail { get; set; }
         public virtual ICollection<tblProjectFieldDataInventoryOutwardDetail> tblProjectFieldDataInventoryOutwardDetails { get; set; }

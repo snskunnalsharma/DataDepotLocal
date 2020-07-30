@@ -15,12 +15,14 @@ namespace CMSAuditThread
             clsErrorLogFile.writeStatus("Thread Started at -" + DateTime.Now.ToShortTimeString());
 
 
-            AuditAllocation objAuditAllocation = new AuditAllocation();
+            // AuditAllocation objAuditAllocation = new AuditAllocation();
 
-            objAuditAllocation.startTheScheduler();
-         
+            //objAuditAllocation.startTheScheduler();
+            MobileSyncUtil mobileUtil = new MobileSyncUtil();
+            mobileUtil.triggerScheduler();
 
 
+            
             clsErrorLogFile.writeStatus("Thread ended at -" + DateTime.Now.ToShortTimeString());
         }
     }
@@ -49,11 +51,12 @@ namespace CMSAuditThread
                     {
                         clsErrorLogFile.writeStatus("Date Matched at -" + DateTime.Now.ToShortTimeString());
 
+                        //MobileSyncUtil mobileUtil = new MobileSyncUtil();
+                        //mobileUtil.triggerScheduler();
+                        //AuditAllocation objAuditAllocation = new AuditAllocation();
 
-                        AuditAllocation objAuditAllocation = new AuditAllocation();
-
-                        objAuditAllocation.AddToAudit();
-                        objAuditAllocation.AllocateAuditVisit();
+                        //objAuditAllocation.AddToAudit();
+                        //objAuditAllocation.AllocateAuditVisit();
 
 
                         clsErrorLogFile.writeStatus("Thread ended at -" + DateTime.Now.ToShortTimeString());

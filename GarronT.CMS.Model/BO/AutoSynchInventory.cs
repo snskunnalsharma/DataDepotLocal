@@ -29,6 +29,9 @@ namespace GarronT.CMS.Model.BO
         public long ProductId { get; set; }
         public string ProductName { get; set; }
         public string SerialNumber { get; set; }
+        public String ProductSize { get; set; }
+        public String ProductMake { get; set; }
+        public String ProductType { get; set; }
         public int ProductQuantity { get; set; }
     }
 }

@@ -16,6 +16,9 @@ namespace GarronT.CMS.Model
         public long id { get; set; }
         public long FKProductId { get; set; }
         public string ProductName { get; set; }
+        public long MeterMakeId { get; set; }
+        public long MeterSizeId { get; set; }
+        public long MeterTypeId { get; set; }
         public string SerialNumber { get; set; }
         public Nullable<int> BalanceQty { get; set; }
     }

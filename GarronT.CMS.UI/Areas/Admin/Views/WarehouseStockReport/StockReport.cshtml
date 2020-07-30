@@ -1625,6 +1625,7 @@
             success: function (data) {
                 waitingDialog.hide();
                 // debugger;
+                //console.log("result == " + JSON.stringify(data));
                 if (data.success == "false") {
                     var $toast = toastr["error"](data.ErrorMessage, "Notification");
                 }

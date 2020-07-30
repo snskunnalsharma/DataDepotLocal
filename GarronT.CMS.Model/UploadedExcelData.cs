@@ -26,6 +26,7 @@ namespace GarronT.CMS.Model
         public string Street12 { get; set; }
         public string Account12 { get; set; }
         public Nullable<int> Active { get; set; }
+        public Nullable<int> SyncEnable { get; set; }
         public Nullable<System.DateTime> CreatedOn { get; set; }
         public Nullable<long> CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedOn { get; set; }

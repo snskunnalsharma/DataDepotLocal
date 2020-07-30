@@ -141,6 +141,7 @@ namespace GarronT.CMS.Model
         public virtual DbSet<AspNetUserRolePermission> AspNetUserRolePermissions { get; set; }
         public virtual DbSet<tblProject> tblProjects { get; set; }
         public virtual DbSet<VW_Project> VW_Project { get; set; }
+        public virtual DbSet<SerialNumberSummary> SerialNumberSummary { get; set; }
     
         public virtual int SP_DeleteFormSectionRelations(Nullable<long> formId)
         {

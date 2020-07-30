@@ -2159,6 +2159,82 @@ namespace GarronT.CMS.UI
 
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public void ViewBalanceDetailInventory(long UserId, long ProjectId, string FromDate, string Todate)
+        {
+            JavaScriptSerializer s = new JavaScriptSerializer();
+            s.MaxJsonLength = 2147483644;
+
+            log.Info("WEB Service ViewRunningInventory Started at - " + DateTime.Now.ToString());
+
+            try
+            {
+                if (UserId == 0)
+                {
+                    setJsonReponse(4, "Error", "Missing UserId field in request string.");
+                }
+                else if (string.IsNullOrEmpty(FromDate))
+                {
+
+                    setJsonReponse(4, "Error", "Missing FromDate field in request string");
+                    return;
+                }
+                else if (string.IsNullOrEmpty(Todate))
+                {
+
+                    setJsonReponse(4, "Error", "Missing Todate field in request string");
+                    return;
+                }
+                else
+                {
+                    /*WebServiceRunningInventoryDAL objWebServiceRunningInventoryDAL = new WebServiceRunningInventoryDAL();
+                    var viewRequestList = objWebServiceRunningInventoryDAL.GetRunningInventory(UserId, ProjectId, FromDate, Todate);
+                    Context.Response.ContentType = "application/json";
+                    Context.Response.Write(s.Serialize(viewRequestList));
+                    objWebServiceRunningInventoryDAL.Dispose();*/
+                    List<PROC_InstallStockDetailReport_Result> ReportData = new List<PROC_InstallStockDetailReport_Result>();
+                    //List<InstallerStockReportSummaryBO> SummeryReportData = new List<InstallerStockReportSummaryBO>();
+                    List<BalanceDetail> inventoryDetail = new List<BalanceDetail>();
+                    InventoryDAL inventoryDal = new InventoryDAL();
+                    //SummeryReportData = inventoryDal.GetInventryStockReportSummery(ProjectId, UserId, 0, FromDate, Todate);
+                    ReportData = inventoryDal.GetInventryStockReport(ProjectId, UserId, 0, FromDate, Todate);
+                    List<long> productList = new List<long>();
+                    inventoryDetail = ReportData.Where(o => o.InHandQty > 0).GroupBy(o => new { o.FKProductId, o.ProductName }).Select(o => new BalanceDetail { ProductName = o.Key.ProductName, Quantity = o.Sum(x => x.InHandQty )}).ToList();
+                    /*foreach(PROC_InstallStockDetailReport_Result stock in ReportData)
+                    {
+                        
+                        //stock.FKProductId
+                    }
+                    foreach (InstallerStockReportSummaryBO summaryInfo in SummeryReportData)
+                    {
+                        if(summaryInfo.InHandInventory > 0)
+                        {
+                            BalanceDetail detail = new BalanceDetail();
+                            detail.ProductName = summaryInfo.ProductName;
+                            detail.Quantity = summaryInfo.InHandInventory;
+                            inventoryDetail.Add(detail);
+                        }
+                        
+                    }*/
+                    Context.Response.ContentType = "application/json";
+                    Context.Response.Write(s.Serialize(inventoryDetail));
+                    inventoryDal.Dispose();
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                setJsonReponse(4, "Fail", ex.Message);
+                log.Info("WEB Service  ViewRunningInventory ERROR at " + DateTime.Now.ToString());
+                log.Info("ERROR  ex.Message - " + (ex.Message != null ? ex.Message : ""));
+                log.Info("ERROR  ex.StackTrace - " + (ex.StackTrace != null ? ex.StackTrace : ""));
+                log.Info("ERROR  ex.InnerException.Message - " + (ex.InnerException.Message != null ? ex.InnerException.Message : ""));
+            }
+
+        }
+
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         public void UserSignOffRequest(string jsonDataParam)
         {
             JavaScriptSerializer s = new JavaScriptSerializer();
@@ -2538,6 +2614,7 @@ namespace GarronT.CMS.UI
                                 }
                             }
                         }
+
                     }
 
                     Context.Response.ContentType = "application/json";

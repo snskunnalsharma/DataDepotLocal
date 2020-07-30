@@ -990,6 +990,7 @@ function _searchClick() {
                         "aoColumnDefs": [
                             {
                                 "mRender": function (data, type, full, row) {
+                                    //console.log("data === " + JSON.stringify(full));
                                     var timeInMillis = Date.parse(full.Dates);
 
                                     if (full.ProjectStatus == "Active") {
@@ -999,7 +1000,7 @@ function _searchClick() {
                                                 return '<a href="#" id=' + full.ID + ' onclick="EditRecords(' + full.InstallerId + ',' + +full.ProjectId + ',' + full.ID + ',' + full.FormId + ');" class="btn btn-primary btn-xs rep_btn_primary" role="button" alt="Edit" title="Edit"><i class="fa fa-pencil"></i></a>'
                                                     // '<a href="/admin/Reports/DownloadFile?id=' + full.ID + '&frmID=' + full.FormId + '" title="PDF" target="_blank"><i class="fa fa-file-text"></i></a>';
                                                     + '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="PDFRecords(this);"  title="PDF" >  <i class="fa fa-file-text"></i></a>' +
-                                                    '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="Reopen(' + full.ID + ',' + full.InstallerId + ',' + full.FormId + ',' + full.CategoryType + ');"  title="Reopen" >  <i class="fa fa-retweet"></i></a>' +
+                                                    '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="Reopen(' + full.ID + ',' + full.InstallerId + ',' + full.FormId + ',\'' + full.CategoryType + '\',' + full.NewMeterNo + ',' + full.NEWRADIONUMBER + ');"  title="Reopen" >  <i class="fa fa-retweet"></i></a>' +
                                                     ' <a href="#" id=' + full.ID + ' class="btn btn-default btn-circle" name=' + full.FormId + ' onclick="GetAuditData(' + full.ID + ',' + full.InstallerId + ',' + full.FormId + ');"  title="Audit Status - Add To Audit " > <i class="fa fa-font" aria-hidden="true"></i></a>' +
                                                     '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="ViewImages(' + full.ID + ');"  title="View Images" > <i class="fa fa-eye" aria-hidden="true"></i></a>';
                                             }
@@ -1007,7 +1008,7 @@ function _searchClick() {
                                                 return '<a href="#" id=' + full.ID + ' onclick="EditRecords(' + full.InstallerId + ',' + +full.ProjectId + ',' + full.ID + ',' + full.FormId + ');" class="btn btn-primary btn-xs rep_btn_primary" role="button" alt="Edit" title="Edit"><i class="fa fa-pencil"></i></a>'
                                                     // '<a href="/admin/Reports/DownloadFile?id=' + full.ID + '&frmID=' + full.FormId + '" title="PDF" target="_blank"><i class="fa fa-file-text"></i></a>';
                                                     + '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="PDFRecords(this);"  title="PDF" >  <i class="fa fa-file-text"></i></a>' +
-                                                    '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="Reopen(' + full.ID + ',' + full.InstallerId + ',' + full.FormId + ',' + full.CategoryType + ');"  title="Reopen" >  <i class="fa fa-retweet"></i></a>' +
+                                                    '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="Reopen(' + full.ID + ',' + full.InstallerId + ',' + full.FormId + ',\'' + full.CategoryType + '\',' + full.NewMeterNo + ',' + full.NEWRADIONUMBER + ');"  title="Reopen" >  <i class="fa fa-retweet"></i></a>' +
                                                     ' <a href="#" id=' + full.ID + ' class="btn btn-primary btn-circle" name=' + full.FormId + ' onclick="GetAuditView(' + full.ID + ',' + full.InstallerId + ',' + full.FormId + ');"  title="Audit Status - Pending" > <i class="fa fa-font" aria-hidden="true"></i></a>'
                                                 + '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="ViewImages(' + full.ID + ');"  title="View Images" > <i class="fa fa-eye" aria-hidden="true"></i></a>';
 
@@ -1016,7 +1017,7 @@ function _searchClick() {
                                                 return '<a href="#" id=' + full.ID + ' onclick="EditRecords(' + full.InstallerId + ',' + +full.ProjectId + ',' + full.ID + ',' + full.FormId + ');" class="btn btn-primary btn-xs rep_btn_primary" role="button" alt="Edit" title="Edit"><i class="fa fa-pencil"></i></a>'
                                                     // '<a href="/admin/Reports/DownloadFile?id=' + full.ID + '&frmID=' + full.FormId + '" title="PDF" target="_blank"><i class="fa fa-file-text"></i></a>';
                                                     + '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="PDFRecords(this);"  title="PDF" >  <i class="fa fa-file-text"></i></a>' +
-                                                    '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="Reopen(' + full.ID + ',' + full.InstallerId + ',' + full.FormId + ',' + full.CategoryType + ');"  title="Reopen" >  <i class="fa fa-retweet"></i></a>' +
+                                                    '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="Reopen(' + full.ID + ',' + full.InstallerId + ',' + full.FormId + ',\'' + full.CategoryType + '\',' + full.NewMeterNo + ',' + full.NEWRADIONUMBER + ');"  title="Reopen" >  <i class="fa fa-retweet"></i></a>' +
                                                     ' <a href="#" id=' + full.ID + ' class="btn btn-success btn-circle" name=' + full.FormId + ' onclick="GetAuditView(' + full.ID + ',' + full.InstallerId + ',' + full.FormId + ');"  title="Audit Status - Completed" > <i class="fa fa-font" aria-hidden="true"></i></a>'
                                                 + '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="ViewImages(' + full.ID + ');"  title="View Images" > <i class="fa fa-eye" aria-hidden="true"></i></a>';
                                             }
@@ -1024,7 +1025,7 @@ function _searchClick() {
                                             else {
                                                 return '<a href="#" id=' + full.ID + ' onclick="EditRecords(' + full.InstallerId + ',' + +full.ProjectId + ',' + full.ID + ',' + full.FormId + ');" class="btn btn-primary btn-xs rep_btn_primary" role="button" alt="Edit" title="Edit"><i class="fa fa-pencil"></i></a>'
                                                     + '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="PDFRecords(this);"  title="PDF" >  <i class="fa fa-file-text"></i></a>' +
-                                                    '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="Reopen(' + full.ID + ',' + full.InstallerId + ',' + full.FormId + ',' + full.CategoryType + ');"  title="Reopen" >  <i class="fa fa-retweet"></i></a>'
+                                                    '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="Reopen(' + full.ID + ',' + full.InstallerId + ',' + full.FormId + ',\'' + full.CategoryType + '\',' + full.NewMeterNo + ',' + full.NEWRADIONUMBER + ');"  title="Reopen" >  <i class="fa fa-retweet"></i></a>'
                                                 + '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="ViewImages(' + full.ID + ');"  title="View Images" > <i class="fa fa-eye" aria-hidden="true"></i></a>';
                                             }
                                         } else {
@@ -1032,7 +1033,7 @@ function _searchClick() {
                                                 return '<a href="#" id=' + full.ID + ' data-toggle="modal" data-backdrop="static" onclick="GetSKipRTU_Details(' + full.InstallerId + ',' + full.ProjectId + ',' + full.ID + ',' + full.FormId + ');" class="btn btn-primary btn-xs rep_btn_primary" role="button" alt="View" title="View"><i class="fa fa-eye"></i></a>'
                                                     //Export_SKipRTU Added by AniketJ on 1-sep-2016
                                                     + '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="PDFRecords(this);"  title="PDF" >  <i class="fa fa-file-text"></i></a>'
-                                                    + '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="Reopen(' + full.ID + ',' + full.InstallerId + ',' + full.FormId + ',' + full.CategoryType + ');"  title="Reopen" >  <i class="fa fa-retweet"></i></a>'
+                                                    + '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="Reopen(' + full.ID + ',' + full.InstallerId + ',' + full.FormId + ',\'' + full.CategoryType + '\',' + full.NewMeterNo + ',' + full.NEWRADIONUMBER + ');"  title="Reopen" >  <i class="fa fa-retweet"></i></a>'
                                                 + '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="ViewImages(' + full.ID + ');"  title="View Images" > <i class="fa fa-eye" aria-hidden="true"></i></a>';
                                             } else {
                                                 return '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' > </a>'
@@ -1126,6 +1127,9 @@ $('#btnReopen').click(function () {
     var FormIDV = $("#formId").val();
     var reopenid = $("#ddlReasonMaster").val();
     var reopenComm = $("#txtReopenReason").val();
+    var taskStatus = $("#taskStatus").val();
+    var meterId = $("#meterId").val();
+    var radioId = $("#radioId").val();
 
     var UrlReopen = $("#urlReopenForm").val();
     var InstallerId = $("#ddlReopenInstaller option:selected").val();
@@ -1140,7 +1144,10 @@ $('#btnReopen').click(function () {
             "installerId": InstallerId,
             "formId": FormIDV,
             "reOpenId": reopenid,
-            "reOpenComment": reopenComm
+            "reOpenComment": reopenComm,
+            "taskStatus": taskStatus,
+            "meterId": meterId,
+            "radioId": radioId
             //"strfromDate": strstartDate,
             //"strtoDate": strendDate
         },
@@ -1274,6 +1281,91 @@ function Reopen(UpId, instId, formId) {
 
 }
 
+function Reopen(UpId, instId, formId, taskStatus, NewMeterNumber, NewMeterRadio) {
+    debugger;
+    $("#upLoadId").val('');
+    $("#formId").val('');
+    $("#meterId").val('');
+    $("#radioId").val('');
+    $("#taskStatus").val('');
+    $("#txtReopenReason").val('');
+    console.log("serial no === " + NewMeterNumber + ", " + NewMeterRadio + ", " + taskStatus);
+    var Project = $("#ddlProject option:selected")
+    var urlGetReopenData = $('#urlGetReopenData').val();
+    $.ajax({
+        type: 'GET',
+        url: urlGetReopenData,
+        data: { projectId: Project.val() },
+        async: true,
+        beforeSend: function () {
+            waitingDialog.show('Loading Please Wait...');
+        },
+        complete: function () {
+            waitingDialog.hide();
+        },
+        success: function (data) {
+
+            if (data.success === undefined) {
+
+                $("#ddlReasonMaster").empty();
+                $('#ddlReopenInstaller').empty();
+                var count = data.InstallerList.length;
+                if (count > 0) {
+
+                    $.each(data.InstallerList, function (index, item) {
+                        if (index == 0) {
+                            $('#ddlReopenInstaller').append($('<option></option>').val('0').html(""));
+                        }
+                        $('#ddlReopenInstaller').append($('<option></option>').val(item.UserId).html(item.UserName));
+                    });
+                    $('#ddlReopenInstaller').val(instId).attr("selected", "selected");
+                    $('#ddlReopenInstaller').trigger('chosen:updated');
+                }
+
+                var count1 = data.ReopenList.length;
+                if (count1 > 0) {
+
+                    $.each(data.ReopenList, function (index, item) {
+                        if (index == 0) {
+                            $('#ddlReasonMaster').append($('<option></option>').val('0').html(""));
+                        }
+                        $('#ddlReasonMaster').append($('<option></option>').val(item.SkipId).html(item.SkipReason));
+                    });
+                    $('#ddlReasonMaster').trigger('chosen:updated');
+                }
+
+
+                $("#upLoadId").val(UpId);
+                $("#formId").val(formId);
+                $("#meterId").val(NewMeterNumber);
+                $("#radioId").val(NewMeterRadio);
+                $("#taskStatus").val(taskStatus);
+                $("#myModal1").modal({
+                    show: true,
+                    backdrop: 'static',
+                    keyboard: false
+                });
+
+            }
+            else {
+                var $toast = toastr["error"](data.returnMessage, "Notification !");
+            }
+
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            waitingDialog.hide();
+            var $toast = toastr["error"](textStatus + "</br>" + errorThrown, "Error Notification");
+            console.log('jqXHR:');
+            console.log(jqXHR);
+            console.log('textStatus:');
+            console.log(textStatus);
+            console.log('errorThrown:');
+            console.log(errorThrown);
+        },
+
+    });
+
+}
 
 
 function PDFRecords(data) {

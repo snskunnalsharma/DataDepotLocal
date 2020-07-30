@@ -14,6 +14,7 @@ using System.Data.SqlClient;
 using System.Configuration;
 using System.Transactions;
 using Microsoft.AspNet.Identity;
+using System.Collections;
 
 namespace GarronT.CMS.Model.DAL
 {
@@ -834,7 +835,7 @@ namespace GarronT.CMS.Model.DAL
 
         }
 
-        public bool reOpenRecords(long uploadId, long installerId, long formId, long reOpenId, string reOpenComment, int userId)
+        public bool reOpenRecords(long uploadId, long installerId, long formId, long reOpenId, string reOpenComment, int userId, string taskStatus, string meterId, string radioId)
         {
             bool result = false;
 
@@ -937,7 +938,264 @@ namespace GarronT.CMS.Model.DAL
                         }
                     }
 
+                    if (taskStatus == "COMPLETED")
+                    {
+                        List<string> serialList = new List<string>();
+                        serialList.Add(meterId);
+                        serialList.Add(radioId);
+                        foreach(string serialNo in serialList)
+                        {
+                            DataTable dt = new DataTable();
+                            using (SqlConnection sqlcon = new SqlConnection(objCompassEntities.Database.Connection.ConnectionString))
+                            {
+                                using (SqlCommand cmd = new SqlCommand("PROC_Update_ProductMovementReport", sqlcon))
+                                {
+                                    cmd.CommandType = CommandType.StoredProcedure;
+                                    cmd.Parameters.Add("@SerialNumber", serialNo);
+                                    cmd.Parameters.Add("@ProjectId", projectId);
+                                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                                    {
+                                        da.Fill(dt);
+                                    }
+                                }
+                            }
+                            dt.Dispose();
+                            objCompassEntities.SaveChanges();
+                            var stockList = objCompassEntities.StockDetails.Where(o => o.SerialNumber == serialNo && o.Active == 1).OrderBy(o => o.Id).ToList();
+                            if (stockList != null)
+                            {
+                                var slCount = stockList.Count();
+                                var cnt = 1;
+                                foreach(var stock in stockList)
+                                {
+                                    
+                                    var outwardList = objCompassEntities.OutwardDetails.Where(o => o.FKStockDetailsID == stock.Id).ToList();
+                                    foreach (var outward in outwardList)
+                                    {
+                                        var inventoryOutwardList = objCompassEntities.tblProjectFieldDataInventoryOutwardDetails.Where(o => o.FKOutwardDetailsId == outward.Id).ToList();
+                                        foreach(var inventoryOurward in inventoryOutwardList)
+                                        {
+                                            var projectInventoryDetailList = objCompassEntities.tblProjectFieldDataInventoryDetails.Where(o => o.ID == inventoryOurward.FKtblProjectFieldDataInventoryDetailsId).ToList();
+                                            foreach(var projectInventoryDetail in projectInventoryDetailList)
+                                            {
+                                                projectInventoryDetail.Active = 0;
+                                                //objCompassEntities.tblProjectFieldDataInventoryDetails.Remove(projectInventoryDetail);
+                                                objCompassEntities.SaveChanges();
+                                                
+                                            }
+                                            inventoryOurward.Active = 0;
+                                            objCompassEntities.SaveChanges();
+                                        }
+                                        outward.Active = 0;
+                                        objCompassEntities.SaveChanges();
+                                    }
+                                    if (cnt == slCount)
+                                    {
+                                        //set serial no in stock
+                                        stock.AllStockUtilized = false;
+                                        stock.IsAllocated = false;
+                                        stock.IsReturned = 0;
+                                        objCompassEntities.SaveChanges();
+                                    }
+                                    else
+                                    {
+                                        //deactive self with all related records
+                                        stock.Active = 0;
+                                        objCompassEntities.SaveChanges();
+                                    }
+                                    cnt++;
+                                }
+                            }
+                            //Allocate inventory to user
+                            DataTable ObjDataTable = new DataTable();
 
+                            ObjDataTable.Columns.Add("SourceId", typeof(long));
+                            ObjDataTable.Columns.Add("SubSourceId", typeof(long));
+                            ObjDataTable.Columns.Add("ProductId", typeof(long));
+                            ObjDataTable.Columns.Add("IsSerialNumber", typeof(bool));
+                            ObjDataTable.Columns.Add("SerialNumber", typeof(string));
+                            ObjDataTable.Columns.Add("TotalQty", typeof(int));
+
+                            DataRow DR = ObjDataTable.NewRow();
+                            DR["ProductId"] = DBNull.Value;
+                            DR["IsSerialNumber"] = true;
+                            DR["SerialNumber"] = serialNo;
+                            DR["TotalQty"] = 1;
+                            ObjDataTable.Rows.Add(DR);
+
+                            try
+                            {
+                                SqlConnection con = new SqlConnection(objCompassEntities.Database.Connection.ConnectionString);
+                                con.Open();
+                                //SqlCommand cmd = new SqlCommand("PROC_Insert_UserStockRequestFromMobile", con);
+
+                                SqlCommand cmd = new SqlCommand("PROC_Insert_UserStockRequestForReopenLocation", con);
+                                cmd.Parameters.AddWithValue("@tblStockRequest", ObjDataTable); // passing Datatable
+                                cmd.Parameters.AddWithValue("@deviceDateTime", new CommonFunctions().ServerDate());
+                                cmd.Parameters.AddWithValue("@UserId", installerId);
+                                cmd.Parameters.AddWithValue("@ProjectId", projectId);
+                                cmd.CommandType = CommandType.StoredProcedure;
+                                cmd.ExecuteNonQuery();
+                                con.Close();
+                            }
+                            catch (SqlException ex)
+                            {
+                                var errormessage = ex.Message;
+                            }
+                            objCompassEntities.SaveChanges();
+                        }
+                        //make history of serial number
+                        /*DataTable dt = new DataTable();
+                        using (SqlConnection sqlcon = new SqlConnection(objCompassEntities.Database.Connection.ConnectionString))
+                        {
+                            using (SqlCommand cmd = new SqlCommand("PROC_Update_ProductMovementReport", sqlcon))
+                            {
+                                cmd.CommandType = CommandType.StoredProcedure;
+                                cmd.Parameters.Add("@SerialNumber", meterId);
+                                cmd.Parameters.Add("@ProjectId", projectId);
+                                using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                                {
+                                    da.Fill(dt);
+                                }
+                            }
+                        }
+                        using (SqlConnection sqlcon = new SqlConnection(objCompassEntities.Database.Connection.ConnectionString))
+                        {
+                            using (SqlCommand cmd = new SqlCommand("PROC_Update_ProductMovementReport", sqlcon))
+                            {
+                                cmd.CommandType = CommandType.StoredProcedure;
+                                cmd.Parameters.Add("@SerialNumber", radioId);
+                                cmd.Parameters.Add("@ProjectId", projectId);
+                                using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                                {
+                                    da.Fill(dt);
+                                }
+                            }
+                        }
+
+                        //return meternumber inventory to installer inhand
+                        var stockDetail = objCompassEntities.StockDetails.Where(o => o.SerialNumber == meterId && o.Active == 1).OrderByDescending(o => o.Id).FirstOrDefault();
+                        if (stockDetail != null)
+                        {
+                            var outwarDetail = objCompassEntities.OutwardDetails.Where(a => a.FKStockDetailsID == stockDetail.Id && a.Active == 1).OrderByDescending(a => a.Id).FirstOrDefault();
+                            if (outwarDetail != null)
+                            {
+                                //Add to transfer table
+                                OutwardDetail newOutward = new OutwardDetail
+                                {
+                                    FKStockDetailsID = stockDetail.Id,
+                                    FKInventoryMobileStockRequestDetailId = outwarDetail.FKInventoryMobileStockRequestDetailId,
+                                    Active = 1,
+                                    AllocatedQty = 1,
+                                    AllStockUtilized = false,
+                                    AllocatedByReopen = 1,
+                                    AllocatedTo = installerId,
+                                    RemovedQty = 0,
+                                    ReturnToWarehouseQty =0,
+                                    TransferredQty = 1,
+                                    InstalledQty = 0,
+                                    CreatedBy = userId,
+                                    CreatedOn = new CommonFunctions().ServerDate(),
+                                    ReAllocatedOn = new CommonFunctions().ServerDate()
+
+                                };
+                                newOutward = objCompassEntities.OutwardDetails.Add(newOutward);
+                                objCompassEntities.SaveChanges();
+
+                                var maxTransferId = objCompassEntities.OutwardTransferDetails.Where(a => a.FKUserIdReducedStock == installerId && a.Active == 1).OrderByDescending(a => a.Id).Select(a => a.TransferRequestId).FirstOrDefault();
+                                OutwardTransferDetail transferDatail = new OutwardTransferDetail();
+                                transferDatail.FKUserIdReducedStock = installerId;
+                                transferDatail.TransferRequestId = maxTransferId + 1;
+                                transferDatail.TransferredQty = 1;
+                                transferDatail.RecordSynched = 0;
+                                transferDatail.Active = 1;
+                                transferDatail.FKOutWardDetailsId = newOutward.Id;
+                                transferDatail.FKOutWardDetailsOldId = outwarDetail.Id;
+                                transferDatail.CreatedBy = userId;
+                                transferDatail.CreatedOn = new CommonFunctions().ServerDate();
+                                transferDatail = objCompassEntities.OutwardTransferDetails.Add(transferDatail); 
+                                objCompassEntities.SaveChanges();
+
+                                var inventoryDetail = objCompassEntities.tblProjectFieldDataInventoryOutwardDetails.Where(b => b.FKOutwardDetailsId == outwarDetail.Id && b.Active == 1).FirstOrDefault();
+                                if (inventoryDetail != null)
+                                {
+                                    outwarDetail.AllStockUtilized = false;
+                                    outwarDetail.InstalledQty = outwarDetail.InstalledQty - 1;
+                                    outwarDetail.AllocatedByReopen = 1;
+                                    outwarDetail.ReAllocatedOn = new CommonFunctions().ServerDate();
+                                    stockDetail.BalanceQty = 0;
+                                    stockDetail.IsAllocated = true;
+                                    stockDetail.AllStockUtilized = false;
+                                    inventoryDetail.TotalQty = 0;
+                                    inventoryDetail.Active = 0;
+                                }
+                            }
+                        }
+                        objCompassEntities.SaveChanges();
+                        //return meterradio inventory to installer inhand
+                        var stockDetail1 = objCompassEntities.StockDetails.Where(o => o.SerialNumber == radioId && o.Active == 1).OrderByDescending(o => o.Id).FirstOrDefault();
+                        if (stockDetail1 != null)
+                        {
+                            var outwarDetail1 = objCompassEntities.OutwardDetails.Where(a => a.FKStockDetailsID == stockDetail1.Id && a.Active == 1).OrderByDescending(a => a.Id).FirstOrDefault();
+                            if (outwarDetail1 != null)
+                            {
+                                if (outwarDetail1 != null)
+                                {
+                                    //Add to transfer table
+                                    OutwardDetail newOutward = new OutwardDetail
+                                    {
+                                        FKStockDetailsID = stockDetail1.Id,
+                                        FKInventoryMobileStockRequestDetailId = outwarDetail1.FKInventoryMobileStockRequestDetailId,
+                                        Active = 1,
+                                        AllocatedQty = 1,
+                                        AllStockUtilized = false,
+                                        AllocatedByReopen = 1,
+                                        AllocatedTo = installerId,
+                                        RemovedQty = 0,
+                                        ReturnToWarehouseQty = 0,
+                                        TransferredQty = 1,
+                                        InstalledQty = 0,
+                                        CreatedBy = userId,
+                                        CreatedOn = new CommonFunctions().ServerDate(),
+                                        ReAllocatedOn = new CommonFunctions().ServerDate()
+
+                                    };
+                                    newOutward = objCompassEntities.OutwardDetails.Add(newOutward);
+                                    objCompassEntities.SaveChanges();
+
+                                    var maxTransferId = objCompassEntities.OutwardTransferDetails.Where(a => a.FKUserIdReducedStock == installerId && a.Active == 1).OrderByDescending(a => a.Id).Select(a => a.TransferRequestId).FirstOrDefault();
+                                    OutwardTransferDetail transferDatail = new OutwardTransferDetail();
+                                    transferDatail.FKUserIdReducedStock = installerId;
+                                    transferDatail.TransferRequestId = maxTransferId + 1;
+                                    transferDatail.TransferredQty = 1;
+                                    transferDatail.RecordSynched = 0;
+                                    transferDatail.Active = 1;
+                                    transferDatail.FKOutWardDetailsId = newOutward.Id;
+                                    transferDatail.FKOutWardDetailsOldId = outwarDetail1.Id;
+                                    transferDatail.CreatedBy = userId;
+                                    transferDatail.CreatedOn = new CommonFunctions().ServerDate();
+                                    transferDatail = objCompassEntities.OutwardTransferDetails.Add(transferDatail);
+                                    objCompassEntities.SaveChanges();
+
+                                    var inventoryDetail = objCompassEntities.tblProjectFieldDataInventoryOutwardDetails.Where(b => b.FKOutwardDetailsId == outwarDetail1.Id && b.Active == 1).FirstOrDefault();
+                                    if (inventoryDetail != null)
+                                    {
+                                        outwarDetail1.AllStockUtilized = false;
+                                        outwarDetail1.InstalledQty = outwarDetail1.InstalledQty - 1;
+                                        outwarDetail1.AllocatedByReopen = 1;
+                                        outwarDetail1.ReAllocatedOn = new CommonFunctions().ServerDate();
+                                        stockDetail1.BalanceQty = 0;
+                                        stockDetail1.IsAllocated = true;
+                                        stockDetail1.AllStockUtilized = false;
+                                        inventoryDetail.TotalQty = 0;
+                                        inventoryDetail.Active = 0;
+                                    }
+                                }
+                                
+                            }
+                        }
+                        objCompassEntities.SaveChanges(); */
+                    }
 
                     tblInstallerMapData objtblInstallerMapDatas = objCompassEntities.tblInstallerMapDatas.Where(o => o.FK_UploadedExcelData_Id == uploadId && o.InstallerId == reOpenId).FirstOrDefault();
 
@@ -953,7 +1211,9 @@ namespace GarronT.CMS.Model.DAL
                     {
                         insert = false;
                         objtblInstallerMapDatas.ModifiedOn = new CommonFunctions().ServerDate();
+                        
                     }
+                    
 
 
                     objtblInstallerMapDatas.Active = 1;
@@ -1003,6 +1263,13 @@ namespace GarronT.CMS.Model.DAL
                     {
                         objCompassEntities.tblInstallerMapDatas.Add(objtblInstallerMapDatas);
                     }
+                    //update UploadedExcelData record for sync enable for mobile device ////added on 24june 2020 by snssystem
+                    var uploadedExcelData = objCompassEntities.UploadedExcelDatas.Where(o => o.Id == uploadId).FirstOrDefault();
+                    if (uploadedExcelData != null)
+                    {
+                        uploadedExcelData.SyncEnable = 1;
+                    }
+
                     objCompassEntities.SaveChanges();
                     result = true;
                     scope.Complete();

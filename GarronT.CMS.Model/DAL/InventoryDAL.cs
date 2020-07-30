@@ -2086,7 +2086,7 @@ namespace GarronT.CMS.Model.DAL
                     {
                         query1 = query1.Where(a => a.FKProductId == ProductId).ToList();
                     }
-
+                    
 
                     objOldDataList = query1.Select(o =>
                         new PROC_InstallStockDetailReport_Result
@@ -2240,108 +2240,15 @@ namespace GarronT.CMS.Model.DAL
                 reportData = objList;
 
                 #endregion
-                //}
-                //else
-                //{
-                //    #region  For All Project
-
-                //    var query = objCompassEntities.PROC_InstallStockSummaryReport(fromdate, todate).ToList();
-                //    reportData = query.Select(o =>
-                //                               new InstallerStockReportSummaryBO
-                //                               {
-                //                                   FKProductId = o.FKProductId,
-                //                                   ProductCategoryId = o.ProductCategoryId.Value,
-                //                                   ProductName = o.ProductName,
-                //                                   TotalRelasedQty = o.TotalRelasedQty,
-                //                                   InstalledQty = o.InstalledQty,
-                //                                   ReturnedQty = o.ReturnedQty,
-                //                                   TransferredQty = o.TransferredQty,
-                //                                   InHandInventory = o.InHandInventory,
-                //                                   UserId = o.UserId,
-                //                                   UserName = o.FirstName,
-                //                                   CategoryName = o.CategoryName
-                //                               }
-                //                               ).ToList();
-
-                //    #endregion
-                //}
-
                 if (installerId != 0)
                 {
                     reportData = reportData.Where(a => a.UserId == installerId).ToList();
                 }
-                //if (categoryId != 0)
-                //{
-                //    reportData = reportData.Where(a => a.ProductCategoryId == categoryId).ToList();
-                //}
+                
                 if (ProductId != 0)
                 {
                     reportData = reportData.Where(a => a.FKProductId == ProductId).ToList();
                 }
-
-
-
-                //if (fromdate.Value.Date > (DateTime.Parse("2018-Jan-01")).Date)
-                //{
-                //    DateTime newStartDate = DateTime.Parse("2018-Jan-01");
-                //    DateTime newEndDate = fromdate.Value.AddDays(-1);
-                //    var query1 = objCompassEntities.PROC_InstallStockSummaryReport(newStartDate, newEndDate).ToList();
-
-                //    if (query1 != null && query1.Count > 0)
-                //    {
-                //        foreach (var item in query1)
-                //        {
-                //            if (item.InHandInventory.Value > 0)
-                //            {
-                //                var obj = reportData.Where(o => o.FKProductId == item.FKProductId && o.UserId == item.UserId).FirstOrDefault();
-                //                if (obj != null)
-                //                {
-                //                    obj.OpeningBalance = item.InHandInventory.Value;
-
-                //                    obj.InHandInventory = (obj.OpeningBalance + obj.TotalRelasedQty) - (obj.InstalledQty + obj.ReturnedQty + obj.TransferredQty);
-
-                //                }
-                //                else
-                //                {
-
-                //                    var newObj = new InstallerStockReportSummaryBO
-                //                      {
-
-                //                          FKProductId = item.FKProductId,
-                //                          ProductCategoryId = item.ProductCategoryId.Value,
-                //                          ProductName = item.ProductName,
-                //                          OpeningBalance = item.InHandInventory.Value,
-                //                          TotalRelasedQty = 0,
-                //                          InstalledQty = 0,
-                //                          ReturnedQty = 0,
-                //                          TransferredQty = 0,
-                //                          InHandInventory = item.InHandInventory,
-                //                          UserId = item.UserId,
-                //                          UserName = item.FirstName,
-                //                          CategoryName = item.CategoryName
-                //                      };
-
-                //                    reportData.Add(newObj);
-                //                }
-                //            }
-                //        }
-                //    }
-                //}
-
-                //if (installerId != 0)
-                //{
-                //    reportData = reportData.Where(a => a.UserId == installerId).ToList();
-                //}
-                ////if (categoryId != 0)
-                ////{
-                ////    reportData = reportData.Where(a => a.ProductCategoryId == categoryId).ToList();
-                ////}
-                //if (ProductId != 0)
-                //{
-                //    reportData = reportData.Where(a => a.FKProductId == ProductId).ToList();
-                //}
-
-
             }
             catch (Exception ex)
             {
@@ -2903,6 +2810,25 @@ namespace GarronT.CMS.Model.DAL
 
                 //cmd.ExecuteNonQuery();
                 //con.Close();
+                /*var serialHistory = objCompassEntities.SerialNumberSummary.Where(o => o.SerialNumber == serialnumber).Select(a => new MovementReport
+                {
+                    SerialNumber = a.SerialNumber,
+                    StockStatus = a.StockStatus,
+                    Location = a.Location,
+                    StockMovementDate = a.StockMovementDate,
+                    StockMovementDateString = a.StockMovementDate.Value.ToString("MMM-dd-yyyy h:mm tt"),
+
+                    UserName = a.UserName,
+                    LatLong = a.LatLong,
+                    Account = a.Account,
+                    Street = a.Street,
+                    ProjectName = a.ProjectName
+
+                }).ToList();
+                if(serialHistory != null && serialHistory.Count > 0)
+                {
+                    reportdata.AddRange(serialHistory);
+                }*/
 
                 reportdata = objCompassEntities.PROC_Report_ProductMovementReport(projectId, serialnumber).Select(a => new MovementReport
                 {
@@ -2919,6 +2845,8 @@ namespace GarronT.CMS.Model.DAL
                     ProjectName = a.ProjectName
 
                 }).ToList();
+                //reportdata.AddRange(currentData);
+
 
 
 

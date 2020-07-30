@@ -592,7 +592,7 @@ namespace GarronT.CMS.Model.DAL
                     cmd.Parameters.Add("@InstallerId", installerId);
                     cmd.Parameters.Add("@FromDate", _frmDate);
                     cmd.Parameters.Add("@ToDate", _toDate);
-                    cmd.CommandTimeout = 180;
+                    cmd.CommandTimeout = 600;
                     //cmd.CommandTimeout = 120;
                     sqlConnection1.Open();
 
@@ -752,7 +752,7 @@ namespace GarronT.CMS.Model.DAL
                 cmd.Parameters.Add("@InstallerId", installerId);
                 cmd.Parameters.Add("@FromDate", _frmDate);
                 cmd.Parameters.Add("@ToDate", _toDate);
-                cmd.CommandTimeout = 120;
+                cmd.CommandTimeout = 600;
                 sqlConnection1.Open();
 
                 reader = cmd.ExecuteReader();
@@ -1080,7 +1080,7 @@ namespace GarronT.CMS.Model.DAL
                         var ID = Convert.ToInt64(item);
                         ///find if address already mapped to current installer.
                         var installerdata = dbcontext.tblInstallerMapDatas.Where(a => a.FK_UploadedExcelData_Id == ID
-                            && a.InstallerId == InstallerMap.InstallerID).FirstOrDefault();
+                            && a.InstallerId == InstallerMap.InstallerID).OrderByDescending(a => a.ID).FirstOrDefault();
 
 
                         if (installerdata != null)
@@ -1467,6 +1467,7 @@ namespace GarronT.CMS.Model.DAL
             cmd.Parameters.Add("@InstallerId", installerId);
             cmd.Parameters.Add("@FromDate", fromDate);
             cmd.Parameters.Add("@ToDate", toDate);
+            cmd.CommandTimeout = 600;
 
             sqlConnection1.Open();
 
@@ -2755,7 +2756,7 @@ namespace GarronT.CMS.Model.DAL
                 cmd.Parameters.Add("@InstallerId", InstallerMap.InstallerID);
                 cmd.Parameters.Add("@FromDate", DateTime.Parse(InstallerMap.FromDate));
                 cmd.Parameters.Add("@ToDate", DateTime.Parse(InstallerMap.ToDate));
-
+                cmd.CommandTimeout = 600;
                 sqlConnection1.Open();
 
                 reader = cmd.ExecuteReader();

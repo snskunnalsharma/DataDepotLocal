@@ -2522,7 +2522,7 @@ namespace GarronT.CMS.Model.DAL
                                                   Type = p.MeterType,
                                                   Size = p.MeterSize,
                                                   UtilityName = p.UtilityName,
-                                                  Quantity = m.Quantity == null ? 0 : m.Quantity.Value,
+                                                  Quantity = m.Quantity == null ? 0 : (int)m.Quantity,
                                                   SerialNumberRequired = p.SerialNumberRequired
                                               }).ToList();
 

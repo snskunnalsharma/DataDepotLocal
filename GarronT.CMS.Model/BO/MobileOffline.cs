@@ -546,6 +546,14 @@ namespace GarronT.CMS.Model.BO
         public string checkSum { get; set; }
         public List<newMobileOffline2> data { get; set; }
         public int totalRecord { get; set; }
+        public List<LastCompleteLocation> projectLastLocation { get; set; }
+    }
+     
+    public class LastCompleteLocation
+    {
+        public long projectId { get; set; }
+        public string lastCompleteLat { get; set; }
+        public string lastCompleteLong { get; set; }
     }
 
     public class newMobileOffline2
@@ -559,8 +567,9 @@ namespace GarronT.CMS.Model.BO
         public List<MenuVisits3> objMenuVisits { get; set; }
         public long processId { get; set; }
         public long projectId { get; set; }
-
         public string projectName { get; set; }
+        public string lastCompleteLat { get; set; }
+        public string lastCompleteLong { get; set; }
         public List<RTUReason> rtuReasonList { get; set; }
 
         public List<ServiceData> servicesProductList { get; set; }
@@ -587,6 +596,8 @@ namespace GarronT.CMS.Model.BO
         public int totalVisits { get; set; }
         public string visitDateTime { get; set; }
         public string visitId { get; set; }
+        public string latitude { get; set; }
+        public string longitude { get; set; }
 
     }
 

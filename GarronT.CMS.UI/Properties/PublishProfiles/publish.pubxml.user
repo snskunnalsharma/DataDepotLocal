@@ -291,7 +291,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>10/05/2018 12:39:30</publishTime>
     </File>
     <File Include="Areas/Admin/Views/InstallerAllocation/Index.cshtml">
-      <publishTime>04/27/2020 16:19:49</publishTime>
+      <publishTime>05/11/2020 17:13:40</publishTime>
     </File>
     <File Include="Areas/Admin/Views/InstallerAllocation/Index1.cshtml">
       <publishTime>01/08/2020 12:24:38</publishTime>
@@ -321,7 +321,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/01/2017 18:38:02</publishTime>
     </File>
     <File Include="Areas/Admin/Views/InventryStockReport/Index.cshtml">
-      <publishTime>12/05/2019 13:31:44</publishTime>
+      <publishTime>04/29/2020 21:20:16</publishTime>
     </File>
     <File Include="Areas/Admin/Views/MeterMake/Index.cshtml">
       <publishTime>10/05/2018 12:39:48</publishTime>
@@ -456,7 +456,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/14/2018 11:29:10</publishTime>
     </File>
     <File Include="Areas/Admin/Views/Reports/Index.cshtml">
-      <publishTime>11/04/2019 13:16:34</publishTime>
+      <publishTime>06/16/2020 16:04:43</publishTime>
     </File>
     <File Include="Areas/Admin/Views/Reports/RdlcReport.cshtml">
       <publishTime>04/20/2016 09:56:13</publishTime>
@@ -666,19 +666,19 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>09/14/2016 13:27:42</publishTime>
     </File>
     <File Include="bin/GarronT.CMS.Model.dll">
-      <publishTime>04/27/2020 19:10:28</publishTime>
+      <publishTime>06/17/2020 14:45:19</publishTime>
     </File>
     <File Include="bin/GarronT.CMS.Model.dll.config">
-      <publishTime>04/27/2020 19:06:12</publishTime>
+      <publishTime>06/02/2020 16:41:09</publishTime>
     </File>
     <File Include="bin/GarronT.CMS.Model.pdb">
-      <publishTime>04/27/2020 19:10:28</publishTime>
+      <publishTime>06/17/2020 14:45:19</publishTime>
     </File>
     <File Include="bin/GarronT.CMS.UI.dll">
-      <publishTime>04/27/2020 19:10:29</publishTime>
+      <publishTime>06/17/2020 14:45:21</publishTime>
     </File>
     <File Include="bin/GarronT.CMS.UI.pdb">
-      <publishTime>04/27/2020 19:10:29</publishTime>
+      <publishTime>06/17/2020 14:45:21</publishTime>
     </File>
     <File Include="bin/GoogleMaps.LocationServices.dll">
       <publishTime>02/15/2016 12:49:40</publishTime>
@@ -12687,7 +12687,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>04/01/2016 12:23:01</publishTime>
     </File>
     <File Include="Scripts/Admin/InstallerAllocationchange.js">
-      <publishTime>04/27/2020 17:24:11</publishTime>
+      <publishTime>05/11/2020 17:08:47</publishTime>
     </File>
     <File Include="Scripts/Admin/InstallerAllocationnew.js">
       <publishTime>03/24/2016 14:25:27</publishTime>
@@ -12747,7 +12747,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>11/11/2019 16:47:58</publishTime>
     </File>
     <File Include="Scripts/Admin/Reports.js">
-      <publishTime>04/10/2020 13:15:45</publishTime>
+      <publishTime>06/17/2020 12:21:30</publishTime>
     </File>
     <File Include="Scripts/Admin/ServicesMaster.js">
       <publishTime>09/28/2018 12:04:40</publishTime>
@@ -13554,7 +13554,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/15/2016 12:40:38</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>04/27/2020 19:10:33</publishTime>
+      <publishTime>06/08/2020 14:36:42</publishTime>
     </File>
     <File Include="WebFormBarcodReport.aspx">
       <publishTime>08/24/2017 12:20:22</publishTime>

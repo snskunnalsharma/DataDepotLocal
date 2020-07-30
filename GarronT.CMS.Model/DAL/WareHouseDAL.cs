@@ -5,6 +5,8 @@ using System.Linq;
 using System.Linq.Dynamic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data.SqlClient;
+using System.Data;
 
 namespace GarronT.CMS.Model.DAL
 {
@@ -344,7 +346,53 @@ namespace GarronT.CMS.Model.DAL
 
                 foreach (var item in warehouseId)
                 {
-                    var query = objcompassentities.PROC_Report_WarehouseStockReport(projectId, item).AsEnumerable();
+                    /*List<PROC_Report_WarehouseStockReport_Result> objList = new List<PROC_Report_WarehouseStockReport_Result>();
+                    SqlConnection sqlConnection1 = new SqlConnection(objcompassentities.Database.Connection.ConnectionString);
+                    SqlCommand cmd = new SqlCommand();
+                    SqlDataReader reader;
+
+                    cmd.CommandText = "PROC_Report_WarehouseStockReport";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Connection = sqlConnection1;
+                    cmd.Parameters.Add("@ProjectId", projectId);
+                    cmd.Parameters.Add("@warehouseId", item);
+                    cmd.CommandTimeout = 600;
+                    //cmd.CommandTimeout = 120;
+                    sqlConnection1.Open();
+
+                    reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        objList.Add(new PROC_Report_WarehouseStockReport_Result
+                        {
+                            StockDetailId = long.Parse(reader["StockDetailId"].ToString()),
+                            WarehouseId = long.Parse(reader["WarehouseId"].ToString()),
+                            WarehouseName = reader["WarehouseName"].ToString(),
+                            ProductId = long.Parse(reader["ProductId"].ToString()),
+                            ProductName = reader["ProductName"].ToString(),
+                            ProductDescription = reader["ProductDescription"].ToString(),
+                            PartNumber = reader["PartNumber"].ToString(),
+                            UPCCode = reader["UPCCode"].ToString(),
+                            UtilityName = reader["UtilityName"].ToString(),
+                            CategoryId = long.Parse(reader["CategoryId"].ToString()),
+                            CategoryName = reader["CategoryName"].ToString(),
+                            Make = reader["Make"].ToString(),
+                            MeterType = reader["MeterType"].ToString(),
+                            MeterSize = reader["MeterSize"].ToString(),
+                            SerialNumberRequired = bool.Parse(reader["SerialNumberRequired"].ToString()),
+                            serialnumber = reader["serialnumber"].ToString(),
+                            TotalQty = int.Parse(reader["TotalQty"].ToString()),
+                            BalanceQty = int.Parse(reader["BalanceQty"].ToString())
+                        });
+                    }
+                    sqlConnection1.Close();
+                    reader.Close();
+                    reader.Dispose();
+                    cmd.Dispose();
+                    sqlConnection1.Dispose();*/
+
+                    //var query = objcompassentities.PROC_Report_WarehouseStockReport(projectId, item).AsEnumerable();
+                    var query = objcompassentities.PROC_Report_WarehouseStockReport(projectId, item).ToList();
 
                     //if (categoryId != 0)
                     //{
@@ -352,7 +400,7 @@ namespace GarronT.CMS.Model.DAL
                     //}
                     if (productId != 0)
                     {
-                        query = query.Where(f => f.ProductId == productId);
+                        query = query.Where(f => f.ProductId == productId).Select(f => f).ToList();
                     }
 
                     var data = query.Select(o =>

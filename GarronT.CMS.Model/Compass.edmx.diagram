@@ -188,6 +188,7 @@
         <AssociationConnector Association="CompassModel.FK_TblAlertMaster_TblProject" />
         <EntityTypeShape EntityType="CompassModel.VW_Project" Width="1.5" PointX="1.9019843479162009" PointY="23.3019888062505" />
         <EntityTypeShape EntityType="CompassModel.tblAssignedCycleRoute" Width="1.5" PointX="8.112687017821095" PointY="21.833042229448" />
+        <EntityTypeShape EntityType="CompassModel.SerialNumberSummary" Width="1.5" PointX="7.8795087411438622" PointY="3.2597447946945879" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

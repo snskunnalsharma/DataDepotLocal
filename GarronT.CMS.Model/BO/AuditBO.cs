@@ -292,6 +292,8 @@ namespace GarronT.CMS.Model.BO
         public int pendingVisits { get; set; }
         public int skippedVisits { get; set; }
         public string street { get; set; }
+        public string latitude { get; set; }
+        public string longitude { get; set; }
         public int totalVisits { get; set; }
         public string visitDateTime { get; set; }
         public string visitId { get; set; }

@@ -123,7 +123,7 @@
     table#dynamic-table td {
         word-break: break-all;
     }
-    /*table#dynamic-table > thead > tr > :nth-child(4) {
+ /*   table#dynamic-table > thead > tr > :nth-child(4) {
         width: 20% !important;
         word-break: break-all;
     }
@@ -1735,7 +1735,7 @@
                                         <form id="InstallerAllocationForm">
                                             <div class="col-lg-0 nopadding">
                                             </div>
-                                            <div class="col-lg-3 col-sm-6 col-xs-12 nopadding box1">
+                                            <div class="col-lg-3 col-sm-6 col-xs-12 nopadding box1" style="padding-left:0px;">
 
                                                 <div class="prj_btn">
                                                     <div class="col-lg-12 col-sm-12 col-xs-12">
@@ -1756,7 +1756,7 @@
                                                 </div>
 
                                             </div>
-                                            <div class="col-lg-3 col-sm-6 col-xs-12 box2">
+                                            <div class="col-lg-3 col-sm-6 col-xs-12 box2" style="padding-left:0px;">
 
                                                 <div id="divcycle">
                                                     <div class="installer_btn ">
@@ -1792,7 +1792,7 @@
                                                 </div>
 
                                             </div>
-                                            <div class="col-lg-3 col-sm-6 col-xs-12 box3 ">
+                                            <div class="col-lg-3 col-sm-6 col-xs-12 box3 " style="padding-left:0px;">
 
                                                 <div class="sel_route_btn " id="divroute">
 
@@ -1844,18 +1844,19 @@
 
                                             </div>
 
-                                            <div class="col-lg-3 col-sm-6 col-xs-12 box4">
+                                            <div class="col-lg-3 col-sm-6 col-xs-12 box4" style="padding-left:0px;">
 
 
                                                 <button id="btnShowMap" class="btn btn-warning shw_map_btn " type="button">Show Map</button>
 
                                                 @*<button id="btnSave" class="btn btn-success save_btn " type="button" style="color:#ffffff; ">&nbsp;&nbsp;&nbsp;&nbsp;Save&nbsp;&nbsp;&nbsp;&nbsp;</button>*@
-                                                <button class="btn btn-danger chng-inst-btn " id="btnAssignAddress" type="button" style="color:#fff; width:30%;">Change Installer</button>
-                                                <button id="btnSave" class="btn btn-success save_btn " type="button" style="color:#ffffff; margin-top: 0px;">Save</button>
+                                                <button class="btn btn-danger chng-inst-btn " id="btnAssignAddress" type="button" style="color:#fff;">Change Installer</button>
+
                                                 <br /><br />
 
                                                 @*<button id="btnExport" class="btn btn-info cancel_btn " type="button">Export</button>*@
                                                 <input type="checkbox" name="includeSkip" id="chkIncludeSkip">Include Skip
+                                                <button id="btnSave" class="btn btn-success save_btn " type="button" style="color:#ffffff; width:auto;">Save</button>
                                                 <button id="btnExport" class="btn btn-primary dropdown-toggle cancel_btn dropdown" type="button" data-toggle="dropdown">
                                                     Export
                                                     <span class="caret"></span>
@@ -1907,7 +1908,7 @@
 <!-- Modal for Installers -->
 <div class="modal fade modal-dialog-center" id="InstallerAddrExist" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     @*<div class="modal-dialog modal-lg modal-sm modal-xs">*@
-    <div class="modal-dialog  ">
+    <div class="modal-dialog"  style="width:75% !important;">
         <div class="modal-content-wrap">
             <div class="modal-content">
                 <div class="modal-header">
@@ -1917,7 +1918,7 @@
                 <div class="modal-body mod_bdy">
                     <input type="hidden" id="deactivationID" />
                     <div class="table-responsive" style="overflow: auto;outline: none;">
-                        <table id="dynamic-table" class="table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                        <table id="dynamic-table" class="table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info" >
                             <!--<thead>
         <tr>
             <th>Project Name1</th>

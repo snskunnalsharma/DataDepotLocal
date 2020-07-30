@@ -140,6 +140,16 @@ namespace GarronT.CMS.Model.DAL
                     {
                         if (!string.IsNullOrEmpty(item.SerialNumber))
                         {
+                            var meterMake = "";
+                            var meterSize = "";
+                            var meterType = "";
+                            if (item.MeterMakeId > 0)
+                                meterMake = objCompassEntities.tblMeterMakes.AsNoTracking().Where(o => o.ID == item.MeterMakeId && o.Active == 1).Select(o => o.Make).FirstOrDefault();
+                            if (item.MeterSizeId > 0)
+                                meterSize = objCompassEntities.tblMeterSizes.AsNoTracking().Where(o => o.ID == item.MeterSizeId && o.Active == 1).Select(o => o.MeterSize).FirstOrDefault();
+                            if (item.MeterTypeId > 0)
+                                meterType = objCompassEntities.tblMeterTypes.AsNoTracking().Where(o => o.ID == item.MeterTypeId && o.Active == 1).Select(o => o.MeterType).FirstOrDefault();
+
                             objSerialList.Add(
                                 new TransferredSerialStock
                                 {
@@ -147,7 +157,11 @@ namespace GarronT.CMS.Model.DAL
                                     ProductId = item.FKProductId,
                                     ProductName = item.ProductName,
                                     SerialNumber = item.SerialNumber,
-                                    ProductQuantity = item.TransferredQty
+                                    ProductQuantity = item.TransferredQty,
+                                    ProductMake = meterMake,
+                                    ProductSize = meterSize,
+                                    ProductType = meterType
+
                                 });
 
                             objAutoSynchInventory.TransferRequestId = item.TransferRequestId.Value;
@@ -216,7 +230,16 @@ namespace GarronT.CMS.Model.DAL
                         {
                             if (!string.IsNullOrEmpty(item.SerialNumber))
                             {
-                                objSerialList.Add(new TransferredSerialStock { ProjectId = item1.ProjectId, ProductId = item.FKProductId, ProductName = item.ProductName, SerialNumber = item.SerialNumber, ProductQuantity = int.Parse(item.BalanceQty.ToString()) });
+                                var meterMake = "";
+                                var meterSize = "";
+                                var meterType = "";
+                                if (item.MeterMakeId > 0)
+                                    meterMake = objCompassEntities.tblMeterMakes.AsNoTracking().Where(o => o.ID == item.MeterMakeId && o.Active == 1).Select(o => o.Make).FirstOrDefault();
+                                if (item.MeterSizeId > 0)
+                                    meterSize = objCompassEntities.tblMeterSizes.AsNoTracking().Where(o => o.ID == item.MeterSizeId && o.Active == 1).Select(o => o.MeterSize).FirstOrDefault();
+                                if (item.MeterTypeId > 0)
+                                    meterType = objCompassEntities.tblMeterTypes.AsNoTracking().Where(o => o.ID == item.MeterTypeId && o.Active == 1).Select(o => o.MeterType).FirstOrDefault();
+                                objSerialList.Add(new TransferredSerialStock { ProjectId = item1.ProjectId, ProductId = item.FKProductId, ProductName = item.ProductName, ProductMake = meterMake, ProductSize = meterSize, ProductType=meterType, SerialNumber = item.SerialNumber, ProductQuantity = int.Parse(item.BalanceQty.ToString()) });
 
                                 objAutoSynchInventory.TransferRequestId = 0;
                             }
