@@ -1033,7 +1033,7 @@ function _searchClick() {
                                                 return '<a href="#" id=' + full.ID + ' data-toggle="modal" data-backdrop="static" onclick="GetSKipRTU_Details(' + full.InstallerId + ',' + full.ProjectId + ',' + full.ID + ',' + full.FormId + ');" class="btn btn-primary btn-xs rep_btn_primary" role="button" alt="View" title="View"><i class="fa fa-eye"></i></a>'
                                                     //Export_SKipRTU Added by AniketJ on 1-sep-2016
                                                     + '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="PDFRecords(this);"  title="PDF" >  <i class="fa fa-file-text"></i></a>'
-                                                    + '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="Reopen(' + full.ID + ',' + full.InstallerId + ',' + full.FormId + ',\'' + full.CategoryType + '\',' + full.NewMeterNo + ',' + full.NEWRADIONUMBER + ');"  title="Reopen" >  <i class="fa fa-retweet"></i></a>'
+                                                    + '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="Reopen(' + full.ID + ',' + full.InstallerId + ',' + full.FormId + ',\'' + full.CategoryType + '\',\'' + full.NewMeterNo + '\',\'' + full.NEWRADIONUMBER + '\');"  title="Reopen" >  <i class="fa fa-retweet"></i></a>'
                                                 + '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="ViewImages(' + full.ID + ');"  title="View Images" > <i class="fa fa-eye" aria-hidden="true"></i></a>';
                                             } else {
                                                 return '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' > </a>'

@@ -1,4 +1,4 @@
-﻿// T4 code generation is enabled for model 'D:\NetProjects\MeterReading\CMS-20200330\CMS\GarronT.CMS.Model\Compass.edmx'. 
+﻿// T4 code generation is enabled for model 'D:\NetProjects\MeterReading\CMS-20200330\git\Datadepot\GarronT.CMS.Model\Compass.edmx'. 
 // To enable legacy code generation, change the value of the 'Code Generation Strategy' designer
 // property to 'Legacy ObjectContext'. This property is available in the Properties Window when the model
 // is open in the designer.

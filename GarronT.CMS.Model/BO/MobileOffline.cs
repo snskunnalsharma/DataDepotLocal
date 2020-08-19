@@ -556,6 +556,12 @@ namespace GarronT.CMS.Model.BO
         public string lastCompleteLong { get; set; }
     }
 
+    public class LocationCycleRoute
+    {
+        public string cycle { get; set; }
+        public string route { get; set; }
+    }
+
     public class newMobileOffline2
     {
         public string appointmentDates { get; set; }
@@ -639,6 +645,8 @@ namespace GarronT.CMS.Model.BO
         public string street { get; set; }
         public int totalVisits { get; set; }
         public string UpdatedDate { get; set; }
+        public string cycle { get; set; }
+        public string route { get; set; }
 
     }
 

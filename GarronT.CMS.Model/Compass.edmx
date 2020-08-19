@@ -1793,6 +1793,7 @@
           <Property Name="ManagerId" Type="bigint" />
           <Property Name="FieldSupervisorId" Type="bigint" />
           <Property Name="ManagerApprovalRequired" Type="int" />
+          <Property Name="ExcludeSkip" Type="int" />
         </EntityType>
         <EntityType Name="tblVehicleMakeMaster">
           <Key>
@@ -8154,6 +8155,7 @@ warning 6002: The table/view 'CMSMeter.dbo.VW_Project' does not have a primary k
           <Property Name="ManagerId" Type="Int64" />
           <Property Name="FieldSupervisorId" Type="Int64" />
           <Property Name="ManagerApprovalRequired" Type="Int32" />
+          <Property Name="ExcludeSkip" Type="Int32" />
           <NavigationProperty Name="InvenTrasRequestConfigs" Relationship="CompassModel.FK_InvenTrasRequestConfig_tblUsers" FromRole="tblUser" ToRole="InvenTrasRequestConfig" />
           <NavigationProperty Name="InvenTrasRequestConfigs1" Relationship="CompassModel.FK_InvenTrasRequestConfig_tblUsers1" FromRole="tblUser" ToRole="InvenTrasRequestConfig" />
           <NavigationProperty Name="WarehouseUserRelations" Relationship="CompassModel.FK_WarehouseUserRelation_tblUsers" FromRole="tblUser" ToRole="WarehouseUserRelation" />
@@ -12673,6 +12675,7 @@ warning 6002: The table/view 'CMSMeter.dbo.VW_Project' does not have a primary k
           <EntitySetMapping Name="tblUsers">
             <EntityTypeMapping TypeName="CompassModel.tblUser">
               <MappingFragment StoreEntitySet="tblUsers">
+                <ScalarProperty Name="ExcludeSkip" ColumnName="ExcludeSkip" />
                 <ScalarProperty Name="ManagerApprovalRequired" ColumnName="ManagerApprovalRequired" />
                 <ScalarProperty Name="FieldSupervisorId" ColumnName="FieldSupervisorId" />
                 <ScalarProperty Name="ManagerId" ColumnName="ManagerId" />

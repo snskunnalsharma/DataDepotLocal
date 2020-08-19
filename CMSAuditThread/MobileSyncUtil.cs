@@ -9,6 +9,7 @@ using System.Data.SqlClient;
 using System.Data;
 using GarronT.CMS.Model.DAL;
 using GarronT.CMS.Model.BO;
+using System.Transactions;
 
 namespace CMSAuditThread
 {
@@ -216,6 +217,63 @@ namespace CMSAuditThread
             OrignalCycleList = OrignalCycleList.OrderBy(o => o.CycleId).Distinct().ToList();
             return OrignalCycleList;
             //return base.Json(new { OrignalCycleList = OrignalCycleList, CycleList = cyclelist }, JsonRequestBehavior.AllowGet);
+        }
+    }
+
+    class SkippedTask
+    {
+        public void changeSkipToNotAllocated()
+        {
+            DateTime dt = DateTime.Now;
+            clsErrorLogFile.writeStatus("Thread changeSkipToNotAllocated Started at -" + DateTime.Now.ToShortTimeString());
+            clsErrorLogFile.writeStatus("Dates -" + dt.Date.ToString() + " / " + DateTime.Now.Date.ToString());
+            CompassEntities objCompassEntities = new CompassEntities();
+            try
+            {
+                DataTable dtable = new DataTable();
+                using (SqlConnection sqlcon = new SqlConnection(objCompassEntities.Database.Connection.ConnectionString))
+                {
+                    using (SqlCommand cmd = new SqlCommand("PROC_GetSkippedAllBefore72h", sqlcon))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            da.Fill(dtable);
+                        }
+                    }
+                    sqlcon.Close();
+                    
+                }
+                if (dtable != null)
+                {
+                    var distSkippedData = dtable.AsEnumerable().
+                    Select(o => new
+                    {
+                        ExcelId = o.Field<long>("ID"),
+                        ProjectId = o.Field<long>("ProjectId"),
+                        InstallerId = o.Field<long>("InstallerId"),
+                        FormId = o.Field<long>("FormId")
+                    }).Distinct().ToList();
+
+                    foreach (var skipData in distSkippedData)
+                    {
+                        var projectId = objCompassEntities.UploadedExcelDatas.AsNoTracking().Where(o => o.Id == skipData.ExcelId && o.Active == 1).Select(o => o.FKProjectId).FirstOrDefault();
+                        var formObject = objCompassEntities.tblFormMasters.AsNoTracking().Where(o => o.FormId == skipData.FormId && o.ProjectId == projectId).FirstOrDefault();
+                        var objDependantFormList = objCompassEntities.tblFormTypeMaps.Where(o => o.FormTypeId == formObject.FormId && o.Active == 1).Select(o => o).ToList();
+
+                    }
+                    objCompassEntities.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                clsErrorLogFile.writeStatus("changeSkipToNotAllocated Method exception occured at -" + DateTime.Now.ToShortTimeString());
+                clsErrorLogFile.writeStatus("changeSkipToNotAllocated Method exception ex message-" + ex.Message);
+                clsErrorLogFile.writeStatus("changeSkipToNotAllocated Method exception ex inner exception message-" + Convert.ToString(ex.InnerException.Message));
+                Console.WriteLine("changeSkipToNotAllocated Method exception ex message-" + ex.Message);
+            }
+            clsErrorLogFile.writeStatus("Thread changeSkipToNotAllocated End at -" + DateTime.Now.ToShortTimeString());
+            Console.WriteLine("Thread changeSkipToNotAllocated End at -" + DateTime.Now.ToShortTimeString());
         }
     }
 }

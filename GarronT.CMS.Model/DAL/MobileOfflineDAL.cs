@@ -1837,7 +1837,8 @@ namespace GarronT.CMS.Model.DAL
 
                 List<newMobileOffline2> objListMobileOffline = new List<newMobileOffline2>();
 
-
+                string procName = "";
+                int? excludeSkip = 0; 
                 long BatchNumber = 0;
                 bool sendAlreadySentRecord = false;
                 bool checkRecordAvilableForNextTrip = false;
@@ -1847,11 +1848,21 @@ namespace GarronT.CMS.Model.DAL
 
 
                 DataTable countDT = new DataTable();
-
+                CompassEntities db = new CompassEntities();
+                var UserObj = objCompassEntities.tblUsers.Where(n => n.UserID == userId).FirstOrDefault();
+                excludeSkip = UserObj.ExcludeSkip;
+                if (excludeSkip == 1)
+                {
+                    procName = "PROC_WebService_Installer_OfflineDataExcludeSkip";
+                }
+                else
+                {
+                    procName = "PROC_WebService_Installer_OfflineData";
+                }
 
                 using (SqlConnection sqlcon = new SqlConnection(objCompassEntities.Database.Connection.ConnectionString))
                 {
-                    using (SqlCommand cmd = new SqlCommand("PROC_WebService_Installer_OfflineData", sqlcon))
+                    using (SqlCommand cmd = new SqlCommand(procName, sqlcon))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.Add("@installerId", userId);
@@ -1889,7 +1900,7 @@ namespace GarronT.CMS.Model.DAL
                 dt = new DataTable();
                 using (SqlConnection sqlcon = new SqlConnection(objCompassEntities.Database.Connection.ConnectionString))
                 {
-                    using (SqlCommand cmd = new SqlCommand("PROC_WebService_Installer_OfflineData", sqlcon))
+                    using (SqlCommand cmd = new SqlCommand(procName, sqlcon))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.Add("@installerId", userId);
@@ -2766,7 +2777,7 @@ namespace GarronT.CMS.Model.DAL
                                             objMapVisits.hasAppointment = false;
                                         }
 
-
+                                        LocationCycleRoute cycleRoute = getCycleRoute((long)item1["Id"], (long)item1["FKProjectId"]);
 
                                         objMapVisits.street = item1[StreetDynamicColumnName].ToString();
                                         objMapVisits.latitude = Convert.ToString(item1["AddressLatitude"]);
@@ -2777,6 +2788,8 @@ namespace GarronT.CMS.Model.DAL
                                         objMapVisits.totalVisits = totalVisits;
                                         objMapVisits.isActive = (int)item1["Active"] == 1 ? true : false;
                                         objMapVisits.UpdatedDate = Convert.ToString(item1["ModifiedOn"]);
+                                        objMapVisits.cycle = cycleRoute.cycle;
+                                        objMapVisits.route = cycleRoute.route;
                                         objListMapVisits.Add(objMapVisits);
 
                                         #endregion
@@ -2838,7 +2851,7 @@ namespace GarronT.CMS.Model.DAL
                                             objMapVisits.hasAppointment = false;
                                         }
 
-
+                                        LocationCycleRoute cycleRoute = getCycleRoute((long)item1["Id"], (long)item1["FKProjectId"]);
                                         objMapVisits.street = swd;
                                         objMapVisits.latitude = Convert.ToString(item1["AddressLatitude"]);
                                         objMapVisits.longitude = Convert.ToString(item1["AddressLongitude"]);
@@ -2847,6 +2860,8 @@ namespace GarronT.CMS.Model.DAL
                                         objMapVisits.rtuVisits = rtu;
                                         objMapVisits.skippedVisits = skipped;
                                         objMapVisits.totalVisits = totalVisits;
+                                        objMapVisits.cycle = cycleRoute.cycle;
+                                        objMapVisits.route = cycleRoute.route;
 
 
                                         var _totalAccount = currentProData.AsEnumerable().Where(o => o.Field<string>("AddressLatitude") == item1["AddressLatitude"].ToString() &&
@@ -4488,10 +4503,49 @@ namespace GarronT.CMS.Model.DAL
 
                         
                     }
+                    cmd.Clone();
                 }
+                sqlcon.Close();
             }
 
             return resultDict;
+        }
+        public LocationCycleRoute getCycleRoute(long recordId, long projectId)
+        {
+            LocationCycleRoute result = new LocationCycleRoute();
+            CompassEntities objCompassEntities = new CompassEntities();
+            DataTable dt = new DataTable();
+            using (SqlConnection sqlcon = new SqlConnection(objCompassEntities.Database.Connection.ConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand("PROC_GetLocationCycleRoute", sqlcon))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@uploadedExcelDataId", recordId);
+                    cmd.Parameters.Add("@projectId", projectId);
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    {
+                        da.Fill(dt);
+                    }
+                    if (dt != null)
+                    {
+                        var resultDict = dt.AsEnumerable().
+                        Select(o => new
+                        {
+                            cycle = o.Field<string>("cycle"),
+                            route = o.Field<string>("route")
+                        }).Distinct().ToList();
+                        foreach (var dataId in resultDict)
+                        {
+                            result.cycle = dataId.cycle;
+                            result.route = dataId.route;
+                        }
+                    }
+                    cmd.Clone();
+                }
+                sqlcon.Close();
+            }
+
+            return result;
         }
 
     }

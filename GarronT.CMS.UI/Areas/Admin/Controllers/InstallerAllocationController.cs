@@ -92,9 +92,21 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 List<AddressMaster> list = new List<AddressMaster>();
 
                 list = new InstallerDAL().GetDynamicAllAddress(Root, Cycle, ProjectID);
-
+                var userId = long.Parse(installerId);
                 if (!string.IsNullOrEmpty(installerId)) 
                 {
+                    // update excludeskip status for user
+                    CompassEntities db = new CompassEntities();
+                    var UserObj = db.tblUsers.Where(n => n.UserID == userId).FirstOrDefault();
+                    if (includeSkip != null && includeSkip.Equals("1"))
+                    {
+                        UserObj.ExcludeSkip = 0;
+                    }
+                    else
+                    {
+                        UserObj.ExcludeSkip = 1;
+                    }
+                    db.SaveChanges();
                     // get existing mapped records.
                     installerAddress = new InstallerDAL().GetDynamicInstallerExistingAddress(ProjectID, Root, Cycle, fromDate, toDate, long.Parse(installerId), includeSkip);
 
@@ -387,14 +399,15 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 DateTime startDate = Convert.ToDateTime(fromDate);
                 DateTime endDate = Convert.ToDateTime(toDate);
                 var lat_by_ProjectInstaller = objDAL.CheckAddressExistby_ProjectInstallerDate(ProjectID, InstallerID, startDate, endDate);
-
+                CompassEntities db = new CompassEntities();
+                var ExcludeSkip = db.tblUsers.Where(n => n.UserID == InstallerID).FirstOrDefault().ExcludeSkip;
                 //foreach (var item in lat_by_ProjectInstaller)
                 //{
                 //    item.strFormDate = item.FromDate.Value.ToString("MMM-dd-yyyy");
                 //    item.strToDate = item.ToDate.Value.ToString("MMM-dd-yyyy");
                 //}
 
-                return base.Json(new { lat_by_ProjectInstaller, todaysDate }, JsonRequestBehavior.AllowGet);
+                return base.Json(new { lat_by_ProjectInstaller, todaysDate, ExcludeSkip }, JsonRequestBehavior.AllowGet);
             }
         }
 

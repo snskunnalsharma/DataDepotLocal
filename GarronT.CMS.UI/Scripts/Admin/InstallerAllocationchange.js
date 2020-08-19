@@ -144,18 +144,26 @@ $(document).ready(function () {
             }
         },
         selected: function (event, ui) {
-
-            if ($(ui.selected).hasClass('highlighted')) {
-                $(ui.selected).removeClass('ui-selected click-selected highlighted');
+            if ($(ui.selected).hasClass('disabledli')) {
 
             } else {
-                $(ui.selected).addClass('click-selected highlighted');
+                if ($(ui.selected).hasClass('highlighted')) {
+                    $(ui.selected).removeClass('ui-selected click-selected highlighted');
 
+                } else {
+                    $(ui.selected).addClass('click-selected highlighted');
+
+                }
             }
+            
         },
         unselected: function (event, ui) {
+            if ($(ui.selected).hasClass('disabledli')) {
 
-            $(ui.unselected).removeClass('click-selected');
+            } else {
+                $(ui.unselected).removeClass('click-selected');
+            }
+            
         },
         stop: function (event, ui) {
 
@@ -179,18 +187,25 @@ $(document).ready(function () {
             }
         },
         selected: function (event, ui) {
-
-            if ($(ui.selected).hasClass('highlighted')) {
-                $(ui.selected).removeClass('ui-selected click-selected highlighted');
+            if ($(ui.selected).hasClass('disabledli')) {
 
             } else {
-                $(ui.selected).addClass('click-selected highlighted');
+                if ($(ui.selected).hasClass('highlighted')) {
+                    $(ui.selected).removeClass('ui-selected click-selected highlighted');
 
+                } else {
+                    $(ui.selected).addClass('click-selected highlighted');
+
+                }
             }
         },
         unselected: function (event, ui) {
+            if ($(ui.selected).hasClass('disabledli')) {
 
-            $(ui.unselected).removeClass('click-selected');
+            } else {
+                $(ui.unselected).removeClass('click-selected');
+            }
+            
         },
         stop: function (event, ui) {
 
@@ -229,18 +244,26 @@ $(document).ready(function () {
             }
         },
         selected: function (event, ui) {
-
-            if ($(ui.selected).hasClass('highlighted')) {
-                $(ui.selected).removeClass('ui-selected click-selected highlighted');
+            if ($(ui.selected).hasClass('disabledli')) {
+                console.log("in disableli");
 
             } else {
-                $(ui.selected).addClass('click-selected highlighted');
+                if ($(ui.selected).hasClass('highlighted')) {
+                    $(ui.selected).removeClass('ui-selected click-selected highlighted');
 
+                } else {
+                    $(ui.selected).addClass('click-selected highlighted');
+
+                }
             }
+            
         },
         unselected: function (event, ui) {
+            if ($(ui.selected).hasClass('disabledli')) {
 
-            $(ui.unselected).removeClass('click-selected');
+            } else {
+                $(ui.unselected).removeClass('click-selected');
+            }
         },
         stop: function (event, ui) {
 
@@ -272,18 +295,24 @@ $(document).ready(function () {
             }
         },
         selected: function (event, ui) {
-
-            if ($(ui.selected).hasClass('highlighted')) {
-                $(ui.selected).removeClass('ui-selected click-selected highlighted');
+            if ($(ui.selected).hasClass('disabledli')) {
 
             } else {
-                $(ui.selected).addClass('click-selected highlighted');
+                if ($(ui.selected).hasClass('highlighted')) {
+                    $(ui.selected).removeClass('ui-selected click-selected highlighted');
 
+                } else {
+                    $(ui.selected).addClass('click-selected highlighted');
+
+                }
             }
         },
         unselected: function (event, ui) {
+            if ($(ui.selected).hasClass('disabledli')) {
 
-            $(ui.unselected).removeClass('click-selected');
+            } else {
+                $(ui.unselected).removeClass('click-selected');
+            }
         },
         stop: function (event, ui) {
 
@@ -332,8 +361,11 @@ $(document).ready(function () {
             }
         },
         unselected: function (event, ui) {
+            if ($(ui.selected).hasClass('disabledli')) {
 
-            $(ui.unselected).removeClass('click-selected');
+            } else {
+                $(ui.unselected).removeClass('click-selected');
+            }
         },
         stop: function (event, ui) {
 
@@ -936,7 +968,13 @@ $('#ddlInstaller').unbind().change(function () {
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: function (installerdata) {
-
+                console.log("ExcludeSkip == " + installerdata.ExcludeSkip);
+                if (installerdata.ExcludeSkip == 1) {
+                    console.log("set checkbox status");
+                    $("#chkIncludeSkip").prop("checked", false);
+                } else {
+                    $("#chkIncludeSkip").prop("checked", true);
+                }
                 if (installerdata.lat_by_ProjectInstaller.length > 0) {
 
                     existrecordfound = false;

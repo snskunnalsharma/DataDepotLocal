@@ -67,6 +67,7 @@ namespace GarronT.CMS.Model
         public Nullable<long> ManagerId { get; set; }
         public Nullable<long> FieldSupervisorId { get; set; }
         public Nullable<int> ManagerApprovalRequired { get; set; }
+        public Nullable<int> ExcludeSkip { get; set; }
     
         public virtual ICollection<InvenTrasRequestConfig> InvenTrasRequestConfigs { get; set; }
         public virtual ICollection<InvenTrasRequestConfig> InvenTrasRequestConfigs1 { get; set; }
