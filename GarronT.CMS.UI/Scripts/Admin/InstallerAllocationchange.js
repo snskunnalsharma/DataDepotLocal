@@ -450,6 +450,13 @@ function getProjectList() {
     });
 
 }
+function getCurrentDate() {
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    let current_datetime = new Date()
+    let formatted_date = months[current_datetime.getMonth()] + "-" + current_datetime.getDate() + "-" + current_datetime.getFullYear()
+    console.log(formatted_date)
+    return formatted_date;
+}
 var prjFromDate;
 var prjToDate;
 
@@ -564,7 +571,7 @@ $('#ddlProject').unbind().change(function () {
             if (Project.length > 0) {
 
                 var projectid = Project.val();
-
+                var currDate = getCurrentDate();
                 if (projectid != undefined && projectid != "") {
                     $.each(_ProjectList, function (index, item) {
                         if (item.ProjectId == projectid) {
@@ -731,7 +738,7 @@ $('#ddlProject').unbind().change(function () {
 
 
 
-
+                
                 var urlCycleData = $('#GetCycle').val();
 
                 var i = 0;
@@ -1027,10 +1034,13 @@ $('#ddlInstaller').unbind().change(function () {
                                     var todayDate = new Date(installerdata.todaysDate)
                                     ProjectInstallerlastdate = full.strToDate
                                     if (todayDate > endDate) {
-                                        return '<a href="#" id="' + full.strFormDate + '" name="' + full.strToDate + '" onclick="Edit(this);" class="btn btn-primary btn-xs" role="button" alt="View/Edit" title="View/Edit"><i class="fa fa-eye"></i></a> ';
+                                        //return '<a href="#" id="' + full.strFormDate + '" name="' + full.strToDate + '" onclick="Edit(this);" class="btn btn-primary btn-xs" role="button" alt="View/Edit" title="View/Edit"><i class="fa fa-eye"></i></a> ';
+                                        return '<a href="#" id="' + full.strFormDate + '" name="' + full.strToDate + '" onclick="EditAllocation(this,\'' + full.Cycle + '\',\'' + full.Route + '\');" class="btn btn-primary btn-xs" role="button" alt="View/Edit" title="View/Edit"><i class="fa fa-eye"></i></a> ';
                                     }
                                     else {
-                                        return '<a href="#" id="' + full.strFormDate + '" name="' + full.strToDate + '" onclick="Edit(this);" class="btn btn-primary btn-xs" role="button" alt="View/Edit" title="View/Edit"><i class="fa fa-eye"></i></a> ';
+                                        //return '<a href="#" id="' + full.strFormDate + '" name="' + full.strToDate + '" onclick="Edit(this);" class="btn btn-primary btn-xs" role="button" alt="View/Edit" title="View/Edit"><i class="fa fa-eye"></i></a> ';
+                                        return '<a href="#" id="' + full.strFormDate + '" name="' + full.strToDate + '" onclick="EditAllocation(this,\'' + full.Cycle + '\',\'' + full.Route + '\');" class="btn btn-primary btn-xs" role="button" alt="View/Edit" title="View/Edit"><i class="fa fa-eye"></i></a> ';
+
                                         // return '<a href="#confirmActivatedialog" data-toggle="modal" data-backdrop="static" id=' + full.CityID + ' onclick="Activate(' + full.CityID + ');"  class="btn btn-success btn-xs" role="button" alt="Activate" title="Activate"><i class="fa fa-check"></i></a>';
                                     }
                                 },
@@ -1616,10 +1626,10 @@ function CheckAddressExistby_ProjectInstallerDate() {
                                         var todayDate = new Date(installerdata.todaysDate)
                                         ProjectInstallerlastdate = full.strToDate
                                         if (todayDate > endDate) {
-                                            return '<a href="#" id="' + full.strFormDate + '" name="' + full.strToDate + '" onclick="Edit(this);" class="btn btn-primary btn-xs" role="button" alt="View/Edit" title="View/Edit"><i class="fa fa-eye"></i></a> ';
+                                            return '<a href="#" id="' + full.strFormDate + '" name="' + full.strToDate + '" onclick="EditAllocation(this,\'' + full.Cycle + '\',\'' + full.Route + '\');" class="btn btn-primary btn-xs" role="button" alt="View/Edit" title="View/Edit"><i class="fa fa-eye"></i></a> ';
                                         }
                                         else {
-                                            return '<a href="#" id="' + full.strFormDate + '" name="' + full.strToDate + '" onclick="Edit(this);" class="btn btn-primary btn-xs" role="button" alt="View/Edit" title="View/Edit"><i class="fa fa-eye"></i></a> ';
+                                            return '<a href="#" id="' + full.strFormDate + '" name="' + full.strToDate + '" onclick="EditAllocation(this,\'' + full.Cycle + '\',\'' + full.Route + '\');" class="btn btn-primary btn-xs" role="button" alt="View/Edit" title="View/Edit"><i class="fa fa-eye"></i></a> ';
                                             // return '<a href="#confirmActivatedialog" data-toggle="modal" data-backdrop="static" id=' + full.CityID + ' onclick="Activate(' + full.CityID + ');"  class="btn btn-success btn-xs" role="button" alt="Activate" title="Activate"><i class="fa fa-check"></i></a>';
                                         }
                                     },
@@ -1720,10 +1730,10 @@ $('#btnviewAllInstallers').click(function () {
                                     var todayDate = new Date(installerdata.todaysDate)
                                     ProjectInstallerlastdate = full.strToDate
                                     if (todayDate > endDate) {
-                                        return '<a href="#" id="' + full.strFormDate + '" name="' + full.strToDate + '" onclick="Edit(this);" class="btn btn-primary btn-xs" role="button" alt="View" title="View"><i class="fa fa-eye"></i></a> ';
+                                        return '<a href="#" id="' + full.strFormDate + '" name="' + full.strToDate + '" onclick="EditAllocation(this,\'' + full.Cycle + '\',\'' + full.Route + '\');" class="btn btn-primary btn-xs" role="button" alt="View" title="View"><i class="fa fa-eye"></i></a> ';
                                     }
                                     else {
-                                        return '<a href="#" id="' + full.strFormDate + '" name="' + full.strToDate + '" onclick="Edit(this);" class="btn btn-primary btn-xs" role="button" alt="View/Edit" title="View/Edit"><i class="fa fa-eye"></i></a> ';
+                                        return '<a href="#" id="' + full.strFormDate + '" name="' + full.strToDate + '" onclick="EditAllocation(this,\'' + full.Cycle + '\',\'' + full.Route + '\');" class="btn btn-primary btn-xs" role="button" alt="View/Edit" title="View/Edit"><i class="fa fa-eye"></i></a> ';
                                         // return '<a href="#confirmActivatedialog" data-toggle="modal" data-backdrop="static" id=' + full.CityID + ' onclick="Activate(' + full.CityID + ');"  class="btn btn-success btn-xs" role="button" alt="Activate" title="Activate"><i class="fa fa-check"></i></a>';
                                     }
                                 },
@@ -3018,7 +3028,7 @@ function Edit(data) {
                 if (item.CycleDisabled == false) {
                     $("#ulCycle li").filter(function () { return $(this).text() === item.CycleId; }).addClass("ui-selected click-selected highlighted");
                 }
-                else {
+                else if (incSkip == "1")  {
                     $("#ulCycle li").filter(function () { return $(this).text() === item.CycleId; }).addClass("ui-selected click-selected highlighted disabledli");
                 }
 
@@ -3083,7 +3093,7 @@ function Edit(data) {
                                 if (item.RouteDisabled == false) {
                                     $("#ulroute").find("li[value='" + item.RouteId + "']").addClass("ui-selected click-selected highlighted")
                                 }
-                                else {
+                                else if (incSkip == "1") {
                                     $("#ulroute").find("li[value='" + item.RouteId + "']").addClass("ui-selected click-selected highlighted disabledli")
                                 }
                             });
@@ -3228,6 +3238,7 @@ function Edit(data) {
                     }
                 });
             }
+            waitingDialog.hide();
 
 
         },
@@ -3241,6 +3252,533 @@ function Edit(data) {
             console.log('errorThrown:');
             console.log(errorThrown);
         }
+        
+    });
+    //editInstallerRecord = true;
+
+
+
+    $('#btnAssignAddress').prop("disabled", false);
+    $("#InstallerAddrExist").modal("hide");
+}
+
+function EditAllocation(data, cycle, routes) {
+    debugger;
+    InstallerEdit = true;
+    waitingDialog.show('Loading Please Wait...');
+
+    //set edit mode to false i.e. record not selected to edit from model pop up
+    //Addedby AniketJ to edit daterange
+    oldfromdate = data.id;
+    oldtodate = data.name;
+
+    var fromdate = data.id;
+    var todate = data.name;
+
+    $("#InstallerAddrExist").modal('hide');
+    //model popup flage set to false i.e. popup will not shown
+
+    $("#datepicker1").val(fromdate);
+    $("#datepicker2").datepicker('option', 'minDate', new Date(fromdate));
+    $("#datepicker2").val(todate);
+
+
+    $('#btnShowMap').prop("disabled", true);
+    $('#btnSave').prop("disabled", true);
+    $('#btnExport').prop("disabled", true);
+    $('#btnAssignAddress').prop("disabled", true);
+
+
+    $("#CycleHeader").removeClass("ddlHeader").text("Select Cycle")
+    $("li.liCycle").removeClass('ui-selected click-selected highlighted');
+    $('.txtfilterall').val("");
+    $('.chbSelectAll').prop('checked', false);
+
+    //Route
+    $('#ulroute').empty();
+    $("#routeHeader").removeClass("ddlHeader").text("Select Route");
+
+    //Address
+    $('#ulAddress').empty();
+    $("#addrHeader").removeClass("ddlHeader").text("Select Address");
+
+    $('#btnAssignAddress').prop("disabled", false);
+
+    var ProjectID = $('#ddlProject').val();
+    var InstallerID = $('#ddlInstaller').val();
+    var fromDate = $('#datepicker1').val();
+    var toDate = $('#datepicker2').val();
+    var incSkip = "0";
+    if ($("#chkIncludeSkip").is(
+        ":checked")) {
+        console.log("checked");
+        incSkip = "1";
+    } else {
+        incSkip = "0";
+    }
+    console.log("incSkip == " + incSkip);
+
+    if (cycle != null) {
+        // do stuff 
+        $("#ulCycle li").filter(function () { return $(this).text() === cycle.trim(); }).addClass("ui-selected click-selected highlighted");
+        $('#txtfilterRoute').val("");
+        $('#Route_SelectAll').prop('checked', false);
+        $('#Route1_SelectAll').prop('checked', false);
+
+        $('#txtfilterAddress').val("");
+        $('#Address_SelectAll').prop('checked', false);
+
+
+        var selectedlivalue = $('#ulCycle li.highlighted').map(function (i, el) { return $(el).val(); });
+
+
+        var selectedlilength = selectedlivalue.length;
+        if (selectedlilength == 0) {
+            $("#CycleHeader").removeClass("ddlHeader").text("Select Cycle")
+        } else {
+            $("#CycleHeader").addClass("ddlHeader").text(selectedlilength + " Cycle selected")
+        }
+
+        //#region SelectAll checked/unchecked
+        if ($('#ulCycle .liCycle:visible').length > 0 && $('#ulCycle .highlighted:visible').length == $('#ulCycle .liCycle:visible').length) {
+            $('#Cycle_SelectAll').prop('checked', true);
+        } else {
+            $('#Cycle_SelectAll').prop('checked', false);
+        }
+        //#endregion
+        initialize();
+
+        var cyclevalue = [];
+        var value = $('#ulCycle li.highlighted')
+        value.each(function (index, item) { cyclevalue.push($(this).text()) });
+        var routeValue = routes.split(',');
+        if (cyclevalue != null && cyclevalue.length > 0) {
+
+            var urlRootData = $('#GetAllRouteByCycle').val();
+
+            $.ajax({
+                url: urlRootData,
+                type: 'POST',
+                async: true,
+                data: { ProjectId: ProjectID, "Cycle": cyclevalue, "Route": routeValue, "InstallerId": InstallerID },
+                success: function (data) {
+                    $('#ulroute').empty();
+                    debugger;
+                    $.each(data.Route, function (index, item) { $('#ulroute').append($('<li></li>').val(item).addClass("liRoute active-result").html(item)); });
+
+                    if (InstallerID != null) {
+                        $.each(data.selectedRoute, function (index, item) {
+                            if (item.RouteDisabled == false) {
+                                $("#ulroute").find("li[value='" + item.RouteId + "']").addClass("ui-selected click-selected highlighted")
+                            }
+                            else if (incSkip == "1") {
+                                $("#ulroute").find("li[value='" + item.RouteId + "']").addClass("ui-selected click-selected highlighted disabledli")
+                            }
+                        });
+                    }
+
+                    //selectRoute()
+
+                    $('#txtfilterAddress').val("");
+                    $('#Address_SelectAll').prop('checked', false);
+                    var selectedlivalue = $('#ulroute li.highlighted').map(function (i, el) { return $(el).val(); });
+
+
+                    var selectedlilength = selectedlivalue.length;
+                    if (selectedlilength == 0) {
+                        $("#routeHeader").removeClass("ddlHeader").text("Select Route")
+                    } else {
+                        $("#routeHeader").addClass("ddlHeader").text(selectedlilength + " Route selected")
+                    }
+                    //#region SelectAll checked/unchecked
+                    if ($('#ulroute .liRoute:visible').length > 0 && $('#ulroute .highlighted:visible').length == $('#ulroute .liRoute:visible').length) {
+                        $('#Route_SelectAll').prop('checked', true);
+                    } else {
+                        $('#Route_SelectAll').prop('checked', false);
+                    }
+
+                    if ($('#ulroute1 .liRoute1:visible').length > 0 && $('#ulroute1 .highlighted:visible').length == $('#ulroute1 .liRoute1:visible').length) {
+                        $('#Route1_SelectAll').prop('checked', true);
+                    } else {
+                        $('#Route1_SelectAll').prop('checked', false);
+                    }
+                    //#endregion
+
+
+                    // getAddressList()
+
+                    var projectId = $('#ddlProject').val();
+
+                    var ddlRootvalues = [];
+                    var value = $('#ulroute li.highlighted')
+                    value.each(function (index, item) { ddlRootvalues.push($(this).val()) });
+
+
+                    var ddlCyclevalues = [];
+                    var cyclevalue = $('#ulCycle li.highlighted')
+                    cyclevalue.each(function (index, item) { ddlCyclevalues.push($(this).text()) });
+
+
+                    var urlStateData = $('#GetAddressUrl').val();
+                    var installerid = $('#ddlInstaller').val();
+                    var fromDate = $('#datepicker1').val();
+                    var toDate = $('#datepicker2').val();
+
+
+                    $('#ulAddress').empty();
+                    //for stop purpose
+                    //waitingDialog.hide();
+                    //return;
+
+                    if (ddlRootvalues != null && ddlRootvalues.length > 0) {
+
+                        $.ajax({
+                            url: urlStateData,
+                            async: true,
+                            type: "POST",
+                            dataType: "json",
+                            data: { Root: ddlRootvalues, Cycle: ddlCyclevalues, Address: null, ProjectID: projectId, installerId: installerid, fromDate: fromDate, toDate: toDate, includeSkip: incSkip },
+                            success: function (jsonResult) {
+                                if (jsonResult.success === undefined) {
+
+                                    // here
+                                    $('#ulAddress').empty();
+                                    $.each(jsonResult.AllAddress, function (index, item) { $('#ulAddress').append($('<li></li>').val(item.ID).addClass("liAddress active-result").html(item.Street)); });
+
+                                    $.each(jsonResult.InstallerAddress, function (index, item) {
+
+                                        if (item.StreetDisabled == true) {
+
+                                            $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted disabledli")
+                                        }
+                                        else if (item.Appointmentflag == "1") {
+                                            $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted Appointmentdisabledli")
+                                        }
+                                        else {
+
+                                            $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted ")
+                                        }
+                                    });
+
+
+                                    //selectAddress()
+
+                                    var selectedlivalue = $('#ulAddress li.highlighted').map(function (i, el) { return $(el)[0].value; });
+
+                                    var selectedlilength = selectedlivalue.length;
+                                    if (selectedlilength == 0) {
+                                        $("#addrHeader").removeClass("ddlHeader").text("Select Address")
+                                        $('#btnShowMap').prop("disabled", true);
+                                        $('#btnSave').prop("disabled", false);
+                                        $('#btnExport').prop("disabled", true);
+                                    } else {
+                                        $("#addrHeader").addClass("ddlHeader").text(selectedlilength + " Address Selected")
+                                        $('#btnShowMap').prop("disabled", false);
+                                        $('#btnSave').prop("disabled", false);
+                                        $('#btnExport').prop("disabled", true);
+                                    }
+                                    debugger
+                                    //#region SelectAll checked/unchecked
+                                    if ($('#ulAddress .liAddress:visible').length > 0 && $('#ulAddress .highlighted:visible').length == $('#ulAddress .liAddress:visible').length) {
+                                        $('#Address_SelectAll').prop('checked', true);
+                                    } else {
+                                        $('#Address_SelectAll').prop('checked', false);
+                                    }
+
+
+                                    waitingDialog.hide();
+                                }
+                                else {
+                                    waitingDialog.hide();
+                                    var $toast = toastr["error"](jsonResult.message, "Notification");
+                                }
+
+                            },
+                            error: function (jqXHR, textStatus, errorThrown) {
+                                waitingDialog.hide();
+                                var $toast = toastr["error"](textStatus + "</br>" + errorThrown, "Notification");
+                                console.log('jqXHR:');
+                                console.log(jqXHR);
+                                console.log('textStatus:');
+                                console.log(textStatus);
+                                console.log('errorThrown:');
+                                console.log(errorThrown);
+                            }
+                        });
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    waitingDialog.hide();
+                    var $toast = toastr["error"](textStatus + "</br>" + errorThrown, "Error Notification");
+                    console.log('jqXHR:');
+                    console.log(jqXHR);
+                    console.log('textStatus:');
+                    console.log(textStatus);
+                    console.log('errorThrown:');
+                    console.log(errorThrown);
+                }
+            });
+        }
+
+
+        //waitingDialog.hide();
+        return;
+    }
+
+    var GetExistingCycleList = $('#GetExistingCycleList').val();
+
+    $.ajax({
+        type: "Post",
+        url: GetExistingCycleList,
+        //async: false,
+        async: true,
+        data: JSON.stringify({ ProjectID: ProjectID, InstallerID: InstallerID, fromDate: fromDate, toDate: toDate }),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (data) {
+            debugger;
+            //waitingDialog.hide();
+
+            $('#ulCycle').empty();
+            var count = data.OrignalCycleList.length;
+            for (i = 0; i < count; i++) {
+                $('#ulCycle').append($('<li></li>').val(data.OrignalCycleList[i].CycleId).addClass("liCycle active-result").html(data.OrignalCycleList[i].CycleId));
+            }
+
+
+            //select the item whose street are visited.
+            //If the street of cycle has record skip or rtu then they are disabled,
+            //they can enabled only when that records are assigned to other installer.
+            $.each(data.CycleList, function (index, item) {
+                debugger;
+                if (item.CycleDisabled == false) {
+                    $("#ulCycle li").filter(function () { return $(this).text() === item.CycleId; }).addClass("ui-selected click-selected highlighted");
+                }
+                else if (incSkip == "1") {
+                    $("#ulCycle li").filter(function () { return $(this).text() === item.CycleId; }).addClass("ui-selected click-selected highlighted disabledli");
+                }
+
+            });
+
+
+            $('#txtfilterRoute').val("");
+            $('#Route_SelectAll').prop('checked', false);
+            $('#Route1_SelectAll').prop('checked', false);
+
+            $('#txtfilterAddress').val("");
+            $('#Address_SelectAll').prop('checked', false);
+
+
+            var selectedlivalue = $('#ulCycle li.highlighted').map(function (i, el) { return $(el).val(); });
+
+
+            var selectedlilength = selectedlivalue.length;
+            if (selectedlilength == 0) {
+                $("#CycleHeader").removeClass("ddlHeader").text("Select Cycle")
+            } else {
+                $("#CycleHeader").addClass("ddlHeader").text(selectedlilength + " Cycle selected")
+            }
+
+            //#region SelectAll checked/unchecked
+            if ($('#ulCycle .liCycle:visible').length > 0 && $('#ulCycle .highlighted:visible').length == $('#ulCycle .liCycle:visible').length) {
+                $('#Cycle_SelectAll').prop('checked', true);
+            } else {
+                $('#Cycle_SelectAll').prop('checked', false);
+            }
+            //#endregion
+
+
+
+            // getRouteList()
+            initialize();
+
+
+
+            var cyclevalue = [];
+            var value = $('#ulCycle li.highlighted')
+            value.each(function (index, item) { cyclevalue.push($(this).text()) });
+
+            if (cyclevalue != null && cyclevalue.length > 0) {
+
+                var urlRootData = $('#GetRootByCycle').val();
+
+                $.ajax({
+                    url: urlRootData,
+                    type: 'POST',
+                    async: true,
+                    data: { ProjectId: ProjectID, "Cycle": cyclevalue, InstallerId: InstallerID, strDateTime: fromDate, strtoTime: toDate },
+                    success: function (data) {
+
+
+                        $('#ulroute').empty();
+
+                        $.each(data.Route, function (index, item) { $('#ulroute').append($('<li></li>').val(item).addClass("liRoute active-result").html(item)); });
+
+                        if (InstallerID != null) {
+                            $.each(data.selectedRoute, function (index, item) {
+                                if (item.RouteDisabled == false) {
+                                    $("#ulroute").find("li[value='" + item.RouteId + "']").addClass("ui-selected click-selected highlighted")
+                                }
+                                else if (incSkip == "1") {
+                                    $("#ulroute").find("li[value='" + item.RouteId + "']").addClass("ui-selected click-selected highlighted disabledli")
+                                }
+                            });
+                        }
+
+                        //selectRoute()
+
+                        $('#txtfilterAddress').val("");
+                        $('#Address_SelectAll').prop('checked', false);
+                        var selectedlivalue = $('#ulroute li.highlighted').map(function (i, el) { return $(el).val(); });
+
+
+                        var selectedlilength = selectedlivalue.length;
+                        if (selectedlilength == 0) {
+                            $("#routeHeader").removeClass("ddlHeader").text("Select Route")
+                        } else {
+                            $("#routeHeader").addClass("ddlHeader").text(selectedlilength + " Route selected")
+                        }
+                        //#region SelectAll checked/unchecked
+                        if ($('#ulroute .liRoute:visible').length > 0 && $('#ulroute .highlighted:visible').length == $('#ulroute .liRoute:visible').length) {
+                            $('#Route_SelectAll').prop('checked', true);
+                        } else {
+                            $('#Route_SelectAll').prop('checked', false);
+                        }
+
+                        if ($('#ulroute1 .liRoute1:visible').length > 0 && $('#ulroute1 .highlighted:visible').length == $('#ulroute1 .liRoute1:visible').length) {
+                            $('#Route1_SelectAll').prop('checked', true);
+                        } else {
+                            $('#Route1_SelectAll').prop('checked', false);
+                        }
+                        //#endregion
+
+
+                        // getAddressList()
+
+                        var projectId = $('#ddlProject').val();
+
+                        var ddlRootvalues = [];
+                        var value = $('#ulroute li.highlighted')
+                        value.each(function (index, item) { ddlRootvalues.push($(this).val()) });
+
+
+                        var ddlCyclevalues = [];
+                        var cyclevalue = $('#ulCycle li.highlighted')
+                        cyclevalue.each(function (index, item) { ddlCyclevalues.push($(this).text()) });
+
+
+                        var urlStateData = $('#GetAddressUrl').val();
+                        var installerid = $('#ddlInstaller').val();
+                        var fromDate = $('#datepicker1').val();
+                        var toDate = $('#datepicker2').val();
+
+
+                        $('#ulAddress').empty();
+
+                        if (ddlRootvalues != null && ddlRootvalues.length > 0) {
+
+                            $.ajax({
+                                url: urlStateData,
+                                async: true,
+                                type: "POST",
+                                dataType: "json",
+                                data: { Root: ddlRootvalues, Cycle: ddlCyclevalues, Address: null, ProjectID: projectId, installerId: installerid, fromDate: fromDate, toDate: toDate, includeSkip: incSkip },
+                                success: function (jsonResult) {
+                                    if (jsonResult.success === undefined) {
+
+                                        // here
+                                        $('#ulAddress').empty();
+                                        $.each(jsonResult.AllAddress, function (index, item) { $('#ulAddress').append($('<li></li>').val(item.ID).addClass("liAddress active-result").html(item.Street)); });
+
+                                        $.each(jsonResult.InstallerAddress, function (index, item) {
+
+                                            if (item.StreetDisabled == true) {
+
+                                                $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted disabledli")
+                                            }
+                                            else if (item.Appointmentflag == "1") {
+                                                $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted Appointmentdisabledli")
+                                            }
+                                            else {
+
+                                                $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted ")
+                                            }
+                                        });
+
+
+                                        //selectAddress()
+
+                                        var selectedlivalue = $('#ulAddress li.highlighted').map(function (i, el) { return $(el)[0].value; });
+
+                                        var selectedlilength = selectedlivalue.length;
+                                        if (selectedlilength == 0) {
+                                            $("#addrHeader").removeClass("ddlHeader").text("Select Address")
+                                            $('#btnShowMap').prop("disabled", true);
+                                            $('#btnSave').prop("disabled", false);
+                                            $('#btnExport').prop("disabled", true);
+                                        } else {
+                                            $("#addrHeader").addClass("ddlHeader").text(selectedlilength + " Address Selected")
+                                            $('#btnShowMap').prop("disabled", false);
+                                            $('#btnSave').prop("disabled", false);
+                                            $('#btnExport').prop("disabled", true);
+                                        }
+                                        debugger
+                                        //#region SelectAll checked/unchecked
+                                        if ($('#ulAddress .liAddress:visible').length > 0 && $('#ulAddress .highlighted:visible').length == $('#ulAddress .liAddress:visible').length) {
+                                            $('#Address_SelectAll').prop('checked', true);
+                                        } else {
+                                            $('#Address_SelectAll').prop('checked', false);
+                                        }
+
+
+                                        waitingDialog.hide();
+                                    }
+                                    else {
+                                        waitingDialog.hide();
+                                        var $toast = toastr["error"](jsonResult.message, "Notification");
+                                    }
+
+                                },
+                                error: function (jqXHR, textStatus, errorThrown) {
+                                    waitingDialog.hide();
+                                    var $toast = toastr["error"](textStatus + "</br>" + errorThrown, "Notification");
+                                    console.log('jqXHR:');
+                                    console.log(jqXHR);
+                                    console.log('textStatus:');
+                                    console.log(textStatus);
+                                    console.log('errorThrown:');
+                                    console.log(errorThrown);
+                                }
+                            });
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        waitingDialog.hide();
+                        var $toast = toastr["error"](textStatus + "</br>" + errorThrown, "Error Notification");
+                        console.log('jqXHR:');
+                        console.log(jqXHR);
+                        console.log('textStatus:');
+                        console.log(textStatus);
+                        console.log('errorThrown:');
+                        console.log(errorThrown);
+                    }
+                });
+            }
+            waitingDialog.hide();
+
+
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            waitingDialog.hide();
+            var $toast = toastr["error"](textStatus + "</br>" + errorThrown, "Error Notification");
+            console.log('jqXHR:');
+            console.log(jqXHR);
+            console.log('textStatus:');
+            console.log(textStatus);
+            console.log('errorThrown:');
+            console.log(errorThrown);
+        }
+
     });
     //editInstallerRecord = true;
 
@@ -3463,7 +4001,7 @@ $("#btnCycleFilter").click(function () {
                         if (item.RouteDisabled == false) {
                             $("#ulroute").find("li[value='" + item.RouteId + "']").addClass("ui-selected click-selected highlighted");
                         }
-                        else {
+                        else if (incSkip == "1") {
                             $("#ulroute").find("li[value='" + item.RouteId + "']").addClass("ui-selected click-selected highlighted disabledli")
                         }
                     });

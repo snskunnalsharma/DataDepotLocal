@@ -67,10 +67,15 @@ namespace CMSAuditThread
                         }
                         foreach (var user in userObj)
                         {
+                            
                             List<CycleMaster> cycleList = GetExistingCycles((long)projectId, user.UserId, fromDate, toDate);
 
                             foreach (var cycle in cycleList)
                             {
+                                if (user.UserId == 14 && projectId == 10075 && cycle.CycleId == "16")
+                                {
+                                    Console.WriteLine("For user and project - 14,10075");
+                                }
                                 var cycleId = cycle.CycleId;
                                 clsErrorLogFile.writeStatus("For Cycle -" + cycleId);
                                 Console.WriteLine("For Cycle -" + cycleId);
@@ -220,6 +225,8 @@ namespace CMSAuditThread
         }
     }
 
+
+    /*
     class SkippedTask
     {
         public void changeSkipToNotAllocated()
@@ -272,8 +279,8 @@ namespace CMSAuditThread
                 clsErrorLogFile.writeStatus("changeSkipToNotAllocated Method exception ex inner exception message-" + Convert.ToString(ex.InnerException.Message));
                 Console.WriteLine("changeSkipToNotAllocated Method exception ex message-" + ex.Message);
             }
-            clsErrorLogFile.writeStatus("Thread changeSkipToNotAllocated End at -" + DateTime.Now.ToShortTimeString());
+            clsErrorLogFile .writeStatus("Thread changeSkipToNotAllocated End at -" + DateTime.Now.ToShortTimeString());
             Console.WriteLine("Thread changeSkipToNotAllocated End at -" + DateTime.Now.ToShortTimeString());
         }
-    }
+    }*/
 }

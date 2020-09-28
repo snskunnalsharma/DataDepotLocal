@@ -199,13 +199,9 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         public ActionResult GetExistingCycles(long projectID, long installerId, string fromDate, string toDate)
         {
             List<string> cyclelist1 = new List<string>();
-
             cyclelist1 = new InstallerDAL().GetDynamicFreshCycleByProjectID(projectID);
 
-
-
             var cyclelist2 = new InstallerDAL().GetDynamicExistingMappedCycle(projectID, installerId, DateTime.Parse(fromDate), DateTime.Parse(toDate));
-
 
             List<CycleMaster> OrignalCycleList = new List<CycleMaster>();
             List<CycleMaster> cyclelist = new List<CycleMaster>();
@@ -254,7 +250,17 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             return base.Json(new { OrignalCycleList = OrignalCycleList, CycleList = cyclelist }, JsonRequestBehavior.AllowGet);
         }
 
+        public ActionResult GetAllRouteByCycle(long ProjectId, string[] Cycle, string[] Route, string InstallerId)
+        {
+            List<string> routeList = new InstallerDAL().GetAllRouteByCycle(Cycle, ProjectId);
+            var InstallerRouteList = new List<RouteMaster>();
 
+            foreach (var item in Route)
+            {
+                InstallerRouteList.Add(new RouteMaster { RouteId = item, RouteDisabled = false });
+            }
+            return base.Json(new { Route = routeList, selectedRoute = InstallerRouteList }, JsonRequestBehavior.AllowGet);
+        }
 
         public ActionResult GetRootByCycle(long ProjectId, string[] Cycle, string InstallerId, string strDateTime, string strtoTime)
         {

@@ -171,6 +171,50 @@ namespace GarronT.CMS.Model.DAL
             return GetRoot;
         }
 
+        public List<string> GetAllRouteByCycle(string[] Cycle, long ProjectId)
+        {
+            string cycleVal = "";
+            foreach(var item in Cycle)
+            {
+                if (cycleVal.Length == 0)
+                {
+                    cycleVal = item;
+                }
+                else
+                {
+                    cycleVal += "," + item + "";
+                }
+            }
+            CompassEntities dbcontext = new CompassEntities();
+            List<PROC_ExistingRoute_Result> objListPROC_ExistingRoute_Result = new List<PROC_ExistingRoute_Result>();
+            List<string> GetRoot = new List<string>();
+            SqlConnection sqlConnection1 = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
+            SqlCommand cmd = new SqlCommand();
+            SqlDataReader reader;
+
+            cmd.CommandText = "PROC_AllRouteByCycle";
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Connection = sqlConnection1;
+            cmd.Parameters.Add("@ProjectId", ProjectId);
+            cmd.Parameters.Add("@Cycle", cycleVal);
+
+            sqlConnection1.Open();
+
+            reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                objListPROC_ExistingRoute_Result.Add(new PROC_ExistingRoute_Result { Route = reader["Route"].ToString(), Cycle = reader["Cycle"].ToString() });
+            }
+
+            sqlConnection1.Close();
+            reader.Close();
+            reader.Dispose();
+            cmd.Dispose();
+            sqlConnection1.Dispose();
+            GetRoot = objListPROC_ExistingRoute_Result.Where(x => Cycle.Contains(x.Cycle)).Select(a => a.Route).Distinct().OrderBy(a => a).ToList();
+
+            return GetRoot;
+        }
 
         public List<string> GetDynamicFreshRootByCycle(string[] Cycle, long ProjectId)
         {
@@ -181,11 +225,24 @@ namespace GarronT.CMS.Model.DAL
             SqlCommand cmd = new SqlCommand();
             SqlDataReader reader;
 
-            cmd.CommandText = "PROC_DynamicPendingRoute";
+            string cycleVal = "";
+            foreach (var item in Cycle)
+            {
+                if (cycleVal.Length == 0)
+                {
+                    cycleVal = item;
+                }
+                else
+                {
+                    cycleVal += "," + item + "";
+                }
+            }
+
+            cmd.CommandText = "PROC_DynamicPendingRoute_ByCycle";
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Connection = sqlConnection1;
             cmd.Parameters.Add("@ProjectId", ProjectId);
-
+            cmd.Parameters.Add("@Cycle", cycleVal);
             sqlConnection1.Open();
 
             reader = cmd.ExecuteReader();
@@ -207,19 +264,32 @@ namespace GarronT.CMS.Model.DAL
         public List<PROC_ExistingRoute_Result> GetDynamicExistingRootByCycle(string[] Cycle, long ProjectId, long installerId, DateTime fromDate, DateTime toDate)
         {
             CompassEntities dbcontext = new CompassEntities();
+            string cycleVal = "";
+            foreach (var item in Cycle)
+            {
+                if (cycleVal.Length == 0)
+                {
+                    cycleVal = item;
+                }
+                else
+                {
+                    cycleVal += "," + item + "";
+                }
+            }
 
             List<PROC_ExistingRoute_Result> objListPROC_ExistingRoute_Result = new List<PROC_ExistingRoute_Result>();
             SqlConnection sqlConnection1 = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
             SqlCommand cmd = new SqlCommand();
             SqlDataReader reader;
 
-            cmd.CommandText = "PROC_DynamicExistingRoute";
+            cmd.CommandText = "PROC_DynamicExistingRoute_ByCycle";
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Connection = sqlConnection1;
             cmd.Parameters.Add("@ProjectId", ProjectId);
             cmd.Parameters.Add("@InstallerId", installerId);
             cmd.Parameters.Add("@fromDate", fromDate);
             cmd.Parameters.Add("@toDate", toDate);
+            cmd.Parameters.Add("@Cycle", cycleVal);
             sqlConnection1.Open();
 
             reader = cmd.ExecuteReader();
@@ -558,18 +628,38 @@ namespace GarronT.CMS.Model.DAL
 
         }
 
-
         public List<AddressMaster> GetDynamicInstallerExistingAddress(long projectId, List<string> Root, List<string> Cycle, string fromDate, string toDate, long installerId, string includeSkip)
         {
-
-
-
             //List<AddressMaster> data = CompassEntities.STP_GetVisitForUserInstallation(fromDate, toDate, installerId, projectid).ToList().
             //      Where(x => Root.Contains(x.Route) && Cycle.Contains(x.Cycle)).
             //    Select(o => new AddressMaster { ID = o.id, Street = o.Street, Latitude = o.Latitude, Longitude = o.Longitude }).ToList();
 
             DateTime _frmDate = Convert.ToDateTime(fromDate);
             DateTime _toDate = Convert.ToDateTime(toDate);
+            string routeVal = "";
+            string cycleVal = "";
+            foreach (var item in Cycle)
+            {
+                if (cycleVal.Length == 0)
+                {
+                    cycleVal = item.Trim();
+                }
+                else
+                {
+                    cycleVal += "," + item.Trim() + "";
+                }
+            }
+            foreach (var item in Root)
+            {
+                if (routeVal.Length == 0)
+                {
+                    routeVal = item.Trim();
+                }
+                else
+                {
+                    routeVal += "," + item.Trim();
+                }
+            }
 
             using (CompassEntities dbcontext = new CompassEntities())
             {
@@ -579,19 +669,30 @@ namespace GarronT.CMS.Model.DAL
                 if (formId != null && formId != 0)
                 {
 
-
+                    var procName = "";
+                    if (includeSkip != null && includeSkip.Equals("1"))
+                    {
+                        procName = "PROC_InstallerAllocation_GetInstallerData_ByCycleRoute_WithSkipped";
+                    }
+                    else
+                    {
+                        procName = "PROC_InstallerAllocation_GetInstallerData_ByCycleRoute";
+                    }
                     List<Proc_GetInstallerFormStatusData_Result> objList = new List<Proc_GetInstallerFormStatusData_Result>();
                     SqlConnection sqlConnection1 = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
                     SqlCommand cmd = new SqlCommand();
                     SqlDataReader reader;
 
-                    cmd.CommandText = "PROC_InstallerAllocation_GetInstallerData";
+                    //cmd.CommandText = "PROC_InstallerAllocation_GetInstallerData";
+                    cmd.CommandText = procName;
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Connection = sqlConnection1;
                     cmd.Parameters.Add("@formId", formId);
                     cmd.Parameters.Add("@InstallerId", installerId);
                     cmd.Parameters.Add("@FromDate", _frmDate);
                     cmd.Parameters.Add("@ToDate", _toDate);
+                    cmd.Parameters.Add("@Cycle", cycleVal);
+                    cmd.Parameters.Add("@Route", routeVal);
                     cmd.CommandTimeout = 600;
                     //cmd.CommandTimeout = 120;
                     sqlConnection1.Open();
@@ -846,7 +947,31 @@ namespace GarronT.CMS.Model.DAL
 
             CompassEntities dbcontext = new CompassEntities();
             List<AddressMaster> objaddress = new List<AddressMaster>();
-
+            string procName = "PROC_InstallerAllocation_GetAllVisits_ByCycleRoute";
+            string routeVal = "";
+            string cycleVal = "";
+            foreach(var item in Cycle)
+            {
+                if (cycleVal.Length == 0)
+                {
+                    cycleVal = item.Trim();
+                }
+                else
+                {
+                    cycleVal += "," + item.Trim() + "";
+                }
+            }
+            foreach(var item in Root)
+            {
+                if(routeVal.Length == 0)
+                {
+                    routeVal = item.Trim();
+                }
+                else
+                {
+                    routeVal += "," + item.Trim();
+                }
+            }
 
             if (Root != null)
             {
@@ -855,10 +980,13 @@ namespace GarronT.CMS.Model.DAL
                 SqlCommand cmd = new SqlCommand();
                 SqlDataReader reader;
 
-                cmd.CommandText = "PROC_InstallerAllocation_GetAllVisits";
+                //cmd.CommandText = "PROC_InstallerAllocation_GetAllVisits";
+                cmd.CommandText = "PROC_InstallerAllocation_GetAllVisits_ByCycleRoute";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Connection = sqlConnection1;
                 cmd.Parameters.Add("@ProjectId", projectId);
+                cmd.Parameters.Add("@Cycle", cycleVal);
+                cmd.Parameters.Add("@Route", routeVal);
 
                 sqlConnection1.Open();
 
@@ -883,14 +1011,15 @@ namespace GarronT.CMS.Model.DAL
                 cmd.Dispose();
                 sqlConnection1.Dispose();
 
-                objaddress = objaddress.Where(x => Root.Contains(x.Route) && Cycle.Contains(x.Cycle)).
+                /*objaddress = objaddress.Where(x => Root.Contains(x.Route) && Cycle.Contains(x.Cycle)).
                 Select(o => new AddressMaster
                 {
                     Latitude = o.Latitude,
                     Longitude = o.Longitude,
                     ID = o.ID,
                     Street = o.Street,
-                }).OrderBy(a => a.Latitude).ThenBy(a => a.Longitude).ThenBy(a => a.Street).ToList();
+                }).OrderBy(a => a.Latitude).ThenBy(a => a.Longitude).ThenBy(a => a.Street).ToList();*/
+                objaddress = objaddress.OrderBy(a => a.Latitude).ThenBy(a => a.Longitude).ThenBy(a => a.Street).ToList();
             }
 
             return objaddress;
@@ -2806,13 +2935,24 @@ namespace GarronT.CMS.Model.DAL
 
             using (CompassEntities dbcontext = new CompassEntities())
             {
+                var ExcludeSkip = dbcontext.tblUsers.Where(n => n.UserID == InstallerID).FirstOrDefault().ExcludeSkip;
+                string procName = "";
+                if(ExcludeSkip == 1)
+                {
+                    procName = "PROC_InstallerAllocation_CurrentDataInstaller_ByDate_New";
+
+                }
+                else
+                {
+                    procName = "PROC_InstallerAllocation_CurrentDataInstaller_WithSkipped_ByDate";
+                }
                 List<STP_GetExistedUserInstallationbyDate_Result> objList = new List<STP_GetExistedUserInstallationbyDate_Result>();
                 SqlConnection sqlConnection1 = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
                 SqlCommand cmd = new SqlCommand();
                 SqlDataReader reader;
 
                 //cmd.CommandText = "PROC_InstallerAllocation_CurrentDataInstaller_ByDate";
-                cmd.CommandText = "PROC_InstallerAllocation_CurrentDataInstaller_ByDate_New";
+                cmd.CommandText = procName;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Connection = sqlConnection1;
                 cmd.Parameters.Add("@projectId", ProjectID);

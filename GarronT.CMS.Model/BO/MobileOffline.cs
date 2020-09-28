@@ -547,6 +547,7 @@ namespace GarronT.CMS.Model.BO
         public List<newMobileOffline2> data { get; set; }
         public int totalRecord { get; set; }
         public List<LastCompleteLocation> projectLastLocation { get; set; }
+        public TimeSpan totalTime { get; set; }
     }
      
     public class LastCompleteLocation

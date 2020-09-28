@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -1832,7 +1833,8 @@ namespace GarronT.CMS.Model.DAL
         {
             try
             {
-
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
                 MobileOfflineResult2 mobileOfflineResult = new MobileOfflineResult2();
 
                 List<newMobileOffline2> objListMobileOffline = new List<newMobileOffline2>();
@@ -2957,6 +2959,7 @@ namespace GarronT.CMS.Model.DAL
                     }
                     #endregion
                     //get last complete position of user project's
+                    var timeElapsed = sw.Elapsed;
                     if (!checkRecordAvilableForNextTrip)
                     {                     
                         var projectLastLocation = getLastCompleteLocation(userId);
@@ -2965,7 +2968,8 @@ namespace GarronT.CMS.Model.DAL
                             mobileOfflineResult.projectLastLocation = projectLastLocation;
                         }
                     }
-                    
+                    mobileOfflineResult.totalTime = sw.Elapsed;
+
                     return mobileOfflineResult;
 
 
