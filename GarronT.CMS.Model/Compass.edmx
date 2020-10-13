@@ -1844,8 +1844,8 @@
             <PropertyRef Name="VersionId" />
           </Key>
           <Property Name="VersionId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="VersionNumber" Type="varchar" MaxLength="20" Nullable="false" />
-          <Property Name="VersionDescription" Type="varchar" MaxLength="2000" Nullable="false" />
+          <Property Name="VersionNumber" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="VersionDescription" Type="varchar" MaxLength="4000" Nullable="false" />
           <Property Name="Active" Type="int" Nullable="false" />
           <Property Name="CreatedBy" Type="int" />
           <Property Name="CreatedOn" Type="datetime" />
@@ -1865,6 +1865,18 @@
           <Property Name="CreatedOn" Type="datetime" />
           <Property Name="ModifiedBy" Type="int" />
           <Property Name="ModifiedOn" Type="datetime" />
+        </EntityType>
+        <EntityType Name="TimeClockMaster">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="250" />
+          <Property Name="Active" Type="int" />
+          <Property Name="CreatedOn" Type="datetime" />
+          <Property Name="CreatedBy" Type="bigint" />
+          <Property Name="ModifiedOn" Type="datetime" />
+          <Property Name="ModifiedBy" Type="bigint" />
         </EntityType>
         <EntityType Name="UploadedExcelData">
           <Key>
@@ -1963,6 +1975,22 @@
           <Property Name="ModifiedBy" Type="int" />
           <Property Name="ModifiedOn" Type="datetime" />
           <Property Name="FKCustomerId" Type="bigint" />
+        </EntityType>
+        <EntityType Name="UserTimeClockDetail">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FKTimeClockId" Type="bigint" />
+          <Property Name="FKUploadedDataExcelId" Type="bigint" />
+          <Property Name="FKProductId" Type="bigint" />
+          <Property Name="InTime" Type="datetime" />
+          <Property Name="OutTime" Type="datetime" />
+          <Property Name="Active" Type="int" />
+          <Property Name="CreatedOn" Type="datetime" />
+          <Property Name="CreatedBy" Type="bigint" />
+          <Property Name="ModifiedOn" Type="datetime" />
+          <Property Name="ModifiedBy" Type="bigint" />
         </EntityType>
         <EntityType Name="UtilityMaster">
           <Key>
@@ -2964,6 +2992,42 @@ warning 6002: The table/view 'CMSMeter.dbo.VW_Project' does not have a primary k
             </Dependent>
           </ReferentialConstraint>
         </Association>
+      <Association Name="FK_UserTimeClockDetail_ProductMaster">
+        <End Role="ProductMaster" Type="Self.ProductMaster" Multiplicity="0..1" />
+        <End Role="UserTimeClockDetail" Type="Self.UserTimeClockDetail" Multiplicity="*" />
+        <ReferentialConstraint>
+          <Principal Role="ProductMaster">
+            <PropertyRef Name="Id" />
+          </Principal>
+          <Dependent Role="UserTimeClockDetail">
+            <PropertyRef Name="FKProductId" />
+          </Dependent>
+        </ReferentialConstraint>
+      </Association>
+      <Association Name="FK_UserTimeClockDetail_TimeClockMaster">
+        <End Role="TimeClockMaster" Type="Self.TimeClockMaster" Multiplicity="0..1" />
+        <End Role="UserTimeClockDetail" Type="Self.UserTimeClockDetail" Multiplicity="*" />
+        <ReferentialConstraint>
+          <Principal Role="TimeClockMaster">
+            <PropertyRef Name="Id" />
+          </Principal>
+          <Dependent Role="UserTimeClockDetail">
+            <PropertyRef Name="FKTimeClockId" />
+          </Dependent>
+        </ReferentialConstraint>
+      </Association>
+      <Association Name="FK_UserTimeClockDetail_UploadedExcelData">
+        <End Role="UploadedExcelData" Type="Self.UploadedExcelData" Multiplicity="0..1" />
+        <End Role="UserTimeClockDetail" Type="Self.UserTimeClockDetail" Multiplicity="*" />
+        <ReferentialConstraint>
+          <Principal Role="UploadedExcelData">
+            <PropertyRef Name="Id" />
+          </Principal>
+          <Dependent Role="UserTimeClockDetail">
+            <PropertyRef Name="FKUploadedDataExcelId" />
+          </Dependent>
+        </ReferentialConstraint>
+      </Association>
         <Association Name="FK_WarehouseMaster_TblCityMaster">
           <End Role="TblCityMaster" Type="Self.TblCityMaster" Multiplicity="1" />
           <End Role="WarehouseMaster" Type="Self.WarehouseMaster" Multiplicity="*" />
@@ -3624,6 +3688,8 @@ warning 6002: The table/view 'CMSMeter.dbo.VW_Project' does not have a primary k
           <EntitySet Name="WarehouseMaster" EntityType="Self.WarehouseMaster" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WarehouseUserRelation" EntityType="Self.WarehouseUserRelation" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SerialNumberSummary" EntityType="Self.SerialNumberSummary" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TimeClockMaster" EntityType="Self.TimeClockMaster" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserTimeClockDetail" EntityType="Self.UserTimeClockDetail" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="VW_AuditorList" EntityType="Self.VW_AuditorList" store:Type="Views" store:Schema="dbo">
             <DefiningQuery>SELECT 
     [VW_AuditorList].[UserID] AS [UserID], 
@@ -4916,6 +4982,20 @@ warning 6002: The table/view 'CMSMeter.dbo.VW_Project' does not have a primary k
           </AssociationSet>
           <EntitySet Name="VW_Project" EntityType="CompassModel.VW_Project" />
           <EntitySet Name="SerialNumberSummary" EntityType="CompassModel.SerialNumberSummary" />
+          <EntitySet Name="TimeClockMasters" EntityType="CompassModel.TimeClockMaster" />
+          <EntitySet Name="UserTimeClockDetails" EntityType="CompassModel.UserTimeClockDetail" />
+          <AssociationSet Name="FK_UserTimeClockDetail_ProductMaster" Association="CompassModel.FK_UserTimeClockDetail_ProductMaster">
+            <End Role="ProductMaster" EntitySet="ProductMasters" />
+            <End Role="UserTimeClockDetail" EntitySet="UserTimeClockDetails" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserTimeClockDetail_TimeClockMaster" Association="CompassModel.FK_UserTimeClockDetail_TimeClockMaster">
+            <End Role="TimeClockMaster" EntitySet="TimeClockMasters" />
+            <End Role="UserTimeClockDetail" EntitySet="UserTimeClockDetails" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserTimeClockDetail_UploadedExcelData" Association="CompassModel.FK_UserTimeClockDetail_UploadedExcelData">
+            <End Role="UploadedExcelData" EntitySet="UploadedExcelDatas" />
+            <End Role="UserTimeClockDetail" EntitySet="UserTimeClockDetails" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="C__MigrationHistory">
           <Key>
@@ -6736,6 +6816,7 @@ warning 6002: The table/view 'CMSMeter.dbo.VW_Project' does not have a primary k
           <Property Name="RefCol56" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
           <Property Name="RefCol57" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
           <Property Name="RefCol58" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="UserTimeClockDetails" Relationship="CompassModel.FK_UserTimeClockDetail_UploadedExcelData" FromRole="UploadedExcelData" ToRole="UserTimeClockDetail" />
         </EntityType>
         <ComplexType Name="PROC_ReportPDF_GetReportHeaderFields_Result">
           <Property Type="String" Name="formname" Nullable="false" MaxLength="250" />
@@ -7824,7 +7905,7 @@ warning 6002: The table/view 'CMSMeter.dbo.VW_Project' does not have a primary k
           <NavigationProperty Name="InventoryMobileUploadDetails" Relationship="CompassModel.FK_InventoryMobileUploadDetails_ProductMaster" FromRole="ProductMaster" ToRole="InventoryMobileUploadDetail" />
           <NavigationProperty Name="ProductMasterFields" Relationship="CompassModel.FK_ProductMasterFields_ProductMaster" FromRole="ProductMaster" ToRole="ProductMasterField" />
           <NavigationProperty Name="StockDetails" Relationship="CompassModel.FK_StockDetails_ProductMaster" FromRole="ProductMaster" ToRole="StockDetail" />
-         
+          <NavigationProperty Name="UserTimeClockDetails" Relationship="CompassModel.FK_UserTimeClockDetail_ProductMaster" FromRole="ProductMaster" ToRole="UserTimeClockDetail" />
         </EntityType>
         <Association Name="FK_ProductMaster_Category">
           <End Type="CompassModel.Category" Role="Category" Multiplicity="1" />
@@ -9548,6 +9629,74 @@ warning 6002: The table/view 'CMSMeter.dbo.VW_Project' does not have a primary k
           <Property Name="Active" Type="Int32" />
           <Property Name="CreatedOn" Type="DateTime" Precision="3" />
         </EntityType>
+        <EntityType Name="TimeClockMaster">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Description" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="Active" Type="Int32" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="Int64" />
+          <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Int64" />
+          <NavigationProperty Name="UserTimeClockDetails" Relationship="CompassModel.FK_UserTimeClockDetail_TimeClockMaster" FromRole="TimeClockMaster" ToRole="UserTimeClockDetail" />
+        </EntityType>
+        <EntityType Name="UserTimeClockDetail">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FKTimeClockId" Type="Int64" />
+          <Property Name="FKUploadedDataExcelId" Type="Int64" />
+          <Property Name="FKProductId" Type="Int64" />
+          <Property Name="InTime" Type="DateTime" Precision="3" />
+          <Property Name="OutTime" Type="DateTime" Precision="3" />
+          <Property Name="Active" Type="Int32" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="Int64" />
+          <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Int64" />
+          <NavigationProperty Name="ProductMaster" Relationship="CompassModel.FK_UserTimeClockDetail_ProductMaster" FromRole="UserTimeClockDetail" ToRole="ProductMaster" />
+          <NavigationProperty Name="TimeClockMaster" Relationship="CompassModel.FK_UserTimeClockDetail_TimeClockMaster" FromRole="UserTimeClockDetail" ToRole="TimeClockMaster" />
+          <NavigationProperty Name="UploadedExcelData" Relationship="CompassModel.FK_UserTimeClockDetail_UploadedExcelData" FromRole="UserTimeClockDetail" ToRole="UploadedExcelData" />
+        </EntityType>
+        <Association Name="FK_UserTimeClockDetail_ProductMaster">
+          <End Type="CompassModel.ProductMaster" Role="ProductMaster" Multiplicity="0..1" />
+          <End Type="CompassModel.UserTimeClockDetail" Role="UserTimeClockDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProductMaster">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserTimeClockDetail">
+              <PropertyRef Name="FKProductId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserTimeClockDetail_TimeClockMaster">
+          <End Type="CompassModel.TimeClockMaster" Role="TimeClockMaster" Multiplicity="0..1" />
+          <End Type="CompassModel.UserTimeClockDetail" Role="UserTimeClockDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TimeClockMaster">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserTimeClockDetail">
+              <PropertyRef Name="FKTimeClockId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserTimeClockDetail_UploadedExcelData">
+          <End Type="CompassModel.UploadedExcelData" Role="UploadedExcelData" Multiplicity="0..1" />
+          <End Type="CompassModel.UserTimeClockDetail" Role="UserTimeClockDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UploadedExcelData">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserTimeClockDetail">
+              <PropertyRef Name="FKUploadedDataExcelId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -13724,6 +13873,36 @@ warning 6002: The table/view 'CMSMeter.dbo.VW_Project' does not have a primary k
                 <ScalarProperty Name="ProjectName" ColumnName="ProjectName" />
                 <ScalarProperty Name="Active" ColumnName="Active" />
                 <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TimeClockMasters">
+            <EntityTypeMapping TypeName="CompassModel.TimeClockMaster">
+              <MappingFragment StoreEntitySet="TimeClockMaster">
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="Active" ColumnName="Active" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserTimeClockDetails">
+            <EntityTypeMapping TypeName="CompassModel.UserTimeClockDetail">
+              <MappingFragment StoreEntitySet="UserTimeClockDetail">
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="Active" ColumnName="Active" />
+                <ScalarProperty Name="OutTime" ColumnName="OutTime" />
+                <ScalarProperty Name="InTime" ColumnName="InTime" />
+                <ScalarProperty Name="FKProductId" ColumnName="FKProductId" />
+                <ScalarProperty Name="FKUploadedDataExcelId" ColumnName="FKUploadedDataExcelId" />
+                <ScalarProperty Name="FKTimeClockId" ColumnName="FKTimeClockId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

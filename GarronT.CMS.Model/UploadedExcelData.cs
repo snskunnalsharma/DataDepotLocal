@@ -14,6 +14,11 @@ namespace GarronT.CMS.Model
     
     public partial class UploadedExcelData
     {
+        public UploadedExcelData()
+        {
+            this.UserTimeClockDetails = new HashSet<UserTimeClockDetail>();
+        }
+    
         public long Id { get; set; }
         public long FKProjectId { get; set; }
         public string AddressLatitude { get; set; }
@@ -89,5 +94,7 @@ namespace GarronT.CMS.Model
         public string RefCol56 { get; set; }
         public string RefCol57 { get; set; }
         public string RefCol58 { get; set; }
+    
+        public virtual ICollection<UserTimeClockDetail> UserTimeClockDetails { get; set; }
     }
 }

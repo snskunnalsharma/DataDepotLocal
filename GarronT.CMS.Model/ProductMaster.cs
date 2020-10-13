@@ -26,6 +26,7 @@ namespace GarronT.CMS.Model
             this.InventoryMobileUploadDetails = new HashSet<InventoryMobileUploadDetail>();
             this.ProductMasterFields = new HashSet<ProductMasterField>();
             this.StockDetails = new HashSet<StockDetail>();
+            this.UserTimeClockDetails = new HashSet<UserTimeClockDetail>();
         }
     
         public long Id { get; set; }
@@ -66,5 +67,6 @@ namespace GarronT.CMS.Model
         public virtual ICollection<InventoryMobileUploadDetail> InventoryMobileUploadDetails { get; set; }
         public virtual ICollection<ProductMasterField> ProductMasterFields { get; set; }
         public virtual ICollection<StockDetail> StockDetails { get; set; }
+        public virtual ICollection<UserTimeClockDetail> UserTimeClockDetails { get; set; }
     }
 }

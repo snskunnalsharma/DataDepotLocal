@@ -2844,11 +2844,32 @@ namespace GarronT.CMS.UI
             setJsonReponse(3, "Success", "");
         }
 
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public void GetClockTimeMasterRecord(long projectId)
+        {
+            JavaScriptSerializer s = new JavaScriptSerializer();
+            s.MaxJsonLength = 2147483644;
+            log.Info("WEB Service GetProductList Started at - " + DateTime.Now.ToString());
+            try
+            {
+                List<WebServiceTimeClockBO> objTimeClockBOList = new List<WebServiceTimeClockBO>();
+                WebServiceTimeClockDAL objWebServiceClockDAL = new WebServiceTimeClockDAL();
 
-
-
-
+                objTimeClockBOList = objWebServiceClockDAL.getTimeClockData();
+              
+                Context.Response.ContentType = "application/json";
+                Context.Response.Write(s.Serialize(objTimeClockBOList));
+                objWebServiceClockDAL.Dispose();
+            }
+            catch (Exception ex)
+            {
+                setJsonReponse(4, "Fail", ex.Message);
+                log.Info("WEB Service  GetClockTimeMasterRecord ERROR at " + DateTime.Now.ToString());
+                log.Info("ERROR  ex.Message - " + (ex.Message != null ? ex.Message : ""));
+                log.Info("ERROR  ex.StackTrace - " + (ex.StackTrace != null ? ex.StackTrace : ""));
+                log.Info("ERROR  ex.InnerException.Message - " + (ex.InnerException.Message != null ? ex.InnerException.Message : ""));
+            }
+        }
     }
-
-
 }

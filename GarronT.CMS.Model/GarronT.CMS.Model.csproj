@@ -252,6 +252,7 @@
     <Compile Include="BO\InventorySourceBO.cs" />
     <Compile Include="BO\WarehouseBO.cs" />
     <Compile Include="BO\WebServiceProductBO.cs" />
+    <Compile Include="BO\WebServiceTimeClockBO.cs" />
     <Compile Include="Category.cs">
       <DependentUpon>Compass.tt</DependentUpon>
       <SubType>Code</SubType>
@@ -336,6 +337,7 @@
     <Compile Include="DAL\VersionDAL.cs" />
     <Compile Include="DAL\WareHouseDAL.cs" />
     <Compile Include="DAL\WebServiceRunningInventoryDAL.cs" />
+    <Compile Include="DAL\WebServiceTimeClockDAL.cs" />
     <Compile Include="DAL\WebServiceUserRoleDAL.cs" />
     <Compile Include="InventoryMobileStockRequest.cs">
       <DependentUpon>Compass.tt</DependentUpon>
@@ -1100,6 +1102,7 @@
       <DependentUpon>Compass.tt</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="TimeClockMaster.cs" />
     <Compile Include="UploadedExcelData.cs">
       <DependentUpon>Compass.tt</DependentUpon>
       <SubType>Code</SubType>
@@ -1108,6 +1111,7 @@
       <DependentUpon>Compass.tt</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="UserTimeClockDetail.cs" />
     <Compile Include="UtilityMaster.cs">
       <DependentUpon>Compass.tt</DependentUpon>
       <SubType>Code</SubType>
