@@ -189,6 +189,11 @@
         <EntityTypeShape EntityType="CompassModel.VW_Project" Width="1.5" PointX="1.9019843479162009" PointY="23.3019888062505" />
         <EntityTypeShape EntityType="CompassModel.tblAssignedCycleRoute" Width="1.5" PointX="8.112687017821095" PointY="21.833042229448" />
         <EntityTypeShape EntityType="CompassModel.SerialNumberSummary" Width="1.5" PointX="7.8795087411438622" PointY="3.2597447946945879" />
+        <EntityTypeShape EntityType="CompassModel.TimeClockMaster" Width="1.5" PointX="6.6340421953397071" PointY="15.015434346634631" />
+        <EntityTypeShape EntityType="CompassModel.UserTimeClockDetail" Width="1.5" PointX="1.5006552811249416" PointY="25.431170192282259" />
+        <AssociationConnector Association="CompassModel.FK_UserTimeClockDetail_ProductMaster" />
+        <AssociationConnector Association="CompassModel.FK_UserTimeClockDetail_TimeClockMaster" />
+        <AssociationConnector Association="CompassModel.FK_UserTimeClockDetail_UploadedExcelData" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

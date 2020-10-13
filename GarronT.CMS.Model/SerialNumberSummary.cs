@@ -24,7 +24,7 @@ namespace GarronT.CMS.Model
         public string Account { get; set; }
         public string Street { get; set; }
         public string ProjectName { get; set; }
-        public int Active { get; set; }
+        public Nullable<int> Active { get; set; }
         public Nullable<System.DateTime> CreatedOn { get; set; }
     }
 }

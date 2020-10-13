@@ -116,7 +116,7 @@ namespace GarronT.CMS.Model
                 //mail.Bcc.Add(bcc);
                 //mail.Bcc.Add(bcc1);
 
-                string Host = ConfigurationManager.AppSettings["WebMasterSMTPServer"].ToString();
+                /*string Host = ConfigurationManager.AppSettings["WebMasterSMTPServer"].ToString();
                 int HostPort = int.Parse(ConfigurationManager.AppSettings["WebMasterPort"].ToString());
                 SmtpClient smtp = new SmtpClient(Host, HostPort);
                 smtp.Port = Convert.ToInt32(ConfigurationManager.AppSettings["WebMasterPort"]);
@@ -132,7 +132,7 @@ namespace GarronT.CMS.Model
                 smtp.Credentials = new System.Net.NetworkCredential(user, password);
                 smtp.EnableSsl = enableSSL;
                 smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
-                smtp.Send(mail);
+                smtp.Send(mail);*/
                 return "Email sent successfully.";
 
             }
