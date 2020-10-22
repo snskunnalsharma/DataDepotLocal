@@ -179,6 +179,7 @@
     <Compile Include="BO\AuditCycleBO.cs" />
     <Compile Include="BO\AutoSynchInventory.cs" />
     <Compile Include="BO\CategoryBO.cs" />
+    <Compile Include="BO\ClockTimeReportModel.cs" />
     <Compile Include="BO\CustomerAuditPercentage.cs" />
     <Compile Include="BO\DuplicateReportBO.cs" />
     <Compile Include="BO\InstallerAuditCycleBO.cs" />
@@ -299,6 +300,7 @@
     <Compile Include="DAL\AppointmentDAL.cs" />
     <Compile Include="DAL\AuditDAL.cs" />
     <Compile Include="DAL\CategoryDAL.cs" />
+    <Compile Include="DAL\ClockTimeReportDAL.cs" />
     <Compile Include="DAL\DuplicateReportDAL.cs" />
     <Compile Include="DAL\ExportReportDAL.cs" />
     <Compile Include="DAL\FormTypeDAL.cs" />
@@ -1102,7 +1104,9 @@
       <DependentUpon>Compass.tt</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="TimeClockMaster.cs" />
+    <Compile Include="TimeClockMaster.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+    </Compile>
     <Compile Include="UploadedExcelData.cs">
       <DependentUpon>Compass.tt</DependentUpon>
       <SubType>Code</SubType>
@@ -1111,7 +1115,9 @@
       <DependentUpon>Compass.tt</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="UserTimeClockDetail.cs" />
+    <Compile Include="UserTimeClockDetail.cs">
+      <DependentUpon>Compass.tt</DependentUpon>
+    </Compile>
     <Compile Include="UtilityMaster.cs">
       <DependentUpon>Compass.tt</DependentUpon>
       <SubType>Code</SubType>

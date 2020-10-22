@@ -2874,5 +2874,31 @@ namespace GarronT.CMS.Model.DAL
             return true;
 
         }
+
+        public List<UsersSmallModel> GetAllInstallerList()
+        {
+            try
+            {
+
+                CompassEntities CompassEntities = new CompassEntities();
+                var InstallerList = CompassEntities.tblUsers.Where(a => a.Active == 1);
+                List<UsersSmallModel> InstallerListadd = new List<UsersSmallModel>();
+                foreach (var item in InstallerList)
+                {
+                    InstallerListadd.Add(
+                                new UsersSmallModel
+                                {
+                                    UserId = item.UserID,
+                                    UserName = item.UserName
+                                }
+                                );
+                }
+                return InstallerListadd;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

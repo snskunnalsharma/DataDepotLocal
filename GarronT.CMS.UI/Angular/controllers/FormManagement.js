@@ -422,7 +422,8 @@ angularApp
                 type: 'GET',
                 success: function (msg) {
                     //   waitingDialog.hide();
-                    oTable = $('#dynamic-table').dataTable(
+                    oTable = $('#
+                        ').dataTable(
                         {
                             "bAutoWidth": false,
                             "bDestroy": true,

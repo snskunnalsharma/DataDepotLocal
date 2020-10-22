@@ -1,0 +1,2823 @@
+﻿@*this page create by Deepak date 28 sep 2020*@
+@{
+    ViewBag.Title = "Clock Time Report";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+@Html.Hidden("UrlgetListDetailsOnBack", Url.Action("getListDetailsOnBack", "ClockTimeReport"))
+@Html.Hidden("UrlReportsList", Url.Action("GetReportsList", "ClockTimeReport"))
+@Html.Hidden("UrlGetInstallerList", Url.Action("GetInstallerList", "ClockTimeReport"))
+@Html.Hidden("UrlGetWeekDayRangeList", Url.Action("GetWeekDayRangeList", "ClockTimeReport"))
+@Html.Hidden("UrlGetUserTimeClockReport", Url.Action("GetUserTimeClockReport", "ClockTimeReport"))
+
+<script>
+    var slideIndex = 1;
+    $(document).ready(function () {
+        showDivs(slideIndex);
+    })
+
+    function plusDivs(n) {
+        showDivs(slideIndex += n);
+    }
+
+    function showDivs(n) {
+        //debugger;
+        var i;
+        var x = document.getElementsByClassName("mySlides");
+        if (n > x.length) { slideIndex = 1 }
+        if (n < 1) { slideIndex = x.length }
+        for (i = 0; i < x.length; i++) {
+            x[i].style.display = "none";
+        }
+        if (x.length > 0)
+            x[slideIndex - 1].style.display = "block";
+    }
+</script>
+
+<style>
+    #img-grp-wrap {
+        position: relative;
+    }
+
+    .Pic {
+        position: relative;
+        /*border: 1px solid #CCC;*/
+        width: 100%;
+        /*height: 330px;*/
+        text-align: center;
+        /*background: #d9edf7;*/
+    }
+
+        .Pic img {
+            position: absolute;
+            /*left: 2px;*/
+            -moz-box-shadow: 1px 1px 4px #CCC;
+            width: auto;
+            top: 2px;
+            /*width: 99%;*/
+            height: 99%;
+            /*left: 120px !important;*/
+            text-align: center;
+        }
+
+    .rotate-img {
+        width: 70% !important;
+        left: 84px !important;
+        top: 18px;
+    }
+
+    .Pic img:not(:first-child) {
+        display: none;
+    }
+
+
+    #btnnext, #btnprevious {
+        /*position: absolute;
+        cursor: pointer;
+        top: 70px;*/
+    }
+
+    .modal {
+        z-index: 0;
+    }
+
+    .zoomWrapper {
+        width: auto !important;
+    }
+
+
+    .viewer {
+        /*width: 100%;*/
+        height: 425px;
+        border: 3px solid #eeeeee;
+        position: relative;
+        border-radius: 12px;
+    }
+
+    .wrapper01 {
+        overflow: hidden;
+    }
+
+    .viewer-modal-body {
+        padding: 5px 15px;
+    }
+
+    .rep-img-modal {
+        height: 43em;
+    }
+
+    #btnCloseallImages {
+        background: #4584C1;
+        border: 2px solid #4584c1;
+        width: 22px;
+        float: right;
+    }
+
+        #btnCloseallImages:hover {
+            background: #4584C1;
+            border: 2px solid;
+        }
+
+    .fa .lef-arrw :hover {
+        color: green;
+    }
+
+    .fa .rig-arrw :hover {
+        color: black;
+    }
+
+    #btnnext {
+        /*margin-top: -90px;*/
+    }
+
+    #btnprevious {
+        /*margin-top: -90px;
+        margin-left: -44px;*/
+    }
+
+
+
+    #example-select-all {
+        margin: 2px -8px 0px 0px !important;
+    }
+
+    .instal-dat-hist {
+        margin-top: 50px;
+    }
+
+    .reappnt-span {
+        font-size: 14px;
+        line-height: 1.8;
+    }
+
+    .control-label {
+        margin-bottom: 0px;
+    }
+
+    .form-group-1 {
+        margin-top: 40px;
+    }
+
+    .chosen-select {
+        /*width: auto;*/
+    }
+
+    .ddlHeader {
+        color: #000000;
+    }
+
+    .rep-grp2 {
+        /*margin-top: 74px;
+        margin-bottom: 112px;*/
+    }
+
+    .rep-grp3 {
+        margin-top: 81px;
+    }
+
+    .btn-exp {
+        width: 14%;
+        float: right;
+        margin-right: 5px;
+    }
+
+    .dataTables_paginate.paging_bootstrap.pagination {
+    }
+
+    div.dataTables_info1 {
+        /*margin-top: 6px;*/
+    }
+
+    .rep-shw-ent {
+        margin-top: -26px;
+        /*margin-bottom: -15px;*/
+        height: 40px;
+    }
+
+    .drp-rec {
+    }
+
+    .rep-shw-ent .dataTables_info {
+        padding: 10px 0px !important;
+    }
+
+    .bottom-dataTables_length {
+        padding-left: 16px;
+    }
+
+    .text-success {
+        color: yellow;
+        background: yellow;
+        /*border-radius: 3px;*/
+        font-size: 13px;
+        border: 2px solid #000;
+    }
+
+    .nav-tabs > li.active > a, .nav-tabs > li.active > a:focus, .nav-tabs > li.active > a:hover {
+        color: green;
+    }
+
+    .report-modal-nav li a {
+        color: black;
+    }
+
+    .report-modal-nav > li .active > a {
+    }
+
+    .btn-circle {
+        width: 30px;
+        height: 30px;
+        text-align: center;
+        padding: 6px 0;
+        font-size: 12px;
+        line-height: 1.42;
+        border-radius: 15px;
+    }
+
+    @@media only screen and (min-width:321px) and (max-width:410px) {
+        .dataTables_paginate.paging_bootstrap.pagination {
+            min-width: 100% !important;
+        }
+    }
+
+    @@media only screen and (min-width:411px) and (max-width:429px) {
+        .dataTables_paginate.paging_bootstrap.pagination {
+            min-width: 90% !important;
+        }
+    }
+
+    @@media (max-width:320px) {
+        .rep-box {
+            /*margin-left: 10%;*/
+        }
+
+        .for_btn {
+            margin-bottom: 3%;
+            margin-left: 7%;
+        }
+
+        .rep_date {
+            /*margin-left: 6%;*/
+            margin-left: 8%;
+            margin-right: -6%;
+        }
+
+
+
+        .rep_srch {
+            padding-left: 0px;
+            margin-left: 8%;
+        }
+
+            .rep_srch > .btn-success {
+                margin-left: 2%;
+            }
+
+        .rep_res {
+            padding-left: 0px;
+        }
+
+            .rep_res > .btn-danger {
+                margin-left: 3%;
+            }
+
+        .iconic-input {
+        }
+
+        .rep-mod {
+            margin: 0 auto;
+            width: 88%;
+        }
+
+        .btn-exp {
+            width: 37%;
+            float: left;
+            margin-top: 8px;
+            margin-left: 50%;
+        }
+
+        .dataTables_filter {
+            float: right !important;
+            width: 61%;
+            text-align: center;
+        }
+
+        .dataTables_paginate.paging_bootstrap.pagination {
+            min-width: 100% !important;
+        }
+
+        .rep-shw-ent {
+        }
+
+        .drp-rec {
+            margin-top: -4%;
+        }
+
+        .rep-shw-ent .dataTables_info {
+            padding: 0px 0px !important;
+            margin-top: -5%;
+        }
+
+        .bottom-dataTables_length .dataTables_info {
+            margin-top: -8%;
+        }
+
+        .dataTables_length > label {
+            white-space: normal;
+            width: auto;
+        }
+
+        div.dataTables_info {
+            margin-top: -10%;
+        }
+
+        .dup-text-div {
+            margin-left: 9%;
+            margin-right: -13%;
+        }
+    }
+
+
+    @@media only screen and (min-width:321px) and (max-width:359px) {
+        .rep-box {
+            margin-left: 8%;
+        }
+
+        .for_btn {
+            margin-bottom: 3%;
+        }
+
+        .rep_srch {
+            padding-left: 0px;
+        }
+
+            .rep_srch > .btn-success {
+            }
+
+        .rep_res {
+            padding-left: 0px;
+        }
+
+            .rep_res > .btn-danger {
+            }
+
+        .iconic-input {
+            /*margin-left: 70%;*/
+            width: 100%;
+        }
+
+        .rep-grp {
+            margin-bottom: 3%;
+        }
+
+        .rep-grp1 {
+            margin-top: 12%;
+        }
+
+        .btn-exp {
+            width: 37%;
+            float: left;
+            margin-top: 8px;
+            margin-left: 42%;
+        }
+
+        .dataTables_filter {
+            float: right !important;
+            width: 61% !important;
+            text-align: center !important;
+        }
+
+        .rep-shw-ent {
+        }
+
+        .drp-rec {
+            margin-top: -4%;
+        }
+
+        .rep-shw-ent .dataTables_info {
+            padding: 0px 0px !important;
+            margin-top: -5%;
+        }
+
+        .bottom-dataTables_length .dataTables_info {
+            margin-top: -8%;
+        }
+
+        .dup-text-div {
+            margin-left: -7%;
+            width: 95%;
+        }
+    }
+
+    @@media only screen and (min-width:360px) and (max-width:420px) {
+        .rep-box {
+            margin-left: 8%;
+        }
+
+        .for_btn {
+            margin-bottom: 3%;
+        }
+
+        .rep_srch {
+            padding-left: 0px;
+        }
+
+            .rep_srch > .btn-success {
+            }
+
+        .rep_res {
+            padding-left: 0px;
+        }
+
+            .rep_res > .btn-danger {
+            }
+
+        .iconic-input {
+            /*margin-left: 70%;*/
+            width: 100%;
+        }
+
+        .rep-grp {
+            margin-bottom: 3%;
+        }
+
+        .rep-grp1 {
+            margin-top: 12%;
+        }
+
+        .btn-exp {
+            width: 37%;
+            float: left;
+            margin-top: 8px;
+            margin-left: 42%;
+        }
+
+        .dataTables_filter {
+            float: right !important;
+            width: 61% !important;
+            text-align: center !important;
+        }
+
+        .rep-shw-ent {
+        }
+
+        .drp-rec {
+            margin-top: -4%;
+        }
+
+        .rep-shw-ent .dataTables_info {
+            padding: 0px 0px !important;
+            margin-top: -5%;
+        }
+
+        .bottom-dataTables_length .dataTables_info {
+            margin-top: -8%;
+        }
+
+        div.dataTables_info {
+            margin-top: -10%;
+        }
+    }
+
+    @@media only screen and (min-width:421px) and (max-width:479px) {
+        .rep-box {
+            margin-left: 8%;
+        }
+
+        .for_btn {
+            margin-bottom: 2%;
+        }
+
+        .rep_date {
+            padding-left: 0;
+        }
+
+        .rep_srch {
+            padding-left: 0px;
+        }
+
+            .rep_srch > .btn-success {
+                width: 100%;
+            }
+
+        .rep_res {
+            padding-left: 0px;
+        }
+
+            .rep_res > .btn-danger {
+                width: 100%;
+            }
+
+        .iconic-input {
+            margin-left: 18%;
+            margin-right: 0%;
+        }
+
+        .btn-exp {
+            width: 40%;
+            float: right;
+            margin-top: 0px;
+        }
+
+        .dataTables_filter {
+            float: right !important;
+            width: 61% !important;
+            text-align: center !important;
+        }
+
+        .dataTables_paginate.paging_bootstrap.pagination {
+            min-width: 80% !important;
+        }
+
+        .rep-shw-ent .dataTables_info {
+            margin-left: -35%;
+            margin-top: 1%;
+            width: 44%;
+        }
+
+        .bottom-dataTables_length .dataTables_info {
+        }
+
+        .dup-text-div {
+            margin-left: -7%;
+            width: 95%;
+        }
+    }
+
+
+    @@media only screen and (min-width:480px) and (max-width:530px) and (orientation:portrait) {
+        .rep-box {
+            margin-left: 8%;
+        }
+
+        .for_btn {
+            margin-bottom: 2%;
+        }
+
+        .rep_date {
+            padding-left: 0;
+        }
+
+        .rep_srch {
+            padding-left: 0px;
+        }
+
+            .rep_srch > .btn-success {
+                width: 100%;
+            }
+
+        .rep_res {
+            padding-left: 0px;
+        }
+
+            .rep_res > .btn-danger {
+                width: 100%;
+            }
+
+        dataTables_filter {
+            float: right !important;
+            width: 50% !important;
+        }
+
+        .iconic-input {
+            width: 85%;
+            float: right;
+        }
+
+        .rep-mod {
+            margin: 0 auto;
+            width: 88%;
+        }
+
+        .btn-exp {
+            width: 40%;
+            float: right;
+            margin-top: 0px;
+        }
+
+        .dataTables_filter {
+            float: right !important;
+        }
+
+        .dataTables_paginate.paging_bootstrap.pagination {
+            /*min-width: 80% !important;*/
+        }
+
+        .dataTables_paginate.paging_bootstrap.pagination {
+        }
+
+        .rep-shw-ent > .dataTables_info {
+            /*margin-left: -35%;*/
+            margin-top: 0%;
+            width: 50%;
+            margin-right: 10%;
+        }
+
+
+        .rep-shw-ent > .dataTables_paginate.paging_bootstrap.pagination {
+            margin-top: -1%;
+            margin-bottom: -1%;
+        }
+
+        div.dataTables_info {
+            margin-top: 1%;
+        }
+
+        .dup-text-div {
+            white-space: nowrap;
+        }
+    }
+
+    @@media only screen and (min-width:480px) and (max-width:530px)and (orientation:landscape) {
+        .wrapper {
+            margin-top: -1%;
+            padding-top: 0;
+        }
+
+        .rep-box {
+            margin-left: 8%;
+        }
+
+        .for_btn {
+            margin-bottom: 2%;
+        }
+
+        .rep_date {
+            padding-left: 0;
+        }
+
+        .rep_srch {
+            padding-left: 0px;
+        }
+
+            .rep_srch > .btn-success {
+                width: 100%;
+            }
+
+        .rep_res {
+            padding-left: 0px;
+        }
+
+            .rep_res > .btn-danger {
+                width: 100%;
+            }
+
+        dataTables_filter {
+            float: right !important;
+            width: 50% !important;
+        }
+
+        .iconic-input {
+            width: 90%;
+            float: right;
+        }
+
+        .rep-mod {
+            margin: 0 auto;
+            width: 88%;
+        }
+
+        .btn-exp {
+            width: 40%;
+            float: right;
+            margin-top: 0px;
+        }
+
+        .dataTables_filter {
+            float: right !important;
+        }
+
+        .dataTables_paginate.paging_bootstrap.pagination {
+            /*min-width: 80% !important;*/
+        }
+
+        .dataTables_paginate.paging_bootstrap.pagination {
+        }
+
+        .rep-shw-ent > .dataTables_info {
+            margin-left: -35%;
+            margin-top: 0%;
+            width: 50%;
+            margin-right: 10%;
+        }
+
+
+        .rep-shw-ent > .dataTables_paginate.paging_bootstrap.pagination {
+            margin-top: -1%;
+            margin-bottom: -1%;
+        }
+
+        div.dataTables_info {
+            margin-top: 1%;
+        }
+
+        .dup-text-div {
+            white-space: nowrap;
+            margin-left: -6%;
+        }
+    }
+
+    @@media only screen and (min-width:531px) and (max-width:567px)and (orientation:portrait) {
+        .rep-box {
+            margin-left: 8%;
+        }
+
+        .for_btn {
+            margin-bottom: 2%;
+        }
+
+        .rep_date {
+            padding-left: 0;
+        }
+
+        .rep_srch {
+            padding-left: 0px;
+        }
+
+            .rep_srch > .btn-success {
+                width: 100%;
+            }
+
+        .rep_res {
+            padding-left: 0px;
+        }
+
+            .rep_res > .btn-danger {
+                width: 100%;
+            }
+
+        .iconic-input {
+            width: 90%;
+            margin-left: 0%;
+        }
+
+        .rep-mod {
+            margin: 0 auto;
+            width: 88%;
+        }
+
+        .btn-exp {
+            width: 40%;
+            float: right;
+            margin-top: 0px;
+        }
+
+        .dataTables_filter {
+        }
+
+        .dataTables_paginate.paging_bootstrap.pagination {
+            /*min-width: 80% !important;*/
+        }
+
+        .dataTables_paginate.paging_bootstrap.pagination {
+        }
+
+        .rep-shw-ent {
+            margin-top: 9%;
+        }
+
+            .rep-shw-ent .dataTables_info {
+                margin-left: -23%;
+                /*margin-top: 12%;
+                width: 40%;*/
+            }
+
+            .rep-shw-ent > .dataTables_paginate.paging_bootstrap.pagination {
+                /*margin-top: -7%;*/
+                margin-top: 0%;
+            }
+
+        .dup-text-div {
+            margin-left: 0%;
+            margin-right: -14%;
+        }
+    }
+
+    @@media only screen and (min-width:531px) and (max-width:567px)and (orientation:landscape) {
+        .rep-box {
+            margin-left: 8%;
+        }
+
+        .for_btn {
+            margin-bottom: 2%;
+        }
+
+        .rep_date {
+            padding-left: 0;
+        }
+
+        .rep_srch {
+            padding-left: 0px;
+        }
+
+            .rep_srch > .btn-success {
+                width: 100%;
+            }
+
+        .rep_res {
+            padding-left: 0px;
+        }
+
+            .rep_res > .btn-danger {
+                width: 100%;
+            }
+
+        .iconic-input {
+            width: 90%;
+            margin-left: 0%;
+        }
+
+        .rep-mod {
+            margin: 0 auto;
+            width: 88%;
+        }
+
+        .btn-exp {
+            width: 40%;
+            float: right;
+            margin-top: 0px;
+        }
+
+        .dataTables_filter {
+        }
+
+        .dataTables_paginate.paging_bootstrap.pagination {
+            /*min-width: 80% !important;*/
+        }
+
+        .dataTables_paginate.paging_bootstrap.pagination {
+        }
+
+        .rep-shw-ent {
+            margin-top: 0%;
+        }
+
+            .rep-shw-ent .dataTables_info {
+                margin-left: -23%;
+                /*margin-top: 12%;
+                width: 40%;*/
+            }
+
+            .rep-shw-ent > .dataTables_paginate.paging_bootstrap.pagination {
+                margin-top: -7%;
+            }
+
+        .dup-text-div {
+            margin-left: 5%;
+            margin-right: -14%;
+        }
+    }
+
+    @@media only screen and (min-width:568px) and (max-width:599px) {
+        .rep-box {
+            margin-left: 8%;
+        }
+
+        .for_btn {
+            margin-bottom: 2%;
+        }
+
+        .rep_date {
+            padding-left: 0;
+        }
+
+        .rep_srch {
+            padding-left: 0px;
+        }
+
+            .rep_srch > .btn-success {
+                width: 100%;
+            }
+
+        .rep_res {
+            padding-left: 0px;
+        }
+
+            .rep_res > .btn-danger {
+                width: 100%;
+            }
+
+        .iconic-input {
+            width: 90%;
+            margin-left: 0%;
+        }
+
+        .rep-mod {
+            margin: 0 auto;
+            width: 88%;
+        }
+
+        .btn-exp {
+            width: 40%;
+            float: right;
+            margin-top: 0px;
+        }
+
+        .dataTables_filter {
+        }
+
+        .dataTables_paginate.paging_bootstrap.pagination {
+            /*min-width: 80% !important;*/
+        }
+
+        .dataTables_paginate.paging_bootstrap.pagination {
+        }
+
+        .rep-shw-ent .dataTables_info {
+            margin-left: -23%;
+            margin-top: 12%;
+            width: 40%;
+            margin-right: -3%;
+        }
+
+        .rep-shw-ent > .dataTables_paginate.paging_bootstrap.pagination {
+            margin-top: -1%;
+            margin-bottom: -1%;
+        }
+
+        div.dataTables_info {
+            margin-top: 1%;
+        }
+
+        .dup-text-div {
+            margin-left: 12%;
+            margin-right: -14%;
+        }
+    }
+
+    @@media only screen and (min-width:600px) and (max-width:640px) and (orientation:portrait) {
+        .rep_panel {
+            margin-top: -1% !important;
+        }
+
+        .rep-box {
+            margin-left: 8%;
+        }
+
+        .for_btn {
+            margin-bottom: 2%;
+        }
+
+        .rep_date {
+            padding-left: 0;
+        }
+
+        .rep_srch {
+            padding-left: 0px;
+        }
+
+            .rep_srch > .btn-success {
+                width: 100%;
+            }
+
+        .rep_res {
+            padding-left: 0px;
+        }
+
+            .rep_res > .btn-danger {
+                width: 100%;
+            }
+
+        .btn-exp {
+            width: 40%;
+            float: right;
+            margin-top: 0px;
+        }
+
+        .dataTables_filter {
+        }
+
+        .dataTables_paginate.paging_bootstrap.pagination {
+            /*min-width:74% !important;*/
+        }
+
+        div.dataTables_info {
+            margin-top: 1%;
+            /*padding-left: 12%;*/
+        }
+
+        .rep-shw-ent {
+            margin-top: 8%;
+        }
+
+            .rep-shw-ent .dataTables_info {
+                margin-left: -20%;
+                margin-right: -1%;
+                width: 40%;
+            }
+
+            .rep-shw-ent > .dataTables_paginate.paging_bootstrap.pagination {
+                margin-top: -2%;
+            }
+
+        .dup-text-div {
+            margin-left: 14%;
+            margin-right: -8%;
+        }
+    }
+
+    @@media only screen and (min-width:600px) and (max-width:640px) and (orientation:landscape) {
+        .wrapper {
+            margin-top: 2% !important;
+        }
+
+        .rep_panel {
+            margin-top: -1% !important;
+        }
+
+        .rep-box {
+            margin-left: 8%;
+        }
+
+        .for_btn {
+            margin-bottom: 2%;
+        }
+
+        .rep_date {
+            padding-left: 0;
+        }
+
+        .rep_srch {
+            padding-left: 0px;
+        }
+
+            .rep_srch > .btn-success {
+                width: 100%;
+            }
+
+        .rep_res {
+            padding-left: 0px;
+        }
+
+            .rep_res > .btn-danger {
+                width: 100%;
+            }
+
+        .btn-exp {
+            width: 40%;
+            float: right;
+            margin-top: 0px;
+        }
+
+        .dataTables_filter {
+        }
+
+        .dataTables_paginate.paging_bootstrap.pagination {
+            /*min-width: 75% !important;*/
+            margin-top: -1%;
+            margin-left: -4% !important;
+        }
+
+        div.dataTables_info {
+            padding-top: 3%;
+        }
+
+        .rep-shw-ent {
+            margin-top: 14%;
+        }
+
+            .rep-shw-ent .dataTables_info {
+                margin-top: -5%;
+            }
+
+            .rep-shw-ent > .dataTables_paginate.paging_bootstrap.pagination {
+                margin-top: -7%;
+            }
+
+        .dup-text-div {
+            margin-left: 20%;
+            margin-right: -8%;
+        }
+    }
+
+    @@media only screen and (min-width:641px) and (max-width:710px) {
+        .wrapper {
+            margin-top: -1%;
+            padding-top: 0;
+        }
+
+        .rep-box {
+            margin-left: 8%;
+        }
+
+        .for_btn {
+            margin-bottom: 2%;
+        }
+
+        .rep_date {
+            padding-left: 0;
+        }
+
+        .rep_srch {
+            padding-left: 0%;
+            margin-right: 0%;
+            margin-left: 0%;
+        }
+
+            .rep_srch > .btn-success {
+                width: 100%;
+            }
+
+        .rep_res {
+            padding-left: 0px;
+        }
+
+            .rep_res > .btn-danger {
+                width: 100%;
+            }
+
+        .btn-exp {
+            width: 40%;
+            float: right;
+            margin-top: 0px;
+        }
+
+        .dataTables_filter {
+        }
+
+        .dataTables_paginate.paging_bootstrap.pagination {
+            margin-top: 0%;
+        }
+
+        .rep-shw-ent > .dataTables_info {
+            margin-top: 10%;
+            margin-left: -18%;
+            width: 40%;
+        }
+
+        .drp-rec {
+            margin-top: -2%;
+        }
+
+        .rep-shw-ent {
+        }
+
+            .rep-shw-ent > .dataTables_paginate.paging_bootstrap.pagination {
+                margin-top: -1%;
+                margin-bottom: -1%;
+            }
+
+            .rep-shw-ent > div.dataTables_info {
+                margin-right: 0%;
+                /*margin-top: 1%;*/
+            }
+
+        div.dataTables_info {
+            margin-right: -38%;
+            margin-top: 1%;
+        }
+
+        .dup-text-div {
+            margin-left: 25%;
+            margin-right: -14%;
+        }
+    }
+
+    @@media only screen and (min-width:711px) and (max-width:767px) {
+        .wrapper {
+            margin-top: -1%;
+            padding-top: 0;
+        }
+
+        .rep-box {
+            margin-left: 8%;
+        }
+
+        .for_btn {
+            margin-bottom: 2%;
+        }
+
+        .rep_date {
+            padding-left: 0;
+        }
+
+        .rep_srch {
+            padding-left: 0%;
+            margin-right: 0%;
+            margin-left: 0%;
+        }
+
+            .rep_srch > .btn-success {
+                width: 100%;
+            }
+
+        .rep_res {
+            padding-left: 0px;
+        }
+
+            .rep_res > .btn-danger {
+                width: 100%;
+            }
+
+        .btn-exp {
+            width: 40%;
+            float: right;
+            margin-top: 0px;
+        }
+
+        .dataTables_filter {
+        }
+
+        .dataTables_paginate.paging_bootstrap.pagination {
+            margin-top: 0%;
+        }
+
+        .rep-shw-ent > .dataTables_info {
+            margin-right: 0%;
+            margin-top: 8%;
+            width: 50%;
+            float: left;
+            margin-left: -16%;
+        }
+
+        .drp-rec {
+            margin-top: -2%;
+        }
+
+        .rep-shw-ent {
+        }
+
+            .rep-shw-ent > .dataTables_paginate.paging_bootstrap.pagination {
+                margin-top: -1%;
+                margin-bottom: -1%;
+            }
+
+        div.dataTables_info {
+            margin-right: -38%;
+            margin-top: 1%;
+        }
+
+        .dup-text-div {
+            margin-left: 32%;
+            margin-right: -12%;
+        }
+    }
+
+    @@media only screen and (min-width:768px) and (max-width:799px) {
+        .rep-box {
+            margin-left: 8%;
+        }
+
+        .for_btn {
+            margin-bottom: 2%;
+        }
+
+        .rep_date_inp {
+        }
+
+        .rep_todate_inp {
+        }
+
+        .rep_date {
+            padding-left: 0;
+        }
+
+        .rep_srch {
+            padding-left: 0px;
+            margin-right: -5%;
+        }
+
+            .rep_srch > .btn-success {
+            }
+
+        .rep_res {
+            padding-left: 0px;
+            margin-left: 6%;
+            margin-right: -18%;
+        }
+
+            .rep_res > .btn-danger {
+            }
+
+        .btn-exp {
+            width: 40%;
+            float: right;
+            margin-top: 0px;
+        }
+
+        .dataTables_filter {
+        }
+
+        .dataTables_paginate.paging_bootstrap.pagination {
+            /*min-width:70% !important;*/
+            margin-top: 1%;
+        }
+
+        div.dataTables_info {
+            margin-top: 1%;
+            margin-right: -17%;
+        }
+
+        .rep-shw-ent {
+            margin-top: 14%;
+        }
+
+            .rep-shw-ent .dataTables_info {
+                margin-top: -5%;
+            }
+
+            .rep-shw-ent > .dataTables_paginate.paging_bootstrap.pagination {
+                margin-top: -7%;
+            }
+    }
+
+    @@media only screen and (min-width:800px) and (max-width:850px) {
+        .for_btn {
+            margin-left: -2%;
+            margin-right: -2%;
+            width: 28%;
+        }
+
+        .rep-box {
+            margin-left: 2%;
+        }
+
+        .rep_date_inp {
+        }
+
+        .rep_todate_inp {
+        }
+
+        .rep_date {
+            padding-left: 0;
+        }
+
+        .rep_srch {
+            /*padding-left: 0px;
+            margin-right: -5%;*/
+            margin-right: -12%;
+            margin-left: -8%;
+            width: 63% !important;
+        }
+
+            .rep_srch > .btn-success {
+                padding-left: 0;
+            }
+
+        .rep_res {
+            padding-left: 0px;
+            margin-left: 6%;
+            margin-right: -18%;
+            width: 63% !important;
+        }
+
+            .rep_res > .btn-danger {
+            }
+
+        .btn-exp {
+            width: 18%;
+            margin-right: 4%;
+        }
+
+        .dataTables_paginate.paging_bootstrap.pagination {
+            margin-top: 0%;
+        }
+
+        div.dataTables_info {
+            margin-top: 1%;
+            margin-right: -22%;
+        }
+
+        .rep-shw-ent {
+            margin-top: -4%;
+        }
+
+            .rep-shw-ent .dataTables_info {
+            }
+
+            .rep-shw-ent > .dataTables_paginate.paging_bootstrap.pagination {
+                margin-top: -2%;
+            }
+
+        .dup-color-bootstrap {
+            width: 50% !important;
+        }
+
+        .dup-text-div {
+            margin-left: 0%;
+        }
+    }
+
+    @@media only screen and (min-width:851px) and (max-width:919px) {
+        .rep-box {
+        }
+
+        .rep_date_inp {
+        }
+
+        .rep_todate_inp {
+        }
+
+        .rep_date {
+            padding-left: 0;
+        }
+
+        .rep_srch {
+            padding-left: 0px;
+            margin-right: -5%;
+        }
+
+            .rep_srch > .btn-success {
+            }
+
+        .rep_res {
+            padding-left: 0px;
+            margin-left: 6%;
+            margin-right: -18%;
+        }
+
+            .rep_res > .btn-danger {
+            }
+
+        .dataTables_paginate.paging_bootstrap.pagination {
+        }
+
+        div.dataTables_info1 {
+            margin-top: 1%;
+            padding-left: 23%;
+        }
+
+        .dup-text-div {
+            margin-left: -91%;
+            margin-right: -13%;
+        }
+    }
+
+    @@media only screen and (min-width:920px) and (max-width:967px) {
+        .rep-box {
+        }
+
+        .rep_date_inp {
+        }
+
+        .rep_todate_inp {
+        }
+
+        .rep_date {
+            padding-left: 0;
+        }
+
+        .rep_srch {
+            padding-left: 0px;
+            margin-right: -5%;
+        }
+
+            .rep_srch > .btn-success {
+            }
+
+        .rep_res {
+            padding-left: 0px;
+            margin-left: 6%;
+            margin-right: -18%;
+        }
+
+            .rep_res > .btn-danger {
+            }
+
+        .dataTables_paginate.paging_bootstrap.pagination {
+        }
+
+        div.dataTables_info1 {
+            margin-top: 1%;
+            padding-left: 23%;
+        }
+
+        .dup-text-div {
+            margin-left: -59%;
+            margin-right: -13%;
+        }
+    }
+
+    @@media only screen and (min-width:968px) and (max-width:1023px) {
+        .for_btn {
+            margin-left: -2%;
+            margin-right: -1.5%;
+            width: 28%;
+        }
+
+        .rep-box {
+            margin-left: 2%;
+        }
+
+        .rep_date_inp {
+            margin-left: -20%;
+            width: 120%;
+        }
+
+        .rep_todate_inp {
+            width: 120%;
+        }
+
+        .rep_date {
+            padding-left: 0;
+        }
+
+        .rep_srch {
+            margin-right: -12%;
+            margin-left: -8%;
+            width: 63% !important;
+        }
+
+            .rep_srch > .btn-success {
+                padding-left: 0;
+            }
+
+        .rep_res {
+            padding-left: 0px;
+            margin-left: 6%;
+            margin-right: -18%;
+            width: 63% !important;
+        }
+
+            .rep_res > .btn-danger {
+            }
+
+        .btn-exp {
+            width: 18%;
+            margin-right: 4%;
+        }
+
+        .dataTables_paginate.paging_bootstrap.pagination {
+            /*min-width:74% !important;*/
+        }
+
+        div.dataTables_info {
+            margin-top: 1%;
+            /*padding-left: 12%;*/
+            width: 40%;
+        }
+
+        .rep-shw-ent {
+            margin-top: 0%;
+            margin-bottom: 0%;
+        }
+
+            .rep-shw-ent .dataTables_info {
+                margin-top: -3%;
+                width: 40%;
+            }
+
+            .rep-shw-ent > .dataTables_paginate.paging_bootstrap.pagination {
+                margin-top: -5%;
+            }
+
+        .dup-text-div {
+            margin-left: -68%;
+            margin-right: -13%;
+        }
+    }
+
+    @@media only screen and (min-width:1024px) and (max-width:1100px) {
+        .iconic-input {
+            margin-right: -8%;
+        }
+
+        .dataTables_paginate.paging_bootstrap.pagination {
+        }
+
+        div.dataTables_info {
+            /*margin-top: 5%;
+                    padding-left: 22%;*/
+        }
+
+        .dup-text-div {
+            margin-left: -47%;
+            margin-right: -13%;
+        }
+    }
+
+    @@media only screen and (min-width:1101px) and (max-width:1200px) {
+        .dup-text-div {
+            margin-left: -32%;
+            margin-right: -13%;
+        }
+    }
+
+    @@media only screen and (min-width:1201px) and (max-width:1280px) {
+        .dup-text-div {
+            margin-left: -9%;
+            margin-right: -13%;
+        }
+    }
+
+    @@media (min-width:1200px) {
+        .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9 {
+            float: left;
+        }
+
+        .col-lg-12 {
+            width: 100%;
+        }
+
+        .col-lg-11 {
+            width: 91.66666667%;
+        }
+
+        .col-lg-10 {
+            width: 83.33333333%;
+        }
+
+        .col-lg-9 {
+            width: 75%;
+        }
+
+        .col-lg-8 {
+            width: 66.66666667%;
+        }
+
+        .col-lg-7 {
+            width: 58.33333333%;
+        }
+
+        .col-lg-6 {
+            width: 50% !important;
+        }
+
+        .col-lg-5 {
+            width: 41.66666667%;
+        }
+
+        .col-lg-4 {
+            width: 33.33333333%;
+        }
+
+        .col-lg-3 {
+            width: 25%;
+        }
+
+        .col-lg-2 {
+            width: 16.66666667%;
+        }
+
+        .col-lg-1 {
+            width: 8.33333333%;
+        }
+
+        .multiselect {
+            padding: 3px;
+        }
+
+        .lg-none {
+            display: none;
+        }
+
+        .lg-clear {
+            clear: both;
+        }
+    }
+
+    @@media (min-width:992px) and (max-width:1199px) {
+        .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9 {
+            float: left;
+        }
+
+        .col-md-12 {
+            width: 100%;
+        }
+
+        .col-md-11 {
+            width: 91.66666667%;
+        }
+
+        .col-md-10 {
+            width: 83.33333333%;
+        }
+
+        .col-md-9 {
+            width: 75%;
+        }
+
+        .col-md-8 {
+            width: 66.66666667%;
+        }
+
+        .col-md-7 {
+            width: 58.33333333%;
+        }
+
+        .col-md-6 {
+            width: 50%;
+        }
+
+        .col-md-5 {
+            width: 41.66666667%;
+        }
+
+        .col-md-4 {
+            width: 33.33333333%;
+        }
+
+        .col-md-3 {
+            width: 25%;
+        }
+
+        .col-md-2 {
+            width: 16.66666667%;
+        }
+
+        .col-md-1 {
+            width: 8.33333333%;
+        }
+
+        .col-md-pull-12 {
+            right: 100%;
+        }
+
+        .col-md-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-md-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-md-pull-9 {
+            right: 75%;
+        }
+
+        .col-md-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-md-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-md-pull-6 {
+            right: 50%;
+        }
+
+        .col-md-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-md-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-md-pull-3 {
+            right: 25%;
+        }
+
+        .col-md-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-md-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-md-pull-0 {
+            right: auto;
+        }
+
+        .col-md-push-12 {
+            left: 100%;
+        }
+
+        .col-md-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-md-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-md-push-9 {
+            left: 75%;
+        }
+
+        .col-md-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-md-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-md-push-6 {
+            left: 50%;
+        }
+
+        .col-md-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-md-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-md-push-3 {
+            left: 25%;
+        }
+
+        .col-md-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-md-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-md-push-0 {
+            left: auto;
+        }
+
+        .col-md-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-md-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-md-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-md-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-md-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-md-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-md-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-md-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-md-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-md-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-md-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-md-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-md-offset-0 {
+            margin-left: 0;
+        }
+
+        .md-clear {
+            clear: both;
+        }
+
+        .md-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .md-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .md-none {
+            display: none;
+        }
+
+        .md-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .md-nopaddingright {
+            padding-right: 0px;
+        }
+    }
+
+    @@media (min-width:768px) and (max-width:991px) {
+        .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9 {
+            float: left;
+        }
+
+        .col-sm-12 {
+            width: 100%;
+        }
+
+        .col-sm-11 {
+            width: 91.66666667%;
+        }
+
+        .col-sm-10 {
+            width: 83.33333333%;
+        }
+
+        .col-sm-9 {
+            width: 75%;
+        }
+
+        .col-sm-8 {
+            width: 66.66666667%;
+        }
+
+        .col-sm-7 {
+            width: 58.33333333%;
+        }
+
+        .col-sm-6 {
+            width: 50%;
+        }
+
+        .col-sm-5 {
+            width: 41.66666667%;
+        }
+
+        .col-sm-4 {
+            width: 33.33333333%;
+        }
+
+        .col-sm-3 {
+            width: 25%;
+        }
+
+        .col-sm-2 {
+            width: 16.66666667%;
+        }
+
+        .col-sm-1 {
+            width: 8.33333333%;
+        }
+
+        .col-sm-pull-12 {
+            right: 100%;
+        }
+
+        .col-sm-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-sm-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-sm-pull-9 {
+            right: 75%;
+        }
+
+        .col-sm-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-sm-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-sm-pull-6 {
+            right: 50%;
+        }
+
+        .col-sm-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-sm-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-sm-pull-3 {
+            right: 25%;
+        }
+
+        .col-sm-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-sm-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-sm-pull-0 {
+            right: auto;
+        }
+
+        .col-sm-push-12 {
+            left: 100%;
+        }
+
+        .col-sm-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-sm-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-sm-push-9 {
+            left: 75%;
+        }
+
+        .col-sm-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-sm-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-sm-push-6 {
+            left: 50%;
+        }
+
+        .col-sm-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-sm-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-sm-push-3 {
+            left: 25%;
+        }
+
+        .col-sm-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-sm-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-sm-push-0 {
+            left: auto;
+        }
+
+        .col-sm-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-sm-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-sm-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-sm-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-sm-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-sm-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-sm-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-sm-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-sm-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-sm-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-sm-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-sm-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-sm-offset-0 {
+            margin-left: 0;
+        }
+
+        .sm-clear {
+            clear: both;
+        }
+
+        .sm-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .sm-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .sm-block {
+            display: block;
+        }
+
+        .sm-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .sm-nopaddingright {
+            padding-right: 0px;
+        }
+    }
+
+    @@media (min-width:481px) and (max-width:767px) {
+
+        .col-xs-1, .col-xs-10, .col-xs-11, .col-xs-12, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9 {
+            float: left;
+        }
+
+        .col-xs-12 {
+            width: 100%;
+        }
+
+        .col-xs-11 {
+            width: 91.66666667%;
+        }
+
+        .col-xs-10 {
+            width: 83.33333333%;
+        }
+
+        .col-xs-9 {
+            width: 75%;
+        }
+
+        .col-xs-8 {
+            width: 66.66666667%;
+        }
+
+        .col-xs-7 {
+            width: 58.33333333%;
+        }
+
+        .col-xs-6 {
+            width: 50%;
+        }
+
+        .col-xs-5 {
+            width: 41.66666667%;
+        }
+
+        .col-xs-4 {
+            width: 33.33333333%;
+        }
+
+        .col-xs-3 {
+            width: 25%;
+        }
+
+        .col-xs-2 {
+            width: 16.66666667%;
+        }
+
+        .col-xs-1 {
+            width: 8.33333333%;
+        }
+
+        .col-xs-pull-12 {
+            right: 100%;
+        }
+
+        .col-xs-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-xs-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-xs-pull-9 {
+            right: 75%;
+        }
+
+        .col-xs-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-xs-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-xs-pull-6 {
+            right: 50%;
+        }
+
+        .col-xs-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-xs-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-xs-pull-3 {
+            right: 25%;
+        }
+
+        .col-xs-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-xs-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-xs-pull-0 {
+            right: auto;
+        }
+
+        .col-xs-push-12 {
+            left: 100%;
+        }
+
+        .col-xs-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-xs-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-xs-push-9 {
+            left: 75%;
+        }
+
+        .col-xs-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-xs-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-xs-push-6 {
+            left: 50%;
+        }
+
+        .col-xs-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-xs-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-xs-push-3 {
+            left: 25%;
+        }
+
+        .col-xs-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-xs-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-xs-push-0 {
+            left: auto;
+        }
+
+        .col-xs-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-xs-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-xs-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-xs-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-xs-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-xs-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-xs-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-xs-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-xs-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-xs-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-xs-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-xs-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-xs-offset-0 {
+            margin-left: 0;
+        }
+
+        .cre_uti_label {
+            margin-left: 0%;
+            text-align: right !important;
+        }
+
+        .create_label {
+            margin-right: 0px;
+        }
+
+        .xs-clear {
+            clear: both;
+        }
+
+        .xs-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .xs-block {
+            display: block;
+        }
+
+        .xs-nopadding {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+
+        .xs-none {
+            display: none;
+        }
+
+        .xs-clear-none {
+            clear: none;
+        }
+
+        .xs-right {
+            float: right;
+        }
+
+        .form-control {
+            width: 95%;
+        }
+    }
+
+    @@media (max-width:480px) {
+
+
+        .col-xxs-1, .col-xxs-10, .col-xxs-11, .col-xxs-12, .col-xxs-2, .col-xxs-3, .col-xxs-4, .col-xxs-5, .col-xxs-6, .col-xxs-7, .col-xxs-8, .col-xxs-9 {
+            float: left;
+        }
+
+        .col-xxs-12 {
+            width: 100%;
+        }
+
+        .col-xxs-11 {
+            width: 91.66666667%;
+        }
+
+        .col-xxs-10 {
+            width: 83.33333333%;
+        }
+
+        .col-xxs-9 {
+            width: 75%;
+        }
+
+        .col-xxs-8 {
+            width: 66.66666667%;
+        }
+
+        .col-xxs-7 {
+            width: 58.33333333%;
+        }
+
+        .col-xxs-6 {
+            width: 50%;
+        }
+
+        .col-xxs-5 {
+            width: 41.66666667%;
+        }
+
+        .col-xxs-4 {
+            width: 33.33333333%;
+        }
+
+        .col-xxs-3 {
+            width: 25%;
+        }
+
+        .col-xxs-2 {
+            width: 16.66666667%;
+        }
+
+        .col-xxs-1 {
+            width: 8.33333333%;
+        }
+
+        .col-xxs-pull-12 {
+            right: 100%;
+        }
+
+        .col-xxs-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-xxs-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-xxs-pull-9 {
+            right: 75%;
+        }
+
+        .col-xxs-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-xxs-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-xxs-pull-6 {
+            right: 50%;
+        }
+
+        .col-xxs-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-xxs-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-xxs-pull-3 {
+            right: 25%;
+        }
+
+        .col-xxs-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-xxs-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-xxs-pull-0 {
+            right: auto;
+        }
+
+        .col-xxs-push-12 {
+            left: 100%;
+        }
+
+        .col-xxs-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-xxs-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-xxs-push-9 {
+            left: 75%;
+        }
+
+        .col-xxs-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-xxs-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-xxs-push-6 {
+            left: 50%;
+        }
+
+        .col-xxs-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-xxs-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-xxs-push-3 {
+            left: 25%;
+        }
+
+        .col-xxs-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-xxs-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-xxs-push-0 {
+            left: auto;
+        }
+
+        .col-xxs-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-xxs-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-xxs-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-xxs-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-xxs-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-xxs-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-xxs-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-xxs-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-xxs-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-xxs-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-xxs-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-xxs-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-xxs-offset-0 {
+            margin-left: 0;
+        }
+
+        .create_label {
+            margin-left: 0%;
+            margin-right: 0px;
+        }
+
+        .xxs-clear {
+            clear: both;
+        }
+
+        .xxs-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .xxs-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .xxs-mbot3 {
+            margin-bottom: 3%;
+        }
+
+        .xxs-block {
+            display: block;
+        }
+
+        .xxs-nopadding {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+
+        .xxs-none {
+            display: none;
+        }
+
+        .xxs-center {
+            text-align: center;
+        }
+
+        .wrapper {
+            margin-top: 1%;
+            padding: 0px 2%;
+        }
+
+        .form-control {
+            width: 95%;
+        }
+    }
+
+
+    .btn {
+        padding: 2px 8px;
+    }
+</style>
+
+
+<div id="loading">
+    <div id="loadingcontent">
+        <p id="loadingspinner">
+            Searching things...
+        </p>
+    </div>
+</div>
+
+<!-- page start-->
+<section id="main-content">
+    <section class="wrapper ">
+        <section class="panel rep_panel">
+            <header class="panel-heading rep_header " style="background: #80B2DF; color: #fff;">
+                Clock Time Report
+                <span class="tools pull-right">
+                    <a id="haha" class="fa fa-chevron-down clickdive" href="javascript:;" style="color: #fff; padding-right:10px;"></a>
+                </span>
+            </header>
+            <br />
+            <div class="panel-body">
+                <form id="reportForm" style="margin-top:0.5%;">
+
+                    <div class="row mbot05">
+                        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6 col-xxs-12 mbot05  md-mbot1 md-nopaddingright  sm-mbot2 xs-mbot2 xxs-mbot2">
+                            <select data-placeholder="Select Installer" name="InstallerName" id="InstallerName" class="form-control chosen-select"></select>
+                        </div>
+
+                        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6 col-xxs-12 mbot05  md-mbot1 md-nopaddingright  sm-mbot2 xs-mbot2 xxs-mbot2">
+                            <select data-placeholder="Select Year" name="YearName" id="YearName" class="form-control chosen-select"></select>
+                        </div>
+
+                        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6 col-xxs-12 mbot05  md-mbot1 md-nopaddingright  sm-mbot2 xs-mbot2 xxs-mbot2">
+                            <select data-placeholder="Select Month" name="MonthName" id="MonthName" class="form-control chosen-select"></select>
+                        </div>
+
+                        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6 col-xxs-12 mbot05  md-mbot1 md-nopaddingright  sm-mbot2 xs-mbot2 xxs-mbot2">
+                            <select data-placeholder="Select Week Range" name="WeekName" id="WeekName" class="form-control chosen-select"></select>
+                        </div>
+
+                        @*<div class="col-lg-3 col-md-4 col-sm-6 col-xs-6 col-xxs-12 lg-clear md-mbot1  md-nopaddingright  sm-mbot2 xs-mbot2 xs-clear xxs-mbot2">
+                                <div id="divroot">
+                                    <div id="divInstaller" class=" ">
+                                        <div class="chosen-container chosen-container-single " title="" id="ddlInstaller_chosen">
+                                            <a class="chosen-single chosen-default" id="ancInstaller_chosen" tabindex="-1"><span class="" id="InstallerHeader">Select Installer</span><div><b></b></div></a>
+                                            <div class="chosen-drop">
+                                                <div class="chosen-search"><input type="text" id="txtfilterallInstaller" class="txtfilterall" onkeyup="filterInstaller(this)" autocomplete="off"></div>
+                                                <div class="InstallerFilter row">
+                                                    <label style="margin-left: 7px;" class="col-lg-2">
+                                                        <input type="checkbox" style="zoom:1.2;" class="chbSelectAll" id="Installer_SelectAll" autocomplete="off" value=" "><span>Select All</span>
+                                                    </label>
+                                                </div>
+                                                <ul id="ulInstaller" class="chosen-results " style=""></ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6 col-xxs-12  md-mbot1  sm-mbot2  xs-mbot2 xxs-mbot2">
+                                <div id="divYear">
+                                    <div class="chosen-container chosen-container-single " title="" id="ddlYear_chosen">
+                                        <a class="chosen-single chosen-default" id="ancYear_chosen" tabindex="-1"><span class="" id="YearHeader">Select Year</span><div><b></b></div></a>
+                                        <div class="chosen-drop">
+                                            <div class="chosen-search"><input type="text" id="txtfilterallYear" class="txtfilterall" onkeyup="filterYear(this)" autocomplete="off"></div>
+                                            <div class="YearFilter row">
+                                                <label style="margin-left: 7px;" class="col-lg-2">
+                                                    <input type="checkbox" style="zoom:1.2;" class="chbSelectAll" id="Year_SelectAll" autocomplete="off" value=" "><span>Select All</span>
+                                                </label>
+
+                                            </div>
+                                            <ul id="ulYear" class="chosen-results " style=""></ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6 col-xxs-12 md-nopaddingright md-clear sm-clear  sm-mbot2 xs-mbot2 xxs-mbot2">
+                                <div id="divMonth">
+
+                                    <div class="chosen-container chosen-container-single " title="" id="ddlMonth_chosen">
+                                        <a class="chosen-single chosen-default" id="ancMonth_chosen" tabindex="-1"><span class="" id="MonthHeader">Select Month</span><div><b></b></div></a>
+                                        <div class="chosen-drop">
+                                            <div class="chosen-search"><input type="text" id="txtfilterallMonth" class="txtfilterall" onkeyup="filterMonth(this)" autocomplete="off"></div>
+                                            <div class="MonthFilter row">
+                                                <label style="margin-left: 7px;" class="col-lg-2">
+                                                    <input type="checkbox" style="zoom:1.2;" class="chbSelectAll" id="Month_SelectAll" autocomplete="off" value=" "><span>Select All</span>
+                                                </label>
+
+                                            </div>
+                                            <ul id="ulMonth" class="chosen-results " style=""></ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6 col-xxs-12 md-nopaddingright  sm-mbot2 xs-mbot2 xxs-mbot2">
+                                <div id="divWeek">
+                                    <div class="chosen-container chosen-container-single " title="" id="ddlWeek_chosen">
+                                        <a class="chosen-single chosen-default" id="ancWeek_chosen" tabindex="-1"><span class="" id="WeekHeader">Select Week</span><div><b></b></div></a>
+                                        <div class="chosen-drop">
+                                            <div class="chosen-search"><input type="text" id="txtfilterallWeek" class="txtfilterall" onkeyup="filterWeek(this)" autocomplete="off"></div>
+                                            <div class="WeekFilter row">
+                                                <label style="margin-left: 7px;" class="col-lg-2">
+                                                    <input type="checkbox" style="zoom:1.2;" class="chbSelectAll" id="Week_SelectAll" autocomplete="off" value=" "><span>Select All</span>
+                                                </label>
+                                            </div>
+                                            <ul id="ulWeek" class="chosen-results " style=""></ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>*@
+
+                    </div>
+
+                    <div class="row mbot05 xs-mbot2 xxs-mbot2" style="">
+                        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6 col-xxs-12 sm-mbot1 xs-mbot2 xxs-mbot2">
+                            @*<div>
+                                    <input type="checkbox" id="chkShowMap" /> Include map on export report
+                                </div>*@
+                        </div>
+
+                        <div class="col-lg-6 col-md-5 col-sm-6 col-xs-6 col-xxs-12 sm-mbot1 xs-mbot2 xxs-clear xxs-center xxs-mbot2">
+                            <button id="btnSearch" class="btn btn-success" type="button">Search</button>
+                            <button class="btn btn-danger" id="btnReset" type="button">Reset</button>
+                            @*<button id="btnExport" class="btn btn-success" type="button">Export</button>*@
+                        </div>
+
+
+                        @*<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 col-xxs-12 sm-clear xs-clear xxs-clear xs-right xxs-right dup-color-bootstrap" style="float:right;">
+                                <div class="form-group text-right">
+                                    <i class="fa fa-square-o fa-2x text-success"></i>&nbsp;
+                                    <span>Duplicate Report Indicator </span>
+                                </div>
+                            </div>*@
+                    </div>
+                </form>
+            </div>
+        </section>
+        @*</div>
+            </div>*@
+        <section class="panel dynamic_panel rep-dyanmc-panel">
+            <div class="panel-body report_table ">
+                @*<div class="table-responsive col-lg-12 rep_dyn_table">*@
+                <div class="table-responsive   rep_dyn_table">
+                    <table id="dynamic-table" class="display table table-bordered table-striped dataTable  " aria-describedby="dynamic-table_info">
+                        <thead>
+                            <tr>
+                                @*<th><input type="checkbox" name="select_all" value="1" id="example-select-all"></th>*@
+                                <th style="width:17%;text-align:center">Days/Dates</th>
+                                <th style="width:11%;text-align:center">Monday</th>
+                                <th style="width:11%;text-align:center">Tuesday</th>
+                                <th style="width:11%;text-align:center">Wednesday</th>
+                                <th style="width:11%;text-align:center">Thursday</th>
+                                <th style="width:11%;text-align:center">Friday</th>
+                                <th style="width:11%;text-align:center">Saturday</th>
+                                <th style="width:17%;text-align:center">WK Ending<br>Total Week Installs</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </section>
+</section>
+
+<link href="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.css")" rel="stylesheet" />
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.jquery.min.js")"></script>
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.proto.min.js")"></script>
+<script src='@Url.Content("~/Scripts/Admin/ClockTimeReport.js")'></script>
