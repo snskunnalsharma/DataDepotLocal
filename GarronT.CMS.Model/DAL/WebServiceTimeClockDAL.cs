@@ -1,7 +1,9 @@
 ﻿using GarronT.CMS.Model.BO;
+using OfficeOpenXml.Style;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -73,6 +75,76 @@ namespace GarronT.CMS.Model.DAL
                 throw ex;
             }
             return timeClockData;
+        }
+
+        // Add Code by Deepak date 14 Oct 2020 
+        public String InsertOrUpdate(long TimeClockId, long InstallerId, long UploadedDataExcelId, long ProductId, long PK_UTCD)
+        {
+            String json = string.Empty;
+            try
+            {                                                               // info UTCD = UserTimeClockDetails
+                CompassEntities objCompassEntities = new CompassEntities();
+                CommonFunctions _datetime = new CommonFunctions();
+                var dbdate = _datetime.ServerDate();
+                UserTimeClockDetail objUserTimeClockDetail = new UserTimeClockDetail();
+                List<WebServiceIimeClockDetailBO> UTCDId = new List<WebServiceIimeClockDetailBO>();
+                if (PK_UTCD == 0)
+                {
+                    #region Insert
+                    objUserTimeClockDetail.FKTimeClockId = TimeClockId;
+                    objUserTimeClockDetail.FKInstallerId = InstallerId;
+                    objUserTimeClockDetail.FKUploadedDataExcelId = UploadedDataExcelId;
+                    objUserTimeClockDetail.FKProductId = ProductId;
+                    objUserTimeClockDetail.InTime = dbdate;
+                    objUserTimeClockDetail.OutTime = null;
+                    objUserTimeClockDetail.Active = 1;          // 1 for Active or 2 for InActive
+                    objUserTimeClockDetail.CreatedOn = dbdate;
+                    objUserTimeClockDetail.CreatedBy = InstallerId;
+                    objUserTimeClockDetail.ModifiedOn = dbdate;
+                    objUserTimeClockDetail.ModifiedBy = InstallerId;
+                    objCompassEntities.UserTimeClockDetails.Add(objUserTimeClockDetail);
+                    objCompassEntities.SaveChanges();
+
+                    long insertedcurrentid = objUserTimeClockDetail.Id; // inserted current id
+                    json = "[{\"Id\":\"" + insertedcurrentid + "\"}]";
+                    //json = @"{""Id"":""" + insertedcurrentid + "\"}";
+                    /* var getcurrentinsertrecordsid = objCompassEntities.UserTimeClockDetails.Where(o => o.Id == insertedcurrentid).Select(o =>
+                        new WebServiceIimeClockDetailBO
+                        {
+                            Id = o.Id
+                        }
+                        ).ToList();
+                     if (getcurrentinsertrecordsid != null)
+                     {
+                         UTCDId.AddRange(getcurrentinsertrecordsid);
+                     }*/
+                    #endregion
+                }
+                else
+                {
+                    #region Update
+                    var exist = objCompassEntities.UserTimeClockDetails.Where(o => o.Id == PK_UTCD).FirstOrDefault();
+                    if (exist != null)
+                    {
+                        exist.OutTime = dbdate;
+                        exist.ModifiedOn = dbdate;
+                        exist.ModifiedBy = InstallerId;
+                        objCompassEntities.SaveChanges();
+                        json = "[{\"Id\":\"" + PK_UTCD + "\"}]";
+                        //json = @"{""Id"":""" + PK_UTCD + "}";
+                    }
+                    else
+                    {
+                        json = "[{\"error\":\"error\"}]";
+                    }
+                    #endregion
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return json;
         }
     }
 }

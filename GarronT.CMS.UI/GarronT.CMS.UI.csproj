@@ -234,6 +234,7 @@
     <Compile Include="Areas\Admin\Controllers\AuditorReportsController.cs" />
     <Compile Include="Areas\Admin\Controllers\CategoryController.cs" />
     <Compile Include="Areas\Admin\Controllers\CityController.cs" />
+    <Compile Include="Areas\Admin\Controllers\ClockTimeReportController.cs" />
     <Compile Include="Areas\Admin\Controllers\CustomerController.cs" />
     <Compile Include="Areas\Admin\Controllers\CountryController.cs" />
     <Compile Include="Areas\Admin\Controllers\DeviceController.cs" />
@@ -4253,6 +4254,7 @@
       <DependentUpon>dsReportExport.xsd</DependentUpon>
     </Content>
     <Content Include="Scripts\Admin\AuditClone.js" />
+    <Content Include="Scripts\Admin\ClockTimeReport.js" />
     <Content Include="Scripts\Admin\ProductMovementReport.js" />
     <Content Include="Scripts\js\images\animated-overlay.gif" />
     <Content Include="Scripts\js\images\ui-bg_diagonals-thick_18_b81900_40x40.png" />
@@ -4371,6 +4373,7 @@
     <Content Include="Areas\Admin\Views\Permission\Index.cshtml" />
     <Content Include="Areas\Admin\Views\Users\UserPermission.cshtml" />
     <Content Include="Areas\Admin\Views\Project\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\ClockTimeReport\Index.cshtml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile1.pubxml" />
     <None Include="Properties\PublishProfiles\publish.pubxml" />

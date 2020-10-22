@@ -98,14 +98,14 @@
                 </a>
             </li>
             @*<li id="liRoleMaster">
-                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Role", new { area = "Admin" })">
-                    <span class="icon">
-                        <i class="fa fa-check-square-o"></i>
-                    </span>
+                    <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Role", new { area = "Admin" })">
+                        <span class="icon">
+                            <i class="fa fa-check-square-o"></i>
+                        </span>
 
-                    <span>Role Master</span>
-                </a>
-            </li>*@
+                        <span>Role Master</span>
+                    </a>
+                </li>*@
             <li id="liServices">
                 <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Services", new { area = "Admin" })">
                     <span class="icon">
@@ -217,7 +217,7 @@
                     </a>
                 </li>*@
 
-           
+
 
 
 
@@ -320,6 +320,14 @@
             <span>Reports</span>
         </a>
         <ul id="subReports" class="sub" style="display: none;">
+            <li id="liClockTimeReport">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "ClockTimeReport", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    <span>Clock Time Report</span>
+                </a>
+            </li>
             <li id="liDuplicateReport">
                 <a target="_self" class="AdminMenu" href="@Url.Action("Index", "DuplicateReport", new { area = "Admin" })">
                     <span class="icon">

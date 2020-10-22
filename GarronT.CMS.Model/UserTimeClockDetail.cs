@@ -16,6 +16,7 @@ namespace GarronT.CMS.Model
     {
         public long Id { get; set; }
         public Nullable<long> FKTimeClockId { get; set; }
+        public Nullable<long> FKInstallerId { get; set; }
         public Nullable<long> FKUploadedDataExcelId { get; set; }
         public Nullable<long> FKProductId { get; set; }
         public Nullable<System.DateTime> InTime { get; set; }

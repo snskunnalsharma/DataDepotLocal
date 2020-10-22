@@ -674,7 +674,7 @@ function createPDF(canvas) {
 
 $("#btnExportCPChart").click(function () {
 
-    debugger;
+    //debugger;
     var canvas = $("#chartContainer .canvasjs-chart-canvas").get(0);
     createPDF(canvas)
     // var dataURL = canvas.toDataURL();
@@ -713,7 +713,7 @@ $("#btnExportCPChart").click(function () {
 })
 
 $("#btnExportCPChart1").click(function () {
-    debugger;
+    //debugger;
     var canvas = $("#chartContainerInstallation .canvasjs-chart-canvas").get(0);
     createPDF(canvas)
 
@@ -725,7 +725,7 @@ $("#btnExportCPChart1").click(function () {
 })
 
 $("#btnExportCPChart2").click(function () {
-    debugger;
+    //debugger;
     var canvas = $("#chartContainerInstallationbyInstaller .canvasjs-chart-canvas").get(0);
 
     createPDF(canvas)
@@ -740,7 +740,7 @@ $("#btnExportCPChart2").click(function () {
 })
 
 $("#btnExportCPChart3").click(function () {
-    debugger;
+    //debugger;
     var canvas = $("#chartProjectPercentage .canvasjs-chart-canvas").get(0);
 
     createPDF(canvas)
@@ -754,7 +754,7 @@ $("#btnExportCPChart3").click(function () {
 
 //Added by Sominath on 05/01/2016
 $("#btnExportAuditChart1").click(function () {
-    debugger;
+    //debugger;
     var canvas = $("#chartInstallerAuditChart .canvasjs-chart-canvas").get(0);
 
     createPDF(canvas)
@@ -852,7 +852,7 @@ function LoadInstallationChart(projectID) {
         },
         success: function (msg) {
 
-            debugger;
+            //debugger;
             var data = eval(msg.list);
 
             var dataPoint_Completed = [];
@@ -984,7 +984,7 @@ function LoadInstallationPerInstaller(projectID) {
             waitingDialog.hide();
         },
         success: function (msg) {
-            debugger;
+            //debugger;
             var data = eval(msg.list);
             var totaluploadedrecords = msg.totaluploadedrecords;
             var dataPoint_Completed = [];
@@ -1131,7 +1131,7 @@ function LoadInstallationPerProject() {
         //data: { projectID: projectID },
         type: 'GET',
         success: function (msg) {
-            debugger;
+            //debugger;
             var data = eval(msg);
             var achivementdata = "";
             var dataPoints = [];

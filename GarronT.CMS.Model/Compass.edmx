@@ -1982,6 +1982,7 @@
           </Key>
           <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="FKTimeClockId" Type="bigint" />
+			<Property Name="FKInstallerId" Type="bigint" />
           <Property Name="FKUploadedDataExcelId" Type="bigint" />
           <Property Name="FKProductId" Type="bigint" />
           <Property Name="InTime" Type="datetime" />
@@ -9648,6 +9649,7 @@ warning 6002: The table/view 'CMSMeter.dbo.VW_Project' does not have a primary k
           </Key>
           <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="FKTimeClockId" Type="Int64" />
+		  <Property Name="FKInstallerId" Type="Int64" />
           <Property Name="FKUploadedDataExcelId" Type="Int64" />
           <Property Name="FKProductId" Type="Int64" />
           <Property Name="InTime" Type="DateTime" Precision="3" />
@@ -13902,6 +13904,7 @@ warning 6002: The table/view 'CMSMeter.dbo.VW_Project' does not have a primary k
                 <ScalarProperty Name="FKProductId" ColumnName="FKProductId" />
                 <ScalarProperty Name="FKUploadedDataExcelId" ColumnName="FKUploadedDataExcelId" />
                 <ScalarProperty Name="FKTimeClockId" ColumnName="FKTimeClockId" />
+				  <ScalarProperty Name="FKInstallerId" ColumnName="FKInstallerId" /> 
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

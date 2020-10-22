@@ -2871,5 +2871,34 @@ namespace GarronT.CMS.UI
                 log.Info("ERROR  ex.InnerException.Message - " + (ex.InnerException.Message != null ? ex.InnerException.Message : ""));
             }
         }
+
+        // Add Code by Deepak date 13 Oct 2020 
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]                                                 // UserTimeClockDetail = UTCD
+        public void Save_Update_UserClockTimeRecord(long TimeClockId,long InstallerId,long UploadedDataExcelId,long ProductId, long PK_UTCD)
+        {                                                                                  
+            try
+            {
+                JavaScriptSerializer s = new JavaScriptSerializer();
+                s.MaxJsonLength = 2147483644;
+                log.Info("WEB Service Save_Update_UserClockTimeRecord Started at - " + DateTime.Now.ToString());
+                List<WebServiceIimeClockDetailBO> objWebServiceIimeClockDetailBO = new List<WebServiceIimeClockDetailBO>();
+                WebServiceTimeClockDAL objWebServiceClockDAL = new WebServiceTimeClockDAL();
+                String returnid = objWebServiceClockDAL.InsertOrUpdate(TimeClockId, InstallerId, UploadedDataExcelId, ProductId, PK_UTCD);
+                Context.Response.ContentType = "application/json";
+                Context.Response.Write(s.Serialize(returnid));
+                objWebServiceClockDAL.Dispose();
+
+                log.Info("WEB Service Save_Update_UserClockTimeRecord Ended at - " + DateTime.Now.ToString());
+            }
+            catch(Exception ex)
+            {
+                setJsonReponse(4, "Fail", ex.Message);
+                log.Info("WEB Service Save_Update_UserClockTimeRecord ERROR at " + DateTime.Now.ToString());
+                log.Info("ERROR  ex.Message - " + (ex.Message != null ? ex.Message : ""));
+                log.Info("ERROR  ex.StackTrace - " + (ex.StackTrace != null ? ex.StackTrace : ""));
+                log.Info("ERROR ex.InnerException.Message - " + (ex.InnerException.Message != null ? ex.InnerException.Message : ""));
+            }
+        }
     }
 }
