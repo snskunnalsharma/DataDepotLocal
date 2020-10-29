@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GarronT.CMS.Model.BO
 {
-  public  class ReportSkipRTUModel
+    public class ReportSkipRTUModel
     {
         public string Dates { get; set; }
         public string Account { get; set; }

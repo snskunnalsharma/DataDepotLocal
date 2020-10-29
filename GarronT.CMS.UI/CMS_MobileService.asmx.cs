@@ -1467,8 +1467,7 @@ namespace GarronT.CMS.UI
                         MobileWarehouseResponseBo objMobileWarehouseResponseBo;
 
                         string message;
-                        var result = objInventoryWebServiceDAL.WarehouseInsertMobileData(ref objMobileWarehouseRecieveBo, jsonDataParam, currentDate1,
-                            out objMobileWarehouseResponseBo, out message);
+                        var result = objInventoryWebServiceDAL.WarehouseInsertMobileData(ref objMobileWarehouseRecieveBo, jsonDataParam, currentDate1, out objMobileWarehouseResponseBo, out message);
 
                         objInventoryWebServiceDAL.Dispose();
 
@@ -2895,6 +2894,33 @@ namespace GarronT.CMS.UI
             {
                 setJsonReponse(4, "Fail", ex.Message);
                 log.Info("WEB Service Save_Update_UserClockTimeRecord ERROR at " + DateTime.Now.ToString());
+                log.Info("ERROR  ex.Message - " + (ex.Message != null ? ex.Message : ""));
+                log.Info("ERROR  ex.StackTrace - " + (ex.StackTrace != null ? ex.StackTrace : ""));
+                log.Info("ERROR ex.InnerException.Message - " + (ex.InnerException.Message != null ? ex.InnerException.Message : ""));
+            }
+        }
+
+        // Add Code by Deepak date 13 Oct 2020 
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]                                                
+        public void get_AccountSummaryReport(long ProjectId, long InstallerId)
+        {
+            try
+            {
+                JavaScriptSerializer s = new JavaScriptSerializer();
+                s.MaxJsonLength = 2147483644;
+                log.Info("WEB Service get Account Summary Report Started at - " + DateTime.Now.ToString());
+                ReportDAL objReportDAL = new ReportDAL();
+                var list = objReportDAL.getAccountSummaryReport(ProjectId,InstallerId);
+                Context.Response.ContentType = "application/json";
+                Context.Response.Write(s.Serialize(list));
+                
+                log.Info("WEB Service Account Summary Report Started Ended at - " + DateTime.Now.ToString());
+            }
+            catch (Exception ex)
+            {
+                setJsonReponse(4, "Fail", ex.Message);
+                log.Info("WEB Service Account Summary Report Started ERROR at " + DateTime.Now.ToString());
                 log.Info("ERROR  ex.Message - " + (ex.Message != null ? ex.Message : ""));
                 log.Info("ERROR  ex.StackTrace - " + (ex.StackTrace != null ? ex.StackTrace : ""));
                 log.Info("ERROR ex.InnerException.Message - " + (ex.InnerException.Message != null ? ex.InnerException.Message : ""));

@@ -15,6 +15,7 @@ using System.Configuration;
 using System.Transactions;
 using Microsoft.AspNet.Identity;
 using System.Collections;
+using System.Web.Script.Services;
 
 namespace GarronT.CMS.Model.DAL
 {
@@ -2900,5 +2901,71 @@ namespace GarronT.CMS.Model.DAL
                 throw ex;
             }
         }
+
+        // Add on Deepak 28 Oct 2020
+        public List<AccountSummaryReportJson> getAccountSummaryReport(long ProjectId,long InstallerId)
+        {
+            try
+            {
+                CompassEntities CompassEntities = new CompassEntities();
+                var List = new List<AccountSummaryReportModel>();
+                SqlConnection sqlConnection1 = new SqlConnection(CompassEntities.Database.Connection.ConnectionString);
+                SqlCommand cmd = new SqlCommand();
+                SqlDataReader reader;
+
+                cmd.CommandText = "PROC_Get_AccountSummaryReport";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Connection = sqlConnection1;
+                cmd.Parameters.Add("@ProjectId", ProjectId);
+                cmd.Parameters.Add("@InstallerId", InstallerId);
+                sqlConnection1.Open();
+                reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    List.Add(new AccountSummaryReportModel {
+                        Dates=Convert.ToString(reader["Dates"]),
+                        CategoryType= Convert.ToString(reader["CategoryType"])
+                    });
+                }
+
+                List<AccountSummaryReportJson> objAccountSummaryReportJson = new List<AccountSummaryReportJson>();
+                objAccountSummaryReportJson.Add(new AccountSummaryReportJson
+                {
+                    key="All Records",
+                    value = (new AccountSummaryReportList
+                    {
+                        COMPLETED = List.Where(o => o.CategoryType == "COMPLETED").Count(),
+                        PENDING = List.Where(o => o.CategoryType == "PENDING").Count(),
+                        RTU = List.Where(o => o.CategoryType == "RTU").Count(),
+                        SKIP = List.Where(o => o.CategoryType == "SKIP").Count(),
+                        NOT_ALLOCATED = List.Where(o => o.CategoryType == "NOT ALLOCATED").Count()
+                    }),
+                });;
+
+                DateTime serverDate = new CommonFunctions().ServerDate();
+                DateTime fd = Convert.ToDateTime(serverDate);
+                string st = fd.ToString("dd MMM yyyy");
+                DateTime fd1 = Convert.ToDateTime(st);
+                var sd = List.Where(a => !string.IsNullOrEmpty(a.Dates) && Convert.ToDateTime(a.Dates).Date == fd1.Date && a.CategoryType == "COMPLETED");
+                objAccountSummaryReportJson.Add(new AccountSummaryReportJson
+                {
+                    key = "Today Records",
+                    value = (new AccountSummaryReportList
+                    {
+                        COMPLETED = List.Where(a => !string.IsNullOrEmpty(a.Dates) && Convert.ToDateTime(a.Dates).Date == fd1.Date && a.CategoryType == "COMPLETED").Count(),
+                        PENDING = List.Where(a => !string.IsNullOrEmpty(a.Dates) && Convert.ToDateTime(a.Dates).Date == fd1.Date && a.CategoryType == "PENDING").Count(),
+                        RTU = List.Where(a => !string.IsNullOrEmpty(a.Dates) && Convert.ToDateTime(a.Dates).Date == fd1.Date && a.CategoryType == "RTU").Count(),
+                        SKIP = List.Where(a => !string.IsNullOrEmpty(a.Dates) && Convert.ToDateTime(a.Dates).Date == fd1.Date && a.CategoryType == "SKIP").Count(),
+                        NOT_ALLOCATED = List.Where(a => !string.IsNullOrEmpty(a.Dates) && Convert.ToDateTime(a.Dates).Date == fd1.Date && a.CategoryType == "NOT ALLOCATED").Count()
+                    }),
+                });
+                return objAccountSummaryReportJson;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        //ends hare
     }
 }

@@ -10,7 +10,8 @@
 namespace GarronT.CMS.Model
 {
     using System;
-    
+    using System.Collections.Generic;
+
     public partial class STP_GetReportTableNew_bak_Result
     {
         public string Dates { get; set; }
@@ -41,5 +42,25 @@ namespace GarronT.CMS.Model
         public string SkipComment { get; set; }
         public string ShortComment { get; set; }
         public string ProjectStatus { get; set; }
+    }
+
+    public class AccountSummaryReportModel
+    {
+        public string Dates { get; set; }
+        public string CategoryType { get; set; }
+    }
+
+    public class AccountSummaryReportList
+    {
+        public int COMPLETED { get; set; }
+        public int PENDING { get; set; }
+        public int RTU { get; set; }
+        public int SKIP { get; set; }
+        public int NOT_ALLOCATED { get; set; }
+    }
+    public class AccountSummaryReportJson
+    {
+        public string key { get; set; }
+        public AccountSummaryReportList value { get; set; }
     }
 }

@@ -27,7 +27,19 @@ namespace GarronT.CMS.Model.BO
         public string Thursday { get; set; }
         public string Friday { get; set; }
         public string Saturday { get; set; }
-        public string TotalWeekInstalls { get; set; }
+        public string TotalWorkInWeek { get; set; }
+
+    }
+    public class Get_CTR_Temp        // CTR = Clock Time Report
+    {
+        public string Description { get; set; }
+        public string Monday { get; set; }
+        public string Tuesday { get; set; }
+        public string Wednesday { get; set; }
+        public string Thursday { get; set; }
+        public string Friday { get; set; }
+        public string Saturday { get; set; }
+        public TimeSpan TotalWeekedInaDay { get; set; }
 
     }
 
@@ -36,12 +48,14 @@ namespace GarronT.CMS.Model.BO
         public string Description { get; set; }
         public string Day{ get; set; }
         public string ClockTime { get; set; }
+        public TimeSpan TotalWorkedTime { get; set; }
     }
     public class DetailDay
     {
         public string Description { get; set; }
         public string Day { get; set; }
         public string ClockTime { get; set; }
+        public TimeSpan TotalWorkedTime { get; set; }
     }
     public class HeaderDates
     {

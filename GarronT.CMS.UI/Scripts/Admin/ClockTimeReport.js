@@ -399,7 +399,7 @@ function searchClick() {
                             { "mData": "Thursday" },
                             { "mData": "Friday" },
                             { "mData": "Saturday" },
-                            { "mData": "TotalWeekInstalls" },
+                            { "mData": "TotalWorkInWeek" },
                         ],
                         /*"aoColumnDefs": [
                             {
