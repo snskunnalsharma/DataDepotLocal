@@ -1716,7 +1716,7 @@ function GetSKipRTU_Details(InstallerId, ProjectId, ID, FormId) {
 function EditRecords(userId, projectId, accinifiledId, reportFId) {
 
     var createurl = $("#urlRedirectCreate").val();
-
+    console.log('in EditRecords');
     $.ajax({
         url: createurl,
         datatype: "text",
@@ -1726,6 +1726,7 @@ function EditRecords(userId, projectId, accinifiledId, reportFId) {
         success: function (data) {
 
             if (data.success === undefined) {
+                console.log('in undefined');
                 waitingDialog.show('Please Wait...');
 
 
@@ -1746,6 +1747,7 @@ function EditRecords(userId, projectId, accinifiledId, reportFId) {
                 waitingDialog.hide();
             }
             else {
+                console.log('in fail');
                 var $toast = toastr["error"](data.returnMessage, "Notification !");
             }
         },

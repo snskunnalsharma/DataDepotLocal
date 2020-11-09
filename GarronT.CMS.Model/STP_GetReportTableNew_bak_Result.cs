@@ -48,6 +48,7 @@ namespace GarronT.CMS.Model
     {
         public string Dates { get; set; }
         public string CategoryType { get; set; }
+        public string MeterSize { get; set; }
     }
 
     public class AccountSummaryReportList
@@ -57,10 +58,22 @@ namespace GarronT.CMS.Model
         public int RTU { get; set; }
         public int SKIP { get; set; }
         public int NOT_ALLOCATED { get; set; }
+        public List<SummaryDetail> SummaryDetail {get;set;}
     }
+
+    public class SummaryDetail
+    {
+        public string METERSIZE { get; set; }
+        public int TOTALCOUNT { get; set; }
+    }
+
     public class AccountSummaryReportJson
     {
-        public string key { get; set; }
-        public AccountSummaryReportList value { get; set; }
+        public string summaryType { get; set; }
+        public AccountSummaryReportList records { get; set; }
+    }
+    public class AccountSummaryReport
+    {
+        public Dictionary<string, AccountSummaryReportList> dict { get; set; }
     }
 }

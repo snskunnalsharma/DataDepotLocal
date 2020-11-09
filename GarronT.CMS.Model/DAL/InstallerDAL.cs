@@ -1864,13 +1864,14 @@ namespace GarronT.CMS.Model.DAL
                         ID = long.Parse(reader["Id"].ToString()),
                         OldMeterNo = Convert.ToString(reader["OldMeterNo"]),
                         OldMeterRadioNo = Convert.ToString(reader["OldMeterRadioNo"]),
-                        Account = Convert.ToString(reader["Account"]),
+                        //Account = Convert.ToString(reader["Account"]),    // Remove deepak for Client Requirement
                         Customer = Convert.ToString(reader["Customer"]),
                         //FromDate = DateTime.Parse(reader["FromDate"].ToString()),
                         // ToDate = DateTime.Parse(reader["ToDate"].ToString()),
                         Cycle = Convert.ToString(reader["Cycle"]),
                         Route = Convert.ToString(reader["Route"]),
-                        Street = Convert.ToString(reader["Street"])
+                        Street = Convert.ToString(reader["Street"]),
+                        OldMeterSize= Convert.ToString(reader["OldMeterSize"]), // Add new deepak for Client Requirement
                     });
 
                 }
@@ -1893,9 +1894,10 @@ namespace GarronT.CMS.Model.DAL
                             "<th style='border: 1px solid black;padding: 0px 8px;'>Sr.No</th> " +
                             "<th style='border: 1px solid black;padding: 0px 8px;'>Cycle</th> " +
                             "<th style='border: 1px solid black;padding: 0px 10px;'>Route</th> " +
-                            "<th style='border: 1px solid black;padding: 0px 10px;'>Account Number</th> " +
+                            //"<th style='border: 1px solid black;padding: 0px 10px;'>Account Number</th> " +
                             "<th style='border: 1px solid black;padding: 0px 20px;'>Customer Name</th> " +
                             "<th style='border: 1px solid black;padding: 0px 34px;'>Street</th> " +
+                            "<th style='border: 1px solid black;padding: 0px 10px;'>Old Meter Size</th> " +
                             "<th style='border: 1px solid black;padding: 0px 10px;'>Old Meter Number</th> " +
                             "<th style='border: 1px solid black;padding: 0px 10px;'>Old Meter Radio Number</th> " +
                         "</tr>" +
@@ -1906,13 +1908,8 @@ namespace GarronT.CMS.Model.DAL
                     int j = 1;
                     if (InstallerMap.AddressID.Count > 0)
                     {
-
-
                         i = InstallerMap.AddressID.Count;
                         sb.Append("<tbody style='font-size:13px;'>");
-
-
-
 
                         foreach (var item in InstallerMap.AddressID)
                         {
@@ -1930,9 +1927,10 @@ namespace GarronT.CMS.Model.DAL
                                 sb.Append("<td style='border: 1px solid black;font-weight:500; text-align: center; width:5%;'>" + j + "</td>");
                                 sb.Append("<td style='border: 1px solid black;font-weight:500; text-align: center; width:5%;'>" + installerdata.Cycle + "</td>");
                                 sb.Append("<td style='border: 1px solid black;font-weight:500; text-align: center; width:5%;'>" + installerdata.Route + "</td>");
-                                sb.Append("<td style='border: 1px solid black;font-weight:500; text-align: center; width:10%;'>" + installerdata.Account + "</td>");
+                                //sb.Append("<td style='border: 1px solid black;font-weight:500; text-align: center; width:10%;'>" + installerdata.Account + "</td>");
                                 sb.Append("<td style='border: 1px solid black;font-weight:500; text-align: center; width:25%;'>" + (!string.IsNullOrEmpty(installerdata.Customer) ? installerdata.Customer : "-") + "</td>");
                                 sb.Append("<td style='border: 1px solid black;font-weight:500; text-align: center; width:30%;'>" + installerdata.Street + "</td>");
+                                sb.Append("<td style='border: 1px solid black;font-weight:500; text-align: center; width:10%;'>" + (!string.IsNullOrEmpty(installerdata.OldMeterSize) ? installerdata.OldMeterSize : "-") + "</td>");
                                 sb.Append("<td style='border: 1px solid black;font-weight:500; text-align: center; width:10%;'>" + (!string.IsNullOrEmpty(installerdata.OldMeterNo) ? installerdata.OldMeterNo : "-") + "</td>");
                                 sb.Append("<td style='border: 1px solid black;font-weight:500; text-align: center; width:10%;'>" + (!string.IsNullOrEmpty(installerdata.OldMeterRadioNo) ? installerdata.OldMeterRadioNo : "-") + "</td>");
                                 sb.Append("</tr>");
@@ -1958,9 +1956,10 @@ namespace GarronT.CMS.Model.DAL
                             "<th style='border: 1px solid black;padding: 0px 8px;'>Sr.No</th> " +
                             "<th style='border: 1px solid black;padding: 0px 8px;'>Cycle</th> " +
                             "<th style='border: 1px solid black;padding: 0px 10px;'>Route</th> " +
-                            "<th style='border: 1px solid black;padding: 0px 10px;'>Account Number</th> " +
+                            //"<th style='border: 1px solid black;padding: 0px 10px;'>Account Number</th> " +
                             "<th style='border: 1px solid black;padding: 0px 20px;'>Customer Name</th> " +
                             "<th style='border: 1px solid black;padding: 0px 34px;'>Street</th> " +
+                            "<th style='border: 1px solid black;padding: 0px 10px;'>Old Meter Size</th> " +
                             "<th style='border: 1px solid black;padding: 0px 10px;'>Old Meter Number</th> " +
                             "<th style='border: 1px solid black;padding: 0px 10px;'>Old Meter Radio Number</th> " +
                         "</tr>" +
@@ -1984,9 +1983,10 @@ namespace GarronT.CMS.Model.DAL
                                 sb.Append("<td style='border: 1px solid black;font-weight:500; text-align: center; width:5%;'>" + l + "</th>");
                                 sb.Append("<td style='border: 1px solid black;font-weight:500; text-align: center; width:5%;'>" + Deinstallerdata.Cycle + "</td>");
                                 sb.Append("<td style='border: 1px solid black;font-weight:500; text-align: center; width:5%;'>" + Deinstallerdata.Route + "</td>");
-                                sb.Append("<td style='border: 1px solid black;font-weight:500; text-align: center; width:10%;'>" + Deinstallerdata.Account + "</td>");
+                                //sb.Append("<td style='border: 1px solid black;font-weight:500; text-align: center; width:10%;'>" + Deinstallerdata.Account + "</td>");
                                 sb.Append("<td style='border: 1px solid black;font-weight:500; text-align: center; width:25%;'>" + (!string.IsNullOrEmpty(Deinstallerdata.Customer) ? Deinstallerdata.Customer : "-") + "</td>");
                                 sb.Append("<td style='border: 1px solid black;font-weight:500; text-align: center; width:30%;'>" + Deinstallerdata.Street + "</td>");
+                                sb.Append("<td style='border: 1px solid black;font-weight:500; text-align: center; width:10%;'>" + (!string.IsNullOrEmpty(Deinstallerdata.OldMeterSize) ? Deinstallerdata.OldMeterSize : "-") + "</td>");
                                 sb.Append("<td style='border: 1px solid black;font-weight:500; text-align: center; width:10%;'>" + (!string.IsNullOrEmpty(Deinstallerdata.OldMeterNo) ? Deinstallerdata.OldMeterNo : "-") + "</td>");
                                 sb.Append("<td style='border: 1px solid black;font-weight:500; text-align: center; width:10%;'>" + (!string.IsNullOrEmpty(Deinstallerdata.OldMeterRadioNo) ? Deinstallerdata.OldMeterRadioNo : "-") + "</td>");
                                 sb.Append("</tr>");

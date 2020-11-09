@@ -2922,17 +2922,19 @@ namespace GarronT.CMS.Model.DAL
                 reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    List.Add(new AccountSummaryReportModel {
-                        Dates=Convert.ToString(reader["Dates"]),
-                        CategoryType= Convert.ToString(reader["CategoryType"])
+                    List.Add(new AccountSummaryReportModel
+                    {
+                        Dates = Convert.ToString(reader["Dates"]),
+                        CategoryType = Convert.ToString(reader["CategoryType"]),
+                        MeterSize = Convert.ToString(reader["OldMeterSize"])
                     });
                 }
 
                 List<AccountSummaryReportJson> objAccountSummaryReportJson = new List<AccountSummaryReportJson>();
                 objAccountSummaryReportJson.Add(new AccountSummaryReportJson
                 {
-                    key="All Records",
-                    value = (new AccountSummaryReportList
+                    summaryType = "All Records",
+                    records = (new AccountSummaryReportList
                     {
                         COMPLETED = List.Where(o => o.CategoryType == "COMPLETED").Count(),
                         PENDING = List.Where(o => o.CategoryType == "PENDING").Count(),
@@ -2940,7 +2942,19 @@ namespace GarronT.CMS.Model.DAL
                         SKIP = List.Where(o => o.CategoryType == "SKIP").Count(),
                         NOT_ALLOCATED = List.Where(o => o.CategoryType == "NOT ALLOCATED").Count()
                     }),
-                });;
+                });
+                /*Dictionary<string,AccountSummaryReportList> summaryReport = new Dictionary<string, AccountSummaryReportList>();
+                summaryReport.Add(
+                    "All Records",
+                    new AccountSummaryReportList
+                    {
+                        COMPLETED = List.Where(o => o.CategoryType == "COMPLETED").Count(),
+                        PENDING = List.Where(o => o.CategoryType == "PENDING").Count(),
+                        RTU = List.Where(o => o.CategoryType == "RTU").Count(),
+                        SKIP = List.Where(o => o.CategoryType == "SKIP").Count(),
+                        NOT_ALLOCATED = List.Where(o => o.CategoryType == "NOT ALLOCATED").Count()
+                    }
+                );*/
 
                 DateTime serverDate = new CommonFunctions().ServerDate();
                 DateTime fd = Convert.ToDateTime(serverDate);
@@ -2949,8 +2963,8 @@ namespace GarronT.CMS.Model.DAL
                 var sd = List.Where(a => !string.IsNullOrEmpty(a.Dates) && Convert.ToDateTime(a.Dates).Date == fd1.Date && a.CategoryType == "COMPLETED");
                 objAccountSummaryReportJson.Add(new AccountSummaryReportJson
                 {
-                    key = "Today Records",
-                    value = (new AccountSummaryReportList
+                    summaryType = "Today Records",
+                    records = (new AccountSummaryReportList
                     {
                         COMPLETED = List.Where(a => !string.IsNullOrEmpty(a.Dates) && Convert.ToDateTime(a.Dates).Date == fd1.Date && a.CategoryType == "COMPLETED").Count(),
                         PENDING = List.Where(a => !string.IsNullOrEmpty(a.Dates) && Convert.ToDateTime(a.Dates).Date == fd1.Date && a.CategoryType == "PENDING").Count(),
@@ -2958,6 +2972,37 @@ namespace GarronT.CMS.Model.DAL
                         SKIP = List.Where(a => !string.IsNullOrEmpty(a.Dates) && Convert.ToDateTime(a.Dates).Date == fd1.Date && a.CategoryType == "SKIP").Count(),
                         NOT_ALLOCATED = List.Where(a => !string.IsNullOrEmpty(a.Dates) && Convert.ToDateTime(a.Dates).Date == fd1.Date && a.CategoryType == "NOT ALLOCATED").Count()
                     }),
+                });
+                /*summaryReport.Add(
+                    "Today Records",
+                    new AccountSummaryReportList
+                    {
+                        COMPLETED = List.Where(a => !string.IsNullOrEmpty(a.Dates) && Convert.ToDateTime(a.Dates).Date == fd1.Date && a.CategoryType == "COMPLETED").Count(),
+                        PENDING = List.Where(a => !string.IsNullOrEmpty(a.Dates) && Convert.ToDateTime(a.Dates).Date == fd1.Date && a.CategoryType == "PENDING").Count(),
+                        RTU = List.Where(a => !string.IsNullOrEmpty(a.Dates) && Convert.ToDateTime(a.Dates).Date == fd1.Date && a.CategoryType == "RTU").Count(),
+                        SKIP = List.Where(a => !string.IsNullOrEmpty(a.Dates) && Convert.ToDateTime(a.Dates).Date == fd1.Date && a.CategoryType == "SKIP").Count(),
+                        NOT_ALLOCATED = List.Where(a => !string.IsNullOrEmpty(a.Dates) && Convert.ToDateTime(a.Dates).Date == fd1.Date && a.CategoryType == "NOT ALLOCATED").Count()
+                    }
+                );*/
+                //add complete and pending summary detail
+                objAccountSummaryReportJson.Add(new AccountSummaryReportJson
+                {
+                    summaryType = "Complete Detail",
+                    records = (new AccountSummaryReportList
+                    {
+                        SummaryDetail = List.Where(a => a.CategoryType == "COMPLETED").GroupBy(o => o.MeterSize).Select(o =>
+                        new SummaryDetail { METERSIZE = o.Key, TOTALCOUNT = o.Count() }).ToList()
+                    })
+                });
+                objAccountSummaryReportJson.Add(new AccountSummaryReportJson
+                {
+                    summaryType = "Pending Detail",
+                    records = (new AccountSummaryReportList
+                    {
+                        SummaryDetail = List.Where(a => a.CategoryType == "PENDING").GroupBy(o => o.MeterSize).Select(o =>
+                        new SummaryDetail { METERSIZE = o.Key, TOTALCOUNT = o.Count() }).ToList()
+                    })
+
                 });
                 return objAccountSummaryReportJson;
             }

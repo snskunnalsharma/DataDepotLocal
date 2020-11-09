@@ -89,5 +89,8 @@ namespace GarronT.CMS.Model.BO
         // Added by sominath 
         public string City { get; set; }
         public string State { get; set; }
+
+        // Added by Deepak 02 Nov 2020
+        public string OldMeterSize { get; set; }
     }
 }
