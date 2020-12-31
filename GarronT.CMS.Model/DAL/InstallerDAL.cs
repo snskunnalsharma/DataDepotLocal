@@ -435,6 +435,12 @@ namespace GarronT.CMS.Model.DAL
 
                 foreach (var item in result)
                 {
+                    var streeties = new string[] { "1717 CASTLE DR", "1717 CASTLE DR  RE: SPRINK", "1709 CASTLE DR  RE: PARSON" };
+                    if (streeties.Contains(item.Street))
+                    {
+                        var itemId = item.ID;
+                        
+                    }
                     var checkExistStreet = Get_lat_lagnew.Where(o => o.Street.Contains(item.Street)).FirstOrDefault();
                     if (checkExistStreet == null)
                     {
@@ -2659,8 +2665,6 @@ namespace GarronT.CMS.Model.DAL
                     {
                         InstallerAddressDetails.Add(new InstallerAddressDetails
                         {
-
-
                             id = long.Parse(reader["id"].ToString()),
                             ProjectName = reader["ProjectName"].ToString(),
                             Utilitytype = reader["Utilitytype"].ToString(),
@@ -2676,7 +2680,8 @@ namespace GarronT.CMS.Model.DAL
                             Customer = reader["Customer"].ToString(),
                             OldMeterNumber = reader["OldMeterNo"].ToString(),
                             OldMeterRadioNumber = reader["OldMeterRadioNo"].ToString(),
-                            Street = reader["street"].ToString()
+                            Street = reader["street"].ToString(),
+                            OldMeterSize = reader["OldMeterSize"].ToString()
                         });
 
                     }
@@ -2772,13 +2777,14 @@ namespace GarronT.CMS.Model.DAL
                     "<th style='border: 1px solid black;padding: 0px 8px;'>Sr.No</th> " +
                     "<th style='border: 1px solid black;padding: 0px 8px;'>Cycle</th> " +
                     "<th style='border: 1px solid black;padding: 0px 10px;'>Route</th> " +
-                    "<th style='border: 1px solid black;padding: 0px 10px;'>Account Number</th> " +
+                    //"<th style='border: 1px solid black;padding: 0px 10px;'>Account Number</th> " +
                     "<th style='border: 1px solid black;padding: 0px 20px;'>Customer Name</th> " +
                     "<th style='border: 1px solid black;padding: 0px 34px;'>Street</th> " +
+                    "<th style='border: 1px solid black;padding: 0px 10px;'>Old Meter Size</th> " +
                     "<th style='border: 1px solid black;padding: 0px 10px;'>Old Meter Number</th> " +
                     "<th style='border: 1px solid black;padding: 0px 10px;'>Old Meter Radio Number</th> " +
                 "</tr>" +
-            "</thead><tbody>");
+            "</thead><tbody style='font-size:13px;'>");
 
             int i = 0;
             int j = 1;
@@ -2787,14 +2793,15 @@ namespace GarronT.CMS.Model.DAL
 
             foreach (var item in addressDetails)
             {
-                mailbody.Append("<tr" + ((i % 2 == 0) ? " style='font-size:13px; background-color: #c1dffa; text-align: center;' >" :
-                    "style='font-size:13px; text-align: center;'>"));
+                mailbody.Append("<tr " + ((i % 2 == 0) ? " style='font-size:13px; background-color: #c1dffa; text-align: center;' >" :
+                    " style='font-size:13px; text-align: center;'>"));
                 mailbody.Append("<td style='border: 1px solid black;font-weight:500'>" + j + "</td>");
                 mailbody.Append("<td style='border: 1px solid black;font-weight:500'>" + item.cycle + "</td>");
                 mailbody.Append("<td style='border: 1px solid black;font-weight:500'>" + item.Route + "</td>");
-                mailbody.Append("<td style='border: 1px solid black;font-weight:500'>" + item.Account + "</td>");
+                //mailbody.Append("<td style='border: 1px solid black;font-weight:500'>" + item.Account + "</td>");
                 mailbody.Append("<td style='border: 1px solid black;font-weight:500'>" + (item.Customer != null ? item.Customer : " - ") + "</td>");
                 mailbody.Append("<td style='border: 1px solid black;font-weight:500'>" + item.Street + "</td>");
+                mailbody.Append("<td style='border: 1px solid black;font-weight:500'>" + item.OldMeterSize + "</td>");
                 mailbody.Append("<td style='border: 1px solid black;font-weight:500'>" + item.OldMeterNumber + "</td>");
                 mailbody.Append("<td style='border: 1px solid black;font-weight:500'>" + item.OldMeterRadioNumber + "</td>");
                 mailbody.Append("</tr>");

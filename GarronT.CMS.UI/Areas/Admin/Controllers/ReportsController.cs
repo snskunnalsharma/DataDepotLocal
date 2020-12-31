@@ -2966,13 +2966,13 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
         #region reopen
 
-        public ActionResult reOpenRecord(long uploadId, long installerId, long formId, long reOpenId, string reOpenComment, string taskStatus, string meterId, string radioId)
+        public ActionResult reOpenRecord(long uploadId, long installerId, long formId, long reOpenId, string reOpenComment, string taskStatus, string meterId, string radioId, long oldInstallerId)
         {
             try
             {
                 ReportDAL objReportDAL = new ReportDAL();
                 long userId = new UserDetails().GetUserId(User.Identity.GetUserId());
-                bool result = objReportDAL.reOpenRecords(uploadId, installerId, formId, reOpenId, reOpenComment, (int)userId, taskStatus, meterId, radioId);
+                bool result = objReportDAL.reOpenRecords(uploadId, installerId, formId, reOpenId, reOpenComment, (int)userId, taskStatus, meterId, radioId, oldInstallerId);
 
                 #region Added code by vis o send mail installer when issue reopen
                 if (result)

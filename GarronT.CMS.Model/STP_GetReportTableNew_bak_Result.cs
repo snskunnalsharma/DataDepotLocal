@@ -49,6 +49,8 @@ namespace GarronT.CMS.Model
         public string Dates { get; set; }
         public string CategoryType { get; set; }
         public string MeterSize { get; set; }
+        public string NewMeterName { get; set; }
+        public string ToDate { get; set; }
     }
 
     public class AccountSummaryReportList

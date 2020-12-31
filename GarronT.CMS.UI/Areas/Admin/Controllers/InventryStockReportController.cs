@@ -239,6 +239,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 {
                     //detail
                     ReportData = new InventoryDAL().GetInventryStockReport(projectId, installerId, ProductId, txtFromDate, txtToDate);
+                    
                     success = true;
                     return Json(new { success, ErrorMessage, ReportData }, JsonRequestBehavior.AllowGet);
                 }

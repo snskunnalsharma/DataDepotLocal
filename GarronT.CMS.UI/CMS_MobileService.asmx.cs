@@ -260,6 +260,17 @@ namespace GarronT.CMS.UI
             return epoch.AddMilliseconds(timestamp);
         }
 
+        public DateTime ConvertToLocalTimestamp(double timestamp)
+        {
+            DateTime localEpoch = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Local);
+            double localSeconds = (DateTime.MaxValue - localEpoch).TotalSeconds;
+            if(timestamp > localSeconds)
+            {
+                return localEpoch.AddMilliseconds(timestamp);
+            }
+            return localEpoch.AddSeconds(timestamp);
+        }
+
 
         //[WebMethod]
         //[ScriptMethod(ResponseFormat = ResponseFormat.Json)]
@@ -598,8 +609,9 @@ namespace GarronT.CMS.UI
                 {
                     //var tz = TimeZoneInfo.FindSystemTimeZoneById(timeZoneName);//("Pacific Standard Time");
                     //DateTime time2 = DateTime.UtcNow.ToTimeZoneTime(tz);
+                    DateTime currDate = DateTime.Parse(UnixTimeStampToDateTime(currentDate).ToString()); 
+                    DateTime currentDate1 = currDate.Date;
 
-                    DateTime currentDate1 = DateTime.Parse(UnixTimeStampToDateTime(currentDate).ToString());
                     MobileOfflineDAL objMobile = new MobileOfflineDAL();
 
                     if (processId == 1)
@@ -2903,15 +2915,19 @@ namespace GarronT.CMS.UI
         // Add Code by Deepak date 13 Oct 2020 
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]                                                
-        public void get_AccountSummaryReport(long ProjectId, long InstallerId)
+        public void get_AccountSummaryReport(long ProjectId, long InstallerId, double summaryDate, string selectDate)
         {
             try
             {
+                TimeSpan interval = TimeSpan.FromMilliseconds(summaryDate);
+                DateTime dt = DateTime.Parse(selectDate);
+                DateTime currentDate = DateTime.Parse(UnixTimeStampToDateTime(summaryDate).ToString());
+                //DateTime currentDate = new DateTime(Convert.ToInt64(summaryDate));
                 JavaScriptSerializer s = new JavaScriptSerializer();
                 s.MaxJsonLength = 2147483644;
                 log.Info("WEB Service get Account Summary Report Started at - " + DateTime.Now.ToString());
                 ReportDAL objReportDAL = new ReportDAL();
-                var list = objReportDAL.getAccountSummaryReport(ProjectId,InstallerId);
+                var list = objReportDAL.getAccountSummaryReport(ProjectId,InstallerId, currentDate, dt);
                 Context.Response.ContentType = "application/json";
                 Context.Response.Write(s.Serialize(list));
                 

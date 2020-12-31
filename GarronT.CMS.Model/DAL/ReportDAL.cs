@@ -835,8 +835,8 @@ namespace GarronT.CMS.Model.DAL
             }
 
         }
-
-        public bool reOpenRecords(long uploadId, long installerId, long formId, long reOpenId, string reOpenComment, int userId, string taskStatus, string meterId, string radioId)
+        
+        public bool reOpenRecords(long uploadId, long installerId, long formId, long reOpenId, string reOpenComment, int userId, string taskStatus, string meterId, string radioId, long oldInstallerId)
         {
             bool result = false;
 
@@ -994,6 +994,7 @@ namespace GarronT.CMS.Model.DAL
                                     {
                                         //set serial no in stock
                                         stock.AllStockUtilized = false;
+                                        stock.BalanceQty = 1;
                                         stock.IsAllocated = false;
                                         stock.IsReturned = 0;
                                         objCompassEntities.SaveChanges();
@@ -1033,8 +1034,10 @@ namespace GarronT.CMS.Model.DAL
                                 SqlCommand cmd = new SqlCommand("PROC_Insert_UserStockRequestForReopenLocation", con);
                                 cmd.Parameters.AddWithValue("@tblStockRequest", ObjDataTable); // passing Datatable
                                 cmd.Parameters.AddWithValue("@deviceDateTime", new CommonFunctions().ServerDate());
-                                cmd.Parameters.AddWithValue("@UserId", installerId);
+                                cmd.Parameters.AddWithValue("@UserId", userId);
                                 cmd.Parameters.AddWithValue("@ProjectId", projectId);
+                                cmd.Parameters.AddWithValue("@installerId", installerId);
+                                cmd.Parameters.AddWithValue("@oldInstallerId", oldInstallerId);
                                 cmd.CommandType = CommandType.StoredProcedure;
                                 cmd.ExecuteNonQuery();
                                 con.Close();
@@ -1196,95 +1199,95 @@ namespace GarronT.CMS.Model.DAL
                             }
                         }
                         objCompassEntities.SaveChanges(); */
-                    }
+                  }
 
-                    tblInstallerMapData objtblInstallerMapDatas = objCompassEntities.tblInstallerMapDatas.Where(o => o.FK_UploadedExcelData_Id == uploadId && o.InstallerId == reOpenId).FirstOrDefault();
+                tblInstallerMapData objtblInstallerMapDatas = objCompassEntities.tblInstallerMapDatas.Where(o => o.FK_UploadedExcelData_Id == uploadId && o.InstallerId == reOpenId).FirstOrDefault();
 
-                    bool insert = true;
-                    if (objtblInstallerMapDatas == null)
-                    {
-                        objtblInstallerMapDatas = new tblInstallerMapData();
-                        objtblInstallerMapDatas.CreatedOn = new CommonFunctions().ServerDate();
-                        objtblInstallerMapDatas.InstallerId = installerId;
-                        objtblInstallerMapDatas.FK_UploadedExcelData_Id = uploadId;
-                    }
-                    else
-                    {
-                        insert = false;
-                        objtblInstallerMapDatas.ModifiedOn = new CommonFunctions().ServerDate();
-                        
-                    }
-                    
+                 bool insert = true;
+                 if (objtblInstallerMapDatas == null)
+                 {
+                     objtblInstallerMapDatas = new tblInstallerMapData();
+                     objtblInstallerMapDatas.CreatedOn = new CommonFunctions().ServerDate();
+                     objtblInstallerMapDatas.InstallerId = installerId;
+                     objtblInstallerMapDatas.FK_UploadedExcelData_Id = uploadId;
+                 }
+                 else
+                 {
+                     insert = false;
+                     objtblInstallerMapDatas.ModifiedOn = new CommonFunctions().ServerDate();
 
-
-                    objtblInstallerMapDatas.Active = 1;
-
-                    //if (installerMap.InstallerId == installerId)
-                    //{
-                    //    objtblInstallerMapDatas.FromDate = installerMap.FromDate;
-                    //    objtblInstallerMapDatas.ToDate = installerMap.ToDate;
-                    //}
-                    //else
-                    //{
-                    //var _getInstallerMapList = objCompassEntities.STP_GetExistedUserInstallationbyDate(objtblInstallerMapDatas.CreatedOn, objtblInstallerMapDatas.CreatedOn, installerId, projectId).ToList();
-                    var _getInstallerMapList = objCompassEntities.PROC_ReportHome_ReOpen_GetCurrentVisitByDate(objtblInstallerMapDatas.CreatedOn, objtblInstallerMapDatas.CreatedOn, reOpenId, projectId).ToList();
-                    if (_getInstallerMapList == null || _getInstallerMapList.Count == 0)
-                    {
-                        objtblInstallerMapDatas.FromDate = installerMap.FromDate;
-                        objtblInstallerMapDatas.ToDate = installerMap.ToDate;
-                    }
-                    else
-                    {
-                        bool _result = false;
-                        foreach (var item in _getInstallerMapList)
-                        {
-                            if ((item.FromDate.Value.Date <= installerMap.FromDate.Date && item.ToDate.Value.Date >= installerMap.FromDate.Date) ||
-                                (item.FromDate.Value.Date <= installerMap.ToDate.Date && item.ToDate.Value.Date >= installerMap.ToDate.Date))
-                            {
-                                objtblInstallerMapDatas.FromDate = item.FromDate.Value;
-                                objtblInstallerMapDatas.ToDate = item.ToDate.Value;
-                                _result = true;
-                                break;
-                            }
-                        }
-                        if (!_result)
-                        {
-                            objtblInstallerMapDatas.FromDate = installerMap.FromDate;
-                            objtblInstallerMapDatas.ToDate = installerMap.ToDate;
-                        }
-                        else
-                        {
-                            objtblInstallerMapDatas.FromDate = installerMap.FromDate;
-                            objtblInstallerMapDatas.ToDate = installerMap.ToDate;
-                        }
-                    }
-                    //}
-
-                    if (insert)
-                    {
-                        objCompassEntities.tblInstallerMapDatas.Add(objtblInstallerMapDatas);
-                    }
-                    //update UploadedExcelData record for sync enable for mobile device ////added on 24june 2020 by snssystem
-                    var uploadedExcelData = objCompassEntities.UploadedExcelDatas.Where(o => o.Id == uploadId).FirstOrDefault();
-                    if (uploadedExcelData != null)
-                    {
-                        uploadedExcelData.SyncEnable = 1;
-                    }
-
-                    objCompassEntities.SaveChanges();
-                    result = true;
-                    scope.Complete();
-                }
-
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            return result;
-        }
+                 }
 
 
+
+                 objtblInstallerMapDatas.Active = 1;
+
+                 //if (installerMap.InstallerId == installerId)
+                 //{
+                 //    objtblInstallerMapDatas.FromDate = installerMap.FromDate;
+                 //    objtblInstallerMapDatas.ToDate = installerMap.ToDate;
+                 //}
+                 //else
+                 //{
+                 //var _getInstallerMapList = objCompassEntities.STP_GetExistedUserInstallationbyDate(objtblInstallerMapDatas.CreatedOn, objtblInstallerMapDatas.CreatedOn, installerId, projectId).ToList();
+                 var _getInstallerMapList = objCompassEntities.PROC_ReportHome_ReOpen_GetCurrentVisitByDate(objtblInstallerMapDatas.CreatedOn, objtblInstallerMapDatas.CreatedOn, reOpenId, projectId).ToList();
+                 if (_getInstallerMapList == null || _getInstallerMapList.Count == 0)
+                 {
+                     objtblInstallerMapDatas.FromDate = installerMap.FromDate;
+                     objtblInstallerMapDatas.ToDate = installerMap.ToDate;
+                 }
+                 else
+                 {
+                     bool _result = false;
+                     foreach (var item in _getInstallerMapList)
+                     {
+                         if ((item.FromDate.Value.Date <= installerMap.FromDate.Date && item.ToDate.Value.Date >= installerMap.FromDate.Date) ||
+                             (item.FromDate.Value.Date <= installerMap.ToDate.Date && item.ToDate.Value.Date >= installerMap.ToDate.Date))
+                         {
+                             objtblInstallerMapDatas.FromDate = item.FromDate.Value;
+                             objtblInstallerMapDatas.ToDate = item.ToDate.Value;
+                             _result = true;
+                             break;
+                         }
+                     }
+                     if (!_result)
+                     {
+                         objtblInstallerMapDatas.FromDate = installerMap.FromDate;
+                         objtblInstallerMapDatas.ToDate = installerMap.ToDate;
+                     }
+                     else
+                     {
+                         objtblInstallerMapDatas.FromDate = installerMap.FromDate;
+                         objtblInstallerMapDatas.ToDate = installerMap.ToDate;
+                     }
+                 }
+                 //}
+
+                 if (insert)
+                 {
+                     objCompassEntities.tblInstallerMapDatas.Add(objtblInstallerMapDatas);
+                 }
+                 //update UploadedExcelData record for sync enable for mobile device ////added on 24june 2020 by snssystem
+                 var uploadedExcelData = objCompassEntities.UploadedExcelDatas.Where(o => o.Id == uploadId).FirstOrDefault();
+                 if (uploadedExcelData != null)
+                 {
+                     uploadedExcelData.SyncEnable = 1;
+                 }
+
+                 objCompassEntities.SaveChanges();
+                 result = true;
+                 scope.Complete();
+             }
+
+         }
+         catch (Exception ex)
+         {
+             throw ex;
+         }
+         return result;
+     }
+
+       
         #region--Createdby AniketJ on 30-5-2016--
 
         //get project by project status
@@ -2813,10 +2816,6 @@ namespace GarronT.CMS.Model.DAL
             return paths;
         }
 
-
-
-
-
         public List<ReportHomePageImages> GetRecordImages(long UploadedExcelData_Id, out bool IsRecordSkip)
         {
             CompassEntities cmp = new CompassEntities();
@@ -2903,7 +2902,7 @@ namespace GarronT.CMS.Model.DAL
         }
 
         // Add on Deepak 28 Oct 2020
-        public List<AccountSummaryReportJson> getAccountSummaryReport(long ProjectId,long InstallerId)
+        public List<AccountSummaryReportJson> getAccountSummaryReport(long ProjectId, long InstallerId, DateTime summaryDate, DateTime selectDate)
         {
             try
             {
@@ -2926,18 +2925,28 @@ namespace GarronT.CMS.Model.DAL
                     {
                         Dates = Convert.ToString(reader["Dates"]),
                         CategoryType = Convert.ToString(reader["CategoryType"]),
-                        MeterSize = Convert.ToString(reader["OldMeterSize"])
+                        MeterSize = Convert.ToString(reader["OldMeterSize"]),
+                        NewMeterName = Convert.ToString(reader["NewMeterName"]),
+                        ToDate = Convert.ToString(reader["ToDate"])
                     });
                 }
 
                 List<AccountSummaryReportJson> objAccountSummaryReportJson = new List<AccountSummaryReportJson>();
+
+                DateTime serverDate = new CommonFunctions().ServerDate();
+                DateTime currentDate = Convert.ToDateTime(serverDate);
+                string strCurrentDate = currentDate.ToString("dd MMM yyyy");
+                DateTime formatedCurrentDate = Convert.ToDateTime(strCurrentDate);
+                //var sd = List.Where(a => Convert.ToDateTime(a.ToDate).Date <= formatedCurrentDate.Date && a.CategoryType == "PENDING");
+
                 objAccountSummaryReportJson.Add(new AccountSummaryReportJson
                 {
                     summaryType = "All Records",
                     records = (new AccountSummaryReportList
                     {
                         COMPLETED = List.Where(o => o.CategoryType == "COMPLETED").Count(),
-                        PENDING = List.Where(o => o.CategoryType == "PENDING").Count(),
+                        //PENDING = List.Where(o => o.CategoryType == "PENDING").Count(),
+                        PENDING = List.Where(a => Convert.ToDateTime(a.ToDate) >= currentDate && a.CategoryType == "PENDING").Count(),
                         RTU = List.Where(o => o.CategoryType == "RTU").Count(),
                         SKIP = List.Where(o => o.CategoryType == "SKIP").Count(),
                         NOT_ALLOCATED = List.Where(o => o.CategoryType == "NOT ALLOCATED").Count()
@@ -2956,11 +2965,9 @@ namespace GarronT.CMS.Model.DAL
                     }
                 );*/
 
-                DateTime serverDate = new CommonFunctions().ServerDate();
-                DateTime fd = Convert.ToDateTime(serverDate);
+                DateTime fd = Convert.ToDateTime(selectDate);
                 string st = fd.ToString("dd MMM yyyy");
                 DateTime fd1 = Convert.ToDateTime(st);
-                var sd = List.Where(a => !string.IsNullOrEmpty(a.Dates) && Convert.ToDateTime(a.Dates).Date == fd1.Date && a.CategoryType == "COMPLETED");
                 objAccountSummaryReportJson.Add(new AccountSummaryReportJson
                 {
                     summaryType = "Today Records",
@@ -2990,7 +2997,7 @@ namespace GarronT.CMS.Model.DAL
                     summaryType = "Complete Detail",
                     records = (new AccountSummaryReportList
                     {
-                        SummaryDetail = List.Where(a => a.CategoryType == "COMPLETED").GroupBy(o => o.MeterSize).Select(o =>
+                        SummaryDetail = List.Where(a => a.CategoryType == "COMPLETED").GroupBy(o => o.NewMeterName).Select(o =>
                         new SummaryDetail { METERSIZE = o.Key, TOTALCOUNT = o.Count() }).ToList()
                     })
                 });
@@ -2999,7 +3006,18 @@ namespace GarronT.CMS.Model.DAL
                     summaryType = "Pending Detail",
                     records = (new AccountSummaryReportList
                     {
-                        SummaryDetail = List.Where(a => a.CategoryType == "PENDING").GroupBy(o => o.MeterSize).Select(o =>
+                        SummaryDetail = List.Where(a => Convert.ToDateTime(a.ToDate) >= currentDate && a.CategoryType == "PENDING").GroupBy(o => o.MeterSize).Select(o =>
+                        new SummaryDetail { METERSIZE = o.Key, TOTALCOUNT = o.Count() }).ToList()
+                    })
+
+                });
+                //var categories = new string[] { "COMPLETED", "SKIP", "RTU" };
+                objAccountSummaryReportJson.Add(new AccountSummaryReportJson
+                {
+                    summaryType = "More Detail",
+                    records = (new AccountSummaryReportList
+                    {
+                        SummaryDetail = List.Where(a => !string.IsNullOrEmpty(a.Dates) && Convert.ToDateTime(a.Dates).Date == fd1.Date && a.CategoryType == "COMPLETED").GroupBy(o => o.NewMeterName).Select(o =>
                         new SummaryDetail { METERSIZE = o.Key, TOTALCOUNT = o.Count() }).ToList()
                     })
 

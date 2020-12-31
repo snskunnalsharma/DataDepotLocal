@@ -1689,7 +1689,7 @@ namespace GarronT.CMS.Model.DAL
                                             DeviceDateTime = ih.DeviceDateTime.Value.ToString("MMM-dd-yyyy") + "  " + ih.DeviceDateTime.Value.ToString("h:mm tt"),
                                             UserId = ih.CreatedBy,
                                             UserName = user.UserName,
-                                            ProjectId=ih.FKProjectId,
+                                            ProjectId = ih.FKProjectId,
                                             ProjectName = Convert.ToString(ih.FKProjectId),
                                             WarehouseName = ih.WarehouseMaster.WarehouseName + ", " + ih.WarehouseMaster.TblCityMaster.CityName + ", " + ih.WarehouseMaster.tblStateMaster.StateName
                                         }).FirstOrDefault();
@@ -2086,7 +2086,7 @@ namespace GarronT.CMS.Model.DAL
                     {
                         query1 = query1.Where(a => a.FKProductId == ProductId).ToList();
                     }
-                    
+
 
                     objOldDataList = query1.Select(o =>
                         new PROC_InstallStockDetailReport_Result
@@ -2194,60 +2194,42 @@ namespace GarronT.CMS.Model.DAL
 
         //}
 
-
-        public List<InstallerStockReportSummaryBO> GetInventryStockReportSummery(long projectId, long installerId, long ProductId, string txtFromDate, string txtToDate)
+        // open inventory get in list
+        public List<OpeningInventoryStockReportSummaryBO> GetOpeningInventryStockReportSummery(long projectId, long installerId, long ProductId, DateTime Defualtfromdate, DateTime toDateOneDayBefore, List<OpeningInventoryStockReportSummaryBO> openinginventoryreportData)
         {
             CompassEntities objCompassEntities = new CompassEntities();
-            List<InstallerStockReportSummaryBO> reportData = new List<InstallerStockReportSummaryBO>();
+            //List<OpeningInventoryStockReportSummaryBO> openinginventoryreportData = new List<OpeningInventoryStockReportSummaryBO>();
             try
             {
-                DateTime? fromdate = Convert.ToDateTime(txtFromDate);
-                DateTime? todate = Convert.ToDateTime(txtToDate);
-
-
-                //if (projectId != 0)
-                //{
-
-                #region  For single project
-
-                var query = objCompassEntities.PROC_InstallStockSummaryReport_Project(fromdate, todate, projectId).ToList();
-
-                List<InstallerStockReportSummaryBO> objList = new List<InstallerStockReportSummaryBO>();
+                var query = objCompassEntities.PROC_InstallStockSummaryReport_Project(Defualtfromdate, toDateOneDayBefore, projectId).ToList();
+                List<OpeningInventoryStockReportSummaryBO> objList = new List<OpeningInventoryStockReportSummaryBO>();
                 var UserList = objCompassEntities.TblProjectInstallers.Where(o => o.ProjectID == projectId).ToList();
-
                 foreach (var item in UserList)
                 {
                     var data = query.Where(o => o.UserId == item.tblUsers_UserID).Select(o =>
-                        new InstallerStockReportSummaryBO
+                        new OpeningInventoryStockReportSummaryBO
                         {
-                            FKProductId = o.FKProductId,
-                            ProductCategoryId = o.ProductCategoryId.Value,
-                            ProductName = o.ProductName,
-                            TotalRelasedQty = o.TotalRelasedQty,
-                            InstalledQty = o.InstalledQty,
-                            ReturnedQty = o.ReturnedQty,
-                            TransferredQty = o.TransferredQty,
-                            InHandInventory = o.InHandInventory,
                             UserId = o.UserId,
                             UserName = o.FirstName,
-                            CategoryName = o.CategoryName
+                            FKProductId = o.FKProductId,
+                            ProductCategoryId = o.ProductCategoryId.Value,
+                            CategoryName = o.CategoryName,
+                            ProductName = o.ProductName,
+                            OpeningBalance = o.InHandInventory
                         }
                         ).ToList();
 
                     objList.AddRange(data);
                 }
-
-                reportData = objList;
-
-                #endregion
+                openinginventoryreportData = objList;
                 if (installerId != 0)
                 {
-                    reportData = reportData.Where(a => a.UserId == installerId).ToList();
+                    openinginventoryreportData = openinginventoryreportData.Where(a => a.UserId == installerId).ToList();
                 }
-                
+
                 if (ProductId != 0)
                 {
-                    reportData = reportData.Where(a => a.FKProductId == ProductId).ToList();
+                    openinginventoryreportData = openinginventoryreportData.Where(a => a.FKProductId == ProductId).ToList();
                 }
             }
             catch (Exception ex)
@@ -2255,10 +2237,142 @@ namespace GarronT.CMS.Model.DAL
 
                 throw;
             }
+            return openinginventoryreportData;
+        }
+        //
 
+        public List<InstallerStockReportSummaryBO> GetInventryStockReportSummery(long projectId, long installerId, long ProductId, string txtFromDate, string txtToDate)
+        {
+            CompassEntities objCompassEntities = new CompassEntities();
+            List<InstallerStockReportSummaryBO> reportData = new List<InstallerStockReportSummaryBO>();
+            List<TempInstallerStockReportSummaryBO> tempReportData = new List<TempInstallerStockReportSummaryBO>();
+            try
+            {
+                DateTime? fromdate = Convert.ToDateTime(txtFromDate);
+                DateTime? todate = Convert.ToDateTime(txtToDate);
+
+                // Add opening inventory code
+                DateTime Defualtfromdate = Convert.ToDateTime("Aug-01-2017");
+                DateTime fromdateOneDayBefore = Convert.ToDateTime(txtFromDate);
+                DateTime toDateOneDayBefore = fromdateOneDayBefore.AddDays(-1);
+                List<OpeningInventoryStockReportSummaryBO> openinginventoryreportData = new List<OpeningInventoryStockReportSummaryBO>();
+                openinginventoryreportData = GetOpeningInventryStockReportSummery(projectId, installerId, ProductId, Defualtfromdate, toDateOneDayBefore, openinginventoryreportData);
+                // ends hare
+
+                #region  For single project
+                var query = objCompassEntities.PROC_InstallStockSummaryReport_Project(fromdate, todate, projectId).ToList();
+                List<TempInstallerStockReportSummaryBO> objList = new List<TempInstallerStockReportSummaryBO>();
+                var UserList = objCompassEntities.TblProjectInstallers.Where(o => o.ProjectID == projectId).ToList();
+
+                foreach (var item in UserList)
+                {
+                    var data = query.Where(o => o.UserId == item.tblUsers_UserID).Select(o =>
+                        new TempInstallerStockReportSummaryBO
+                        {
+                            UserId = o.UserId,
+                            UserName = o.FirstName,
+                            FKProductId = o.FKProductId,
+                            ProductCategoryId = o.ProductCategoryId.Value,
+                            ProductName = o.ProductName,
+                            CategoryName = o.CategoryName,
+                            TotalRelasedQty = o.TotalRelasedQty,
+                            InstalledQty = o.InstalledQty,
+                            ReturnedQty = o.ReturnedQty,
+                            TransferredQty = o.TransferredQty,
+                            InHandInventory = o.InHandInventory
+                        }
+                        ).ToList();
+
+                    objList.AddRange(data);
+                }
+                tempReportData = objList;
+
+                #endregion
+                if (installerId != 0)
+                {
+                    tempReportData = tempReportData.Where(a => a.UserId == installerId).ToList();
+                }
+                if (ProductId != 0)
+                {
+                    tempReportData = tempReportData.Where(a => a.FKProductId == ProductId).ToList();
+                }
+
+                // Merge two list data get in common records in a list
+                reportData = (from op in openinginventoryreportData
+                              join o in tempReportData
+                                  on op.ProductName equals o.ProductName
+                              select new InstallerStockReportSummaryBO
+                              {
+                                  UserId = o.UserId,
+                                  UserName = o.UserName,
+                                  FKProductId = o.FKProductId,
+                                  ProductCategoryId = o.ProductCategoryId,
+                                  ProductName = o.ProductName,
+                                  CategoryName = o.CategoryName,
+                                  OpeningBalance = op.OpeningBalance,
+                                  TotalRelasedQty = o.TotalRelasedQty,
+                                  InstalledQty = o.InstalledQty,
+                                  ReturnedQty = o.ReturnedQty,
+                                  TransferredQty = o.TransferredQty,
+                                  InHandInventory = o.InHandInventory + op.OpeningBalance
+                              }).ToList();
+
+                // Remove common recoreds in both list
+                foreach (var pro in reportData)
+                {
+                    var itemToRemove = tempReportData.Single(p => p.ProductName == pro.ProductName);
+                    tempReportData.Remove(itemToRemove);
+
+                    var itemToRemove2 = openinginventoryreportData.Single(p => p.ProductName == pro.ProductName);
+                    openinginventoryreportData.Remove(itemToRemove2);
+                }
+
+                foreach (var o in tempReportData)
+                {
+                    reportData.Add(new InstallerStockReportSummaryBO
+                    {
+                        UserId = o.UserId,
+                        UserName = o.UserName,
+                        FKProductId = o.FKProductId,
+                        ProductCategoryId = o.ProductCategoryId,
+                        ProductName = o.ProductName,
+                        CategoryName = o.CategoryName,
+                        OpeningBalance = 0, // InstallerStockReportSummary with not comming opening balance
+                        TotalRelasedQty = o.TotalRelasedQty,
+                        InstalledQty = o.InstalledQty,
+                        ReturnedQty = o.ReturnedQty,
+                        TransferredQty = o.TransferredQty,
+                        InHandInventory = o.InHandInventory
+                    });
+                }
+                foreach (var o in openinginventoryreportData)
+                {
+                    if (o.OpeningBalance > 0)
+                    {
+                        reportData.Add(new InstallerStockReportSummaryBO
+                        {
+                            UserId = o.UserId,
+                            UserName = o.UserName,
+                            FKProductId = o.FKProductId,
+                            ProductCategoryId = o.ProductCategoryId,
+                            ProductName = o.ProductName,
+                            CategoryName = o.CategoryName,
+                            OpeningBalance = o.OpeningBalance,
+                            TotalRelasedQty = 0,
+                            InstalledQty = 0,
+                            ReturnedQty = 0,
+                            TransferredQty = 0,
+                            InHandInventory = 0 + o.OpeningBalance
+                        });
+                    }
+                }
+                // ends hare
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
             return reportData;
-
-
         }
 
 
@@ -2519,7 +2633,6 @@ namespace GarronT.CMS.Model.DAL
                             productinCategory = true;
                         }
                     }
-
                 }
 
 

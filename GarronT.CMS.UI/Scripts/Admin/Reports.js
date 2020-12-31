@@ -1133,6 +1133,7 @@ $('#btnReopen').click(function () {
 
     var UrlReopen = $("#urlReopenForm").val();
     var InstallerId = $("#ddlReopenInstaller option:selected").val();
+    var oldInstallerId = $('#oldInstallerId').val();
     //var strstartDate = $('#txtFromDate').val();
     //var strendDate = $('#txtToDate').val();
 
@@ -1147,7 +1148,8 @@ $('#btnReopen').click(function () {
             "reOpenComment": reopenComm,
             "taskStatus": taskStatus,
             "meterId": meterId,
-            "radioId": radioId
+            "radioId": radioId,
+            "oldInstallerId": oldInstallerId
             //"strfromDate": strstartDate,
             //"strtoDate": strendDate
         },
@@ -1340,6 +1342,7 @@ function Reopen(UpId, instId, formId, taskStatus, NewMeterNumber, NewMeterRadio)
                 $("#meterId").val(NewMeterNumber);
                 $("#radioId").val(NewMeterRadio);
                 $("#taskStatus").val(taskStatus);
+                $("#oldInstallerId").val(instId);
                 $("#myModal1").modal({
                     show: true,
                     backdrop: 'static',

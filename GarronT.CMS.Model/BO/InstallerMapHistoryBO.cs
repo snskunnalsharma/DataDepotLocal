@@ -124,5 +124,6 @@ namespace GarronT.CMS.Model.BO
         public string OldMeterNumber { get; set; }
         public string OldMeterRadioNumber { get; set; }
         public string Street { get; set; }
+        public string OldMeterSize { get; set; }
     }
 }

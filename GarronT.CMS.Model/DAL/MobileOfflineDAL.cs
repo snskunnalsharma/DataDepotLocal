@@ -2278,9 +2278,10 @@ namespace GarronT.CMS.Model.DAL
                                 {
 
                                     var adata = distCountPro.AsEnumerable().Where(o => o.Field<string>(StreetDynamicColumnName) == row[StreetDynamicColumnName].ToString()).FirstOrDefault();
-
+                                    
                                     if (adata != null)
                                     {
+
                                         int completed = adata["TotalCountWS"] != null ? int.Parse(adata["TotalCountWS"].ToString()) : 0;
                                         int skipped = adata["TotalCountSS"] != null ? int.Parse(adata["TotalCountSS"].ToString()) : 0;
                                         int rtu = adata["TotalCountRS"] != null ? int.Parse(adata["TotalCountRS"].ToString()) : 0;
@@ -2341,7 +2342,11 @@ namespace GarronT.CMS.Model.DAL
                                             #region Account
 
                                             bool isReopen = false;
-
+                                            var uid = (long)row1["Id"];
+                                            if (uid == 137332)
+                                            {
+                                                var found = true;
+                                            }
                                             var listReopen = getStreetNameData.AsEnumerable().Where(o => o.Field<long>("Id") == (long)row1["Id"]).ToList();
 
                                             if (listReopen.Count > 1)
