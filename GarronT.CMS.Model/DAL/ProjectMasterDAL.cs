@@ -204,7 +204,7 @@ namespace GarronT.CMS.Model.DAL
             CompassEntities CompassEntities = new CompassEntities();
             List<ProjectModel> data = (from b in CompassEntities.tblProjects
                                        where b.Active == 1
-                                           //&& (DbFunctions.TruncateTime(b.FromDate.Value) <= DbFunctions.TruncateTime(frmDatenew) && DbFunctions.TruncateTime(b.ToDate.Value) >= DbFunctions.TruncateTime(frmDatenew))
+                                        //&& (DbFunctions.TruncateTime(b.FromDate.Value) <= DbFunctions.TruncateTime(frmDatenew) && DbFunctions.TruncateTime(b.ToDate.Value) >= DbFunctions.TruncateTime(frmDatenew))
                                         && ((DbFunctions.TruncateTime(b.FromDate.Value) <= DbFunctions.TruncateTime(frmDatenew) && DbFunctions.TruncateTime(b.ToDate.Value) >= DbFunctions.TruncateTime(frmDatenew)) ||
                                           (DbFunctions.TruncateTime(b.FromDate.Value) <= DbFunctions.TruncateTime(toDatenew) && DbFunctions.TruncateTime(b.ToDate.Value) >= DbFunctions.TruncateTime(toDatenew)))
                                        select new ProjectModel
@@ -281,7 +281,7 @@ namespace GarronT.CMS.Model.DAL
             List<ProjectModel> data1 = new List<ProjectModel>();
 
 
-            var data = objCompassEntities.VW_Project.Where(o => o.Active == (ActiveStatus == true ? 1 : 0)).AsEnumerable().OrderByDescending(o=>o.CreatedOn).ThenByDescending(o=>o.FromDate).ThenByDescending(o=>o.ToDate).
+            var data = objCompassEntities.VW_Project.Where(o => o.Active == (ActiveStatus == true ? 1 : 0)).AsEnumerable().OrderByDescending(o => o.CreatedOn).ThenByDescending(o => o.FromDate).ThenByDescending(o => o.ToDate).
                 Select(o => new ProjectModel
                 {
                     ProjectId = o.ProjectId,
@@ -292,11 +292,11 @@ namespace GarronT.CMS.Model.DAL
                     stringFromDate = o.FromDate != null ? DateTime.Parse(o.FromDate.ToString()).ToString("MMM-dd-yyyy") : "",
                     stringToDate = o.ToDate != null ? DateTime.Parse(o.ToDate.ToString()).ToString("MMM-dd-yyyy") : "",
                     ProjectStatus = o.ProjectStatus,
-                    IsCloneProject = o.IsCloned != null?o.IsCloned.Value:false
+                    IsCloneProject = o.IsCloned != null ? o.IsCloned.Value : false
                 }).ToList();
 
 
-            foreach (var item in data)
+            foreach (var item in data)  // Get all records or null lat or lon records
             {
                 item.TotalRecords = objCompassEntities.UploadedExcelDatas.Where(o => o.FKProjectId == item.ProjectId && o.Active == 1).Count();
                 var latLongCount = objCompassEntities.UploadedExcelDatas.Where(o => o.FKProjectId == item.ProjectId && o.Active == 1 && o.AddressLatitude != null
@@ -1624,20 +1624,20 @@ namespace GarronT.CMS.Model.DAL
 
 
             objSubMenuesBo.objStateList = CompassEntities.tblStateMasters.AsNoTracking().Select(o => new StateModel
-                                               {
-                                                   StateID = o.StateId,
-                                                   StateName = o.StateName
-                                               }).OrderBy(t => t.StateName).ToList();
+            {
+                StateID = o.StateId,
+                StateName = o.StateName
+            }).OrderBy(t => t.StateName).ToList();
 
 
             objSubMenuesBo.objCityList = CompassEntities.TblCityMasters.AsNoTracking().Where(o => o.StateId == objSubMenuesBo.StateId && o.Active == 1).Select(x => new CityModel { CityID = x.CityId, CityName = x.CityName }).ToList();
 
             objSubMenuesBo.objClientModelList = CompassEntities.tblClients.AsNoTracking().Where(o => o.Active == 1).
                                                 Select(o => new ClientModel
-                                                 {
-                                                     ClientId = o.ClientId,
-                                                     ClientName = o.ClientName
-                                                 }).OrderBy(t => t.ClientName).ToList();
+                                                {
+                                                    ClientId = o.ClientId,
+                                                    ClientName = o.ClientName
+                                                }).OrderBy(t => t.ClientName).ToList();
 
             objSubMenuesBo.objContactModelDDLList = CompassEntities.tblClientContactDetails.AsNoTracking().
                                                     Where(o => o.Active == 1 && o.tblClient_ClientId == objSubMenuesBo.ClientId)
@@ -1966,6 +1966,9 @@ namespace GarronT.CMS.Model.DAL
 
                         if (!string.IsNullOrEmpty(accountColumn) && !string.IsNullOrEmpty(oldMeterColumn))
                         {
+                            //var watch1 = System.Diagnostics.Stopwatch.StartNew();//*****
+                            //var watch2 = System.Diagnostics.Stopwatch.StartNew();//*****
+
                             foreach (DataRow dtRow in dt.Rows)
                             {
 
@@ -2008,8 +2011,6 @@ namespace GarronT.CMS.Model.DAL
                                     }
 
 
-
-
                                     if (visitDone == false)
                                     {
 
@@ -2031,14 +2032,6 @@ namespace GarronT.CMS.Model.DAL
                                                 string sCurrentData = Convert.ToString(dtRow[dtCol]);
                                                 PropertyInfo currentProperty = pClass.Where(o => o.Name == mappedColumnName.FKUploadedExcelDataDynamicColumn).FirstOrDefault();
                                                 currentProperty.SetValue(objRecord, sCurrentData, null);
-                                                //if (dtCol.ColumnName == "ADDRESS LATITUDE")
-                                                //{
-                                                //    objRecord.AddressLatitude = Convert.ToString(dtRow[dtCol]);
-                                                //}
-                                                //if (dtCol.ColumnName == "ADDRESS LONGITUDE")
-                                                //{
-                                                //    objRecord.AddressLongitude = Convert.ToString(dtRow[dtCol]);
-                                                //}
                                             }
                                         }
 
@@ -2047,15 +2040,19 @@ namespace GarronT.CMS.Model.DAL
 
                                         if (flagInsert)
                                         {
+
                                             objRecord.Active = 1;
                                             objRecord.CreatedOn = new CommonFunctions().ServerDate();
                                             objRecord.CreatedBy = long.Parse(userId.ToString());
+                                            objRecord.SyncEnable = 1;
 
                                             objCompassEntities1.Configuration.AutoDetectChangesEnabled = false;
                                             objCompassEntities1.Configuration.AutoDetectChangesEnabled = false;
                                             objCompassEntities1.Configuration.ValidateOnSaveEnabled = false;
                                             objCompassEntities1.UploadedExcelDatas.Add(objRecord);
-                                            objCompassEntities1.SaveChanges();
+
+                                            //objCompassEntities1.SaveChanges();
+
                                         }
 
                                         result = true;
@@ -2068,6 +2065,7 @@ namespace GarronT.CMS.Model.DAL
                                 }
                                 #endregion
                             }
+                            objCompassEntities1.SaveChanges();
                         }
 
                     }
@@ -2767,9 +2765,4 @@ namespace GarronT.CMS.Model.DAL
             return dynamicDt;
         }
     }
-
-
-
-
-
 }

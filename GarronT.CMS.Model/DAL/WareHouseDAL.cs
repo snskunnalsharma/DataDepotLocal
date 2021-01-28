@@ -828,7 +828,7 @@ namespace GarronT.CMS.Model.DAL
         /// </summary>
         /// <param name="StockDetailId"></param>
         /// <returns></returns>
-        public StatusMessage DeleteStockRecord(long StockDetailId, long userId)
+        public StatusMessage DeleteStockRecord(long StockDetailId, long userId) // 
         {
             StatusMessage statusMessage = new StatusMessage();
             CompassEntities dbcontext = new CompassEntities();
@@ -840,7 +840,6 @@ namespace GarronT.CMS.Model.DAL
                     var productmaster = dbcontext.ProductMasters.Where(a => a.Id == stockdetailRecord.FKProductId && a.Active == 1).FirstOrDefault();
                     if (productmaster.SerialNumberRequired)
                     {
-
                         if (stockdetailRecord.AllStockUtilized == false && stockdetailRecord.BalanceQty > 0)
                         {
                             stockdetailRecord.Active = 0;
@@ -867,10 +866,6 @@ namespace GarronT.CMS.Model.DAL
                                 }
 
                             }
-
-
-
-
                             var inwardDeatil = dbcontext.InwardDetails.Where(a => a.Id == stockdetailRecord.FKInwardDetailId).FirstOrDefault();
                             inwardDeatil.Active = 0;
                             inwardDeatil.ModifiedBy = userId;
@@ -886,15 +881,12 @@ namespace GarronT.CMS.Model.DAL
                             statusMessage.Success = false;
                             statusMessage.Message = "Delete failed as product is released to user.";
                         }
-
-
                     }
                     else
                     {
                         if (stockdetailRecord.TotalQty == stockdetailRecord.BalanceQty)
                         {
                             stockdetailRecord.Active = 0;
-
                             var inwardDeatil = dbcontext.InwardDetails.Where(a => a.Id == stockdetailRecord.FKInwardDetailId).FirstOrDefault();
                             inwardDeatil.Active = 0;
                             dbcontext.SaveChanges();
@@ -907,7 +899,6 @@ namespace GarronT.CMS.Model.DAL
                             statusMessage.Message = "Unable to delete record.</br> Product is released to user";
                         }
                     }
-
                 }
                 else
                 {
@@ -926,9 +917,65 @@ namespace GarronT.CMS.Model.DAL
             return statusMessage;
         }
 
+        /// <summary>
+        /// Deepak
+        /// 07-Jan-2021
+        /// Delete record from stock and InwardDetails
+        /// Delete record from stock and Stock detail
+        /// Delete record from stock and OutwardDetails
+        /// </summary>
+        /// <param name="StockDetailId"></param>
+        /// <returns></returns>
+        public StatusMessage DeleteStockRecord_new(long StockDetailId, long userId)
+        {
+            StatusMessage statusMessage = new StatusMessage();
+            CompassEntities dbcontext = new CompassEntities();
+            try
+            {
+                var stockdetailRecord = dbcontext.StockDetails.Where(a => a.Id == StockDetailId && a.Active == 1).FirstOrDefault();
+                if (stockdetailRecord != null)
+                {
+                    var stockdetailAllRecord = dbcontext.StockDetails.Where(a => a.SerialNumber == stockdetailRecord.SerialNumber);
+                    foreach (var sr in stockdetailAllRecord)    // sr=serial number
+                    {
+                        var OutwardDetailsAllRecord = dbcontext.OutwardDetails.Where(a => a.FKStockDetailsID == sr.Id);
+                        /*foreach (var odr in OutwardDetailsAllRecord)    // odr=outword details records
+                        {
+                            var tblProjectFieldDataInventoryOutwardDetails = dbcontext.tblProjectFieldDataInventoryOutwardDetails.Where(a => a.FKOutwardDetailsId == odr.Id);
+                            dbcontext.tblProjectFieldDataInventoryOutwardDetails.RemoveRange(tblProjectFieldDataInventoryOutwardDetails);
+                            var tblProjectFieldDataInventoryDetails = dbcontext.tblProjectFieldDataInventoryDetails.Where(a => a.SerialNumber == stockdetailRecord.SerialNumber);
+                            dbcontext.tblProjectFieldDataInventoryDetails.RemoveRange(tblProjectFieldDataInventoryDetails);
+                        }*/
+                        dbcontext.OutwardDetails.RemoveRange(OutwardDetailsAllRecord);
+                    }
+                    dbcontext.StockDetails.RemoveRange(stockdetailAllRecord);
 
+                    var inwardDeatil = dbcontext.InwardDetails.Where(a => a.SerialNumber == stockdetailRecord.SerialNumber);
+                    dbcontext.InwardDetails.RemoveRange(inwardDeatil);
 
+                    /*var serialNumberSummary = dbcontext.SerialNumberSummary.Where(a => a.SerialNumber == stockdetailRecord.SerialNumber);
+                    dbcontext.SerialNumberSummary.RemoveRange(serialNumberSummary);*/
 
+                    dbcontext.SaveChanges();
+                    statusMessage.Success = true;
+                    statusMessage.Message = "Record Deleted Successfully";
+                }
+                else
+                {
+                    statusMessage.Success = false;
+                    statusMessage.Message = "Unable to delete record";
+                }
+
+            }
+            catch (Exception ex)
+            {
+                statusMessage.Success = false;
+                statusMessage.Message = "Unable to delete record ";
+                throw ex;
+            }
+
+            return statusMessage;
+        }
     }
 
 }

@@ -129,7 +129,7 @@ namespace CMSAuditThread
                 //MailAddress bcc1 = new MailAddress("garron@garront.com");
                 //mail.Bcc.Add(bcc1);
 
-                string Host = ConfigurationManager.AppSettings["WebMasterSMTPServer"].ToString();
+                /*string Host = ConfigurationManager.AppSettings["WebMasterSMTPServer"].ToString();
                 int HostPort = int.Parse(ConfigurationManager.AppSettings["WebMasterPort"].ToString());
                 SmtpClient smtp = new SmtpClient(Host, HostPort);
 
@@ -143,7 +143,7 @@ namespace CMSAuditThread
                 smtp.Credentials = new System.Net.NetworkCredential(user, password);
                 smtp.EnableSsl = enableSSL;
                 smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
-                smtp.Send(mail);
+                smtp.Send(mail);*/
 
 
             }

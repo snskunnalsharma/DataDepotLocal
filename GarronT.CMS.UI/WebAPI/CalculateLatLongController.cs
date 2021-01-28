@@ -2,7 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
@@ -10,6 +13,7 @@ using System.Text;
 using System.Web;
 using System.Web.Http;
 using System.Web.Script.Serialization;
+using System.Web.WebPages;
 using System.Xml.Linq;
 
 namespace GarronT.CMS.UI.WebAPI
@@ -614,9 +618,9 @@ namespace GarronT.CMS.UI.WebAPI
 
         public void GetLatLongForProject(long projetID)
         {
-
+            string id = "";
             CompassEntities objCompassEntities = new CompassEntities();
-            objCompassEntities.Database.CommandTimeout = 180;
+
             var project = objCompassEntities.tblProjects.Where(a => a.ProjectId == projetID && a.Active == 1).FirstOrDefault();
 
             // var city = (from c in CompassEntities.TblCityMasters where c.CityId == project.CityId select c).FirstOrDefault();
@@ -624,9 +628,14 @@ namespace GarronT.CMS.UI.WebAPI
             var cityname = objCompassEntities.TblCityMasters.Where(o => o.CityId == project.CityId).Select(o => o.CityName).FirstOrDefault();
             try
             {
-                string address, lat, lng;
+                string address = string.Empty;
+                string lat = string.Empty;
+                string lng = string.Empty;
                 string Citylat, Citylng;
-                var projectDataList = objCompassEntities.UploadedExcelDatas.Where(o => o.Active == 1 && o.FKProjectId == projetID).ToList();
+                //var projectDataList = objCompassEntities.UploadedExcelDatas.Where(o => o.Active == 1 && o.FKProjectId == projetID).ToList();
+                var projectDataList = objCompassEntities.UploadedExcelDatas.Where(o => o.Active == 1 && o.FKProjectId == projetID
+                   && (o.AddressLatitude == string.Empty || o.AddressLatitude == null ||
+                   o.AddressLongitude == string.Empty || o.AddressLongitude == null)).ToList();
 
                 if (projectDataList != null && projectDataList.Count > 0)
                 {
@@ -647,6 +656,8 @@ namespace GarronT.CMS.UI.WebAPI
 
                     foreach (var item in projectDataList)
                     {
+                        id = Convert.ToString(item.Id.ToString());
+
                         if (!string.IsNullOrEmpty(latColumn) && !string.IsNullOrEmpty(longColumn))
                         {
                             Type tClass = item.GetType();
@@ -672,7 +683,8 @@ namespace GarronT.CMS.UI.WebAPI
                                     item.AddressLongitude = a ? Convert.ToString(currentProperty1.GetValue(item)) : null;
                                     //currentProperty.SetValue(item, (a ? item.AddressLatitude : null), null);
                                     // currentProperty1.SetValue(item, (a ? item.AddressLongitude : null), null);
-                                    objCompassEntities.SaveChanges();
+
+                                    //objCompassEntities.SaveChanges(); // one by one not save save all record in one time see in below
 
                                 }
                                 catch
@@ -683,14 +695,8 @@ namespace GarronT.CMS.UI.WebAPI
                             else
                             {
                                 #region
-                                //Changed by Sanjiv to remove # from address
-
                                 var PropertyInfos = item.GetType().GetProperties();
-
-
                                 var s2 = PropertyInfos.Where(o => o.Name == streetColumn).Select(o => o.GetValue(item, null)).FirstOrDefault();
-
-
                                 string _streetAddress = Convert.ToString(s2);
 
 
@@ -718,8 +724,7 @@ namespace GarronT.CMS.UI.WebAPI
                                     }
 
                                 }
-                                objCompassEntities.SaveChanges();
-
+                                //objCompassEntities.SaveChanges(); // one by one not save save all record in one time see in below
                                 #endregion
                             }
                         }
@@ -739,7 +744,7 @@ namespace GarronT.CMS.UI.WebAPI
                                     // in the database.
                                     item.AddressLatitude = a ? item.AddressLatitude : null;
                                     item.AddressLongitude = a ? item.AddressLongitude : null;
-                                    objCompassEntities.SaveChanges();
+                                    //objCompassEntities.SaveChanges(); // one by one not save save all record in one time see in below
 
                                 }
                                 catch
@@ -791,26 +796,33 @@ namespace GarronT.CMS.UI.WebAPI
                                     }
 
                                 }
-                                objCompassEntities.SaveChanges();
+                                //objCompassEntities.SaveChanges();   // one by one not save save all record in one time see in below
 
                                 #endregion
                             }
+                        }
+                        objCompassEntities.SaveChanges();     // one by one records save
+                        if (lat != string.Empty && lng != string.Empty)
+                        {
+                            String DynamicColumnName = Get_DynamicColumnName(Convert.ToString(projetID));
+                            String StreetValue = Get_StreetValue(Convert.ToString(projetID), id, DynamicColumnName);
+                            String VisitId = Get_Create_VisitId(Convert.ToString(projetID), StreetValue, DynamicColumnName);
+                            String GroupId = Get_Create_GroupId(Convert.ToString(projetID), lat, lng);
+                            item.VisitId = VisitId;
+                            item.GroupId = GroupId;
+                            objCompassEntities.SaveChanges();     // one by one records save
                         }
                     }
 
                 }
 
-
                 if (project != null)
                 {
-                    //project.IsLatLongCalculated = true;
                     project.IsLatLongCalculated = 1; //  complete
-
-                    //objCompassEntities.STP_SetGroupIDVisitId(projetID);
-
-                    objCompassEntities.PROC_SetGroupIDVisitId(projetID);
-                    //objCompassEntities.Database.CommandTimeout = 0;
                     objCompassEntities.SaveChanges();
+
+                    //objCompassEntities.PROC_SetGroupIDVisitId(projetID);
+                    //objCompassEntities.SaveChanges();
                 }
 
             }
@@ -822,19 +834,130 @@ namespace GarronT.CMS.UI.WebAPI
                     objCompassEntities.SaveChanges();
                 }
                 List<String> mailto = new List<String>();
-                //mailto.Add("aniket.jadhav@kairee.in");
-                //mailto.Add("sanjiv.shinde@kairee.in");
-                //mailto.Add("bharat.magdum@kairee.in");
+                //mailto.Add("yogendra.rajpoot@snssystem.com");
+                //mailto.Add("deepak.rajpoot@snssystem.com");
 
                 //mailto.Add(UserName);
-                new GarronT.CMS.Model.clsMail().SendMail(mailto, null, GetRegisterMailBody(projetID, ex.Message), "Error in Latitude,Longitude calculation");
+                new GarronT.CMS.Model.clsMail().SendMail(mailto, null, GetRegisterMailBody(projetID, ex.Message + "\n Uploaded excel table not save Lat or Long Records id = " + id), "Error in Latitude,Longitude calculation");
+            }
+
+        }
+        public string Get_DynamicColumnName(String ProjectID)
+        {
+            try
+            {
+                String DynamicColumnName = "";
+                CompassEntities dbcontext = new CompassEntities();
+                SqlConnection _sqlCon = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
+                _sqlCon.Open();
+                SqlDataAdapter sda = new SqlDataAdapter("Select DynamicColumnName=[dbo].[FN_GetColumnName]('STREET','" + ProjectID + "')", _sqlCon);
+                DataTable _dt = new DataTable();
+                sda.Fill(_dt);
+                if (_dt.Rows.Count > 0)
+                {
+                    DynamicColumnName = _dt.Rows[0]["DynamicColumnName"].ToString();
+                }
+                _sqlCon.Close();
+                return DynamicColumnName;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+        public string Get_StreetValue(String ProjectID, String id, String DynamicColumnName)
+        {
+            try
+            {
+                string StreetValue = "";
+                CompassEntities dbcontext = new CompassEntities();
+                SqlConnection _sqlCon = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
+                _sqlCon.Open();
+                SqlCommand _cmdstreetname = new SqlCommand("Select " + DynamicColumnName + " from UploadedExcelData where id='" + id + "'", _sqlCon);
+                _cmdstreetname.CommandType = CommandType.Text;
+                SqlDataAdapter _sda = new SqlDataAdapter(_cmdstreetname);
+                DataTable _dts = new DataTable();
+                _sda.Fill(_dts);
+                if (_dts.Rows.Count > 0)
+                {
+                    StreetValue = _dts.Rows[0][0].ToString();
+                }
+                _sqlCon.Close();
+                return StreetValue;
+            }
+            catch
+            {
+                return "";
+            }
+
+        }
+        public string Get_Create_VisitId(String ProjectID, String Street, String DynamicColumnName)
+        {
+            try
+            {
+                string VisitId = "";
+                CompassEntities dbcontext = new CompassEntities();
+                SqlConnection _sqlCon = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
+                _sqlCon.Open();
+                SqlCommand _cmd = new SqlCommand("Select top 1 VisitId from UploadedExcelData where FKProjectId='" + ProjectID + "' and " + DynamicColumnName + "='" + Street + "' and [VisitId] is not null ", _sqlCon);
+                SqlDataAdapter sda = new SqlDataAdapter(_cmd);
+                DataTable dt = new DataTable();
+                sda.Fill(dt);
+                if (dt.Rows.Count > 0)
+                {
+                    // availabe VisitId id
+                    VisitId = dt.Rows[0]["VisitId"].ToString();
+                }
+                else
+                {
+                    // not availabe VisitId then generate new id
+                    Guid objVisitId = Guid.NewGuid();
+                    VisitId = objVisitId.ToString().ToUpper();
+                }
+                _sqlCon.Close();
+                return VisitId;
+            }
+            catch
+            {
+                return "";
+            }
+        }
+        public string Get_Create_GroupId(String ProjectID, String let, String lng)
+        {
+            try
+            {
+                string GroupId = "";
+                CompassEntities dbcontext = new CompassEntities();
+                SqlConnection _sqlCon = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
+                _sqlCon.Open();
+                SqlCommand _cmd = new SqlCommand("Select top 1 GroupId from UploadedExcelData where FKProjectId='" + ProjectID + "' and AddressLatitude='" + let + "' and AddressLongitude='" + lng + "' and GroupId is not null", _sqlCon);
+                SqlDataAdapter sda = new SqlDataAdapter(_cmd);
+                DataTable dt = new DataTable();
+                sda.Fill(dt);
+                if (dt.Rows.Count > 0)
+                {
+                    // availabe VisitId id
+                    GroupId = dt.Rows[0]["GroupId"].ToString();
+                }
+                else
+                {
+                    // not availabe VisitId then generate new id
+                    Guid objGroupId = Guid.NewGuid();
+                    GroupId = objGroupId.ToString().ToUpper();
+                }
+                _sqlCon.Close();
+                return GroupId;
+            }
+            catch
+            {
+                return "";
             }
 
         }
 
 
-
-        public void CalPendingLatLongForProject(long projetID)
+        // Old function not a used
+        /*public void CalPendingLatLongForProject(long projetID)
         {
             CompassEntities objCompassEntities = new CompassEntities();
 
@@ -941,8 +1064,8 @@ namespace GarronT.CMS.UI.WebAPI
                                 {
                                     List<String> mailto = new List<String>();
                                     // mailto.Add("aniket.jadhav@kairee.in");
-                                    //mailto.Add("sanjiv.shinde@kairee.in");
-                                    //mailto.Add("bharat.magdum@kairee.in");
+                                    mailto.Add("yogendra.rajpoot@snssystem.com");
+                                    mailto.Add("deepak.rajpoot@snssystem.com");
 
                                     new GarronT.CMS.Model.clsMail().SendMail(mailto, null, GetRegisterMailBody(projetID, ex.Message), "Error in Latitude,Longitude calculation");
                                 }
@@ -997,16 +1120,13 @@ namespace GarronT.CMS.UI.WebAPI
                     // result = true;
                 }
 
-
                 if (project != null)
                 {
-                    //project.IsLatLongCalculated = true;
                     project.IsLatLongCalculated = 1; //  complete
-                    objCompassEntities.Database.CommandTimeout = 180;
-                    //objCompassEntities.STP_SetGroupIDVisitId(projetID);
-
-                    objCompassEntities.PROC_SetGroupIDVisitId(projetID);
                     objCompassEntities.SaveChanges();
+
+                    //objCompassEntities.PROC_SetGroupIDVisitId(projetID);
+                    //objCompassEntities.SaveChanges();
                 }
 
             }
@@ -1019,15 +1139,159 @@ namespace GarronT.CMS.UI.WebAPI
                 }
                 List<String> mailto = new List<String>();
                 //mailto.Add("aniket.jadhav@kairee.in");
-                //mailto.Add("sanjiv.shinde@kairee.in");
-                //mailto.Add("bharat.magdum@kairee.in");
+                //mailto.Add("yogendra.rajpoot@snssystem.com");
+                //mailto.Add("deepak.rajpoot@snssystem.com");
 
                 new GarronT.CMS.Model.clsMail().SendMail(mailto, null, GetRegisterMailBody(projetID, ex.Message), "Error in Latitude,Longitude calculation");
             }
+        }*/
+
+        // Create new method 09 Oct 2020
+        public void CalPendingLatLongForProject(long projetID)
+        {
+            string id = "";
+            CompassEntities objCompassEntities = new CompassEntities();
+            var project = objCompassEntities.tblProjects.Where(a => a.ProjectId == projetID && a.Active == 1).FirstOrDefault();
+
+            var state = (from st in objCompassEntities.tblStateMasters where st.StateId == project.StateId select st).FirstOrDefault();
+            var cityname = objCompassEntities.TblCityMasters.Where(o => o.CityId == project.CityId).Select(o => o.CityName).FirstOrDefault();
+            try
+            {
+                string address = string.Empty;
+                string lat = string.Empty;
+                string lng = string.Empty;
+                string Citylat, Citylng;
+                var projectDataList = objCompassEntities.UploadedExcelDatas.Where(o => o.Active == 1 && o.FKProjectId == projetID
+                    && (o.AddressLatitude == string.Empty || o.AddressLatitude == null ||
+                    o.AddressLongitude == string.Empty || o.AddressLongitude == null)).ToList();
 
 
+                string streetColumn = null;
+                string latColumn = null;
+                string longColumn = null;
+                GetDynamicColumnName(projetID, out streetColumn, out latColumn, out longColumn);
 
+                if (projectDataList != null && projectDataList.Count > 0)
+                {
+
+                    FindCityCoordinates(Convert.ToString(cityname) + ", " + state.StateName + ", USA", out Citylat, out Citylng);
+                    foreach (var item in projectDataList)
+                    {
+                        id = Convert.ToString(item.Id.ToString());
+
+                        if (!string.IsNullOrEmpty(latColumn) && !string.IsNullOrEmpty(longColumn))
+                        {
+                            Type tClass = item.GetType();
+                            PropertyInfo[] pClass = tClass.GetProperties();
+                            PropertyInfo currentProperty = pClass.Where(o => o.Name == latColumn).FirstOrDefault();
+                            string latValue = Convert.ToString(currentProperty.GetValue(item));
+                            PropertyInfo currentProperty1 = pClass.Where(o => o.Name == longColumn).FirstOrDefault();
+                            string longValue = Convert.ToString(currentProperty1.GetValue(item));
+
+
+                            if (!string.IsNullOrEmpty(latValue) && latValue.Length > 0 && latValue != "0"
+                      && !string.IsNullOrEmpty(longValue) && longValue.Trim().Length > 0 && longValue != "0")
+                            {
+                                bool a = FindCoordinates(latValue, longValue, Citylat, Citylng);
+                                //if lat lon correct then no change but if lat long is out of city then null will updated
+                                // in the database.
+                                item.AddressLatitude = a ? Convert.ToString(currentProperty.GetValue(item)) : null;
+                                item.AddressLongitude = a ? Convert.ToString(currentProperty1.GetValue(item)) : null;
+                                //objCompassEntities.SaveChanges();  // one by one not save save all record in one time see in below
+                            }
+                            else
+                            {
+                                //Changed by  remove # from address
+                                string _streetAddress = item.GetType().GetProperty(streetColumn).GetValue(item, null) as string;
+
+                                if (Convert.ToString(_streetAddress).Trim().Contains('#'))
+                                {
+                                    int startIndex = 0;
+                                    int endIndex = _streetAddress.IndexOf('#'); ;
+                                    int length = endIndex - startIndex - 1;
+                                    String computeddress = _streetAddress.Substring(0, length);
+                                    address = computeddress + ", " + Convert.ToString(cityname) + ", " + state.StateName + ", USA";
+                                }
+                                else
+                                {
+                                    address = _streetAddress + ", " + Convert.ToString(cityname) + ", " + state.StateName + ", USA";
+
+                                }
+                                if (!string.IsNullOrEmpty(address))
+                                {
+                                    System.Threading.Thread.Sleep(100);
+
+                                    FindCoordinates(address, out lat, out lng, Citylat, Citylng);
+                                    if (!string.IsNullOrEmpty(lat) && !string.IsNullOrEmpty(lng))
+                                    {
+                                        item.AddressLatitude = lat;
+                                        item.AddressLongitude = lng;
+                                    }
+                                }
+                                //objCompassEntities.SaveChanges(); // one by one not save save all record in one time see in below
+                            }
+                        }
+                        else
+                        {
+                            //Changed by Sanjiv to remove # from address
+                            string _streetAddress = item.GetType().GetProperty(streetColumn).GetValue(item, null) as string;
+
+                            if (Convert.ToString(_streetAddress).Trim().Contains('#'))
+                            {
+                                int startIndex = 0;
+                                int endIndex = _streetAddress.IndexOf('#'); ;
+                                int length = endIndex - startIndex - 1;
+                                String computeddress = _streetAddress.Substring(0, length);
+                                address = computeddress + ", " + Convert.ToString(cityname) + ", " + state.StateName + ", USA";
+                            }
+                            else
+                            {
+                                address = _streetAddress + ", " + Convert.ToString(cityname) + ", " + state.StateName + ", USA";
+
+                            }
+                            if (!string.IsNullOrEmpty(address))
+                            {
+                                System.Threading.Thread.Sleep(100);
+
+                                FindCoordinates(address, out lat, out lng, Citylat, Citylng);
+                                if (!string.IsNullOrEmpty(lat) && !string.IsNullOrEmpty(lng))
+                                {
+                                    item.AddressLatitude = lat;
+                                    item.AddressLongitude = lng;
+                                }
+                            }
+                            //objCompassEntities.SaveChanges(); // one by one not save save all record in one time see in below
+                        }
+                        objCompassEntities.SaveChanges();     // one by one records save
+                        if (lat != string.Empty && lng != string.Empty)
+                        {
+                            String DynamicColumnName = Get_DynamicColumnName(Convert.ToString(projetID));
+                            String StreetValue = Get_StreetValue(Convert.ToString(projetID), id, DynamicColumnName);
+                            String VisitId = Get_Create_VisitId(Convert.ToString(projetID), StreetValue, DynamicColumnName);
+                            String GroupId = Get_Create_GroupId(Convert.ToString(projetID), lat, lng);
+                            item.VisitId = VisitId;
+                            item.GroupId = GroupId;
+                            objCompassEntities.SaveChanges();     // one by one records save
+                        }
+                    }
+                }
+
+                if (project != null)
+                {
+                    project.IsLatLongCalculated = 1; //  complete
+                    objCompassEntities.SaveChanges();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                List<String> mailto = new List<String>();
+                mailto.Add("yogendra.rajpoot@snssystem.com");
+                mailto.Add("deepak.rajpoot@snssystem.com");
+                new GarronT.CMS.Model.clsMail().SendMail(mailto, null, GetRegisterMailBody(projetID, ex.Message + "\n Uploaded excel table not save Lat or Long Records id = " + id), "Error in Latitude,Longitude calculation");
+            }
         }
+        //ends hare
 
 
         public void GetDynamicColumnName(long projectId, out string streetColumn, out string latColumn, out string longColumn)
