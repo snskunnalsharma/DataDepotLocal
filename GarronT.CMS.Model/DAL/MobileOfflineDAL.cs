@@ -2951,7 +2951,7 @@ namespace GarronT.CMS.Model.DAL
                     {
                         long id = (long)item["Id"];
                         var objInstallerMap = objCompassEntities.tblInstallerMapDatas.
-                            Where(o => o.FK_UploadedExcelData_Id == id && o.InstallerId == userId).FirstOrDefault();
+                            Where(o => o.FK_UploadedExcelData_Id == id && o.InstallerId == userId && o.Active == 1).FirstOrDefault();
                         objInstallerMap.BatchNumber = BatchNumber;
                         objInstallerMap.SynchCheckSumString = m2;
                         objInstallerMap.SynchWithMobileFlag = 1;
@@ -3091,7 +3091,7 @@ namespace GarronT.CMS.Model.DAL
                 {
                     long UploadId = long.Parse(row["Id"].ToString());
                     var objInstallerMap = objCompassEntities.tblInstallerMapDatas.Where(o => o.FK_UploadedExcelData_Id == UploadId &&
-                         o.InstallerId == userId).FirstOrDefault();
+                         o.InstallerId == userId && o.Active == 1).FirstOrDefault();
                     if (objInstallerMap != null)
                     {
                         objInstallerMap.BatchNumber = null;

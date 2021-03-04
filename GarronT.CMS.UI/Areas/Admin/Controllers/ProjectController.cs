@@ -642,19 +642,22 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         success = new ProjectMasterDAL().CreateOrUpdateExcelMappingData(objTblProjectExcelMapping, ProjectID,
                             objobjExcelSheetBOList, UserId, dt, out returnMessage, out dt1, out isLatlongCalucalted);
 
+                        List<String> mailto = new List<String>();
+                        mailto.Add("yogendra.rajpoot@snssystem.com");
+                        mailto.Add("deepak.yadav@snssystem.com");
+                        //new GarronT.CMS.Model.clsMail().SendMail(mailto, null, "Excel file uploaded successfully. <br /> Project Id : " + ProjectID + "<br /><br />Thanks and Regards,<br />Team CMS", "Excel file uploaded");
 
                         /// calculate the latitude
-
                         Task.Factory.StartNew(() =>
                         {
-                            //new CalculateLatLongController().CalculateNullLatLongbyProjectID(ProjectID);
-
+                            //new CalculateLatLongController().CalculateNullLatLongbyProjectID(ProjectID); // Old method
                             new CalculateLatLongController().GetLatLongForProject(ProjectID);
                         });
 
                         MSg = returnMessage;
-
-                        return Json(new { success = success, returnMessage = "Record Submitted Successfully.", filePath = fileName }, JsonRequestBehavior.AllowGet);
+                        //return Json(new { success = success, returnMessage = "Record Submitted Successfully. \n Processing in Background", filePath = fileName }, JsonRequestBehavior.AllowGet);
+                        return Json(new { success = success, returnMessage = "File Uploaded Successfully Processing in Background", filePath = fileName }, JsonRequestBehavior.AllowGet);
+                        
                     }
 
                 }

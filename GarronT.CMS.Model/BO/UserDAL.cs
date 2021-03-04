@@ -299,6 +299,7 @@ namespace GarronT.CMS.Model.BO
                         Mapper.DynamicMap<UsersModel, tblUser>(ObjectToCreaetOrUpdate, createOrUpdate);
 
                         createOrUpdate.CreatedBy = currentUserId;
+                        createOrUpdate.ExcludeSkip = 1;         // Add new lines
                         objTollFreeWidgetEntities.tblUsers.Add(createOrUpdate);
                         objTollFreeWidgetEntities.SaveChanges();
                         userid = createOrUpdate.UserID;
