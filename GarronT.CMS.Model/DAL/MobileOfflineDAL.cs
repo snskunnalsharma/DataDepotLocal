@@ -1840,7 +1840,7 @@ namespace GarronT.CMS.Model.DAL
                 List<newMobileOffline2> objListMobileOffline = new List<newMobileOffline2>();
 
                 string procName = "";
-                int? excludeSkip = 0; 
+                int? excludeSkip = 0;
                 long BatchNumber = 0;
                 bool sendAlreadySentRecord = false;
                 bool checkRecordAvilableForNextTrip = false;
@@ -2278,7 +2278,7 @@ namespace GarronT.CMS.Model.DAL
                                 {
 
                                     var adata = distCountPro.AsEnumerable().Where(o => o.Field<string>(StreetDynamicColumnName) == row[StreetDynamicColumnName].ToString()).FirstOrDefault();
-                                    
+
                                     if (adata != null)
                                     {
 
@@ -2510,7 +2510,7 @@ namespace GarronT.CMS.Model.DAL
                                                     if (objForms.isSkipped)
                                                     {
                                                         long _iddd = (long)adata1["Id"];
-                                                        if(_iddd == 114004)
+                                                        if (_iddd == 114004)
                                                         {
                                                             var FK_UploadedExcelData_Id = _iddd;
                                                         }
@@ -2952,13 +2952,16 @@ namespace GarronT.CMS.Model.DAL
                         long id = (long)item["Id"];
                         var objInstallerMap = objCompassEntities.tblInstallerMapDatas.
                             Where(o => o.FK_UploadedExcelData_Id == id && o.InstallerId == userId && o.Active == 1).FirstOrDefault();
-                        objInstallerMap.BatchNumber = BatchNumber;
-                        objInstallerMap.SynchCheckSumString = m2;
-                        objInstallerMap.SynchWithMobileFlag = 1;
-                        objInstallerMap.SynchWithMobileDate = new CommonFunctions().ServerDate();
-                        //objCompassEntities.SaveChanges();
+                        if (objInstallerMap != null)
+                        {
+                            objInstallerMap.BatchNumber = BatchNumber;
+                            objInstallerMap.SynchCheckSumString = m2;
+                            objInstallerMap.SynchWithMobileFlag = 1;
+                            objInstallerMap.SynchWithMobileDate = new CommonFunctions().ServerDate();
+                            //objCompassEntities.SaveChanges();
+                        }
                     }
-                    if(ProjectVisitDataChunk.Rows.Count > 0)
+                    if (ProjectVisitDataChunk.Rows.Count > 0)
                     {
                         objCompassEntities.SaveChanges();
                     }
@@ -2966,9 +2969,9 @@ namespace GarronT.CMS.Model.DAL
                     //get last complete position of user project's
                     var timeElapsed = sw.Elapsed;
                     if (!checkRecordAvilableForNextTrip)
-                    {                     
+                    {
                         var projectLastLocation = getLastCompleteLocation(userId);
-                        if(projectLastLocation.Count > 0)
+                        if (projectLastLocation.Count > 0)
                         {
                             mobileOfflineResult.projectLastLocation = projectLastLocation;
                         }
@@ -3103,7 +3106,7 @@ namespace GarronT.CMS.Model.DAL
                         //objCompassEntities.SaveChanges();
                     }
                 }
-                if(dt.Rows.Count > 0)
+                if (dt.Rows.Count > 0)
                 {
                     objCompassEntities.SaveChanges();
                 }
@@ -3138,7 +3141,7 @@ namespace GarronT.CMS.Model.DAL
                 var debug = true;
             }
             var objInstallerMapList = objCompassEntities.tblInstallerMapDatas.Where(o => o.InstallerId == userId
-                && o.BatchNumber == (batchNumber - 1) && o.SynchWithMobileFlag == 1 && o.MobileResponse != 1).ToList();
+                && o.BatchNumber == (batchNumber - 1) && o.SynchWithMobileFlag == 1 && o.MobileResponse != 1 && o.Active == 1).ToList();
 
             if (objInstallerMapList != null && objInstallerMapList.Count > 0)
             {
@@ -3158,7 +3161,7 @@ namespace GarronT.CMS.Model.DAL
             {
                 /// if  record not present then check the current batch present with mobile response false for the user 
                 objInstallerMapList = objCompassEntities.tblInstallerMapDatas.Where(o => o.InstallerId == userId
-                && o.BatchNumber == batchNumber && o.SynchWithMobileFlag == 1 && o.MobileResponse != 1).ToList();
+                && o.BatchNumber == batchNumber && o.SynchWithMobileFlag == 1 && o.MobileResponse != 1 && o.Active == 1).ToList();
 
                 if (objInstallerMapList != null && objInstallerMapList.Count > 0)
                 {
@@ -3205,7 +3208,7 @@ namespace GarronT.CMS.Model.DAL
 
             //first check any batch number present for the user
             var checkB = objCompassEntities.tblInstallerMapDatas.Where(o => o.InstallerId == userId
-                && o.BatchNumber != null).Select(o => o.BatchNumber).FirstOrDefault();
+                && o.BatchNumber != null && o.Active == 1).Select(o => o.BatchNumber).FirstOrDefault();
 
             if (checkB == null)
             {
@@ -3238,7 +3241,7 @@ namespace GarronT.CMS.Model.DAL
                 else
                 {
                     // send fresh new batch data for the current user.
-                    checkB = objCompassEntities.tblInstallerMapDatas.Where(o => o.InstallerId == userId).Select(o => o.BatchNumber).Max();
+                    checkB = objCompassEntities.tblInstallerMapDatas.Where(o => o.InstallerId == userId && o.Active == 1).Select(o => o.BatchNumber).Max();
                     BatchNumber = long.Parse(checkB.ToString()) + 1;
                 }
             }
