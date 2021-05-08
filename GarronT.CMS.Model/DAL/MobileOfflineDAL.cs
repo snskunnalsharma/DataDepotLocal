@@ -1840,7 +1840,7 @@ namespace GarronT.CMS.Model.DAL
                 List<newMobileOffline2> objListMobileOffline = new List<newMobileOffline2>();
 
                 string procName = "";
-                int? excludeSkip = 0; 
+                int? excludeSkip = 0;
                 long BatchNumber = 0;
                 bool sendAlreadySentRecord = false;
                 bool checkRecordAvilableForNextTrip = false;
@@ -2278,7 +2278,7 @@ namespace GarronT.CMS.Model.DAL
                                 {
 
                                     var adata = distCountPro.AsEnumerable().Where(o => o.Field<string>(StreetDynamicColumnName) == row[StreetDynamicColumnName].ToString()).FirstOrDefault();
-                                    
+
                                     if (adata != null)
                                     {
 
@@ -2510,7 +2510,7 @@ namespace GarronT.CMS.Model.DAL
                                                     if (objForms.isSkipped)
                                                     {
                                                         long _iddd = (long)adata1["Id"];
-                                                        if(_iddd == 114004)
+                                                        if (_iddd == 114004)
                                                         {
                                                             var FK_UploadedExcelData_Id = _iddd;
                                                         }
@@ -2961,7 +2961,7 @@ namespace GarronT.CMS.Model.DAL
                             //objCompassEntities.SaveChanges();
                         }
                     }
-                    if(ProjectVisitDataChunk.Rows.Count > 0)
+                    if (ProjectVisitDataChunk.Rows.Count > 0)
                     {
                         objCompassEntities.SaveChanges();
                     }
@@ -2969,9 +2969,9 @@ namespace GarronT.CMS.Model.DAL
                     //get last complete position of user project's
                     var timeElapsed = sw.Elapsed;
                     if (!checkRecordAvilableForNextTrip)
-                    {                     
+                    {
                         var projectLastLocation = getLastCompleteLocation(userId);
-                        if(projectLastLocation.Count > 0)
+                        if (projectLastLocation.Count > 0)
                         {
                             mobileOfflineResult.projectLastLocation = projectLastLocation;
                         }
@@ -3106,7 +3106,7 @@ namespace GarronT.CMS.Model.DAL
                         //objCompassEntities.SaveChanges();
                     }
                 }
-                if(dt.Rows.Count > 0)
+                if (dt.Rows.Count > 0)
                 {
                     objCompassEntities.SaveChanges();
                 }
@@ -3207,8 +3207,8 @@ namespace GarronT.CMS.Model.DAL
             BatchNumber = 0;
 
             //first check any batch number present for the user
-            var checkB = objCompassEntities.tblInstallerMapDatas.Where(o => o.InstallerId == userId
-                && o.BatchNumber != null && o.Active ==1).Select(o => o.BatchNumber).FirstOrDefault();
+            var checkB = objCompassEntities.tblInstallerMapDatas.Where(o => o.InstallerId == userId && o.BatchNumber != null && o.Active ==1).Select(o => o.BatchNumber).FirstOrDefault();
+
 
             if (checkB == null)
             {
@@ -3240,7 +3240,7 @@ namespace GarronT.CMS.Model.DAL
                 }
                 else
                 {
-                    // send fresh new batch data for the current user.
+
                     checkB = objCompassEntities.tblInstallerMapDatas.Where(o => o.InstallerId == userId && o.Active==1).Select(o => o.BatchNumber).Max();
                     BatchNumber = long.Parse(checkB.ToString()) + 1;
                 }

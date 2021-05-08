@@ -945,12 +945,6 @@ namespace GarronT.CMS.Model.DAL
                             dbcontext.tblProjectFieldDataInventoryOutwardDetails.RemoveRange(tblProjectFieldDataInventoryOutwardDetails);
                             var tblProjectFieldDataInventoryDetails = dbcontext.tblProjectFieldDataInventoryDetails.Where(a => a.SerialNumber == stockdetailRecord.SerialNumber);
                             dbcontext.tblProjectFieldDataInventoryDetails.RemoveRange(tblProjectFieldDataInventoryDetails);
-                            /*var tblProjectFieldDataMaster = dbcontext.tblProjectFieldDataMasters.Where(a => a.FieldValue == stockdetailRecord.SerialNumber && a.Active != 1);
-                            foreach (var pfdm in tblProjectFieldDataMaster)
-                            {
-                                var deleteRec_tblProjectFieldDataMaster= dbcontext.tblProjectFieldDataMasters.Where(a => a.TblProjectFieldData_Id == pfdm.TblProjectFieldData_Id && a.Active != 1);
-                                dbcontext.tblProjectFieldDataMasters.RemoveRange(deleteRec_tblProjectFieldDataMaster);
-                            }*/
                         }
                         dbcontext.OutwardDetails.RemoveRange(OutwardDetailsAllRecord);
                     }
@@ -959,8 +953,8 @@ namespace GarronT.CMS.Model.DAL
                     var inwardDeatil = dbcontext.InwardDetails.Where(a => a.SerialNumber == stockdetailRecord.SerialNumber);
                     dbcontext.InwardDetails.RemoveRange(inwardDeatil);
 
-                    /*var serialNumberSummary = dbcontext.SerialNumberSummary.Where(a => a.SerialNumber == stockdetailRecord.SerialNumber);
-                    dbcontext.SerialNumberSummary.RemoveRange(serialNumberSummary);*/
+                    var serialNumberSummary = dbcontext.SerialNumberSummary.Where(a => a.SerialNumber == stockdetailRecord.SerialNumber);
+                    dbcontext.SerialNumberSummary.RemoveRange(serialNumberSummary);
 
                     dbcontext.SaveChanges();
                     statusMessage.Success = true;
