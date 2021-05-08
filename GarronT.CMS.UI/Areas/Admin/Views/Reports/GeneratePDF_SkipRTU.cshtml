@@ -68,7 +68,7 @@
         font-size: 13px;
     }
     .pdf-video-btn{
-            margin-top: 0px;
+            margin-top: 0px;`
             margin-left: auto;
             width: 9%;
     }
@@ -237,23 +237,23 @@
                         <td width='75%' style="padding:5px;border-right: 1px solid #000 !important;" colspan="3" class='FieldValuestd'>
 
                             @{
-                String LatImagesrc = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + "/images/blueT.png";
-                if (@Model.CategoryType.ToLower() == "skip" || @Model.CategoryType.ToLower() == "SKIP" || @Model.CategoryType.ToLower() == "rtu" || @Model.CategoryType.ToLower() == "RTU")
-                {
-                    System.Text.StringBuilder otherfieldString = new System.Text.StringBuilder();
+                                String LatImagesrc = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + "/images/blueT.png";
+                                if (@Model.CategoryType.ToLower() == "skip" || @Model.CategoryType.ToLower() == "SKIP" || @Model.CategoryType.ToLower() == "rtu" || @Model.CategoryType.ToLower() == "RTU")
+                                {
+                                    System.Text.StringBuilder otherfieldString = new System.Text.StringBuilder();
 
-                    GarronT.CMS.Model.BO.SkipRtuAttachmentModel AttachementList =
-                                                                new GarronT.CMS.Model.DAL.ReportDAL().getGPSLocationImages(Model.ID, Model.InstallerId, Model.FormId);
-                    if (AttachementList != null && AttachementList.IsAudioVideoImage == 3)
-                    {
+                                    GarronT.CMS.Model.BO.SkipRtuAttachmentModel AttachementList =
+                                                                                new GarronT.CMS.Model.DAL.ReportDAL().getGPSLocationImages(Model.ID, Model.InstallerId, Model.FormId);
+                                    if (AttachementList != null && AttachementList.IsAudioVideoImage == 3)
+                                    {
 
-                        var center = "center=" + @Model.Latitude + "," + @Model.Longitude + "";
-                        var lastlist = "&markers=" + @Model.Latitude + "," + @Model.Longitude + "";
-                        var center1 = @Model.Latitude + "," + @Model.Longitude;
-                        var link = "https://maps.googleapis.com/maps/api/staticmap?" + center + "&zoom=15" + lastlist + "&size=1236x493&sensor=FALSE&visual_refresh=true";
-                        //if (AttachementList.IsAudioVideoImage == 3)
-                        //{
-                        String aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + AttachementList.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+                                        var center = "center=" + @Model.Latitude + "," + @Model.Longitude + "";
+                                        var lastlist = "&markers=" + @Model.Latitude + "," + @Model.Longitude + "";
+                                        var center1 = @Model.Latitude + "," + @Model.Longitude;
+                                        var link = "https://maps.googleapis.com/maps/api/staticmap?" + center + "&zoom=15" + lastlist + "&size=1236x493&sensor=FALSE&visual_refresh=true";
+                                        //if (AttachementList.IsAudioVideoImage == 3)
+                                        //{
+                                        String aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + AttachementList.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
 
                         <img src='@aditionalFileName' height="180" width='210' />
                         <a href='https://maps.google.com/maps?q=@center1' target='_blank'>Map</a>
@@ -263,14 +263,14 @@
                         <span style='font-size:14px;'> @((@Model.Latitude.Length > 14) ? (@Model.Latitude.Substring(0, 13)) : @Model.Latitude) , @((@Model.Longitude.Length > 14) ? (@Model.Longitude.Substring(0, 13)) : @Model.Longitude) </span>
                         <br />
                         <span style='font-size:14px;'>@Model.Dates</span>
-        //}
+                                        //}
 
-    }
+                                    }
 
 
-    //}
+                                    //}
 
-}
+                                }
 
 
                             }
@@ -289,31 +289,31 @@
                             @{
 
 
-                List<GarronT.CMS.Model.BO.SkipRtuAttachmentModel> objAttachementList =
-                                                                    new GarronT.CMS.Model.DAL.ReportDAL().getSkipRtuImages(Model.ID, Model.InstallerId, Model.FormId);
-                if (objAttachementList != null && objAttachementList.Count > 0)
-                {
-                    foreach (GarronT.CMS.Model.BO.SkipRtuAttachmentModel obj1 in objAttachementList)
-                    {
-                        if (obj1.IsAudioVideoImage == 2)
-                        {
-                            String fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + obj1.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+                                List<GarronT.CMS.Model.BO.SkipRtuAttachmentModel> objAttachementList =
+                                                                                    new GarronT.CMS.Model.DAL.ReportDAL().getSkipRtuImages(Model.ID, Model.InstallerId, Model.FormId);
+                                if (objAttachementList != null && objAttachementList.Count > 0)
+                                {
+                                    foreach (GarronT.CMS.Model.BO.SkipRtuAttachmentModel obj1 in objAttachementList)
+                                    {
+                                        if (obj1.IsAudioVideoImage == 2)
+                                        {
+                                            String fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + obj1.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
 
                             <a target="_new" href="@fileName" class="btn btn-info pdf-video-btn">Video</a>
 
-        }
-        else if (obj1.IsAudioVideoImage == 1)
-        {
-            String fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + obj1.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
-                @*<audio controls  style="width:43px;">
-        <source src="@fileName" type="audio/mp4">
-        Your browser does not support the audio tag.
-    </audio>*@
+                                        }
+                                        else if (obj1.IsAudioVideoImage == 1)
+                                        {
+                                            String fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + obj1.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+                                                @*<audio controls  style="width:43px;">
+                                                <source src="@fileName" type="audio/mp4">
+                                                Your browser does not support the audio tag.
+                                                </audio>*@
                 <a target="_new" href="@fileName" class="btn btn-link">Audio</a>
-}
-}
-}
-                            }
+                                            }
+                                        }
+                                    }
+                                }
                         </td>
 
 

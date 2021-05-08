@@ -323,6 +323,10 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 bool e = obj.CreateOrUpdateMasterField(4, projectId, currentUserId, objMakeList, out result);
 
                 bool d = new UserRoleDAL().CreateOrUpdateMasterField(projectId, currentUserId, objInstallerList, out result);
+
+                // Add new 
+                bool f = obj.CreateOrUpdateMeterSizePayRete(5, projectId, currentUserId, objMeterSizeList, out result);
+
                 return Json(new { success = a, returnMessage = result }, JsonRequestBehavior.AllowGet);
 
             }
@@ -344,16 +348,19 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             IEnumerable<ServiceSmallModel> objList1 = new List<ServiceSmallModel>();
             IEnumerable<ServiceNotSelectedModel> objList2 = new List<ServiceNotSelectedModel>();
             //List<ProductServiceBo> objList3 = new List<ProductServiceBo>();
-
+            IEnumerable<MeterSizePayRateBo> objList4 = new List<MeterSizePayRateBo>();
+            
             using (ProjectMasterDAL obj = new ProjectMasterDAL())
             {
                 objList1 = obj.GetActiveServiceRecords(projectId);
                 objList2 = obj.GetInActiveServiceRecords(projectId);
                 // objList3 = obj.GetProductServiceList(projectId);
+                objList4 = obj.GetActiveMeterSizePayRates(projectId);
 
                 obj1.objList1 = objList1.ToList();
                 obj1.objList2 = objList2.ToList();
                 //obj1.objList3 = objList3;
+                obj1.objList4 = objList4.ToList();
                 return Json(obj1, JsonRequestBehavior.AllowGet);
             }
 
@@ -387,6 +394,32 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
         }
 
+        public JsonResult SaveTab3DataMeterPayRate(string Objdata)
+        {
+            IEnumerable<MeterSizePayRateBo> objList1 = new List<MeterSizePayRateBo>();
+            //public bool SaveTab3Records(long projectId, List<ServiceSmallModel> objList, int UserId)
+
+            JavaScriptSerializer s = new JavaScriptSerializer();
+            s.MaxJsonLength = 2147483644;
+            Tab3BOMeterPayRate objTab3BO = new Tab3BOMeterPayRate();
+            int userId = (int)new UserDetails().GetUserId(User.Identity.GetUserId());
+            try
+            {
+                objTab3BO = s.Deserialize<Tab3BOMeterPayRate>(Objdata);
+
+                using (ProjectMasterDAL obj = new ProjectMasterDAL())
+                {
+                    bool a1 = obj.SaveTab3MeterPayRateRecords(objTab3BO, userId);
+                    return Json(new { success = a1 }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+
+
+        }
 
         [HttpGet]
         public JsonResult GetPictureList(long ServiceId)
@@ -642,19 +675,22 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         success = new ProjectMasterDAL().CreateOrUpdateExcelMappingData(objTblProjectExcelMapping, ProjectID,
                             objobjExcelSheetBOList, UserId, dt, out returnMessage, out dt1, out isLatlongCalucalted);
 
+                        List<String> mailto = new List<String>();
+                        mailto.Add("yogendra.rajpoot@snssystem.com");
+                        mailto.Add("deepak.yadav@snssystem.com");
+                        //new GarronT.CMS.Model.clsMail().SendMail(mailto, null, "Excel file uploaded successfully. <br /> Project Id : " + ProjectID + "<br /><br />Thanks and Regards,<br />Team CMS", "Excel file uploaded");
 
                         /// calculate the latitude
-
                         Task.Factory.StartNew(() =>
                         {
-                            //new CalculateLatLongController().CalculateNullLatLongbyProjectID(ProjectID);
-
+                            //new CalculateLatLongController().CalculateNullLatLongbyProjectID(ProjectID); // Old method
                             new CalculateLatLongController().GetLatLongForProject(ProjectID);
                         });
 
                         MSg = returnMessage;
-
-                        return Json(new { success = success, returnMessage = "Record Submitted Successfully.", filePath = fileName }, JsonRequestBehavior.AllowGet);
+                        //return Json(new { success = success, returnMessage = "Record Submitted Successfully. \n Processing in Background", filePath = fileName }, JsonRequestBehavior.AllowGet);
+                        return Json(new { success = success, returnMessage = "File Uploaded Successfully Processing in Background", filePath = fileName }, JsonRequestBehavior.AllowGet);
+                        
                     }
 
                 }

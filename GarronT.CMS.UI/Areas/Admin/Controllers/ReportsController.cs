@@ -424,8 +424,9 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 if (result)
                 {
                     List<STP_GetReportTableNew_bak_Result> demo1 = (List<STP_GetReportTableNew_bak_Result>)TempData["List"];
-                    TempData.Keep("List");  
-                    demo1 = demo1.OrderByDescending(a => a.Dates).ThenBy(a => a.Account).ToList();//demo1 = demo1.OrderBy(a => a.Dates).ToList();
+                    TempData.Keep("List");
+                    //demo1 = demo1.OrderByDescending(a => a.Dates).ThenBy(a => a.Account).ToList();//demo1 = demo1.OrderBy(a => a.Dates).ToList();
+                    demo1 = demo1.ToList();
                     var jsonResult = Json(new { status = true, demo1 = demo1 }, JsonRequestBehavior.AllowGet);
                     jsonResult.MaxJsonLength = int.MaxValue;
                     return jsonResult;
@@ -433,7 +434,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 else
                 {
                     List<STP_GetReportTableNew_bak_Result> demo1 = (List<STP_GetReportTableNew_bak_Result>)TempData["List"];
-                    demo1.OrderByDescending(a => a.Dates);
+                    //demo1.OrderByDescending(a => a.Dates);
+                    demo1.ToList();
                     var jsonResult = Json(new { status = true, demo1 = demo1 }, JsonRequestBehavior.AllowGet);
                     jsonResult.MaxJsonLength = int.MaxValue;
                     return jsonResult;
@@ -713,7 +715,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 }
                 // TempData["List"] = demo;
                 //   list.AddRange(list);
-                TempData["List"] = demo1.OrderByDescending(o => o.Dates).ThenBy(o => o.Account).ToList();
+                //TempData["List"] = demo1.OrderByDescending(o => o.Dates).ThenBy(o => o.Account).ToList();
+                TempData["List"] = demo1.ToList();
                 TempData.Keep("List");
                 return true;
 

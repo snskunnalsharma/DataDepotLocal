@@ -20,6 +20,7 @@ namespace GarronT.CMS.Model
             this.ProjectWarehouseRelations = new HashSet<ProjectWarehouseRelation>();
             this.StockDetails = new HashSet<StockDetail>();
             this.TblAlertMasters = new HashSet<TblAlertMaster>();
+            this.tblMeterPays = new HashSet<tblMeterPay>();
         }
     
         public long ProjectId { get; set; }
@@ -51,5 +52,6 @@ namespace GarronT.CMS.Model
         public virtual ICollection<ProjectWarehouseRelation> ProjectWarehouseRelations { get; set; }
         public virtual ICollection<StockDetail> StockDetails { get; set; }
         public virtual ICollection<TblAlertMaster> TblAlertMasters { get; set; }
+        public virtual ICollection<tblMeterPay> tblMeterPays { get; set; }
     }
 }

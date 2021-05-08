@@ -939,13 +939,19 @@ namespace GarronT.CMS.Model.DAL
                     foreach (var sr in stockdetailAllRecord)    // sr=serial number
                     {
                         var OutwardDetailsAllRecord = dbcontext.OutwardDetails.Where(a => a.FKStockDetailsID == sr.Id);
-                        /*foreach (var odr in OutwardDetailsAllRecord)    // odr=outword details records
+                        foreach (var odr in OutwardDetailsAllRecord)    // odr=outword details records
                         {
                             var tblProjectFieldDataInventoryOutwardDetails = dbcontext.tblProjectFieldDataInventoryOutwardDetails.Where(a => a.FKOutwardDetailsId == odr.Id);
                             dbcontext.tblProjectFieldDataInventoryOutwardDetails.RemoveRange(tblProjectFieldDataInventoryOutwardDetails);
                             var tblProjectFieldDataInventoryDetails = dbcontext.tblProjectFieldDataInventoryDetails.Where(a => a.SerialNumber == stockdetailRecord.SerialNumber);
                             dbcontext.tblProjectFieldDataInventoryDetails.RemoveRange(tblProjectFieldDataInventoryDetails);
-                        }*/
+                            /*var tblProjectFieldDataMaster = dbcontext.tblProjectFieldDataMasters.Where(a => a.FieldValue == stockdetailRecord.SerialNumber && a.Active != 1);
+                            foreach (var pfdm in tblProjectFieldDataMaster)
+                            {
+                                var deleteRec_tblProjectFieldDataMaster= dbcontext.tblProjectFieldDataMasters.Where(a => a.TblProjectFieldData_Id == pfdm.TblProjectFieldData_Id && a.Active != 1);
+                                dbcontext.tblProjectFieldDataMasters.RemoveRange(deleteRec_tblProjectFieldDataMaster);
+                            }*/
+                        }
                         dbcontext.OutwardDetails.RemoveRange(OutwardDetailsAllRecord);
                     }
                     dbcontext.StockDetails.RemoveRange(stockdetailAllRecord);

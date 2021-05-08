@@ -4,7 +4,6 @@
     <tr>
 
         <th>
-
             @Html.DisplayNameFor(model => model.productName)
         </th>
         <th>
@@ -46,18 +45,19 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Quantity)
                 </td>
+
                 <td>
                     <a id="@item.productId" name="@item.Quantity" title="Edit" onclick="EditProductService(this,@item.ProjectServiceId)" class='btn btn-primary btnEditProductService' data-backdrop='static' href='#'><i class='fa fa-edit'></i></a>
                     <a id="@item.productId" name="@item.Quantity" title="Delete" onclick="DeleteProductService(@item.ProjectServiceId)" class='btn btn-danger btnDeleteProductService' data-backdrop='static' href='#'><i class='fa fa-trash-o'></i></a>
                 </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr >
+                <td colspan="8" style="text-align:center">No records</td>
             </tr>
         }
-    }
-    else
-    {
-        <tr >
-            <td colspan="6" style="text-align:center">No records</td>
-        </tr>
-    }
 
-</table>
+    </table>

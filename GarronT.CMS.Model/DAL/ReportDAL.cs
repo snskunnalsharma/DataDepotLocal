@@ -158,6 +158,11 @@ namespace GarronT.CMS.Model.DAL
                 reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
+                    string orderingList = reader["DateTimeOrdering"].ToString();
+                    if (orderingList == "" || orderingList == null)
+                    {
+                        orderingList = "0";
+                    }
                     //Route = reader["Route"].ToString(), Cycle = reader["Cycle"].ToString() 
                     list.Add(new STP_GetReportTableNew_bak_Result
                     {
@@ -193,7 +198,8 @@ namespace GarronT.CMS.Model.DAL
                         // SkipRtuAttachmentModel = Convert.ToString(reader["SkipRtuAttachmentModel"]),
                         Street = Convert.ToString(reader["Street"]),
                         ToDate = !string.IsNullOrEmpty(Convert.ToString(reader["ToDate"])) ? DateTime.Parse(reader["ToDate"].ToString()) : dt1,
-                        AuditStaus = int.Parse(Convert.ToString(reader["AuditStaus"]))
+                        AuditStaus = int.Parse(Convert.ToString(reader["AuditStaus"])),
+                        DateTimeOrdering =  long.Parse(orderingList)
 
                     });
                 }
@@ -204,16 +210,8 @@ namespace GarronT.CMS.Model.DAL
                 cmd.Dispose();
                 sqlConnection1.Dispose();
 
-
-                //if (fromDate == null && Todate == null)
-                //{
-                //    list = CompassEntities.STP_GetReportTableNew_bak(ProjectId, null, null, null, null, null).OrderByDescending(o => o.Dates).ToList();
-                //}
-                //else
-                //{
-                //    list = CompassEntities.STP_GetReportTableNew_bak(ProjectId, fromDate.Value.Date, Todate.Value.Date, null, null, null).OrderByDescending(o => o.Dates).ToList();
-                //}
-                return list.OrderBy(o => o.Dates).ThenBy(o => o.Account).ToList();
+                //return list.OrderBy(o => o.Dates).ThenBy(o => o.Account).ToList();
+                return list.OrderBy(o=>o.DateTimeOrdering).ToList();
             }
             catch (Exception ex)
             {

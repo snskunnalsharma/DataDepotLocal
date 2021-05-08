@@ -36,10 +36,15 @@ using System.Globalization;
 
 namespace GarronT.CMS.UI.Areas.Admin.Controllers
 {
-    // this page create by Deepak date 28 sep 2020
+    [OutputCache(Duration = 0, VaryByParam = "none")]
+    [SessionExpire]
+    [Authorize]
+    [RBAC]
     public class ClockTimeReportController : Controller
     {
-        
+        #region Create Object ILog for Logger write
+        private static readonly ILog log = LogManager.GetLogger(typeof(CMS_MobileService));
+        #endregion
         // GET: Admin/ClockTimeReport
         public ActionResult Index()
         {
@@ -89,24 +94,14 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         {
             try
             {
-                if (TempData["List"] == null)
-                {
-                    var jsonResult = Json(JsonRequestBehavior.AllowGet);
-                    jsonResult.MaxJsonLength = int.MaxValue;
-                    return jsonResult;
-                }
-                else
-                {
-                    var list = TempData["List"];
-                    TempData.Keep("List");
-
-                    TempData["isbackFromEdit"] = null;
-
-                    TempData.Keep("isbackFromEdit");
-                    var jsonResult = Json(list, JsonRequestBehavior.AllowGet);
-                    jsonResult.MaxJsonLength = int.MaxValue;
-                    return jsonResult;
-                }
+                List<Get_CTR_New> objGet_CTR = new List<Get_CTR_New>();
+                objGet_CTR = null;
+                int objTotalInstalledMeterInWeek = 0;
+                decimal objTotalWorkingHoursInWeek = 0.00m;
+                decimal objAvrPerHours = 0m;
+                var jsonResult = Json(new { status = true, demo1 = objGet_CTR, TotalInstalledMeterInWeek = objTotalInstalledMeterInWeek, TotalWorkingHoursInWeek = objTotalWorkingHoursInWeek, AvrPerHours = objAvrPerHours }, JsonRequestBehavior.AllowGet);
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
             }
             catch (Exception ex)
             {
@@ -115,15 +110,18 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
         }
 
-        // Get installer name list
+        // Get installer Active project list
         [HttpGet]
-        public JsonResult GetInstallerList()
+        public ActionResult GetProject()
         {
             try
             {
-                List<UsersSmallModel> InstallerList = new List<UsersSmallModel>();
-                InstallerList = new ReportDAL().GetAllInstallerList();
-                return Json(InstallerList, JsonRequestBehavior.AllowGet);
+                ProjectMasterDAL projectMasterDAL = new ProjectMasterDAL();
+                IEnumerable<ProjectModel> data = (from a in projectMasterDAL.GetProjectName()
+                                                  orderby a.ProjectName
+                                                  select a).Distinct<ProjectModel>();
+                var checkAdmin = Session["CurrentUserIsAdmin"].ToString();
+                return base.Json(data, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
@@ -131,14 +129,49 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 throw ex;
             }
         }
-        //
 
-        // Add this method By Deepak 15 Oct 2020
+
+        public JsonResult GetInstallerList(long ProjectID)
+        {
+            List<UsersSmallModel> obj1 = new List<UsersSmallModel>();
+            if (ProjectID > 0)
+            {
+                using (UserRoleDAL obj = new UserRoleDAL())
+                {
+                    obj1 = obj.GeInstallerListCurrentProject(ProjectID).OrderBy(a => a.UserName).ToList();
+                }
+            }
+
+            return Json(obj1, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetYearList(long ProjectID)
+        {
+            #region get year list from start project to till current date fill the dropdown in OrderByDescending
+            CompassEntities objCompassEntities = new CompassEntities();
+            List<YearsListModel> obj = new List<YearsListModel>();
+            var projectDetail = objCompassEntities.tblProjects.Where(o => o.ProjectId == ProjectID).FirstOrDefault();
+            var projectStartYear =Convert.ToDateTime(projectDetail.FromDate);
+            var currentYear = DateTime.Now;
+            for (var i = projectStartYear.Year; i <= currentYear.Year; i++)
+            {
+                obj.Add(new YearsListModel
+                {
+                    YearId = i,
+                    YearName = Convert.ToString(i)
+                });
+            }
+            var list= obj.OrderByDescending(o => o.YearId).ToList();
+            return base.Json(list, JsonRequestBehavior.AllowGet);
+            #endregion
+        }
+
         [HttpGet]
-        public JsonResult GetWeekDayRangeList(int _year, int _month)
+        public JsonResult GetWeekDayRangeList_old(int _year, int _month)
         {
             try
             {
+                log.Info("GetWeekDayRangeList Started at - " + DateTime.Now.ToString());
                 //DateTime reference = DateTime.Now;
                 Calendar calendar = CultureInfo.CurrentCulture.Calendar;
                 //IEnumerable<int> daysInMonth = Enumerable.Range(1, calendar.GetDaysInMonth(reference.Year, reference.Month));
@@ -164,30 +197,107 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-
-                throw ex;
+                log.Info("Error at for this Method GetWeekDayRangeList - " + DateTime.Now.ToString() + " -" + ex.Message);
+                return null;
             }
         }
 
-        // Add this method By Deepak 17 Oct 2020
-        public ActionResult GetUserTimeClockReport(int _installer,string _WeekRangeDate)
+        public JsonResult GetWeekDayRangeList(int _year, long ProjectID)
         {
             try
             {
-                List<Get_CTR> objGet_CTR = new List<Get_CTR>(); // CTR = Clock Time Report
-                objGet_CTR = new ClockTimeReportDAL().GetFormList(_installer, _WeekRangeDate);
-                var jsonResult = Json(new { status = true, demo1 = objGet_CTR }, JsonRequestBehavior.AllowGet);
-                jsonResult.MaxJsonLength = int.MaxValue;
-                return jsonResult;
-                //return Json(objGet_CTR, JsonRequestBehavior.AllowGet);
+                log.Info("GetWeekDayRangeList Started at - " + DateTime.Now.ToString());
+
+                CompassEntities objCompassEntities = new CompassEntities();
+                var projectDetail = objCompassEntities.tblProjects.Where(o => o.ProjectId == ProjectID).FirstOrDefault();
+                var projectStartDate = Convert.ToDateTime(projectDetail.FromDate);
+
+                var jan1 = new DateTime(_year, 1, 1);
+                var startOfFirstWeek = jan1.AddDays(1 - (int)(jan1.DayOfWeek));
+                var week =
+                    Enumerable
+                        .Range(0, 54)
+                        .Select(i => new {
+                            weekStart = startOfFirstWeek.AddDays(i * 7)
+                        })
+                        .TakeWhile(x => x.weekStart.Year <= jan1.Year)
+                        .Select(x => new {
+                            x.weekStart,
+                            weekFinish = x.weekStart.AddDays(6)
+                        })
+                        .SkipWhile(x => x.weekFinish < jan1.AddDays(1))
+                        .Select((x, i) => new {
+                            x.weekStart,
+                            x.weekFinish,
+                            weekNum = i + 1
+                        });
+
+                List<Tuple<DateTime, DateTime, int>> weeksrangedate = week.Select(g => new Tuple<DateTime, DateTime,int>(g.weekStart, g.weekFinish,g.weekNum)).ToList();
+                List<WeeksModel> objWeeksModel = new List<WeeksModel>();
+                if (weeksrangedate != null)
+                {
+                    objWeeksModel = new ClockTimeReportDAL().GetWeekRangeDateCollection_new(weeksrangedate, projectStartDate);
+                }
+                return Json(objWeeksModel, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
-
-                throw ex;
+                log.Info("Error at for this Method GetWeekDayRangeList - " + DateTime.Now.ToString() + " -" + ex.Message);
+                return null;
             }
         }
-       
+
+        public ActionResult GetUserTimeClockReport(long _ProjectID, int _installer, string _WeekRangeDate)
+        {
+            List<Model_FinalResult> finalResult = new List<Model_FinalResult>();
+            List<Get_CTR_New> objGet_CTR = new List<Get_CTR_New>();
+            try
+            {
+                log.Info("GetUserTimeClockReport Started at - " + DateTime.Now.ToString());
+                finalResult = new List<Model_FinalResult>();
+                finalResult = new ClockTimeReportDAL().GetInstallerTotalWorkedTime(_ProjectID, _installer, _WeekRangeDate);
+                var objList = finalResult.Select(o => o._GetCTR).ToList();
+                int objTotalInstalledMeterInWeek = 0;
+                decimal objTotalWorkingHoursInWeek = 0.00m;
+                decimal objAvrPerHours = 0m;
+                string objfilePath = string.Empty;
+                foreach (var item in finalResult)
+                {
+                    objTotalInstalledMeterInWeek = item.TotalInstalledMeterInWeek;
+                    objTotalWorkingHoursInWeek = item.TotalWorkingHoursInWeek;
+                    objAvrPerHours = item.AvgPerHours;
+                    objfilePath = item.filePath;
+                }
+                foreach (var item in objList)
+                {
+                    foreach (var i in item) 
+                    {
+                        objGet_CTR.Add(new Get_CTR_New
+                        {
+                            Description = i.Description,
+                            Monday = i.Monday,
+                            Tuesday = i.Tuesday,
+                            Wednesday = i.Wednesday,
+                            Thursday = i.Thursday,
+                            Friday = i.Friday,
+                            Saturday = i.Saturday,
+                            TotalWorkInWeek = i.TotalWorkInWeek,
+                            Pay = i.Pay,
+                            Total = i.Total
+                        });
+                    }
+                }
+                var jsonResult = Json(new { status = true, demo1 = objGet_CTR, TotalInstalledMeterInWeek = objTotalInstalledMeterInWeek, TotalWorkingHoursInWeek = objTotalWorkingHoursInWeek, AvrPerHours = "$ " + objAvrPerHours, filePath= objfilePath }, JsonRequestBehavior.AllowGet);
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
+            }
+            catch (Exception ex)
+            {
+                log.Info("Error at for this Method GetUserTimeClockReport - " + DateTime.Now.ToString() + " -" + ex.Message);
+                objGet_CTR = null;
+                return Json(new { status = false, demo1 = objGet_CTR }, JsonRequestBehavior.AllowGet);
+            }
+        }
     }
 
 }

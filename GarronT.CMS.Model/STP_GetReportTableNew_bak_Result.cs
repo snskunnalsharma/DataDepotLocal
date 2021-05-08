@@ -42,6 +42,7 @@ namespace GarronT.CMS.Model
         public string SkipComment { get; set; }
         public string ShortComment { get; set; }
         public string ProjectStatus { get; set; }
+        public long DateTimeOrdering { get; set; }
     }
 
     public class AccountSummaryReportModel
@@ -60,7 +61,7 @@ namespace GarronT.CMS.Model
         public int RTU { get; set; }
         public int SKIP { get; set; }
         public int NOT_ALLOCATED { get; set; }
-        public List<SummaryDetail> SummaryDetail {get;set;}
+        public List<SummaryDetail> SummaryDetail { get; set; }
     }
 
     public class SummaryDetail

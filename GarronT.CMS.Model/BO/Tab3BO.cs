@@ -19,4 +19,16 @@ namespace GarronT.CMS.Model.BO
         public string imageCaptureRequired { get; set; }
         public long[] AssignedProductList { get; set; }
     }
+
+    public class Tab3BOMeterPayRate
+    {
+        public long projectId { get; set; }
+        public List<PayRateBO> newMeterPayRate { get; set; }
+    }
+
+    public class PayRateBO
+    {
+        public long Id { get; set; }
+        public decimal Pay { get; set; }
+    }
 }

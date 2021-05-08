@@ -15,6 +15,7 @@
 @Html.Hidden("GetTab2CurrentUrl", Url.Action("GetTab2CurrentListsForProject", "Project"))
 @Html.Hidden("SaveTab2Url", Url.Action("SaveTab2Data", "Project"))
 @Html.Hidden("SaveTab3Url", Url.Action("SaveTab3Data", "Project"))
+@Html.Hidden("SaveTab3UrlMeterPayRate", Url.Action("SaveTab3DataMeterPayRate", "Project"))
 @Html.Hidden("GetTab4Url", Url.Action("GetTab4Data", "Project"))
 @Html.Hidden("SaveTab4Url", Url.Action("SaveTab4Data", "Project"))
 @Html.Hidden("GetTab3Url", Url.Action("GetTab3Data", "Project"))
@@ -420,7 +421,6 @@
 
         .conct_btn {
         }
-
         /*.conct_label {
                 padding-left: 6%;
             }
@@ -854,7 +854,6 @@
             border: 1px solid #d5d5da;
             left: 0;
         }
-
         /* 3 Step Project*/
         .has-switch span {
             width: 49%;
@@ -1640,7 +1639,6 @@
 
         .open > .dropdown-menu {
             width: 98% !important;
-           
         }
 
         .multiselect-container {
@@ -6521,14 +6519,16 @@
     .multiselect {
         width: 98% !important;
     }
-    .Warehouse-div .chosen-drop {    
-    margin-bottom: 15%;
-}
+
+    .Warehouse-div .chosen-drop {
+        margin-bottom: 15%;
+    }
+
     .Warehouse-div .chosen-results {
-    max-height: 10em !important;
-    margin-bottom: 5%;
-    overflow:auto;
-}
+        max-height: 10em !important;
+        margin-bottom: 5%;
+        overflow: auto;
+    }
 </style>
 <div id="loading">
     <div id="loadingcontent">
@@ -6917,6 +6917,19 @@
                                         <div class="task-content col-md-offset-1">
                                             <br>
                                             <ul class="task-list" id="ulAdditionalServicePrice"></ul>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="col-lg-12 col-sm-12 col-xs-12 " style="padding-left: 5%; background-color: #64b5f6"><b>Add Meter Pay Rate</b></div>
+                            <div class="col-xs-12 ">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <div class="task-content col-md-offset-1">
+                                            <br>
+                                            <ul class="task-list" id="ulMeterSizesPayRates"></ul>
                                         </div>
                                     </div>
 

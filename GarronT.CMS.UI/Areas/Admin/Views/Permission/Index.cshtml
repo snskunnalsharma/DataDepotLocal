@@ -178,7 +178,7 @@
                                                     string[] str4 = { "Warehouse Master", "Category Master", "Product Master", "Inventory Upload", "Inventory Receive", "Inventory View", "View Stock Request" };
                                                     string[] str5 = { "Alert Master", "Audit", "Customer", "Project", "Installer Allocation", "Appointment" };
                                                     string[] str6 = { "Form Management" };
-                                                    string[] str7 = { "Duplicate Report", "Export Report", "Installer Report", "Auditor Report", "Skip History Report" };
+                                                    string[] str7 = { "Time Clock Report", "Duplicate Report", "Export Report", "Installer Report", "Auditor Report", "Skip History Report" };
                                                     string[] str8 = { "Warehouse Stock Report", "Inventory Stock Report", "Product Movement Report" };
 
 
@@ -187,7 +187,8 @@
                                                     if (item.PermissionName == "Project Status" || item.PermissionName == "Dashboard" ||
                                                         item.PermissionName == "City Logo Master" || item.PermissionName == "Warehouse Master" ||
                                                         item.PermissionName == "Alert Master" || item.PermissionName == "Form Management" ||
-                                                        item.PermissionName == "Duplicate Report" || item.PermissionName == "Warehouse Stock Report")
+                                                        item.PermissionName == "Duplicate Report" || item.PermissionName == "Warehouse Stock Report"
+                                                         || item.PermissionName == "Time Clock Report")
                                                     {
                                                         var aMenuName = "";
                                                         if (item.PermissionName == "City Logo Master")
@@ -393,7 +394,7 @@
 
                                                                 if (item.PermissionName == "Project Status" || item.PermissionName == "Dashboard" ||
                                                                 item.PermissionName == "Inventory View" || item.PermissionName == "Inventory Stock Report" || item.PermissionName == "Duplicate Report" ||
-                                                                item.PermissionName == "Product Movement Report" || item.PermissionName == "Skip History Report")
+                                                                item.PermissionName == "Product Movement Report" || item.PermissionName == "Skip History Report" || item.PermissionName == "Time Clock Report")
                                                                 {
 
 

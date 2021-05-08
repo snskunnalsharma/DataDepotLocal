@@ -1016,6 +1016,8 @@ function getTab3Data() {
     mastDiv.empty();
     var mastAdditionalDiv = $('#ulAdditionalServicePrice');
     mastAdditionalDiv.empty();
+    var mastMeterPayRateDiv = $('#ulMeterSizesPayRates');
+    mastMeterPayRateDiv.empty();
     var result = '<li class="row" style="margin-top: -12px; margin-bottom: -10px;" > <div class="task-title"> <span class="task-title-sp col-lg-2 col-sm-3 col-xs-3 show_deactive" style="font-weight:700">Service Name</span>' +
         '<span class="task-title-sp col-lg-2 col-sm-3 col-xs-2" style="font-weight:700; ">Rate For Service ($)</span> ' +
         '<span class="task-title-sp1 col-lg-2 col-sm-3 col-xs-3" style="font-weight:700;padding-left: 34px;">Service Images</span>' +
@@ -1027,6 +1029,9 @@ function getTab3Data() {
         '<span class="task-title-sp1 col-lg-2 col-sm-3 col-xs-3" style="font-weight:700;padding-left:34px;">Service Images</span>' +
         '<span class="task-title-sp2 col-lg-2 col-sm-3 col-xs-3" style="font-weight:700;padding-left:34px;">Images Required</span>' +
         '<span class="task-title-sp2 col-lg-3 col-sm-3 col-xs-3 btnAddProduct" style="font-weight:700;">Products Required</span></div></li><br>';
+
+    var result2 = '<li class="row" style="margin-top: -12px; margin-bottom: -10px;" > <div class="task-title"> <span class="task-title-sp col-lg-2 col-sm-3 col-xs-3 show_deactive" style="font-weight:700">Meter Size</span>' +
+        '<span class="task-title-sp col-lg-2 col-sm-3 col-xs-2" style="font-weight:700">Meter Pay Rate ($)</span></div></li><br>';
     $.ajax({
         cache: false,
         type: "GET",
@@ -1159,13 +1164,27 @@ function getTab3Data() {
 
             });
 
+            $.each(data.objList4, function (id, ServiceSmallModel) {
+                result2 = result2 + ' <li class="row" style="margin-bottom: 5px;"> <div class="task-content">';
+                result2 = result2 + ' <div class="col-lg-2 col-sm-3 col-xs-3 show_deactive"><span>' + ServiceSmallModel.MeterSize + '</span></div>';
+                result2 = result2 + '<div class="col-lg-2 col-sm-3 col-xs-3">' +
+                    '<input maxlength="20" id="' + ServiceSmallModel.Id + '" type="text" placeholder="Enter Meter Pay Rate" value="' +
+                    ServiceSmallModel.Pay + '"' +
+                    'style="width:100%; text-align:right; padding-right:10px;" class="tab4txt allownumericwithdecimal"  />' +
+                    '</div>';
+                
+                result2 = result2 + ' </div>';
+                result2 = result2 + ' <div class="col-lg-3 col-sm-3 col-xs-3 regProduct" style="">';
+                //result2 = result2 + '<input type="button" class="btn btn-success btnAddMeterPayRate" name="' + ServiceSmallModel.Id + '" id="btnAddMeterPayRates" value="Save" >';
+                result2 = result2 + '</div></div>  </li>';
+            });
+
             mastDiv.append(result);
             mastAdditionalDiv.append(result1);
-
+            mastMeterPayRateDiv.append(result2);
             ShowHideAddProductButton()
             //debugger;;
             $("[data-toggle='switch']").wrap('<div class="switch" />').parent().bootstrapSwitch()
-
 
 
             if (Servicelist != null && Servicelist.length > 0) {
@@ -1189,6 +1208,13 @@ function getTab3Data() {
                 if (ServiceNotSelectedModel.productArray != undefined && ServiceNotSelectedModel.productArray.length > 0) {
                     $("#ddlService" + ServiceNotSelectedModel.ServiceId).val(ServiceNotSelectedModel.productArray);
                     $("#ddlService" + ServiceNotSelectedModel.ServiceId).multiselect("refresh");
+                }
+            });
+
+            $.each(data.objList4, function (id, ServiceSmallModel) {
+                if (ServiceSmallModel.MeterPayRateArray != undefined && ServiceSmallModel.MeterPayRateArray.length > 0) {
+                    $("#ddlService" + ServiceSmallModel.Id).val(ServiceSmallModel.MeterPayRateArray);
+                    $("#ddlService" + ServiceSmallModel.Id).multiselect("refresh");
                 }
             });
 
@@ -1265,10 +1291,9 @@ $(document).on('change', '.checkalphanumeric', function (e) {
 
 
 function checkTab3Status() {
-    //debugger;;
+    debugger;
 
     var data1 = [];
-
 
     var checkVal = false;
     var serviceName = ''
@@ -1312,15 +1337,81 @@ function checkTab3Status() {
 
     waitingDialog.show('Please Wait...');
 
-    //debugger;;
+    debugger;
 
-    var data0 = { projectId: $("#txtProjectId").val(), Servicedata: data1 };
+    var data0 = { projectId: $("#txtProjectId").val(), Servicedata: data1};
 
     var json = JSON.stringify(data0);
 
 
     jQuery.ajaxSettings.traditional = true;
     var urlSaveTab3Data = $('#SaveTab3Url').val();
+    $.ajax({
+        url: urlSaveTab3Data,
+        type: "GET",
+        // async: false,
+        data: {
+            "Objdata": json
+        },
+        success: function (data) {
+            if (data.success == true) {
+                //debugger;;
+                nextStepWizard.removeAttr('disabled').trigger('click');
+                saveMetePayRates(); // Add new line
+                getTab4Data();
+
+            } else {
+                return false;
+            }
+        },
+        error: function () {
+            var $toast = toastr["error"]("something seems wrong", "Error Notification");
+            return false;
+        }
+    });
+
+}
+
+function saveMetePayRates() {
+    debugger;
+
+    var data2 = [];
+
+    var checkVal = false;
+    var serviceName = ''
+
+    $(".tab4txt").each(function () {
+
+        if ($.isNumeric($(this).val())) {
+            var Object = { Id: $(this)[0].id, Pay: $(this).val() };
+            data2.push(Object);
+        }
+        else {
+            checkVal = true;
+            serviceName = $(this)[0].id.text;
+        }
+
+    });
+
+    if (checkVal) {
+        var $toast = toastr["error"]('Please enter valid rate for all pay rates.', 'Notification !');
+        $(this).focus();
+        return;
+    }
+
+
+
+    waitingDialog.show('Please Wait...');
+
+    debugger;;
+
+    var data0 = { projectId: $("#txtProjectId").val(), newMeterPayRate: data2 };
+
+    var json = JSON.stringify(data0);
+
+
+    jQuery.ajaxSettings.traditional = true;
+    var urlSaveTab3Data = $('#SaveTab3UrlMeterPayRate').val();
     $.ajax({
         url: urlSaveTab3Data,
         type: "GET",
@@ -1344,10 +1435,7 @@ function checkTab3Status() {
             return false;
         }
     });
-
 }
-
-
 
 function getTab4Data() {
     //debugger;;
@@ -2064,7 +2152,7 @@ function GetServiceProduct(serviceid) {
 
 
 $('#btnSaveServiceProduct').click(function () {
-
+    debugger;
     var productid = $('#ddlProductList').val();
     var quantity = $('#txtQuantity').val();
 
@@ -2077,6 +2165,7 @@ $('#btnSaveServiceProduct').click(function () {
         var $toast = toastr["error"]("Please, enter quantity", "Notification");
         return;
     }
+    
     saveServiceProduct()
 })
 var productAddEdit = "";
@@ -2113,8 +2202,10 @@ function saveServiceProduct() {
         success: function (data) {
             waitingDialog.hide();
             //debugger;;
-            ResetServiceProduct()
+            ResetServiceProduct();
+            checkTab2Status();      // Add product time relation table get data meter pay rate Recall this method
             $("#tblServiceProduct").html(data)
+            
 
         },
         error: function () {
@@ -2134,6 +2225,7 @@ function EditProductService(element, pServiceId) {
     var projectId = $(element).attr("id");
     var quantity = $(element).attr("name");
     var serviceid = pServiceId;
+
     productAddEdit = "Edit";
 
 
@@ -2141,6 +2233,7 @@ function EditProductService(element, pServiceId) {
 
     $('#ddlProductList').val(projectId).attr("selected", "selected").trigger('chosen:updated');
     $('#txtQuantity').val(quantity);
+
     $('#hndProjectServiceId').val(serviceid);
     if (isSerialRequired == "True") {
         isSerialProduct = true;
@@ -2154,7 +2247,7 @@ function EditProductService(element, pServiceId) {
 }
 
 function DeleteProductService(pServiceId) {
-    //debugger;;
+    debugger;
     $.confirm({
         icon: 'fa fa-warning',
         columnClass: 'col-md-6 col-md-offset-3',
@@ -2184,7 +2277,7 @@ function DeleteProductService(pServiceId) {
 
 
 function DeleteProductFromList(pServiceId) {
-    //debugger;;
+    debugger;
     waitingDialog.show('Please Wait...');
     var UrlDeleteServiceProduct = $('#UrlDeleteServiceProduct').val();
     var projectId = $('#txtProjectId').val();
@@ -2196,7 +2289,9 @@ function DeleteProductFromList(pServiceId) {
         success: function (data) {
             waitingDialog.hide();
 
-            ResetServiceProduct()
+            ResetServiceProduct();
+
+            checkTab2Status();      // Add product time relation table get data meter pay rate Recall this method
 
             $("#tblServiceProduct").html("");
             $("#tblServiceProduct").html(data)
@@ -2212,7 +2307,7 @@ function DeleteProductFromList(pServiceId) {
 
 $('#btnResetServiceProduct').click(function () {
 
-    ResetServiceProduct()
+    ResetServiceProduct();
 })
 function ResetServiceProduct() {
     $("#btnSaveServiceProduct").text("Add")

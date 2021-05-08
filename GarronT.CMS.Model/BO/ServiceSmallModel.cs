@@ -71,6 +71,7 @@ namespace GarronT.CMS.Model.BO
         public List<ServiceSmallModel> objList1 { get; set; }
         public List<ServiceNotSelectedModel> objList2 { get; set; }
         public List<ProductServiceBo> objList3 { get; set; }
+        public List<MeterSizePayRateBo> objList4 { get; set; }
     }
 
     public class ProductServiceBo
@@ -84,9 +85,35 @@ namespace GarronT.CMS.Model.BO
         public string Size { get; set; }
         public string UtilityName { get; set; }
         public bool SerialNumberRequired { get; set; }
-         public int Quantity { get; set; }
+        public int Quantity { get; set; }
     }
 
+    // Add new 
+    public class MeterSizePayRateBo : IDisposable
+    {
 
+        bool disposed;
+        protected virtual void Dispose(bool disposing)
+        {
+            disposed = true;
+        }
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        public long Id { get; set; }
+        public string MeterSize { get; set; }
+        public string Pay { get; set; }
+        public long[] MeterPayRateArray { get; set; }
+    }
+
+    public class Meterpayratedetail
+    {
+        public long MeterSizeId { get; set; }
+        public string MeterSize { get; set; }
+        public long MeterTypeId { get; set; }
+        public string MeterType { get; set; }
+    }
 
 }

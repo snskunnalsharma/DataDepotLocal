@@ -1,13 +1,14 @@
-﻿@*this page create by Deepak date 28 sep 2020*@
-@{
+﻿@{
     ViewBag.Title = "Clock Time Report";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 @Html.Hidden("UrlgetListDetailsOnBack", Url.Action("getListDetailsOnBack", "ClockTimeReport"))
+@Html.Hidden("urlGetProject", Url.Action("GetProject", "ClockTimeReport"))
 @Html.Hidden("UrlReportsList", Url.Action("GetReportsList", "ClockTimeReport"))
 @Html.Hidden("UrlGetInstallerList", Url.Action("GetInstallerList", "ClockTimeReport"))
 @Html.Hidden("UrlGetWeekDayRangeList", Url.Action("GetWeekDayRangeList", "ClockTimeReport"))
 @Html.Hidden("UrlGetUserTimeClockReport", Url.Action("GetUserTimeClockReport", "ClockTimeReport"))
+@Html.Hidden("UrlYearList", Url.Action("GetYearList", "ClockTimeReport"))
 
 <script>
     var slideIndex = 1;
@@ -2665,7 +2666,7 @@
     <section class="wrapper ">
         <section class="panel rep_panel">
             <header class="panel-heading rep_header " style="background: #80B2DF; color: #fff;">
-                Clock Time Report
+                Time Clock Report
                 <span class="tools pull-right">
                     <a id="haha" class="fa fa-chevron-down clickdive" href="javascript:;" style="color: #fff; padding-right:10px;"></a>
                 </span>
@@ -2676,93 +2677,23 @@
 
                     <div class="row mbot05">
                         <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6 col-xxs-12 mbot05  md-mbot1 md-nopaddingright  sm-mbot2 xs-mbot2 xxs-mbot2">
+                            <select data-placeholder="Select Project" name="ProjectName" id="ddlProject" class="form-control chosen-select"></select>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6 col-xs-6 col-xxs-12 mbot05  md-mbot1 md-nopaddingright  sm-mbot2 xs-mbot2 xxs-mbot2">
                             <select data-placeholder="Select Installer" name="InstallerName" id="InstallerName" class="form-control chosen-select"></select>
                         </div>
 
-                        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6 col-xxs-12 mbot05  md-mbot1 md-nopaddingright  sm-mbot2 xs-mbot2 xxs-mbot2">
+                        <div class="col-lg-2 col-md-4 col-sm-6 col-xs-6 col-xxs-12 mbot05  md-mbot1 md-nopaddingright  sm-mbot2 xs-mbot2 xxs-mbot2">
                             <select data-placeholder="Select Year" name="YearName" id="YearName" class="form-control chosen-select"></select>
                         </div>
 
-                        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6 col-xxs-12 mbot05  md-mbot1 md-nopaddingright  sm-mbot2 xs-mbot2 xxs-mbot2">
+                        <div class="col-lg-0 col-md-4 col-sm-6 col-xs-6 col-xxs-12 mbot05  md-mbot1 md-nopaddingright  sm-mbot2 xs-mbot2 xxs-mbot2" style="display:none">
                             <select data-placeholder="Select Month" name="MonthName" id="MonthName" class="form-control chosen-select"></select>
                         </div>
 
-                        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6 col-xxs-12 mbot05  md-mbot1 md-nopaddingright  sm-mbot2 xs-mbot2 xxs-mbot2">
+                        <div class="col-lg-5 col-md-4 col-sm-6 col-xs-6 col-xxs-12 mbot05  md-mbot1 md-nopaddingright  sm-mbot2 xs-mbot2 xxs-mbot2">
                             <select data-placeholder="Select Week Range" name="WeekName" id="WeekName" class="form-control chosen-select"></select>
                         </div>
-
-                        @*<div class="col-lg-3 col-md-4 col-sm-6 col-xs-6 col-xxs-12 lg-clear md-mbot1  md-nopaddingright  sm-mbot2 xs-mbot2 xs-clear xxs-mbot2">
-                                <div id="divroot">
-                                    <div id="divInstaller" class=" ">
-                                        <div class="chosen-container chosen-container-single " title="" id="ddlInstaller_chosen">
-                                            <a class="chosen-single chosen-default" id="ancInstaller_chosen" tabindex="-1"><span class="" id="InstallerHeader">Select Installer</span><div><b></b></div></a>
-                                            <div class="chosen-drop">
-                                                <div class="chosen-search"><input type="text" id="txtfilterallInstaller" class="txtfilterall" onkeyup="filterInstaller(this)" autocomplete="off"></div>
-                                                <div class="InstallerFilter row">
-                                                    <label style="margin-left: 7px;" class="col-lg-2">
-                                                        <input type="checkbox" style="zoom:1.2;" class="chbSelectAll" id="Installer_SelectAll" autocomplete="off" value=" "><span>Select All</span>
-                                                    </label>
-                                                </div>
-                                                <ul id="ulInstaller" class="chosen-results " style=""></ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6 col-xxs-12  md-mbot1  sm-mbot2  xs-mbot2 xxs-mbot2">
-                                <div id="divYear">
-                                    <div class="chosen-container chosen-container-single " title="" id="ddlYear_chosen">
-                                        <a class="chosen-single chosen-default" id="ancYear_chosen" tabindex="-1"><span class="" id="YearHeader">Select Year</span><div><b></b></div></a>
-                                        <div class="chosen-drop">
-                                            <div class="chosen-search"><input type="text" id="txtfilterallYear" class="txtfilterall" onkeyup="filterYear(this)" autocomplete="off"></div>
-                                            <div class="YearFilter row">
-                                                <label style="margin-left: 7px;" class="col-lg-2">
-                                                    <input type="checkbox" style="zoom:1.2;" class="chbSelectAll" id="Year_SelectAll" autocomplete="off" value=" "><span>Select All</span>
-                                                </label>
-
-                                            </div>
-                                            <ul id="ulYear" class="chosen-results " style=""></ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6 col-xxs-12 md-nopaddingright md-clear sm-clear  sm-mbot2 xs-mbot2 xxs-mbot2">
-                                <div id="divMonth">
-
-                                    <div class="chosen-container chosen-container-single " title="" id="ddlMonth_chosen">
-                                        <a class="chosen-single chosen-default" id="ancMonth_chosen" tabindex="-1"><span class="" id="MonthHeader">Select Month</span><div><b></b></div></a>
-                                        <div class="chosen-drop">
-                                            <div class="chosen-search"><input type="text" id="txtfilterallMonth" class="txtfilterall" onkeyup="filterMonth(this)" autocomplete="off"></div>
-                                            <div class="MonthFilter row">
-                                                <label style="margin-left: 7px;" class="col-lg-2">
-                                                    <input type="checkbox" style="zoom:1.2;" class="chbSelectAll" id="Month_SelectAll" autocomplete="off" value=" "><span>Select All</span>
-                                                </label>
-
-                                            </div>
-                                            <ul id="ulMonth" class="chosen-results " style=""></ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6 col-xxs-12 md-nopaddingright  sm-mbot2 xs-mbot2 xxs-mbot2">
-                                <div id="divWeek">
-                                    <div class="chosen-container chosen-container-single " title="" id="ddlWeek_chosen">
-                                        <a class="chosen-single chosen-default" id="ancWeek_chosen" tabindex="-1"><span class="" id="WeekHeader">Select Week</span><div><b></b></div></a>
-                                        <div class="chosen-drop">
-                                            <div class="chosen-search"><input type="text" id="txtfilterallWeek" class="txtfilterall" onkeyup="filterWeek(this)" autocomplete="off"></div>
-                                            <div class="WeekFilter row">
-                                                <label style="margin-left: 7px;" class="col-lg-2">
-                                                    <input type="checkbox" style="zoom:1.2;" class="chbSelectAll" id="Week_SelectAll" autocomplete="off" value=" "><span>Select All</span>
-                                                </label>
-                                            </div>
-                                            <ul id="ulWeek" class="chosen-results " style=""></ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>*@
 
                     </div>
 
@@ -2776,16 +2707,11 @@
                         <div class="col-lg-6 col-md-5 col-sm-6 col-xs-6 col-xxs-12 sm-mbot1 xs-mbot2 xxs-clear xxs-center xxs-mbot2">
                             <button id="btnSearch" class="btn btn-success" type="button">Search</button>
                             <button class="btn btn-danger" id="btnReset" type="button">Reset</button>
-                            @*<button id="btnExport" class="btn btn-success" type="button">Export</button>*@
+                            <button id="btnExport" class="btn btn-success" type="button">Export</button>
+                            <!--'<a href="http://localhost:6070/InventoryUpload/sampleMar-24-202103-28-06.pdf" title="PDF" target="_blank"><i class="fa fa-file-text"></i></a>';-->
+                            <span id="clockTimeReportFilePath" nam="clockTimeReportFilePath" style="display:none"></span>
+                            <br><br>
                         </div>
-
-
-                        @*<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 col-xxs-12 sm-clear xs-clear xxs-clear xs-right xxs-right dup-color-bootstrap" style="float:right;">
-                                <div class="form-group text-right">
-                                    <i class="fa fa-square-o fa-2x text-success"></i>&nbsp;
-                                    <span>Duplicate Report Indicator </span>
-                                </div>
-                            </div>*@
                     </div>
                 </form>
             </div>
@@ -2800,20 +2726,73 @@
                         <thead>
                             <tr>
                                 @*<th><input type="checkbox" name="select_all" value="1" id="example-select-all"></th>*@
-                                <th style="width:17%;text-align:center">Days/Dates</th>
-                                <th style="width:11%;text-align:center">Monday</th>
-                                <th style="width:11%;text-align:center">Tuesday</th>
-                                <th style="width:11%;text-align:center">Wednesday</th>
-                                <th style="width:11%;text-align:center">Thursday</th>
-                                <th style="width:11%;text-align:center">Friday</th>
-                                <th style="width:11%;text-align:center">Saturday</th>
-                                <th style="width:17%;text-align:center">WK Ending<br>Total Week Installs</th>
+                                <th style="width:17%;text-align:center">Days</th>
+                                <th style="width:9%;text-align:center">Monday</th>
+                                <th style="width:9%;text-align:center">Tuesday</th>
+                                <th style="width:9%;text-align:center">Wednesday</th>
+                                <th style="width:9%;text-align:center">Thursday</th>
+                                <th style="width:9%;text-align:center">Friday</th>
+                                <th style="width:9%;text-align:center">Saturday</th>
+                                <th style="width:9%;text-align:center">Ending<br>Weekly Total</th>
+                                <th style="width:10%;text-align:center"></th>
+                                <th style="width:10%;text-align:center"></th>
                             </tr>
                         </thead>
                     </table>
                 </div>
             </div>
         </section>
+        <br /><br />
+        <header class="panel-heading">
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 col-xxs-2 sm-mbot2 xs-mbot2 xxs-mbot2">
+                <b>
+                    TOTAL WO IN<br />DATA DEPOT
+                    <br />
+                    <b id="totalInstalledMeter" name="totalInstalledMeter" style="padding-left:8%;">-</b>
+                </b>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 col-xxs-2 sm-mbot2 xs-mbot2 xxs-mbot2">
+                <b>TOTAL<br />HOURS</b>
+                <br />
+                <b id="ttHoursInWeek" name="ttHoursInWeek" style="padding-left:1%;">-</b>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 col-xxs-2 sm-mbot2 xs-mbot2 xxs-mbot2">
+                <b>AVG PER<br />HOUR</b>
+                <br />
+                <b id="avgPerHours" name="avgPerHours" style="padding-left:1%;">-</b>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 col-xxs-2 sm-mbot2 xs-mbot2 xxs-mbot2">
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 col-xxs-3 sm-mbot3 xs-mbot3 xxs-mbot3">
+                <b>Contractor Signature</b>
+            </div>
+            <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1 col-xxs-1 sm-mbot1 xs-mbot1 xxs-mbot1">
+                <b id="fTodayDate" name="fTodayDate" style="padding-left:1%;">-</b>
+                <br />
+                <b>Date</b>
+            </div>
+        </header>
+        <br />
+        <br />
+        <br />
+        <header class="panel-heading">
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 col-xxs-2 sm-mbot2 xs-mbot2 xxs-mbot2">
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 col-xxs-2 sm-mbot2 xs-mbot2 xxs-mbot2">
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 col-xxs-2 sm-mbot2 xs-mbot2 xxs-mbot2">
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 col-xxs-2 sm-mbot2 xs-mbot2 xxs-mbot2">
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 col-xxs-3 sm-mbot3 xs-mbot3 xxs-mbot3">
+                <b>Project Manager Signature</b>
+            </div>
+            <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1 col-xxs-1 sm-mbot1 xs-mbot1 xxs-mbot1">
+                <b id="sTodayDate" name="sTodayDate" style="padding-left:1%;">-</b>
+                <br />
+                <b> Date</b>
+            </div>
+        </header>
     </section>
 </section>
 

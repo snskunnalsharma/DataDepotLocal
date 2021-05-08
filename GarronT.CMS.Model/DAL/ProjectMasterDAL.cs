@@ -598,12 +598,15 @@ namespace GarronT.CMS.Model.DAL
                     bool d = new UserRoleDAL().CreateOrUpdateMasterField(NewProjectId, currentUserId, objUsersSmallModelList, out result);
                 }
 
+                // add new  line
+                bool f = CreateOrUpdateMeterSizePayRete(5, NewProjectId, currentUserId, objMeterSizeList, out result);
 
                 /*Tab 3 Get & Save Methods*/
 
 
                 var objList1 = GetActiveServiceRecords(OldProjectId);
                 var objList2 = GetInActiveServiceRecords(OldProjectId);
+                //var objList4 = GetActiveMeterSizePayRates(OldProjectId);
 
                 Tab3BO objTab3BO = new Tab3BO();
                 objTab3BO.Servicedata = new List<ProjectServiceBO>();
@@ -1046,6 +1049,54 @@ namespace GarronT.CMS.Model.DAL
             }
         }
 
+        public List<MeterSizePayRateBo> GetActiveMeterSizePayRates(long projectId)
+        {
+            try
+            {
+
+                CompassEntities dbcontext = new CompassEntities();
+                SqlConnection sqlConnection1 = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
+                List<MeterSizePayRateBo> objMeterSizePayRateBo = new List<MeterSizePayRateBo>();
+                sqlConnection1.Open();
+                SqlCommand cnn = new SqlCommand("PROC_GetMeterSizeOrder", sqlConnection1);
+                cnn.Parameters.AddWithValue("@projectId", projectId);
+                cnn.CommandType = CommandType.StoredProcedure;
+                SqlDataAdapter sda = new SqlDataAdapter(cnn);
+                DataTable dt = new DataTable();
+                sda.Fill(dt);
+
+                if (dt.Rows.Count > 0)
+                {
+                    foreach (DataRow row in dt.Rows)
+                    {
+                        objMeterSizePayRateBo.Add(new MeterSizePayRateBo
+                        {
+                            Id = long.Parse(row["ID"].ToString()),
+                            MeterSize = row["MeterDisplayName"].ToString(),
+                            Pay = row["Pay"].ToString()
+                        });
+                    }
+                }
+                sqlConnection1.Close();
+                /*CompassEntities CompassEntities = new CompassEntities();
+                List<MeterSizePayRateBo> objMeterSizePayRateBo = CompassEntities.tblMeterPays.AsEnumerable().
+                    Where(o => o.Active == 1 && o.FK_Project_Id == projectId)
+                    .Select(o =>
+                        new MeterSizePayRateBo
+                        {
+                            Id = o.ID,
+                            MeterSize =o.MeterDisplayName,// CompassEntities.tblMeterSizes.Where(o1 => o1.ID == o.FK_MeterSize_Id).Select(o1 => o1.MeterSize).FirstOrDefault(),
+                            Pay = Convert.ToString(o.Pay)
+                        }).OrderBy(t => t.Id).ToList();*/
+                return objMeterSizePayRateBo;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
         public List<ProductServiceBo> GetProductServiceList(long projectId)
         {
             try
@@ -1209,6 +1260,37 @@ namespace GarronT.CMS.Model.DAL
             }
         }
 
+        public bool SaveTab3MeterPayRateRecords(Tab3BOMeterPayRate objTab3BOPayRate, int currentUserId)
+        {
+            try
+            {
+                TransactionOptions options = new TransactionOptions();
+                options.IsolationLevel = System.Transactions.IsolationLevel.ReadCommitted;
+                options.Timeout = new TimeSpan(0, 15, 0);
+
+
+                using (TransactionScope scope = new TransactionScope(TransactionScopeOption.RequiresNew, options))
+                {
+                    CompassEntities CompassEntities = new CompassEntities();
+
+                    foreach (var item in objTab3BOPayRate.newMeterPayRate)
+                    {
+                        var obj = CompassEntities.tblMeterPays.Where(o => o.ID == item.Id).FirstOrDefault();
+                        obj.Pay = item.Pay;
+                        obj.ModifiedBy = currentUserId;
+                        obj.ModifiedOn = new CommonFunctions().ServerDate();
+                        CompassEntities.SaveChanges();
+                    }
+                    scope.Complete();
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public bool CreateOrUpdateMasterField(int type, long projectId, int userId, string[] objMeterSizeList, out string returnMessage)
         {
             bool result = false;
@@ -1219,7 +1301,7 @@ namespace GarronT.CMS.Model.DAL
             {
                 var oldList = CompassEntities.TblProjectMasterFieldRelations.AsEnumerable().Where(o => o.ProjectID == projectId &&
                         o.MasterTableName == (type == 1 ? "tblMeterSize" : (type == 2 ? "tblMeterType" : (type == 3 ? "tblService" : "tblMeterMake")))).ToList();
-                if (oldList != null && oldList.Count() > 1)
+                if (oldList != null && oldList.Count() > 0)
                 {
                     foreach (var item in oldList)
                     {
@@ -1331,7 +1413,110 @@ namespace GarronT.CMS.Model.DAL
             return result;
         }
 
+        public bool CreateOrUpdateMeterSizePayRete(int type, long projectId, int userId, string[] objMeterSizeList, out string returnMessage)
+        {
+            bool result = false;
+            returnMessage = "Unable to Create / Update State.";
 
+            CompassEntities CompassEntities = new CompassEntities();
+            try
+            {
+                // Add new code insert or update meter size pay rate from table ==> tblMeterPAy
+                if (type == 5)
+                {
+                    var objOldList = CompassEntities.tblMeterPays.AsEnumerable().Where(o => o.FK_Project_Id == projectId).ToList();
+                    if (objOldList != null && objOldList.Count() > 0)
+                    {
+                        foreach (var item in objOldList)
+                        {
+                            item.ModifiedBy = userId;
+                            item.Active = 0;
+                            item.ModifiedOn = new CommonFunctions().ServerDate();
+                            CompassEntities.SaveChanges();
+                        }
+                    }
+                    foreach (var item in objMeterSizeList)
+                    {
+                        long mid = long.Parse(item);
+                        //var obj = CompassEntities.tblMeterPays.AsEnumerable().Where(o => o.FK_Project_Id == projectId && o.FK_MeterSize_Id == long.Parse(item)).FirstOrDefault();
+                        var newobj = (from pm in CompassEntities.ProductMasters
+                                      join vw in CompassEntities.VW_GetProductData on pm.PartNumber equals vw.PartNumber
+                                      join ps in CompassEntities.ProjectServiceProductRelations on pm.Id equals ps.FKProductId
+                                      where pm.MeterSizeId == mid && ps.FKProjectID == projectId
+                                      && pm.Active == 1 && ps.Active == 1
+                                      select new Meterpayratedetail
+                                      {
+                                          MeterSizeId = (long)pm.MeterSizeId,
+                                          MeterSize = vw.MeterSize,
+                                          MeterTypeId = (long)pm.MeterTypeId,
+                                          MeterType = vw.MeterType
+                                      }).Distinct().ToList();
+
+                        if (newobj != null)
+                        {
+                            foreach (var _iten in newobj)
+                            {
+                                var exist = CompassEntities.tblMeterPays.AsEnumerable().Where(o => o.FK_Project_Id == projectId && o.FK_MeterSize_Id == _iten.MeterSizeId && o.FK_MeterType_Id==_iten.MeterTypeId).FirstOrDefault();
+                                if (exist == null)
+                                {
+                                    exist = new tblMeterPay();
+                                    exist.FK_Project_Id = projectId;
+                                    exist.FK_MeterSize_Id = _iten.MeterSizeId;
+                                    exist.FK_MeterType_Id = _iten.MeterTypeId;
+                                    exist.MeterSize = _iten.MeterSize;
+                                    exist.MeterType = _iten.MeterType;
+                                    exist.MeterDisplayName = _iten.MeterSize + " " + _iten.MeterType + " Meters";
+                                    exist.Description = "";   // don't required description
+                                    exist.Pay = 0;            // defualt set 0 and then set meter pay rete next page
+                                    exist.Active = 1;
+                                    exist.CreatedBy = userId;
+                                    exist.CreatedOn = new CommonFunctions().ServerDate();
+                                    CompassEntities.tblMeterPays.Add(exist);
+                                    CompassEntities.SaveChanges();
+                                }
+                                else
+                                {
+                                    exist.ModifiedBy = userId;
+                                    exist.Active = 1;
+                                    exist.ModifiedOn = new CommonFunctions().ServerDate();
+                                    CompassEntities.SaveChanges();
+                                }
+                            }
+                            
+                        }
+                       /* if (obj == null)
+                        {
+                            obj = new tblMeterPay();
+                            obj.FK_Project_Id = projectId;
+                            obj.FK_MeterSize_Id = long.Parse(item);
+                            obj.Description = "";   // don't required description
+                            obj.Pay = 0;            // defualt set 0 and then set meter pay rete next page
+                            obj.Active = 1;
+                            obj.CreatedBy = userId;
+                            obj.CreatedOn = new CommonFunctions().ServerDate();
+                            CompassEntities.tblMeterPays.Add(obj);
+                            CompassEntities.SaveChanges();
+                        }
+                        else
+                        {
+                            obj.ModifiedBy = userId;
+                            obj.Active = 1;
+                            obj.ModifiedOn = new CommonFunctions().ServerDate();
+                            CompassEntities.SaveChanges();
+                        }*/
+                    }
+                }
+                //
+                returnMessage = CommonFunctions.strRecordCreated;
+                result = true;
+            }
+            catch (Exception ex)
+            {
+                returnMessage += "<br/>" + ex.Message;
+                result = false;
+            }
+            return result;
+        }
 
         public List<tblStandardFieldMaster> GetActiveStandardFields()
         {
@@ -2051,7 +2236,7 @@ namespace GarronT.CMS.Model.DAL
                                             objCompassEntities1.Configuration.ValidateOnSaveEnabled = false;
                                             objCompassEntities1.UploadedExcelDatas.Add(objRecord);
 
-                                            //objCompassEntities1.SaveChanges();
+                                            objCompassEntities1.SaveChanges();
 
                                         }
 
@@ -2065,7 +2250,7 @@ namespace GarronT.CMS.Model.DAL
                                 }
                                 #endregion
                             }
-                            objCompassEntities1.SaveChanges();
+                            //objCompassEntities1.SaveChanges();
                         }
 
                     }
@@ -2472,9 +2657,8 @@ namespace GarronT.CMS.Model.DAL
                     ProjectServiceProductRelation objmodel = new ProjectServiceProductRelation();
                     objmodel.FKProductId = productid;
                     objmodel.FKProjectID = ProjectID;
-                    objmodel.FKServiceId = serviceId1;
+                    objmodel.FKServiceId = serviceId1; 
                     objmodel.Quantity = quantity;
-
                     objmodel.Active = 1;
                     objmodel.CreatedBy = 1;
                     objmodel.CreatedOn = new CommonFunctions().ServerDate();

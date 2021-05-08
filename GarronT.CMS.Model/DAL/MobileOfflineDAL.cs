@@ -2951,12 +2951,15 @@ namespace GarronT.CMS.Model.DAL
                     {
                         long id = (long)item["Id"];
                         var objInstallerMap = objCompassEntities.tblInstallerMapDatas.
-                            Where(o => o.FK_UploadedExcelData_Id == id && o.InstallerId == userId).FirstOrDefault();
-                        objInstallerMap.BatchNumber = BatchNumber;
-                        objInstallerMap.SynchCheckSumString = m2;
-                        objInstallerMap.SynchWithMobileFlag = 1;
-                        objInstallerMap.SynchWithMobileDate = new CommonFunctions().ServerDate();
-                        //objCompassEntities.SaveChanges();
+                            Where(o => o.FK_UploadedExcelData_Id == id && o.InstallerId == userId && o.Active == 1).FirstOrDefault();
+                        if (objInstallerMap != null)
+                        {
+                            objInstallerMap.BatchNumber = BatchNumber;
+                            objInstallerMap.SynchCheckSumString = m2;
+                            objInstallerMap.SynchWithMobileFlag = 1;
+                            objInstallerMap.SynchWithMobileDate = new CommonFunctions().ServerDate();
+                            //objCompassEntities.SaveChanges();
+                        }
                     }
                     if(ProjectVisitDataChunk.Rows.Count > 0)
                     {
@@ -3091,7 +3094,7 @@ namespace GarronT.CMS.Model.DAL
                 {
                     long UploadId = long.Parse(row["Id"].ToString());
                     var objInstallerMap = objCompassEntities.tblInstallerMapDatas.Where(o => o.FK_UploadedExcelData_Id == UploadId &&
-                         o.InstallerId == userId).FirstOrDefault();
+                         o.InstallerId == userId && o.Active == 1).FirstOrDefault();
                     if (objInstallerMap != null)
                     {
                         objInstallerMap.BatchNumber = null;
@@ -3138,7 +3141,7 @@ namespace GarronT.CMS.Model.DAL
                 var debug = true;
             }
             var objInstallerMapList = objCompassEntities.tblInstallerMapDatas.Where(o => o.InstallerId == userId
-                && o.BatchNumber == (batchNumber - 1) && o.SynchWithMobileFlag == 1 && o.MobileResponse != 1).ToList();
+                && o.BatchNumber == (batchNumber - 1) && o.SynchWithMobileFlag == 1 && o.MobileResponse != 1 && o.Active == 1).ToList();
 
             if (objInstallerMapList != null && objInstallerMapList.Count > 0)
             {
@@ -3158,7 +3161,7 @@ namespace GarronT.CMS.Model.DAL
             {
                 /// if  record not present then check the current batch present with mobile response false for the user 
                 objInstallerMapList = objCompassEntities.tblInstallerMapDatas.Where(o => o.InstallerId == userId
-                && o.BatchNumber == batchNumber && o.SynchWithMobileFlag == 1 && o.MobileResponse != 1).ToList();
+                && o.BatchNumber == batchNumber && o.SynchWithMobileFlag == 1 && o.MobileResponse != 1 && o.Active == 1).ToList();
 
                 if (objInstallerMapList != null && objInstallerMapList.Count > 0)
                 {
@@ -3205,7 +3208,7 @@ namespace GarronT.CMS.Model.DAL
 
             //first check any batch number present for the user
             var checkB = objCompassEntities.tblInstallerMapDatas.Where(o => o.InstallerId == userId
-                && o.BatchNumber != null).Select(o => o.BatchNumber).FirstOrDefault();
+                && o.BatchNumber != null && o.Active ==1).Select(o => o.BatchNumber).FirstOrDefault();
 
             if (checkB == null)
             {
@@ -3238,7 +3241,7 @@ namespace GarronT.CMS.Model.DAL
                 else
                 {
                     // send fresh new batch data for the current user.
-                    checkB = objCompassEntities.tblInstallerMapDatas.Where(o => o.InstallerId == userId).Select(o => o.BatchNumber).Max();
+                    checkB = objCompassEntities.tblInstallerMapDatas.Where(o => o.InstallerId == userId && o.Active==1).Select(o => o.BatchNumber).Max();
                     BatchNumber = long.Parse(checkB.ToString()) + 1;
                 }
             }

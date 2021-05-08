@@ -389,24 +389,5 @@ namespace GarronT.CMS.Model
             objCompassEntities.Dispose();
             return userId;
         }
-
-
-    }
-
-
-
-    public partial class CompassEntities : DbContext
-    {
-        public CompassEntities(string ConnectionString)
-            : base(ConnectionString)
-        {
-            this.SetCommandTimeOut(300);
-        }
-
-        public void SetCommandTimeOut(int Timeout)
-        {
-            var objectContext = (this as IObjectContextAdapter).ObjectContext;
-            objectContext.CommandTimeout = Timeout;
-        }
     }
 }

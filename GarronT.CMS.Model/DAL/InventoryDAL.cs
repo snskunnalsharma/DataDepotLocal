@@ -2300,7 +2300,7 @@ namespace GarronT.CMS.Model.DAL
                 // Merge two list data get in common records in a list
                 reportData = (from op in openinginventoryreportData
                               join o in tempReportData
-                                  on op.ProductName equals o.ProductName
+                                  on op.ProductName equals o.ProductName where op.UserId == o.UserId
                               select new InstallerStockReportSummaryBO
                               {
                                   UserId = o.UserId,
@@ -2320,13 +2320,12 @@ namespace GarronT.CMS.Model.DAL
                 // Remove common recoreds in both list
                 foreach (var pro in reportData)
                 {
-                    var itemToRemove = tempReportData.Single(p => p.ProductName == pro.ProductName);
+                    var itemToRemove = tempReportData.Single(p => p.ProductName == pro.ProductName && p.UserId == pro.UserId);
                     tempReportData.Remove(itemToRemove);
-
-                    var itemToRemove2 = openinginventoryreportData.Single(p => p.ProductName == pro.ProductName);
+                    var itemToRemove2 = openinginventoryreportData.Single(p => p.ProductName == pro.ProductName && p.UserId == pro.UserId);
                     openinginventoryreportData.Remove(itemToRemove2);
                 }
-
+                
                 foreach (var o in tempReportData)
                 {
                     reportData.Add(new InstallerStockReportSummaryBO

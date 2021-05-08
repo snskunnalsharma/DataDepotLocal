@@ -308,7 +308,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         usermaster.FieldSupervisorId = UserViewModel.UserModel.FieldSupervisorId;
                         usermaster.ManagerApprovalRequired = UserViewModel.UserModel.ManagerApprovalRequired == null ? 2 : UserViewModel.UserModel.ManagerApprovalRequired;
 
-
+                        
 
 
                         //Employment Details

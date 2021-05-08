@@ -17,6 +17,7 @@ namespace GarronT.CMS.Model
         public tblMeterType()
         {
             this.ProductMasters = new HashSet<ProductMaster>();
+            this.tblMeterPays = new HashSet<tblMeterPay>();
         }
     
         public long ID { get; set; }
@@ -29,5 +30,6 @@ namespace GarronT.CMS.Model
         public Nullable<System.DateTime> ModifiedOn { get; set; }
     
         public virtual ICollection<ProductMaster> ProductMasters { get; set; }
+        public virtual ICollection<tblMeterPay> tblMeterPays { get; set; }
     }
 }
