@@ -1291,7 +1291,11 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                                     serviceBase = serviceBase + "<select class='col-lg-6 col-sm-5 col-xs-5 sel-rep' style='margin:9px 0px 0 0px; text-align:left'>";
                                     serviceBase = serviceBase + "<option>" + item3.initialFieldValue + "</option>";
                                     serviceBase = serviceBase + "</select>";
-                                    serviceBase = serviceBase + "<div class='col-lg-3 col-sm-3 col-xs-3' style='margin-left:10%'> <input style='margin:14px 0px 0px -6px;pointer-events: none;opacity: 0.4;'  type='checkbox' name = 'S_" + item3.initialFieldValue + "' id='" + item3.initialFieldId + "' " + (result1 == null ? "" : "checked") + "> </div>";
+                                    //serviceBase = serviceBase + "<div class='col-lg-3 col-sm-3 col-xs-3' style='margin-left:10%'> <input style='margin:14px 0px 0px -6px;pointer-events: none;opacity: 0.4;'  type='checkbox' name = 'S_" + item3.initialFieldValue + "' id='" + item3.initialFieldId + "' " + (result1 == null ? "" : "checked") + "> </div>";
+
+                                    // Checked box editable requirement for clinet side
+                                    serviceBase = serviceBase + "<div class='col-lg-3 col-sm-3 col-xs-3' style='margin-left:10%'> <input style='margin:14px 0px 0px -6px;opacity: 0.4;'  type='checkbox' name = 'S_" + item3.initialFieldValue + "' id='" + item3.initialFieldId + "' " + (result1 == null ? "" : "checked") + "> </div>";
+
 
                                     if (result1 != null)
                                     {
@@ -1402,7 +1406,10 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                                     serviceBase = serviceBase + "<select class='col-lg-6 col-sm-5 col-xs-5 sel-rep' style='margin:9px 0px 0 0px; text-align:left'>";
                                     serviceBase = serviceBase + "<option>" + item3.initialFieldValue + "</option>";
                                     serviceBase = serviceBase + "</select>";
-                                    serviceBase = serviceBase + "<div class='col-lg-3 col-sm-3 col-xs-3' style='margin-left:10%'> <input style='margin:14px 0px 0px -6px;pointer-events: none;opacity: 0.4;'  type='checkbox' name = 'A_" + item3.initialFieldValue + "' id='" + item3.initialFieldId + "' " + (result1 == null ? "" : "checked") + "> </div>";
+                                    //serviceBase = serviceBase + "<div class='col-lg-3 col-sm-3 col-xs-3' style='margin-left:10%'> <input style='margin:14px 0px 0px -6px;pointer-events: none;opacity: 0.4;'  type='checkbox' name = 'A_" + item3.initialFieldValue + "' id='" + item3.initialFieldId + "' " + (result1 == null ? "" : "checked") + "> </div>";
+
+                                    // Checked box editable requirement for clinet side
+                                    serviceBase = serviceBase + "<div class='col-lg-3 col-sm-3 col-xs-3' style='margin-left:10%'> <input style='margin:14px 0px 0px -6px;opacity: 0.4;'  type='checkbox' name = 'A_" + item3.initialFieldValue + "' id='" + item3.initialFieldId + "' " + (result1 == null ? "" : "checked") + "> </div>";
 
                                     if (result1 != null)
                                     {
