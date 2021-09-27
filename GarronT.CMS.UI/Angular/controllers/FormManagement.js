@@ -422,8 +422,7 @@ angularApp
                 type: 'GET',
                 success: function (msg) {
                     //   waitingDialog.hide();
-                    oTable = $('#
-                        ').dataTable(
+                    oTable = $('#dynamic-table').dataTable(
                         {
                             "bAutoWidth": false,
                             "bDestroy": true,
@@ -623,7 +622,7 @@ angularApp
 
             GetFormTypeList()
 
-            function disableallelements() {
+          function disableallelements() {
 
                 $("#datatypediv *").attr("disabled", "disabled").off('click');
             }

@@ -164,7 +164,8 @@ function bindActiveTable() {
 
 //#region Edit (Get Records for edit)
 
-function EditUploadedRecord(uploadedID) {
+//#This method don't use
+function EditUploadedRecord_old(uploadedID) {
     debugger;
     $('#UploadForm').validate().resetForm();
 
@@ -190,6 +191,15 @@ function EditUploadedRecord(uploadedID) {
             $("#txtStreet").val(msg.Street);
             streetName = msg.Street;
 
+            $("#txtCycle").val(msg.Cycle);
+            $("#txtRoute").val(msg.Route);
+            $("#txtOldMeterType").val(msg.OldMeterType);
+            $("#txtOldMeterMake").val(msg.OldMeterMake);
+            $("#txtOldMeterNumber").val(msg.OldMeterNumber);
+            $("#txtOldMeterSize").val(msg.OldMeterSize);
+            $("#txtOldMeterRadioNumber").val(msg.OldMeterRadioNumber);
+            $("#txtCustomer").val(msg.Customer);
+
             $("#myModal").modal({
                 show: true,
                 backdrop: 'static',
@@ -203,8 +213,50 @@ function EditUploadedRecord(uploadedID) {
             alert("something seems wrong");
         }
     });
-
 }
+
+function EditUploadedRecord(uploadedID) {
+    debugger;
+    $('#UploadForm').validate().resetForm();
+    document.getElementById("ModelData").innerHTML = '';
+    $('#ModelData').html('');
+    var GetRecordsbyUploadedID = $("#urlGetRecordsbyUploadedID").val();
+
+    $.ajax({
+        type: 'GET',
+        url: GetRecordsbyUploadedID,
+        async: true,
+        data: { "uploadedID": uploadedID },
+        beforeSend: function () {
+            waitingDialog.show('Loading Please Wait...');
+        },
+        complete: function () {
+            waitingDialog.hide();
+        },
+        success: function (msg) {
+            if (msg.status == true) {
+                debugger;
+                var a = msg.htmlData;
+                $("#ModelData").append(a);
+            }
+            else {
+                var $toast = toastr["error"](msg.errorData, "Error Notification");
+            }
+            $("#myModal").modal({
+                show: true,
+                backdrop: 'static',
+                keyboard: false
+            });
+            $("#myModal").draggable({
+                handle: ".modal-header"
+            });
+        },
+        error: function () {
+            alert("something seems wrong");
+        }
+    });
+}
+
 $("#btnSave").click(function () {
     debugger;
     if ($("#UploadForm").valid()) {
@@ -213,7 +265,8 @@ $("#btnSave").click(function () {
 
 })
 var StreetChanged = false;
-function UpdateUploadedData() {
+//#This method don't use
+function UpdateUploadedData_old() {
     StreetChanged = false;
     var previousValue = streetName;
     var currentValue = $("#txtStreet").val();
@@ -223,16 +276,21 @@ function UpdateUploadedData() {
     }
 
     var UploadformData = $("#UploadForm").serializeArray();
-
+    debugger
 
     var UploadData = {};
-    $.each(UploadformData, function () {
-        if (UploadData[this.name] !== undefined) {
-            if (!UploadData[this.name].push) {
+    $.each(UploadformData, function ()
+    {
+        if (UploadData[this.name] !== undefined)
+        {
+            if (!UploadData[this.name].push)
+            {
                 UploadData[this.name] = [UploadData[this.name]];
             }
             UploadData[this.name].push(this.value || '');
-        } else {
+        }
+        else
+        {
             UploadData[this.name] = this.value || '';
         }
     });
@@ -269,15 +327,43 @@ function UpdateUploadedData() {
     });
 }
 
+StreetChanged = false;
+function UpdateUploadedData() {
+ 
+    var urlUpdateUploadData = $("#urlUpdateUploadData").val();
+    debugger
+    $.ajax({
+        url: urlUpdateUploadData,
+        data: $("#UploadForm").serialize(),
+        type: 'POST',
+        success: function (msg) {
+            if (msg.success == true)
+            {
+                $("#myModal").modal('hide');
+                bindActiveTable();
+                var $toast = toastr["success"](msg.returnMessage, "Success Notification");
+            }
+            else
+            {
+                var $toast = toastr["error"](msg.returnMessage, "Error Notification");
+            }
+        },
+        error: function () {
+            alert("something seems wrong");
+        }
+    });
+}
 
 
 $("#btnCancel").click(function () {
 
-    $("#txtAccount").val('');
-    $("#txtLatitude").val('');
-    $("#txtLongitude").val('');
-    $("#txtStreet").val('');
+    //$("#txtAccount").val('');
+    //$("#txtLatitude").val('');
+    //$("#txtLongitude").val('');
+    //$("#txtStreet").val('');
 
+    document.getElementById("ModelData").innerHTML = '';
+    $('#ModelData').html('');
 
     $("#myModal").modal('hide');
 })

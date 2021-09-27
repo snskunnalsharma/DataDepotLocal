@@ -108,7 +108,12 @@ namespace GarronT.CMS.Model.BO
         public string Account { get; set; }
         public string Latitude { get; set; }
         public string Longitude { get; set; }
-
+        public string OldMeterType { get; set; }
+        public string OldMeterMake { get; set; }
+        public string OldMeterNumber { get; set; }
+        public string OldMeterSize { get; set; }
+        public string OldMeterRadioNumber { get; set; }
+        public string Customer { get; set; }
     }
 
     public class ProjectSmallModel

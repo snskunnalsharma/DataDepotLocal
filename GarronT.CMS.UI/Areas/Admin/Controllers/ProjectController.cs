@@ -21,7 +21,6 @@ using log4net;
 using System.Web.Script.Serialization;
 using GarronT.CMS.UI.CustomHelpers;
 
-
 namespace GarronT.CMS.UI.Areas.Admin.Controllers
 {
     [OutputCache(Duration = 0, VaryByParam = "none")]
@@ -1217,12 +1216,13 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         public ActionResult GetRecordsbyUploadedID(long uploadedID)
         {
             ProjectEditModel uploadedData = new ProjectEditModel();
-
+            string _result = string.Empty;
             try
             {
                 using (ProjectMasterDAL obj = new ProjectMasterDAL())
                 {
-                    uploadedData = obj.GetUploadedDatabyUploadID(uploadedID);
+                    //uploadedData = obj.GetUploadedDatabyUploadID(uploadedID);
+                    _result = obj.GetUploadedDatabyUploadID(uploadedID);
                 }
             }
             catch (Exception ex)
@@ -1230,10 +1230,14 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 return Json(new { success = false, excelData = ex.Message }, JsonRequestBehavior.AllowGet);
             }
 
-            return Json(uploadedData, JsonRequestBehavior.AllowGet);
+            var jsonResult = Json(new { status = true, htmlData = _result }, JsonRequestBehavior.AllowGet);
+            jsonResult.MaxJsonLength = int.MaxValue;
+            return jsonResult;
+            //return Json(uploadedData, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult SaveRecord(ProjectEditModel uploadedData, bool StreetChanged)
+        // don't use this method
+        public ActionResult SaveRecord_old(ProjectEditModel uploadedData, bool StreetChanged)
         {
             bool success = false;
             string returnmessege = "";
@@ -1242,6 +1246,88 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             {
                 success = obj.UpdateUploadData(uploadedData, StreetChanged, out returnmessege);
                 return Json(new { success = success, returnMessage = returnmessege }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpPost]
+        public ActionResult SaveRecord(FormCollection form)
+        {
+            bool success = false;
+            bool checkLatLong = false;
+            string returnmessege = "";
+
+            string colName = string.Empty;
+            string colValue = string.Empty;
+            CompassEntities dbcontext = new CompassEntities();
+            SqlConnection _sqlCon = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
+            ProjectMasterDAL objClass = new ProjectMasterDAL();
+            //_sqlCon.Open();
+            try
+            {
+                string objId = form.AllKeys[0].ToString();
+                long uploadId = long.Parse(Convert.ToString(form[objId]).ToString());
+                var getData = dbcontext.UploadedExcelDatas.Where(o => o.Id == uploadId && o.Active == 1).FirstOrDefault();
+                foreach (string _formData in form)
+                {
+                    colName = _formData.ToString();
+                    colValue = form[_formData].ToString();
+
+                    if (_formData.Contains("STREET_"))
+                    {
+                        string[] obj = _formData.Split('_');
+                        colName = obj[1].ToString();
+                        colValue = form[_formData].ToString();
+                        string oldStreetValue = objClass.getDynamicColValue(getData.FKProjectId, uploadId, colName); // get dynamic column streeet value
+                        //if (colValue.ToString() != getData.Street12.ToString() && colValue.ToString() != street.ToString())
+                        if (colValue.ToString() != oldStreetValue.ToString())
+                        {
+                            // Update lat long and street
+                            checkLatLong = objClass.UpdateLatLong(getData, colValue.ToString());
+                        }
+                        else
+                        {
+                            SqlCommand cmd = new SqlCommand("UPDATE UploadedExcelData SET " + colName + " = @" + colName + ",Street12=@Street12 WHERE Id = @Id", _sqlCon);
+                            cmd.CommandType = CommandType.Text;
+                            cmd.Parameters.AddWithValue("@Id", uploadId);
+                            cmd.Parameters.AddWithValue("@" + colName + "", colValue);
+                            cmd.Parameters.AddWithValue("@Street12", colValue);
+                            _sqlCon.Open();
+                            cmd.ExecuteNonQuery();
+                            _sqlCon.Close();
+                        }
+                    }
+                    else
+                    {
+                        if (colName != "Id" && colName != "AddressLatitude" && colName != "AddressLongitude")
+                        {
+                            SqlCommand cmd = new SqlCommand("UPDATE UploadedExcelData SET " + colName + " = @" + colName + " WHERE Id = @Id", _sqlCon);
+                            cmd.CommandType = CommandType.Text;
+                            cmd.Parameters.AddWithValue("@Id", uploadId);
+                            cmd.Parameters.AddWithValue("@" + colName + "", colValue);
+                            _sqlCon.Open();
+                            cmd.ExecuteNonQuery();
+                            _sqlCon.Close();
+                        }
+                        if (!checkLatLong && (colName == "AddressLatitude" || colName == "AddressLongitude"))
+                        {
+                            SqlCommand cmd = new SqlCommand("UPDATE UploadedExcelData SET " + colName + " = @" + colName + " WHERE Id = @Id", _sqlCon);
+                            cmd.CommandType = CommandType.Text;
+                            cmd.Parameters.AddWithValue("@Id", uploadId);
+                            cmd.Parameters.AddWithValue("@" + colName + "", colValue);
+                            _sqlCon.Open();
+                            cmd.ExecuteNonQuery();
+                            _sqlCon.Close();
+                        }
+                    }
+                }
+                success = true;
+                returnmessege = CommonFunctions.strRecordUpdated;
+                return Json(new { success = success, returnMessage = returnmessege }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                returnmessege += "<br/>" + ex.Message;
+                return Json(new { success = false, returnMessage = returnmessege }, JsonRequestBehavior.AllowGet);
             }
         }
 

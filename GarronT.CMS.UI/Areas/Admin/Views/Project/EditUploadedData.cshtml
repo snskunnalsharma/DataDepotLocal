@@ -12,6 +12,13 @@
 @Html.Hidden("UrlCalculatePendingLatLon", Url.Action("CalculatePendingLatLon", "Project"))
 @Html.Hidden("GetprojectIndex", Url.Action("Index", "Project"))
 
+<style>
+    .vertical-scroll {
+        height: 550px;
+        overflow: scroll;
+    }
+</style>
+
 <div id="loading">
     <div id="loadingcontent">
         <p id="loadingspinner">
@@ -28,7 +35,7 @@
         <!-- page start-->
         <div class="row">
             <div class="col-sm-12">
-                <section class="panel">                    
+                <section class="panel">
                     <header class="panel-heading">
                         <h5 id="Pname"></h5> <br>
                         <h6>Edit Excel Data</h6>
@@ -47,8 +54,8 @@
                                     <div class="col-lg-3 col-md-4 col-xs-4 ">
                                         <button class="btn btn-primary btn-lg" type="button" id="btnCalculate" style="margin-top:0px;">Calculate Pending Lat Lon Records</button>
                                     </div>
-                                </div> 
                                 </div>
+                            </div>
                             <div class="table-responsive">
                                 <table id="dynamic-table" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
                                     <thead>
@@ -75,8 +82,10 @@
 
 
 <!-- Modal for Edit -->
-<div class="modal fade modal-dialog-center" id="myModal" role="dialog" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-md">
+<!--old class model-->
+<!--<div class="modal fade modal-dialog-center" id="myModal" role="dialog" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">-->
+<div class="modal fade" id="myModal" role="dialog" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md vertical-scroll" style="height:550px;overflow:scroll;">
         <div class="modal-content-wrap">
             <div class="modal-content fom_dialog">
                 <div class="modal-header">
@@ -86,30 +95,80 @@
                 <div class="modal-body">
                     <div class="panel-body">
                         <form id="UploadForm" class="cmxform form-horizontal tasi-form">
-                            <input type="hidden" name="ID" id="txtUploadID" class="inputclass form-control" />
-                            <div class="form-group ">
-                                <label for="name" class="col-lg-2 col-sm-3 col-xs-12 control-label">Account</label>
-                                <div class="col-lg-8 col-sm-9 col-xs-9">
-                                    <input type="text" name="Account" readonly maxlength="50" id="txtAccount" class="inputclass form-control  " />
-                                </div>
-                            </div>
-                            <div class="form-group ">
-                                <label for="name" class="col-lg-2 col-sm-3 col-xs-12 control-label">Latitude</label>
-                                <div class="col-lg-8 col-sm-9 col-xs-9">
-                                    <input type="text" name="Latitude" maxlength="50" id="txtLatitude" class="inputclass form-control Decimal-Only " />
-                                </div>
-                            </div>
-                            <div class="form-group ">
-                                <label for="name" class=" col-lg-2 col-sm-3 col-xs-12 control-label">Longitude</label>
-                                <div class="col-lg-8 col-sm-9 col-xs-9">
-                                    <input type="text" name="Longitude" maxlength="50" id="txtLongitude" class="inputclass form-control Decimal-Only" />
-                                </div>
-                            </div>
-                            <div class="form-group ">
-                                <label for="name" class=" col-lg-2 col-sm-3 col-xs-12 control-label">Street<span style="color:red">*</span> </label>
-                                <div class="col-lg-8 col-sm-9 col-xs-9">
-                                    <input type="text" name="Street" maxlength="500" id="txtStreet" class="inputclass form-control " />
-                                </div>
+                            <div id="ModelData">
+                                <!--<input type="hidden" name="ID" id="txtUploadID" class="inputclass form-control" />
+                                   <div class="form-group ">
+                                       <label for="name" class="col-lg-4 col-sm-4 col-xs-12 control-label">Account</label>
+                                       <div class="col-lg-8 col-sm-9 col-xs-9">
+                                           <input type="text" name="Account" readonly maxlength="50" id="txtAccount" class="inputclass form-control  " />
+                                       </div>
+                                   </div>
+                                   <div class="form-group ">
+                                       <label for="name" class="col-lg-4 col-sm-4 col-xs-12 control-label">Cycle</label>
+                                       <div class="col-lg-8 col-sm-9 col-xs-9">
+                                           <input type="text" name="Cycle" readonly maxlength="50" id="txtCycle" class="inputclass form-control Intergers-Only " />
+                                       </div>
+                                   </div>
+                                   <div class="form-group ">
+                                       <label for="name" class="col-lg-4 col-sm-4 col-xs-12 control-label">Route</label>
+                                       <div class="col-lg-8 col-sm-9 col-xs-9">
+                                           <input type="text" name="Route" readonly maxlength="50" id="txtRoute" class="inputclass form-control Intergers-Only " />
+                                       </div>
+                                   </div>
+                                   <div class="form-group ">
+                                       <label for="name" class="col-lg-4 col-sm-4 col-xs-12 control-label">Latitude</label>
+                                       <div class="col-lg-8 col-sm-9 col-xs-9">
+                                           <input type="text" name="Latitude" maxlength="50" id="txtLatitude" class="inputclass form-control Decimal-Only " />
+                                       </div>
+                                   </div>
+                                   <div class="form-group ">
+                                       <label for="name" class="col-lg-4 col-sm-4 col-xs-12 control-label">Longitude</label>
+                                       <div class="col-lg-8 col-sm-9 col-xs-9">
+                                           <input type="text" name="Longitude" maxlength="50" id="txtLongitude" class="inputclass form-control Decimal-Only" />
+                                       </div>
+                                   </div>
+                                   <div class="form-group ">
+                                       <label for="name" class="col-lg-4 col-sm-4 col-xs-12 control-label">Street<span style="color:red">*</span> </label>
+                                       <div class="col-lg-8 col-sm-9 col-xs-9">
+                                           <input type="text" name="Street" maxlength="500" id="txtStreet" class="inputclass form-control " />
+                                       </div>
+                                   </div>
+                                   <div class="form-group ">
+                                       <label for="name" class="col-lg-4 col-sm-4 col-xs-12 control-label">Customer</label>
+                                       <div class="col-lg-8 col-sm-9 col-xs-9">
+                                           <input type="text" name="Customer" maxlength="500" id="txtCustomer" class="inputclass form-control " />
+                                       </div>
+                                   </div>
+                                   <div class="form-group ">
+                                       <label for="name" class="col-lg-4 col-sm-4 col-xs-12 control-label">Old Meter Type</label>
+                                       <div class="col-lg-8 col-sm-9 col-xs-9">
+                                           <input type="text" name="OldMeterType" maxlength="500" id="txtOldMeterType" class="inputclass form-control " />
+                                       </div>
+                                   </div>
+                                   <div class="form-group ">
+                                       <label for="name" class="col-lg-4 col-sm-4 col-xs-12 control-label">Old Meter Make</label>
+                                       <div class="col-lg-8 col-sm-9 col-xs-9">
+                                           <input type="text" name="OldMeterMake" maxlength="500" id="txtOldMeterMake" class="inputclass form-control " />
+                                       </div>
+                                   </div>
+                                   <div class="form-group ">
+                                       <label for="name" class="col-lg-4 col-sm-4 col-xs-12 control-label">Old Meter Number</label>
+                                       <div class="col-lg-8 col-sm-9 col-xs-9">
+                                           <input type="text" name="OldMeterNumber" maxlength="500" id="txtOldMeterNumber" class="inputclass form-control " />
+                                       </div>
+                                   </div>
+                                   <div class="form-group ">
+                                       <label for="name" class="col-lg-4 col-sm-4 col-xs-12 control-label">Old Meter Size</label>
+                                       <div class="col-lg-8 col-sm-9 col-xs-9">
+                                           <input type="text" name="OldMeterSize" maxlength="500" id="txtOldMeterSize" class="inputclass form-control " />
+                                       </div>
+                                   </div>
+                                   <div class="form-group ">
+                                       <label for="name" class="col-lg-4 col-sm-4 col-xs-12 control-label">Old Meter Radio Number</label>
+                                       <div class="col-lg-8 col-sm-9 col-xs-9">
+                                           <input type="text" name="OldMeterRadioNumber" maxlength="500" id="txtOldMeterRadioNumber" class="inputclass form-control " />
+                                       </div>
+                                   </div>-->
                             </div>
                         </form>
                     </div>

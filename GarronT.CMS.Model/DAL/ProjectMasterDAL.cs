@@ -2477,7 +2477,8 @@ namespace GarronT.CMS.Model.DAL
 
 
         //to retrieve uploaded excel data by uploadid
-        public ProjectEditModel GetUploadedDatabyUploadID(long uploadId)
+        // don't use this method
+        public ProjectEditModel GetUploadedDatabyUploadID_old(long uploadId)
         {
             ProjectEditModel uploadedData = new ProjectEditModel();
             try
@@ -2505,7 +2506,15 @@ namespace GarronT.CMS.Model.DAL
                             Latitude = reader["Latitude"].ToString(),
                             Longitude = reader["Longitude"].ToString(),
                             Street = reader["Street"].ToString(),
-                            Account = reader["Account"].ToString()
+                            Account = reader["Account"].ToString(),
+                            Cycle = reader["Cycle"].ToString(),
+                            Route = reader["Route"].ToString(),
+                            OldMeterType = reader["OldMeterType"].ToString(),
+                            OldMeterMake = reader["OldMeterMake"].ToString(),
+                            OldMeterNumber = reader["OldMeterNumber"].ToString(),
+                            OldMeterSize = reader["OldMeterSize"].ToString(),
+                            OldMeterRadioNumber = reader["OldMeterRadioNumber"].ToString(),
+                            Customer = reader["Customer"].ToString()
                         };
                     }
                     // Data is accessible through the DataReader object here.
@@ -2525,9 +2534,181 @@ namespace GarronT.CMS.Model.DAL
             return uploadedData;
         }
 
+        public string getDynamicColValue(long projectId, long id, string DynamicColumnName)
+        {
+            try
+            {
+                string dycColValue = "";
+                CompassEntities dbcontext = new CompassEntities();
+                SqlConnection _sqlCon = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
+                _sqlCon.Open();
+                SqlCommand _cmd = new SqlCommand("Select " + DynamicColumnName + " from UploadedExcelData where id='" + id + "' and FKProjectId='" + projectId + "'", _sqlCon);
+                _cmd.CommandType = CommandType.Text;
+                SqlDataAdapter _sda = new SqlDataAdapter(_cmd);
+                DataTable _dts = new DataTable();
+                _sda.Fill(_dts);
+                if (_dts.Rows.Count > 0)
+                {
+                    dycColValue = _dts.Rows[0][0].ToString();
+                }
+                _sqlCon.Close();
+                return dycColValue;
+            }
+            catch
+            {
+                return "";
+            }
+
+        }
+        //to retrieve uploaded excel data by uploadid
+        public string GetUploadedDatabyUploadID(long uploadId)
+        {
+            ProjectEditModel uploadedData = new ProjectEditModel();
+            StringBuilder htmlData = new StringBuilder();
+            try
+            {
+                using (CompassEntities dbcontext = new CompassEntities())
+                {
+                    var getData = dbcontext.UploadedExcelDatas.Where(o => o.Id == uploadId && o.Active == 1).FirstOrDefault();
+
+                    var getDynamicColumnName = dbcontext.TblProjectExcelMappings.Where(o => o.ProjectID == getData.FKProjectId && o.Active == 1).ToList();
+
+                    htmlData.Append("<input type='hidden' name='Id' id='"+ getData.Id + "' value="+ getData.Id + "  class='inputclass form-control' />");
+
+                    // Note:- Two times loop applied because data show order wise Account, Cycle And Route
+                    foreach (var item in getDynamicColumnName)
+                    {
+                        string dynamicColValue = getDynamicColValue(getData.FKProjectId, uploadId, item.FKUploadedExcelDataDynamicColumn);
+                        if (item.ExcelFieldName.ToUpper() == "ACCOUNT" || item.ExcelFieldName.ToUpper() == "CYCLE" || item.ExcelFieldName.ToUpper() == "ROUTE")
+                        {
+                            //dynamicColValue = dynamicColValue.Replace("'", "&#39;");  // Single quote ' replace srting
+                            dynamicColValue = dynamicColValue.Replace(@"""", "&#34;");  // Single quote " replace srting
+                            htmlData.Append("<div class='form-group'>");
+                            htmlData.Append("<label for='name' class='col-lg-4 col-sm-4 col-xs-12 control-label'>" + item.ExcelFieldName + "</label>");
+                            htmlData.Append("<div class='col-lg-8 col-sm-9 col-xs-9'>");
+                            htmlData.Append("<input type ='text' class='inputclass form-control class55' " +
+                                           "name='" + item.FKUploadedExcelDataDynamicColumn + "' readonly maxlength='50' " +
+                                           "id='" + item.FKUploadedExcelDataDynamicColumn +
+                                           "' value=\"" + dynamicColValue + "\"></input>" +
+                                           "</div>" +
+                                           "</div>");
+
+                        }
+                    }
+                    foreach (var item in getDynamicColumnName)
+                    {
+                        string dynamicColValue = getDynamicColValue(getData.FKProjectId, uploadId, item.FKUploadedExcelDataDynamicColumn);
+                        if (item.ExcelFieldName.ToUpper() == "STREET")
+                        {
+                            //dynamicColValue = dynamicColValue.Replace("'", "&#39;");  // Single quote ' replace srting
+                            dynamicColValue = dynamicColValue.Replace(@"""", "&#34;");  // Single quote " replace srting
+                            htmlData.Append("<div class='form-group'>");
+                            htmlData.Append("<label for='name' class='col-lg-4 col-sm-4 col-xs-12 control-label'>" + item.ExcelFieldName + "</label>");
+                            htmlData.Append("<div class='col-lg-8 col-sm-9 col-xs-9'>");
+                            htmlData.Append("<input type ='text' class='inputclass form-control' " +
+                                            "name='" + "STREET_" + item.FKUploadedExcelDataDynamicColumn + "' maxlength='500' " +
+                                            "id='" + item.FKUploadedExcelDataDynamicColumn +
+                                            "' value=\"" + dynamicColValue + "\"></input>" +
+                                            "</div>" +
+                                            "</div>");
+                        }
+                    }
+
+                    // Add lat & Long
+                    htmlData.Append("<div class='form-group'>");
+                    htmlData.Append("<label for='name' class='col-lg-4 col-sm-4 col-xs-12 control-label'>Address Latitude</label>");
+                    htmlData.Append("<div class='col-lg-8 col-sm-9 col-xs-9'>");
+                    htmlData.Append("<input type ='text' class='inputclass form-control' " +
+                                    "name='AddressLatitude' maxlength='500' " +
+                                    "id='AddressLatitude'" +
+                                    "' value=\"" + getData.AddressLatitude + "\"></input>" +
+                                    "</div>" +
+                                    "</div>");
+
+                    htmlData.Append("<div class='form-group'>");
+                    htmlData.Append("<label for='name' class='col-lg-4 col-sm-4 col-xs-12 control-label'>Address Longitude</label>");
+                    htmlData.Append("<div class='col-lg-8 col-sm-9 col-xs-9'>");
+                    htmlData.Append("<input type ='text' class='inputclass form-control' " +
+                                    "name='AddressLongitude' maxlength='500' " +
+                                    "id='AddressLongitude'" +
+                                    "' value=\"" + getData.AddressLongitude + "\"></input>" +
+                                    "</div>" +
+                                    "</div>");
+                    //end hare
+                    foreach (var item in getDynamicColumnName)
+                    {
+                        string dynamicColValue = getDynamicColValue(getData.FKProjectId, uploadId, item.FKUploadedExcelDataDynamicColumn);
+                        if (item.ExcelFieldName.ToUpper() != "ACCOUNT" && item.ExcelFieldName.ToUpper() != "CYCLE" && item.ExcelFieldName.ToUpper() != "ROUTE" && item.ExcelFieldName.ToUpper() != "STREET")
+                        {
+                            //dynamicColValue = dynamicColValue.Replace("'", "&#39;");  // Single quote ' replace srting
+                            dynamicColValue = dynamicColValue.Replace(@"""", "&#34;");  // Single quote " replace srting
+                            htmlData.Append("<div class='form-group'>");
+                            htmlData.Append("<label for='name' class='col-lg-4 col-sm-4 col-xs-12 control-label'>" + item.ExcelFieldName + "</label>");
+                            htmlData.Append("<div class='col-lg-8 col-sm-9 col-xs-9'>");
+                            htmlData.Append("<input type ='text' class='inputclass form-control' " +
+                                            "name='" + item.FKUploadedExcelDataDynamicColumn + "' maxlength='500' " +
+                                            "id='" + item.FKUploadedExcelDataDynamicColumn +
+                                            "' value=\"" + dynamicColValue + "\"></input>" +
+                                            "</div>" +
+                                            "</div>");
+                            
+                        }
+                    }
+
+
+                    /*SqlConnection sqlConnection1 = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
+                    SqlCommand cmd = new SqlCommand();
+                    SqlDataReader reader;
+
+                    cmd.CommandText = "PROC_ProjectMaster_EditSingleData";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Connection = sqlConnection1;
+                    cmd.Parameters.Add("@UploadId", uploadId);
+
+
+                    sqlConnection1.Open();
+
+                    reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        uploadedData = new ProjectEditModel
+                        {
+                            ID = long.Parse(reader["ID"].ToString()),
+                            Latitude = reader["Latitude"].ToString(),
+                            Longitude = reader["Longitude"].ToString(),
+                            Street = reader["Street"].ToString(),
+                            Account = reader["Account"].ToString(),
+                            Cycle = reader["Cycle"].ToString(),
+                            Route = reader["Route"].ToString(),
+                            OldMeterType = reader["OldMeterType"].ToString(),
+                            OldMeterMake = reader["OldMeterMake"].ToString(),
+                            OldMeterNumber = reader["OldMeterNumber"].ToString(),
+                            OldMeterSize = reader["OldMeterSize"].ToString(),
+                            OldMeterRadioNumber = reader["OldMeterRadioNumber"].ToString(),
+                            Customer = reader["Customer"].ToString()
+                        };
+                    }
+                    // Data is accessible through the DataReader object here.
+
+                    sqlConnection1.Close();
+                    reader.Close();
+                    reader.Dispose();
+                    cmd.Dispose();
+                    sqlConnection1.Dispose();*/
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            string _result = htmlData.ToString();
+            return _result;
+            //return uploadedData;
+        }
 
         #region Insert,Update & Delete
 
+        // This method don't use
         public bool UpdateUploadData(ProjectEditModel ObjectToCreaetOrUpdate, bool StreetChanged, out string Message)
         {
             bool result = false;
@@ -2537,16 +2718,10 @@ namespace GarronT.CMS.Model.DAL
             try
             {
                 CompassEntities CompassEntities = new CompassEntities();
-
                 UploadedExcelData objChk = CompassEntities.UploadedExcelDatas.Where(o => o.Id == ObjectToCreaetOrUpdate.ID && o.Active == 1).FirstOrDefault();
-
 
                 var getData = CompassEntities.VW_GETTab6DropdownData.Where(o => o.ProjectID == objChk.FKProjectId && o.FieldName == "STREET").FirstOrDefault();
                 var streetColumnname = CompassEntities.TblProjectExcelMappings.Where(o => o.Active == 1 && o.FieldID == getData.tabelId && o.FieldType == getData.FieldType).FirstOrDefault();
-
-
-
-
 
                 if (objChk != null)
                 {
@@ -2563,8 +2738,6 @@ namespace GarronT.CMS.Model.DAL
                         PropertyInfo[] pClass = tClass.GetProperties();
                         PropertyInfo currentProperty = pClass.Where(o => o.Name == streetColumnname.FKUploadedExcelDataDynamicColumn).FirstOrDefault();
                         currentProperty.SetValue(objChk, ObjectToCreaetOrUpdate.Street, null);
-
-
                     }
                     else
                     {
@@ -2591,16 +2764,13 @@ namespace GarronT.CMS.Model.DAL
                         else
                         {
                             address = ObjectToCreaetOrUpdate.Street + ", " + Convert.ToString(projectcitystate.CityName) + ", " + projectcitystate.StateName + ", USA";
-
                         }
                         if (!string.IsNullOrEmpty(address))
                         {
                             System.Threading.Thread.Sleep(100);
-
                             FindCoordinates(address, out lat, out lng, Citylat, Citylng);
                             if (!string.IsNullOrEmpty(lat) && !string.IsNullOrEmpty(lng))
                             {
-
                                 objChk.AddressLatitude = lat;
                                 objChk.AddressLongitude = lng;
                                 objChk.Street12 = ObjectToCreaetOrUpdate.Street;
@@ -2609,14 +2779,48 @@ namespace GarronT.CMS.Model.DAL
                                 PropertyInfo[] pClass = tClass.GetProperties();
                                 PropertyInfo currentProperty = pClass.Where(o => o.Name == streetColumnname.FKUploadedExcelDataDynamicColumn).FirstOrDefault();
                                 currentProperty.SetValue(objChk, ObjectToCreaetOrUpdate.Street, null);
-
                             }
-
                         }
-
-
                     }
 
+                    //uploaded more data edit
+                    // get dymanic colulmn name
+                    //var dycColCycle = CompassEntities.VW_GETTab6DropdownData.Where(o => o.ProjectID == objChk.FKProjectId && o.FieldName == "CYCLE").FirstOrDefault();
+                    //var dycColRoute = CompassEntities.VW_GETTab6DropdownData.Where(o => o.ProjectID == objChk.FKProjectId && o.FieldName == "ROUTE").FirstOrDefault();
+                    // Note Cycle and Rouet don't update because these field view page only readonly
+                    Type tClassColName = objChk.GetType();
+                    PropertyInfo[] proClass = tClassColName.GetProperties();
+
+                    var getOldMeterType = CompassEntities.VW_GETTab6DropdownData.Where(o => o.ProjectID == objChk.FKProjectId && o.FieldName == "OLD METER TYPE").FirstOrDefault();
+                    var OldMeterTypeColumnname = CompassEntities.TblProjectExcelMappings.Where(o => o.Active == 1 && o.FieldID == getOldMeterType.tabelId && o.FieldType == getOldMeterType.FieldType).FirstOrDefault();
+                    PropertyInfo curProOldMeterType = proClass.Where(o => o.Name == OldMeterTypeColumnname.FKUploadedExcelDataDynamicColumn).FirstOrDefault();
+                    curProOldMeterType.SetValue(objChk, ObjectToCreaetOrUpdate.OldMeterType, null);
+
+                    var getOldMeterMake = CompassEntities.VW_GETTab6DropdownData.Where(o => o.ProjectID == objChk.FKProjectId && o.FieldName == "OLD METER MAKE").FirstOrDefault();
+                    var OldMeterMakeColumnname = CompassEntities.TblProjectExcelMappings.Where(o => o.Active == 1 && o.FieldID == getOldMeterMake.tabelId && o.FieldType == getOldMeterMake.FieldType).FirstOrDefault();
+                    PropertyInfo curProOldMeterMake = proClass.Where(o => o.Name == OldMeterMakeColumnname.FKUploadedExcelDataDynamicColumn).FirstOrDefault();
+                    curProOldMeterMake.SetValue(objChk, ObjectToCreaetOrUpdate.OldMeterMake, null);
+
+                    var getOldMeterNumber = CompassEntities.VW_GETTab6DropdownData.Where(o => o.ProjectID == objChk.FKProjectId && o.FieldName == "OLD METER NUMBER").FirstOrDefault();
+                    var OldMeterNumberColumnname = CompassEntities.TblProjectExcelMappings.Where(o => o.Active == 1 && o.FieldID == getOldMeterNumber.tabelId && o.FieldType == getOldMeterNumber.FieldType).FirstOrDefault();
+                    PropertyInfo curProOldMeterNumber = proClass.Where(o => o.Name == OldMeterNumberColumnname.FKUploadedExcelDataDynamicColumn).FirstOrDefault();
+                    curProOldMeterNumber.SetValue(objChk, ObjectToCreaetOrUpdate.OldMeterNumber, null);
+
+                    var getOldMeterSize = CompassEntities.VW_GETTab6DropdownData.Where(o => o.ProjectID == objChk.FKProjectId && o.FieldName == "OLD METER SIZE").FirstOrDefault();
+                    var OldMeterSizeColumnname = CompassEntities.TblProjectExcelMappings.Where(o => o.Active == 1 && o.FieldID == getOldMeterSize.tabelId && o.FieldType == getOldMeterSize.FieldType).FirstOrDefault();
+                    PropertyInfo curProOldMeterSize = proClass.Where(o => o.Name == OldMeterSizeColumnname.FKUploadedExcelDataDynamicColumn).FirstOrDefault();
+                    curProOldMeterSize.SetValue(objChk, ObjectToCreaetOrUpdate.OldMeterSize, null);
+
+                    var getOldMeterRadioNumber = CompassEntities.VW_GETTab6DropdownData.Where(o => o.ProjectID == objChk.FKProjectId && o.FieldName == "OLD METER RADIO NUMBER").FirstOrDefault();
+                    var OldMeterRadioNumberColumnname = CompassEntities.TblProjectExcelMappings.Where(o => o.Active == 1 && o.FieldID == getOldMeterRadioNumber.tabelId && o.FieldType == getOldMeterRadioNumber.FieldType).FirstOrDefault();
+                    PropertyInfo curProOldMeterRadioNumber = proClass.Where(o => o.Name == OldMeterRadioNumberColumnname.FKUploadedExcelDataDynamicColumn).FirstOrDefault();
+                    curProOldMeterRadioNumber.SetValue(objChk, ObjectToCreaetOrUpdate.OldMeterRadioNumber, null);
+
+                    var getCustomer = CompassEntities.VW_GETTab6DropdownData.Where(o => o.ProjectID == objChk.FKProjectId && o.FieldName == "CUSTOMER").FirstOrDefault();
+                    var CustomerColumnname = CompassEntities.TblProjectExcelMappings.Where(o => o.Active == 1 && o.FieldID == getCustomer.tabelId && o.FieldType == getCustomer.FieldType).FirstOrDefault();
+                    PropertyInfo curProCustomer = proClass.Where(o => o.Name == CustomerColumnname.FKUploadedExcelDataDynamicColumn).FirstOrDefault();
+                    curProCustomer.SetValue(objChk, ObjectToCreaetOrUpdate.Customer, null);
+                    //ends hare
 
                     CompassEntities.SaveChanges();
                     // CompassEntities.STP_SetGroupIDVisitId_UploadID(ObjectToCreaetOrUpdate.ID);
@@ -2642,6 +2846,68 @@ namespace GarronT.CMS.Model.DAL
 
         #endregion
 
+        // Update lat long 
+        public bool UpdateLatLong(UploadedExcelData objChk1, string newStreetValue)
+        {
+            bool result = false;
+            string Citylat, Citylng;
+            string address, lat, lng;
+            CompassEntities CompassEntities = new CompassEntities();
+            UploadedExcelData objChk = CompassEntities.UploadedExcelDatas.Where(o => o.Id == objChk1.Id && o.Active == 1).FirstOrDefault();
+            var getData = CompassEntities.VW_GETTab6DropdownData.Where(o => o.ProjectID == objChk.FKProjectId && o.FieldName == "STREET").FirstOrDefault();
+            var streetColumnname = CompassEntities.TblProjectExcelMappings.Where(o => o.Active == 1 && o.FieldID == getData.tabelId && o.FieldType == getData.FieldType).FirstOrDefault();
+            try
+            {
+                var projectcitystate = (from p in CompassEntities.tblProjects
+                                        join c in CompassEntities.TblCityMasters on p.CityId equals c.CityId
+                                        join s in CompassEntities.tblStateMasters on p.StateId equals s.StateId
+                                        where p.ProjectId == objChk.FKProjectId && p.Active == 1 && c.Active == 1
+                                        select new
+                                        {
+                                            CityName = c.CityName,
+                                            StateName = s.StateName
+                                        }).FirstOrDefault();
+
+                FindCityCoordinates(Convert.ToString(projectcitystate.CityName) + ", " + projectcitystate.StateName + ", USA", out Citylat, out Citylng);
+
+                if (Convert.ToString(newStreetValue).Trim().Contains('#'))
+                {
+                    int startIndex = 0;
+                    int endIndex = newStreetValue.IndexOf('#'); ;
+                    int length = endIndex - startIndex - 1;
+                    String computeddress = newStreetValue.Substring(0, length);
+                    address = computeddress + ", " + Convert.ToString(projectcitystate.CityName) + ", " + projectcitystate.StateName + ", USA";
+                }
+                else
+                {
+                    address = newStreetValue + ", " + Convert.ToString(projectcitystate.CityName) + ", " + projectcitystate.StateName + ", USA";
+                }
+                if (!string.IsNullOrEmpty(address))
+                {
+                    System.Threading.Thread.Sleep(100);
+                    FindCoordinates(address, out lat, out lng, Citylat, Citylng);
+                    if (!string.IsNullOrEmpty(lat) && !string.IsNullOrEmpty(lng))
+                    {
+                        objChk.AddressLatitude = lat;
+                        objChk.AddressLongitude = lng;
+                        objChk.Street12 = newStreetValue;
+                        Type tClass = objChk.GetType();
+                        PropertyInfo[] pClass = tClass.GetProperties();
+                        PropertyInfo currentProperty = pClass.Where(o => o.Name == streetColumnname.FKUploadedExcelDataDynamicColumn).FirstOrDefault();
+                        currentProperty.SetValue(objChk, newStreetValue, null);
+                    }
+                }
+                CompassEntities.SaveChanges();
+                CompassEntities.PROC_SetGroupIDVisitId_UploadID(objChk.Id);
+                result = true;
+            }
+            catch (Exception ex)
+            {
+                result = false;
+            }
+            return result;
+        }
+        //
 
         public bool SaveProductServiceList(long ProjectID, long serviceId, long productid, int quantity, int projectServiceId)
         {

@@ -2936,6 +2936,31 @@ namespace GarronT.CMS.Model.DAL
         }
 
 
+        // Get Dynamic Col name
+        public string getDynamicColumnName(string temColName, string ProjectID)
+        {
+            try
+            {
+                string dynamicColumnName = "";
+                CompassEntities dbcontext = new CompassEntities();
+                SqlConnection _sqlCon = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
+                _sqlCon.Open();
+                SqlDataAdapter sda = new SqlDataAdapter("Select DynamicColumnName=[dbo].[FN_GetColumnName]('"+ temColName + "','" + ProjectID + "')", _sqlCon);
+                DataTable _dt = new DataTable();
+                sda.Fill(_dt);
+                if (_dt.Rows.Count > 0)
+                {
+                    dynamicColumnName = _dt.Rows[0]["DynamicColumnName"].ToString();
+                }
+                _sqlCon.Close();
+                return dynamicColumnName;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+        //end ahre
 
         public List<STP_GetExistedUserInstallationbyDate_Result> CheckAddressExistby_ProjectInstallerDate(long ProjectID, long InstallerID, DateTime fromDate, DateTime toDate)
         {
@@ -2972,6 +2997,49 @@ namespace GarronT.CMS.Model.DAL
                 reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
+                    string DynamicRouteColumnName = getDynamicColumnName("ROUTE",reader["FKProjectId"].ToString());
+                    string DynamicCycleColumnName = getDynamicColumnName("CYCLE", reader["FKProjectId"].ToString());
+
+                    long tempInstallerId = long.Parse(reader["installerid"].ToString());
+                    long tempProjectId = long.Parse(reader["FKProjectId"].ToString());
+                    string tempCycle = reader["Cycle"].ToString();
+                    string tempFromDate = DateTime.Parse(reader["FromDate"].ToString()).ToString("yyyy-MM-dd");
+                    string tempToDate = DateTime.Parse(reader["ToDate"].ToString()).ToString("yyyy-MM-dd");
+
+
+                    string strQuery = "select Distinct(u." + DynamicRouteColumnName + ") as Route,u." + DynamicCycleColumnName + " as Cycle from tblInstallerMapData as i join uploadedexceldata as u on i.fk_uploadedexceldata_id=u.id where i.InstallerId='" + tempInstallerId + "' and u.FKProjectId='" + tempProjectId + "' and u." + DynamicCycleColumnName + "='" + tempCycle + "' and (i.FromDate between '" + tempFromDate + "' and '" + tempFromDate + "' or i.ToDate between '" + tempToDate + "' and '" + tempToDate + "') order by Route";
+                    SqlCommand _cmdRoutes = new SqlCommand(strQuery, sqlConnection1);
+                    SqlDataAdapter _sda = new SqlDataAdapter(_cmdRoutes);
+                    DataTable _dt = new DataTable();
+                    _sda.Fill(_dt);
+                    string finalRoute = string.Empty;
+                    if (_dt.Rows.Count > 0)
+                    {
+                        /*string[] values = reader["Route"].ToString().Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                        foreach (string item in values)
+                        {
+                            string sd = item.ToString();
+                        }*/
+
+                        string strValue = reader["Route"].ToString();
+                        string[] strArray = strValue.Split(',');
+
+                        foreach (object obj in strArray)
+                        {
+                            string cc = obj.ToString();
+                            foreach (DataRow item in _dt.Rows)
+                            {
+                                string ff = item["Route"].ToString();
+                                if (cc == ff)
+                                {
+                                    finalRoute += ff + ",";
+                                }
+                            }
+                        }
+                    }
+
+                    finalRoute = finalRoute.Remove(finalRoute.Length - 1, 1);
+
                     objList.Add(new STP_GetExistedUserInstallationbyDate_Result
                     {
                         FromDate = DateTime.Parse(reader["FromDate"].ToString()),
@@ -2984,7 +3052,8 @@ namespace GarronT.CMS.Model.DAL
                         UserName = reader["UserName"].ToString(),
                         /*to be uncommented later*/
                         Cycle = reader["Cycle"].ToString(),
-                        Route = reader["Route"].ToString(),
+                        //Route = reader["Route"].ToString(),
+                        Route = finalRoute,
                     });
 
                 }
