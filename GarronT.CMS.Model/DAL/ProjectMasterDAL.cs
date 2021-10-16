@@ -2441,7 +2441,8 @@ namespace GarronT.CMS.Model.DAL
                             Latitude = reader["Latitude"].ToString(),
                             Longitude = reader["Longitude"].ToString(),
                             Route = reader["Route"].ToString(),
-                            Street = reader["Street"].ToString()
+                            Street = reader["Street"].ToString(),
+                            CreatedOn = reader["CreatedOn"].ToString()
                         });
                     }
                     // Data is accessible through the DataReader object here.
