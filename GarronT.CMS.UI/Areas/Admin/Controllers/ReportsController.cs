@@ -396,7 +396,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         /// <param name="AdressId"></param>
         /// <param name="Status"></param>
         /// <returns></returns>
-        public ActionResult getListDetails(long ProjectId, List<string> InstallerId, string fromDate, string Todate, List<string> cycleId, List<string> RouteId, List<string> AdressId, List<string> Status)
+        public ActionResult getListDetails(long ProjectId, List<string> InstallerId, string fromDate, string Todate, List<string> cycleId, List<string> RouteId, List<string> AdressId, List<string> Status,string accountNo)
         {
             try
             {
@@ -412,6 +412,9 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 TempData["RouteIdList"] = RouteId;
                 TempData["AdressIdList"] = AdressId;
                 TempData["StatusList"] = Status;
+
+                TempData["accountNo"] = accountNo;
+
                 TempData.Keep("ProjectId");
                 TempData.Keep("InstallerIdList");
                 TempData.Keep("fromDate");
@@ -419,6 +422,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 TempData.Keep("cycleIdList");
                 TempData.Keep("RouteIdList");
                 TempData.Keep("AdressIdList");
+
+                TempData.Keep("accountNo");
 
                 bool result = getdata();
                 if (result)
@@ -499,13 +504,14 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         }
 
         #region getdata changed by vishal
-
+        
         public bool getdata()
         {
             long ProjectId;
             List<string> InstallerId = null; string fromDate; string Todate;
             List<string> cycleId = null; List<string> RouteId = null; List<string> AdressId = null;
             List<string> StatusList = null;
+            string accountNo = string.Empty;
             ProjectId = long.Parse(Convert.ToString(TempData["ProjectId"]));
             if (TempData["InstallerIdList"] != null)
             {
@@ -532,6 +538,11 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 StatusList = (List<string>)TempData["StatusList"];
             }
 
+            if (TempData["accountNo"] != null && Convert.ToString(TempData["accountNo"]) != "")
+            {
+                // are comming data in accountNo Objcet ==> Account number,Old Meter number,Old Meter Radio number and STREET.
+                accountNo = Convert.ToString(TempData["accountNo"]); 
+            }
 
 
             TempData.Keep("ProjectId");
@@ -542,6 +553,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             TempData.Keep("RouteIdList");
             TempData.Keep("AdressIdList");
             TempData.Keep("StatusList");
+
+            TempData.Keep("accountNo");
             try
             {
                 //System.Collections.Generic.List<STP_GetReportTable_Result> list2 = new System.Collections.Generic.List<STP_GetReportTable_Result>();
@@ -560,14 +573,18 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 List<STP_GetReportTableNew_bak_Result> demo = new List<STP_GetReportTableNew_bak_Result>();
                 List<STP_GetReportTableNew_bak_Result> demo1 = new List<STP_GetReportTableNew_bak_Result>();
                 List<STP_GetReportTableNew_bak_Result> demoList = new List<STP_GetReportTableNew_bak_Result>();
-                if (StatusList != null)  // If visit status  selected
+                if (accountNo != null && accountNo != "" && accountNo != string.Empty)
+                {
+                    demo = new ReportDAL().GetReportsRecordsNew_bak(ProjectId, null, null, accountNo);
+                }
+                else if (StatusList != null)  // If visit status  selected
                 {
                     if (StatusList.Contains("PENDING") || StatusList.Contains("NOT ALLOCATED"))
                     {
                         List<STP_GetReportTableNew_bak_Result> Result1 = new List<STP_GetReportTableNew_bak_Result>();
 
 
-                        Result1 = new ReportDAL().GetReportsRecordsNew_bak(ProjectId, null, null);
+                        Result1 = new ReportDAL().GetReportsRecordsNew_bak(ProjectId, null, null, null);
                         if (StatusList.Contains("SKIP") || StatusList.Contains("COMPLETED") || StatusList.Contains("RTU"))
                         {
                             if (Result1.Count > 0)
@@ -591,7 +608,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     }
                     else
                     {
-                        demo = new ReportDAL().GetReportsRecordsNew_bak(ProjectId, fd1, to1);
+                        demo = new ReportDAL().GetReportsRecordsNew_bak(ProjectId, fd1, to1, null);
                     }
 
                     if (cycleId != null)
@@ -624,7 +641,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 }
                 else    // If visit status not selected
                 {
-                    var Result1 = new ReportDAL().GetReportsRecordsNew_bak(ProjectId, null, null);
+                    var Result1 = new ReportDAL().GetReportsRecordsNew_bak(ProjectId, null, null, null);
                     List<string> list = new List<string>();
                     list.Add("SKIP");
                     list.Add("COMPLETED");

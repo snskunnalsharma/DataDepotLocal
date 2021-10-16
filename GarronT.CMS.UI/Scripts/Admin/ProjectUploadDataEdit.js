@@ -139,6 +139,7 @@ function bindActiveTable() {
                               { "mData": "Street" },
                                { "mData": "Latitude" },
                                 { "mData": "Longitude" },
+                                { "mData": "CreatedOn" },
 
                            { "bSearchable": false, "mData": null },
 
@@ -150,7 +151,7 @@ function bindActiveTable() {
                                                       //  return '<a href="#confirmDeactivatedialog" data-backdrop="static" data-toggle="modal" id=' + full.CountryID + ' onclick="Deactivate(' + full.CountryID + ');" class="btn btn-danger btn-xs" role="button" alt="Delete" title="Delete"><i class="fa fa-ban"></i></a>';
 
                                                   },
-                                                  "aTargets": [6]
+                                                  "aTargets": [7]
                                               }
        ],
 

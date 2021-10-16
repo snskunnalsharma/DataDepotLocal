@@ -288,7 +288,7 @@ $(document).ready(function () {
     });
 
     //#endregion
-
+    document.getElementById("quickSearch").disabled = true;
     GetProjectStatusList()
     GetStatusList()
 });
@@ -413,6 +413,7 @@ function GetProjectListbyProjectStatus() {
 
 $('#ddlProject').change(function () {
 
+    document.getElementById("quickSearch").disabled = false;
     var projectID = $("#ddlProject option:selected").val();
     ResetInstaller()
     if (projectID != "0" && projectID != undefined) {
@@ -653,7 +654,7 @@ function ResetAllData() {
     $('#datepicker1').datepicker('setDate', null);
     $('#datepicker2').datepicker('setDate', null);
 
-
+    document.getElementById("quickSearch").disabled = true;
 
 
 }
@@ -667,7 +668,51 @@ $("#btnCancel1").click(function () {
 //#endregion
 
 
+//#region get account number
+$('#quickSearch').change(function () {
 
+    if ($(this).is(":checked")) {
+
+        $('#divStatus .chosen-drop').css('display', 'none');
+        $('#divInstaller .chosen-drop').css('display', 'none');
+        $('#divCycle .chosen-drop').css('display', 'none');
+        $('#divRoute .chosen-drop').css('display', 'none');
+        $('#divAddress .chosen-drop').css('display', 'none');
+
+        var projectID = $("#ddlProject option:selected").val();
+        GetStatusList();
+        ResetInstaller();
+        GetInstallerByProjectID(projectID);
+        GetCycleListbyProjectID(projectID);
+        $('.txtfilterall').val("");
+        $('.chbSelectAll').prop('checked', false);
+        //$('#datepicker1').datepicker('setDate', null);
+        //$('#datepicker2').datepicker('setDate', null);
+        document.getElementById('datepicker1').readOnly = true;
+        document.getElementById('datepicker2').readOnly = true;
+
+        $('#accountNo').val("");
+        document.getElementById('accountNo').readOnly = false;
+        //document.getElementById('accountNo').removeAttribute('readonly');
+
+    }
+    else {
+
+        $('#divStatus .chosen-drop').css('display', 'block');
+        $('#divInstaller .chosen-drop').css('display', 'block');
+        $('#divCycle .chosen-drop').css('display', 'block');
+        $('#divRoute .chosen-drop').css('display', 'block');
+        $('#divAddress .chosen-drop').css('display', 'block');
+
+        document.getElementById('datepicker1').readOnly = false;
+        document.getElementById('datepicker2').readOnly = false;
+
+        $('#accountNo').val("");
+        document.getElementById('accountNo').readOnly = true;
+        console.log("sdff");
+    }
+});
+//#endregion
 
 $('#btnSearch').unbind("click").click(function () {
     debugger;
@@ -929,10 +974,23 @@ function _searchClick() {
     var Todate = $('#datepicker2').val();
     var urlRoleData = $('#UrlgetListDetails').val();
 
+    var objAccountNo = $('#accountNo').val();
+    var objCheckBox = document.getElementById("quickSearch");
+    if (objCheckBox.checked == true)
+    {
+        if (objAccountNo.length > 0) {
+            console.log("test");
+        }
+        else {
+            var $toast = toastr["error"]('Please Enter Account Number', 'Error Notification');
+            return false;
+        }
+    }
+    
     $.ajax({
         type: 'POST',
         url: urlRoleData,
-        data: { ProjectId: ProjectId, InstallerId: InstallerIdList, fromDate: fromDate, Todate: Todate, cycleId: cycleIdList, RouteId: RouteIdList, AdressId: AdressIdList, Status: objStatusList },
+        data: { ProjectId: ProjectId, InstallerId: InstallerIdList, fromDate: fromDate, Todate: Todate, cycleId: cycleIdList, RouteId: RouteIdList, AdressId: AdressIdList, Status: objStatusList, accountNo: objAccountNo},
         beforeSend: function () {
             waitingDialog.show('Loading Please Wait...');
         },
@@ -2430,7 +2488,7 @@ function validateForm(IsRequired) {
 
 //#region New code for ProjectStatus multiselect dropdown
 function selectProjectStatus() {
-
+    
     var selectedlivalue = $('#ulProjectStatus li.highlighted').map(function (i, el) {
         return $(el).val();
     });
@@ -2451,6 +2509,7 @@ function selectProjectStatus() {
     }
     //#endregion
 
+    document.getElementById("quickSearch").disabled = true;
     ResetProject()
     GetProjectListbyProjectStatus()
 }

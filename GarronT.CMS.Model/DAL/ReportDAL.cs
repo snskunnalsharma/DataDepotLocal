@@ -131,7 +131,7 @@ namespace GarronT.CMS.Model.DAL
         //}
 
 
-        public List<STP_GetReportTableNew_bak_Result> GetReportsRecordsNew_bak(long ProjectId, DateTime? fromDate, DateTime? Todate)
+        public List<STP_GetReportTableNew_bak_Result> GetReportsRecordsNew_bak(long ProjectId, DateTime? fromDate, DateTime? Todate,string accountNo)
         {
 
             try
@@ -151,6 +151,7 @@ namespace GarronT.CMS.Model.DAL
                 cmd.Parameters.Add("@ProjectId", ProjectId);
                 cmd.Parameters.Add("@fromDate", fromDate);
                 cmd.Parameters.Add("@toDate", Todate);
+                cmd.Parameters.Add("@quickSearch", accountNo);
 
                 sqlConnection1.Open();
                 DateTime? dt1 = null;

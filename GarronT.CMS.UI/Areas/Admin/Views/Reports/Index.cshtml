@@ -2975,24 +2975,38 @@
                                 <input type="checkbox" id="chkShowMap" /> Include map on export report
                             </div>
                         </div>
+                        <style>
+                            input::placeholder {
+                                font-size: 1.0em;
+                            }
+                        </style>
+                        <div class="col-lg-3 col-md-5 col-sm-6 col-xs-6 col-xxs-12 sm-mbot1 xs-mbot2 xxs-clear xxs-center xxs-mbot2" style="padding-left:15px;padding-right:0px">
+                            <div class="col-lg-8 col-md-6 col-sm-6 col-xs-6 col-xxs-6" style="padding-left: 0px; padding-right: 5px">
+                                <input type="text" name="accountNo" id="accountNo" readonly placeholder="Enter Account, Meter, Radio or Address" class="form-control" />
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-6 col-xs-6 col-xxs-6" style="padding: 0px">
+                                <input type="checkbox" id="quickSearch" /> Quick Search
+                            </div>
+                        </div>
+
                         @*<div class="col-lg-6 col-sm-6 col-xs-12">*@
                         @*<div class="col-lg-9 col-md-8 col-sm-6 col-xs-6 col-xxs-12 ">*@
-                        <div class="col-lg-6 col-md-5 col-sm-6 col-xs-6 col-xxs-12 sm-mbot1 xs-mbot2 xxs-clear xxs-center xxs-mbot2">
+                        <div class="col-lg-3 col-md-5 col-sm-6 col-xs-6 col-xxs-12 sm-mbot1 xs-mbot2 xxs-clear xxs-center xxs-mbot2">
                             @*<div class="form-group col-lg-3 col-sm-6 col-xs-5 rep_srch ">*@
                             <button id="btnSearch" class="btn btn-success" type="button">Search</button>
                             @*</div>
-                                <div class="form-group col-lg-3 col-sm-6 col-xs-5 rep_res ">*@
+            <div class="form-group col-lg-3 col-sm-6 col-xs-5 rep_res ">*@
                             <button class="btn btn-danger" id="btnReset" type="button">Reset</button>
                             @*</div>
-                                <div class="form-group col-lg-3 col-sm-6 col-xs-5 rep_srch ">*@
+            <div class="form-group col-lg-3 col-sm-6 col-xs-5 rep_srch ">*@
                             @*<button id="btnExport" class="btn btn-success btn-exp" type="button">Export</button>*@
                             <button id="btnExport" class="btn btn-success" type="button">Export</button>
                         </div>
 
-                    @*</div>
+                        @*</div>
 
 
-                    <div class="row">*@
+        <div class="row">*@
                         @*<div class="col-lg-3 col-sm-6 col-xs-8 dup-color-bootstrap" style="float:right;">*@
                         <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 col-xxs-12 sm-clear xs-clear xxs-clear xs-right xxs-right dup-color-bootstrap" style="float:right;">
                             @*<div class="form-group dup-text-div text-right">*@

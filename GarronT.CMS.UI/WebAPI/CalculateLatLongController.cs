@@ -835,7 +835,7 @@ namespace GarronT.CMS.UI.WebAPI
                 }
                 List<String> mailto = new List<String>();
                 //mailto.Add("yogendra.rajpoot@snssystem.com");
-                //mailto.Add("deepak.rajpoot@snssystem.com");
+                //mailto.Add("deepak.yadav@snssystem.com");
 
                 //mailto.Add(UserName);
                 new GarronT.CMS.Model.clsMail().SendMail(mailto, null, GetRegisterMailBody(projetID, ex.Message + "\n Uploaded excel table not save Lat or Long Records id = " + id), "Error in Latitude,Longitude calculation");
@@ -1065,7 +1065,7 @@ namespace GarronT.CMS.UI.WebAPI
                                     List<String> mailto = new List<String>();
                                     // mailto.Add("aniket.jadhav@kairee.in");
                                     mailto.Add("yogendra.rajpoot@snssystem.com");
-                                    mailto.Add("deepak.rajpoot@snssystem.com");
+                                    mailto.Add("deepak.yadav@snssystem.com");
 
                                     new GarronT.CMS.Model.clsMail().SendMail(mailto, null, GetRegisterMailBody(projetID, ex.Message), "Error in Latitude,Longitude calculation");
                                 }
@@ -1140,7 +1140,7 @@ namespace GarronT.CMS.UI.WebAPI
                 List<String> mailto = new List<String>();
                 //mailto.Add("aniket.jadhav@kairee.in");
                 //mailto.Add("yogendra.rajpoot@snssystem.com");
-                //mailto.Add("deepak.rajpoot@snssystem.com");
+                //mailto.Add("deepak.yadav@snssystem.com");
 
                 new GarronT.CMS.Model.clsMail().SendMail(mailto, null, GetRegisterMailBody(projetID, ex.Message), "Error in Latitude,Longitude calculation");
             }
@@ -1287,7 +1287,7 @@ namespace GarronT.CMS.UI.WebAPI
             {
                 List<String> mailto = new List<String>();
                 mailto.Add("yogendra.rajpoot@snssystem.com");
-                mailto.Add("deepak.rajpoot@snssystem.com");
+                mailto.Add("deepak.yadav@snssystem.com");
                 new GarronT.CMS.Model.clsMail().SendMail(mailto, null, GetRegisterMailBody(projetID, ex.Message + "\n Uploaded excel table not save Lat or Long Records id = " + id), "Error in Latitude,Longitude calculation");
             }
         }
