@@ -1316,9 +1316,10 @@ function checkTab3Status() {
             //ddlService767
             var selectedProductList = $('#ddlService' + $(this)[0].id).val();
 
-
+            debugger;
             var serviceObject = { serviceId: $(this)[0].id, servicePrice: $(this).val(), imageCaptureRequired: imageRequired, AssignedProductList: selectedProductList };
             data1.push(serviceObject);
+            debugger;
         }
         else {
             checkVal = true;
@@ -1340,15 +1341,16 @@ function checkTab3Status() {
     debugger;
 
     var data0 = { projectId: $("#txtProjectId").val(), Servicedata: data1};
-
+    debugger;
     var json = JSON.stringify(data0);
+    console.log(json);
 
-
+    debugger;
     jQuery.ajaxSettings.traditional = true;
     var urlSaveTab3Data = $('#SaveTab3Url').val();
     $.ajax({
         url: urlSaveTab3Data,
-        type: "GET",
+        type: "POST",
         // async: false,
         data: {
             "Objdata": json
@@ -1365,6 +1367,7 @@ function checkTab3Status() {
             }
         },
         error: function () {
+            console.log("get error");
             var $toast = toastr["error"]("something seems wrong", "Error Notification");
             return false;
         }
