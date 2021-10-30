@@ -539,14 +539,14 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     }
                     else
                     {
-                        return Json(new { status = false, ErrorMessage = "No data avilable for selected date range." }, JsonRequestBehavior.AllowGet);
+                        return Json(new { status = false, ErrorMessage = "No data available for selected date range." }, JsonRequestBehavior.AllowGet);
                     }
 
 
                 }
                 else
                 {
-                    return Json(new { status = false, ErrorMessage = "No data avilable for selected date range." }, JsonRequestBehavior.AllowGet);
+                    return Json(new { status = false, ErrorMessage = "No data available for selected date range." }, JsonRequestBehavior.AllowGet);
                 }
 
 

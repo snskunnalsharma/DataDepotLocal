@@ -670,13 +670,36 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         string fileName = "";
                         bool isLatlongCalucalted = false;
 
+                        int newRecordsCount = 0;
+                        int skipedRecordsCount = 0;
+                        int updatedRecordsCount = 0;
+                        string skipedAccountsNo = string.Empty;
 
                         success = new ProjectMasterDAL().CreateOrUpdateExcelMappingData(objTblProjectExcelMapping, ProjectID,
-                            objobjExcelSheetBOList, UserId, dt, out returnMessage, out dt1, out isLatlongCalucalted);
+                            objobjExcelSheetBOList, UserId, dt, out returnMessage, out dt1, out isLatlongCalucalted,
+                            out newRecordsCount, out skipedRecordsCount,out updatedRecordsCount,out skipedAccountsNo);
+
+                        CompassEntities objCompassEntities = new CompassEntities();
+                        var objProjectdetail = objCompassEntities.tblProjects.Where(o => o.ProjectId == ProjectID).FirstOrDefault();
+                        var loginUserDetail = objCompassEntities.tblUsers.Where(o => o.UserID == UserId && o.Active == 1).FirstOrDefault();
 
                         List<String> mailto = new List<String>();
-                        mailto.Add("yogendra.rajpoot@snssystem.com");
-                        mailto.Add("deepak.yadav@snssystem.com");
+                        mailto.Add(loginUserDetail.Email);
+
+                        List<String> mailcc = new List<String>();
+                        mailcc.Add("garron@garront.com");
+                        mailcc.Add("yogendra.rajpoot@snssystem.com");
+                        mailcc.Add("deepak.yadav@snssystem.com");
+
+                        string eMailBody = "Excel file uploaded successfully.<br /><br />" +
+                                           "Project Name: <b>" + objProjectdetail.ProjectName + "</b><br />" +
+                                           "Project Id: <b>"+ ProjectID + "</b><br />" +
+                                           "Total New Records: <b>" + newRecordsCount + "</b><br />" +
+                                           "Total Skipped Records: <b>" + skipedRecordsCount + "</b><br />" +
+                                           "<br />" + skipedAccountsNo + ""+
+                                           "<br /><br />Thanks and Regards,<br />Team CMS";
+
+                        new GarronT.CMS.Model.clsMail().SendMail(mailto, mailcc, eMailBody, "Excel file uploaded");
                         //new GarronT.CMS.Model.clsMail().SendMail(mailto, null, "Excel file uploaded successfully. <br /> Project Id : " + ProjectID + "<br /><br />Thanks and Regards,<br />Team CMS", "Excel file uploaded");
 
                         /// calculate the latitude

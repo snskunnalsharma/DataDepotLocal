@@ -1965,12 +1965,18 @@ namespace GarronT.CMS.Model.DAL
         /// <param name="IsLatLongCalculated"></param>
         /// <returns></returns>
         public bool CreateOrUpdateExcelMappingData(TblProjectExcelMapping objTblProjectExcelMapping, long ProjectID,
-            List<ExcelSheetBO> objExcelSheetBOList, int userId, DataTable dt, out string returnMessage, out DataTable dt1, out bool IsLatLongCalculated)
+            List<ExcelSheetBO> objExcelSheetBOList, int userId, DataTable dt, out string returnMessage, out DataTable dt1, out bool IsLatLongCalculated,
+            out int newRecordsCount, out int skipedRecordsCount, out int updatedRecordsCount, out string skipedAccountsNo)
         {
             IsLatLongCalculated = false;
             bool result = false;
             returnMessage = "Unable to Save Records.";
             dt1 = null;
+            newRecordsCount = 0;
+            skipedRecordsCount = 0;
+            updatedRecordsCount = 0;
+            skipedAccountsNo = "Skipped Account No.";
+
             CompassEntities objCompassEntities = new CompassEntities();
             try
             {
@@ -2186,6 +2192,8 @@ namespace GarronT.CMS.Model.DAL
 
                                             if (checkDataSubmitted > 0)
                                             {
+                                                skipedRecordsCount++;   // Count Skipt records
+                                                skipedAccountsNo += "<br />"+ Convert.ToString(dtRow[sAccount]) + "";
                                                 visitDone = true;
                                             }
                                         }
@@ -2198,8 +2206,9 @@ namespace GarronT.CMS.Model.DAL
 
                                     if (visitDone == false)
                                     {
-
-
+                                        int i = 0;
+                                        //updatedRecordsCount++;
+                                        skipedRecordsCount++;   // Count Skipt records only count skip records
                                         UploadedExcelData objRecord = new UploadedExcelData();
 
                                         objRecord.FKProjectId = ProjectID;
@@ -2221,11 +2230,9 @@ namespace GarronT.CMS.Model.DAL
                                         }
 
 
-
-
                                         if (flagInsert)
                                         {
-
+                                            i++;
                                             objRecord.Active = 1;
                                             objRecord.CreatedOn = new CommonFunctions().ServerDate();
                                             objRecord.CreatedBy = long.Parse(userId.ToString());
@@ -2235,11 +2242,16 @@ namespace GarronT.CMS.Model.DAL
                                             objCompassEntities1.Configuration.AutoDetectChangesEnabled = false;
                                             objCompassEntities1.Configuration.ValidateOnSaveEnabled = false;
                                             objCompassEntities1.UploadedExcelDatas.Add(objRecord);
-
                                             objCompassEntities1.SaveChanges();
 
-                                        }
+                                            skipedRecordsCount--;
+                                            newRecordsCount++;
 
+                                        }
+                                        if (i == 0)
+                                        {
+                                            skipedAccountsNo += "<br />" + Convert.ToString(dtRow[sAccount]) + "";
+                                        }
                                         result = true;
                                     }
                                 }
