@@ -1107,6 +1107,14 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     #endregion
                 }
 
+                dt.Columns.Add("Form Name", typeof(string));
+                if (projectId == 10075) // This Condition applied garland Project as per client
+                {
+                    dt.Columns.Add("Meter Box Start Time", typeof(string));
+                    dt.Columns.Add("Meter Box End Time", typeof(string));
+                    dt.Columns.Add("Meter Box Time", typeof(string));
+                }
+
                 var distinctId = objList.Select(o => o.TblProjectFieldData_Id).Distinct().ToList();
 
                 foreach (var item in distinctId)
@@ -1118,6 +1126,41 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     dr["ATTENDANT NAME"] = Convert.ToString(_data1.Installer_Name);
                     dr["VISIT ATTENDED DATETIME"] = Convert.ToString(_data1.visitdatetime);
                     dr["VISIT STATUS"] = "COMPLETED";
+                    dr["Form Name"] = Convert.ToString(_data1.FormName);
+
+                    TimeSpan timeDiff = new TimeSpan();
+                    DateTime start = new DateTime();
+                    DateTime end = new DateTime();
+                    if (projectId == 10075) // This Condition applied garland Project as per client
+                    {
+                        var tempMeterBoxData = objList.Where(o => o.TblProjectFieldData_Id == item).ToList();
+                        string beforeTime = string.Empty;
+                        string afterTime = string.Empty;
+                        foreach (var objItem in tempMeterBoxData)
+                        {
+                            if (objItem.InitialFieldName.ToLower() == "METER BOX BEFORE PHOTO".ToLower())
+                            {
+                                beforeTime = objItem.CapturedDateTime.ToString();
+                            }
+                            if (objItem.InitialFieldName.ToLower() == "METER BOX AFTER PHOTO".ToLower())
+                            {
+                                afterTime = objItem.CapturedDateTime.ToString();
+                            }
+                        }
+                        start = new DateTime();
+                        end = new DateTime();
+                        if (beforeTime != null && beforeTime != "" && afterTime != null && afterTime != "")
+                        {
+                            start = Convert.ToDateTime(beforeTime);
+                            end = Convert.ToDateTime(afterTime);
+                            timeDiff = TimeSpan.Parse(end.ToString("hh:mm:ss")) - TimeSpan.Parse(start.ToString("hh:mm:ss"));
+                        }
+
+                        dr["Meter Box Start Time"] = start.ToString("MMM-dd-yyyy hh:mm tt");
+                        dr["Meter Box End Time"] = end.ToString("MMM-dd-yyyy hh:mm tt");
+                        dr["Meter Box Time"] = timeDiff;
+                    }
+
 
                     #region
                     foreach (var item1 in ExportColumnNameList)

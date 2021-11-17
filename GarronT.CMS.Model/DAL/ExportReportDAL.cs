@@ -503,7 +503,8 @@ namespace GarronT.CMS.Model.DAL
                         TblProjectFieldData_Id = long.Parse(reader["TblProjectFieldData_Id"].ToString()),
                         ProjectFieldDataMasterID = long.Parse(reader["ProjectFieldDataMasterID"].ToString()),
                         ToDate = DateTime.Parse(reader["ToDate"].ToString()),
-                        visitdatetime = DateTime.Parse(reader["visitdatetime"].ToString())
+                        visitdatetime = DateTime.Parse(reader["visitdatetime"].ToString()),
+                        FormName = reader["FormName"].ToString()
 
                     });
 

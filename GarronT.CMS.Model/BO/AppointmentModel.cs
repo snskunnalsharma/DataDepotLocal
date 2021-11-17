@@ -103,6 +103,7 @@ namespace GarronT.CMS.Model.BO
         public string Installer_Name { get; set; }
         public Nullable<System.DateTime> FromDate { get; set; }
         public Nullable<System.DateTime> ToDate { get; set; }
+        public string FormName { get; set; }
     }
 
 }

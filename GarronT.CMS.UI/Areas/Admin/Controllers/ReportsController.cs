@@ -2516,6 +2516,43 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 @ViewBag.ProjectDate = reportheader.ProjectDate;
                 @ViewBag.InstallerName = reportheader.InstallerName;
 
+                // Meter Box Time Calculation Code
+                CompassEntities objCompassEntities = new CompassEntities();
+                var proId = objCompassEntities.UploadedExcelDatas.Where(o => o.Id == ID && o.Active == 1).Select(o => o.FKProjectId).FirstOrDefault();
+                TimeSpan diff = new TimeSpan();
+                string hh = "";
+                string mm = "";
+                string ss = "";
+                @ViewBag.ProjectId = proId;
+                if (proId == 10075) // Only for Garland Project
+                {
+                    string beforeTime = string.Empty;
+                    string afterTime = string.Empty;
+                    foreach (var item in list)
+                    {
+                        if (item.FieldName.ToLower() == "METER BOX BEFORE PHOTO".ToLower())
+                        {
+                            beforeTime = item.captureTimeStamp.ToString();
+                        }
+                        if (item.FieldName.ToLower() == "METER BOX AFTER PHOTO".ToLower())
+                        {
+                            afterTime = item.captureTimeStamp.ToString();
+                        }
+                    }
+                    if (beforeTime != null && beforeTime != "" && afterTime != null && afterTime != "")
+                    {
+                        DateTime start = Convert.ToDateTime(beforeTime);
+                        DateTime end = Convert.ToDateTime(afterTime);
+                        //hh = end.Subtract(start).Hours.ToString("00");
+                        //mm = end.Subtract(start).Minutes.ToString("00");
+                        //ss = end.Subtract(start).Seconds.ToString("00");
+                        diff = TimeSpan.Parse(end.ToString("hh:mm:ss")) - TimeSpan.Parse(start.ToString("hh:mm:ss"));
+                    }
+                    //@ViewBag.MeterAfterBeforeBoxDiffTime = hh + ":" + mm + ":" + ss;
+                    @ViewBag.MeterAfterBeforeBoxDiffTime = diff;
+                }
+                // ends hare
+
                 @ViewBag.UploadID = ID;
                 @ViewBag.FormID = frmID;
 
@@ -2653,6 +2690,36 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 @ViewBag.ProjectName = reportheader.projectname;
                 @ViewBag.ProjectDate = Convert.ToDateTime(reportheader.visiteddate).ToString("MMM-dd-yyyy hh:mm tt");
                 @ViewBag.InstallerName = reportheader.firstname;
+
+                // Meter Box Time Calculation Code
+                CompassEntities objCompassEntities = new CompassEntities();
+                var proId = objCompassEntities.UploadedExcelDatas.Where(o => o.Id == ID && o.Active == 1).Select(o => o.FKProjectId).FirstOrDefault();
+                TimeSpan diff = new TimeSpan();
+                @ViewBag.ProjectId = proId;
+                if (proId == 10075) // Only for Garland Project
+                {
+                    string beforeTime = string.Empty;
+                    string afterTime = string.Empty;
+                    foreach (var item in list)
+                    {
+                        if (item.FieldName.ToLower() == "METER BOX BEFORE PHOTO".ToLower())
+                        {
+                            beforeTime = item.captureTimeStamp.ToString();
+                        }
+                        if (item.FieldName.ToLower() == "METER BOX AFTER PHOTO".ToLower())
+                        {
+                            afterTime = item.captureTimeStamp.ToString();
+                        }
+                    }
+                    if (beforeTime != null && beforeTime != "" && afterTime != null && afterTime != "")
+                    {
+                        DateTime start = Convert.ToDateTime(beforeTime);
+                        DateTime end = Convert.ToDateTime(afterTime);
+                        diff = TimeSpan.Parse(end.ToString("hh:mm:ss")) - TimeSpan.Parse(start.ToString("hh:mm:ss"));
+                    }
+                    @ViewBag.MeterAfterBeforeBoxDiffTime = diff;
+                }
+                // ends hare
 
                 @ViewBag.UploadID = ID;
                 @ViewBag.FormID = frmID;
@@ -2833,6 +2900,9 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         reportPDFVM.sectionfiledval = list;
                         reportPDFVM.FormID = ReportRow.FormID;
                         reportPDFVM.UploadID = ReportRow.UploadedID;
+                        long projectId;
+                        reportPDFVM.MeterAfterBeforeBoxDiffTime = meterBox(ReportRow.UploadedID, list,out projectId);
+                        reportPDFVM.ProjectId = projectId;
                     }
                     else if (ReportRow.CategoryType == "RTU" || ReportRow.CategoryType == "SKIP")
                     {
@@ -2853,6 +2923,38 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             }
         }
 
+        public string meterBox(long ID, List<sectionfiledval> list,out long projectId)
+        {
+            // Meter Box Time Calculation Code
+            CompassEntities objCompassEntities = new CompassEntities();
+            var proId = objCompassEntities.UploadedExcelDatas.Where(o => o.Id == ID && o.Active == 1).Select(o => o.FKProjectId).FirstOrDefault();
+            projectId = proId;
+            TimeSpan diff = new TimeSpan();
+            if (proId == 10075) // Only for Garland Project
+            {
+                string beforeTime = string.Empty;
+                string afterTime = string.Empty;
+                foreach (var item in list)
+                {
+                    if (item.FieldName.ToLower() == "METER BOX BEFORE PHOTO".ToLower())
+                    {
+                        beforeTime = item.captureTimeStamp.ToString();
+                    }
+                    if (item.FieldName.ToLower() == "METER BOX AFTER PHOTO".ToLower())
+                    {
+                        afterTime = item.captureTimeStamp.ToString();
+                    }
+                }
+                if (beforeTime != null && beforeTime != "" && afterTime != null && afterTime != "")
+                {
+                    DateTime start = Convert.ToDateTime(beforeTime);
+                    DateTime end = Convert.ToDateTime(afterTime);
+                    diff = TimeSpan.Parse(end.ToString("hh:mm:ss")) - TimeSpan.Parse(start.ToString("hh:mm:ss"));
+                }
+            }
+            // ends hare
+            return Convert.ToString(diff);
+        }
 
         public ActionResult ViewMultiplePDF()
         {
@@ -2952,6 +3054,9 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         reportPDFVM.FormID = ReportRow.FormID;
                         reportPDFVM.UploadID = ReportRow.UploadedID;
                         reportPDFVM.sectionfiledval = list;
+                        long projectId;
+                        reportPDFVM.MeterAfterBeforeBoxDiffTime = meterBox(ReportRow.UploadedID, list, out projectId);
+                        reportPDFVM.ProjectId = projectId;
                     }
                     else if (ReportRow.CategoryType == "RTU" || ReportRow.CategoryType == "SKIP")
                     {

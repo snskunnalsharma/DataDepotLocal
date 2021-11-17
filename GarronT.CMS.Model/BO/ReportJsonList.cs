@@ -209,6 +209,8 @@ namespace GarronT.CMS.Model.BO
         public string CategoryType { get; set; }
         public List<sectionfiledval> sectionfiledval { get; set; }
         public ReportSkipRTUModel skipRtuRecordModel { get; set; }
+        public long ProjectId { get; set; }
+        public string MeterAfterBeforeBoxDiffTime { get; set; }
     }
 
 
