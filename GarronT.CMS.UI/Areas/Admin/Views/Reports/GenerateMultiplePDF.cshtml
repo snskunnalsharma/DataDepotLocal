@@ -400,94 +400,96 @@
                                                     }
                                                     else
                                                     {
-                                                        if (otherfieldcount == 0)
+                                                        if (item.FieldName.ToLower() != "Meter Box Before Photo".ToLower() && item.FieldName.ToLower() != "Meter Box After Photo".ToLower())
                                                         {
-                                                            if (item.FieldName.ToLower() == "gps location" || item.FieldName.ToLower() == "LOCATION/GPS".ToLower())
+                                                            if (otherfieldcount == 0)
                                                             {
-                                                                if (item.Fieldlatitude != "")
+                                                                if (item.FieldName.ToLower() == "gps location" || item.FieldName.ToLower() == "LOCATION/GPS".ToLower())
                                                                 {
-                                                                    var center = "center=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
-                                                                    var lastlist = "&markers=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
-                                                                    var center1 = item.Fieldlatitude + "," + item.Fieldlongitude;
-
-                                                                    var locationPath = new GarronT.CMS.Model.DAL.ReportDAL().getLocationImage(item.IDS);
-                                                                    if (!string.IsNullOrEmpty(locationPath))
+                                                                    if (item.Fieldlatitude != "")
                                                                     {
-                                                                        locationPath = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + locationPath.Replace(@"..\", "").Replace(@"~\", "");
+                                                                        var center = "center=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
+                                                                        var lastlist = "&markers=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
+                                                                        var center1 = item.Fieldlatitude + "," + item.Fieldlongitude;
+
+                                                                        var locationPath = new GarronT.CMS.Model.DAL.ReportDAL().getLocationImage(item.IDS);
+                                                                        if (!string.IsNullOrEmpty(locationPath))
+                                                                        {
+                                                                            locationPath = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + locationPath.Replace(@"..\", "").Replace(@"~\", "");
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            locationPath = "";
+                                                                        }
+                                                                        var link = "https://maps.googleapis.com/maps/api/staticmap?" + center + "&zoom=15" + lastlist + "&size=1236x493&sensor=FALSE&visual_refresh=true";
+                                                                        otherfieldString.Append("<td width='25%' class='FieldNametd'><span>" + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + " - </span>");
+                                                                        otherfieldString.Append("<a href=\"https://maps.google.com/maps?q=" + @center1 + "\" target='_blank'>Map</a>");
+                                                                        if (@item.isLaLongCaptureRequired == true && @item.Fieldlatitude != "")
+                                                                        {
+                                                                            otherfieldString.Append("<br />");
+                                                                            //otherfieldString.Append("<img  src='" + @LatImagesrc + "' height='25' width='20' />");
+                                                                            otherfieldString.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
+                                                                        }
+                                                                        if (@item.isTimeStampCaptureRequired == true && !string.IsNullOrEmpty(@item.captureTimeStamp))
+                                                                        {
+                                                                            otherfieldString.Append("<br />");
+                                                                            //otherfieldString.Append("<span style='font-size:13px; ' class='fieldvalue datetimespan'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
+                                                                            otherfieldString.Append("<span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
+                                                                        }
+                                                                        otherfieldString.Append("</td>");
                                                                     }
-                                                                    else
-                                                                    {
-                                                                        locationPath = "";
-                                                                    }
-                                                                    var link = "https://maps.googleapis.com/maps/api/staticmap?" + center + "&zoom=15" + lastlist + "&size=1236x493&sensor=FALSE&visual_refresh=true";
-                                                                    otherfieldString.Append("<td width='25%' class='FieldNametd'><span>" + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + " - </span>");
-                                                                    otherfieldString.Append("<a href=\"https://maps.google.com/maps?q=" + @center1 + "\" target='_blank'>Map</a>");
-                                                                    if (@item.isLaLongCaptureRequired == true && @item.Fieldlatitude != "")
-                                                                    {
-                                                                        otherfieldString.Append("<br />");
-                                                                        //otherfieldString.Append("<img  src='" + @LatImagesrc + "' height='25' width='20' />");
-                                                                        otherfieldString.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
-                                                                    }
-                                                                    if (@item.isTimeStampCaptureRequired == true && !string.IsNullOrEmpty(@item.captureTimeStamp))
-                                                                    {
-                                                                        otherfieldString.Append("<br />");
-                                                                        //otherfieldString.Append("<span style='font-size:13px; ' class='fieldvalue datetimespan'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
-                                                                        otherfieldString.Append("<span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
-                                                                    }
-                                                                    otherfieldString.Append("</td>");
-                                                                }
 
 
-                                                            }
-                                                            else
-                                                            {
-                                                                if (@item.strFilePath != null)
-                                                                {
-
-                                                                    otherfieldcount--;
                                                                 }
                                                                 else
                                                                 {
-                                                                    otherfieldString.Append("<td width='25%' class='FieldNametd'><span>" + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + "</span>");
-                                                                    //if (@item.FieldName.ToLower() == "work completed")
-                                                                    //{
-                                                                    //    otherfieldString.Append("<span class='fieldvalue'>" + (@item.FieldValues.ToLower() == "true" ? "Yes" : "No") + "</span>");
-                                                                    //}
-                                                                    //else
-                                                                    //{
-                                                                    otherfieldString.Append("<br /><span class='fieldvalue'>" + @item.FieldValues + "</span>");
-                                                                    //}
-
-
-
-                                                                    if (@item.isLaLongCaptureRequired == true && @item.Fieldlatitude != "")
+                                                                    if (@item.strFilePath != null)
                                                                     {
-                                                                        var mapimageurl = @MapPinsrc + @mapPinsList.Where(a => a.FieldName == item.FieldName).Select(a => a.strImagePath).FirstOrDefault().ToString();
-                                                                        otherfieldString.Append("<br />");
-                                                                        otherfieldString.Append("<img src='" + @mapimageurl + "' height='25' width='20' />");
-                                                                        //otherfieldString.Append("<img src='" + @LatImagesrc + "' height='25' width='20' />");
-                                                                        //otherfieldString.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
-                                                                        otherfieldString.Append("<span class='fieldvalue'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
+
+                                                                        otherfieldcount--;
                                                                     }
-                                                                    if (@item.isTimeStampCaptureRequired == true && !string.IsNullOrEmpty(@item.captureTimeStamp))
+                                                                    else
                                                                     {
-                                                                        otherfieldString.Append("<br />");
-                                                                        //otherfieldString.Append("<span style='font-size:13px;' class='fieldvalue datetimespan'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
-                                                                        otherfieldString.Append(" <span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
+                                                                        otherfieldString.Append("<td width='25%' class='FieldNametd'><span>" + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + "</span>");
+                                                                        //if (@item.FieldName.ToLower() == "work completed")
+                                                                        //{
+                                                                        //    otherfieldString.Append("<span class='fieldvalue'>" + (@item.FieldValues.ToLower() == "true" ? "Yes" : "No") + "</span>");
+                                                                        //}
+                                                                        //else
+                                                                        //{
+                                                                        otherfieldString.Append("<br /><span class='fieldvalue'>" + @item.FieldValues + "</span>");
+                                                                        //}
+
+
+
+                                                                        if (@item.isLaLongCaptureRequired == true && @item.Fieldlatitude != "")
+                                                                        {
+                                                                            var mapimageurl = @MapPinsrc + @mapPinsList.Where(a => a.FieldName == item.FieldName).Select(a => a.strImagePath).FirstOrDefault().ToString();
+                                                                            otherfieldString.Append("<br />");
+                                                                            otherfieldString.Append("<img src='" + @mapimageurl + "' height='25' width='20' />");
+                                                                            //otherfieldString.Append("<img src='" + @LatImagesrc + "' height='25' width='20' />");
+                                                                            //otherfieldString.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
+                                                                            otherfieldString.Append("<span class='fieldvalue'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
+                                                                        }
+                                                                        if (@item.isTimeStampCaptureRequired == true && !string.IsNullOrEmpty(@item.captureTimeStamp))
+                                                                        {
+                                                                            otherfieldString.Append("<br />");
+                                                                            //otherfieldString.Append("<span style='font-size:13px;' class='fieldvalue datetimespan'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
+                                                                            otherfieldString.Append(" <span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
+                                                                        }
+
+                                                                        otherfieldString.Append("</td>");
                                                                     }
 
-                                                                    otherfieldString.Append("</td>");
+
+
                                                                 }
 
-
-
-                                                            }
-
-                                                            otherfieldcount++;
-                                                            if (item11.ToList().Count == _TotalItemCount)
-                                                            {
-                                                                if (otherfieldString.Length > 0)
+                                                                otherfieldcount++;
+                                                                if (item11.ToList().Count == _TotalItemCount)
                                                                 {
+                                                                    if (otherfieldString.Length > 0)
+                                                                    {
                                                                     <tr style="page-break-inside:avoid;border:1px solid #000;">
                                                                         @if (otherfieldString.ToString() != "")
                                                                         {
@@ -502,108 +504,108 @@
 
                                                                         <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
                                                                     </tr>
+                                                                    }
+                                                                    otherfieldcount = 0;
+                                                                    otherfieldString.Remove(0, otherfieldString.Length);
                                                                 }
-                                                                otherfieldcount = 0;
-                                                                otherfieldString.Remove(0, otherfieldString.Length);
+
+
                                                             }
-
-
-                                                        }
-                                                        else if (otherfieldcount == 1)
-                                                        {
-
-                                                            if (item.FieldName.ToLower() == "gps location" || item.FieldName.ToLower() == "LOCATION/GPS".ToLower())
+                                                            else if (otherfieldcount == 1)
                                                             {
-                                                                if (item.Fieldlatitude != "")
+
+                                                                if (item.FieldName.ToLower() == "gps location" || item.FieldName.ToLower() == "LOCATION/GPS".ToLower())
                                                                 {
-                                                                    var center = "center=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
-                                                                    var lastlist = "&markers=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
-                                                                    var center1 = item.Fieldlatitude + "," + item.Fieldlongitude;
+                                                                    if (item.Fieldlatitude != "")
+                                                                    {
+                                                                        var center = "center=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
+                                                                        var lastlist = "&markers=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
+                                                                        var center1 = item.Fieldlatitude + "," + item.Fieldlongitude;
 
-                                                                    var locationPath = new GarronT.CMS.Model.DAL.ReportDAL().getLocationImage(item.IDS);
-                                                                    if (!string.IsNullOrEmpty(locationPath))
-                                                                    {
-                                                                        locationPath = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + locationPath.Replace(@"..\", "").Replace(@"~\", "");
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        locationPath = "";
-                                                                    }
-                                                                    var link = "https://maps.googleapis.com/maps/api/staticmap?" + center + "&zoom=15" + lastlist + "&size=1236x493&sensor=FALSE&visual_refresh=true";
-                                                                    otherfieldString1.Append("<td width='25%' class='FieldNametd'><span>" + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + " - </span>");
-                                                                    otherfieldString1.Append("<a href=\"https://maps.google.com/maps?q=" + @center1 + "\" target='_blank'>Map</a>");
-                                                                    if (!string.IsNullOrEmpty(@item.Fieldlatitude) && !string.IsNullOrEmpty(@item.Fieldlongitude))
-                                                                    {
-                                                                        otherfieldString1.Append("<br />");
-
-                                                                        var _path = mapPinsList.Where(a => a.FieldName == item.FieldName).Select(a => a.strImagePath).FirstOrDefault();
-                                                                        var mapimageurl = MapPinsrc + _path;
-                                                                        if (!string.IsNullOrEmpty(_path))
+                                                                        var locationPath = new GarronT.CMS.Model.DAL.ReportDAL().getLocationImage(item.IDS);
+                                                                        if (!string.IsNullOrEmpty(locationPath))
                                                                         {
-                                                                            otherfieldString1.Append("<img src=" + @mapimageurl + " height='25' width='20' />");
-
-                                                                            otherfieldString1.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
+                                                                            locationPath = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + locationPath.Replace(@"..\", "").Replace(@"~\", "");
                                                                         }
+                                                                        else
+                                                                        {
+                                                                            locationPath = "";
+                                                                        }
+                                                                        var link = "https://maps.googleapis.com/maps/api/staticmap?" + center + "&zoom=15" + lastlist + "&size=1236x493&sensor=FALSE&visual_refresh=true";
+                                                                        otherfieldString1.Append("<td width='25%' class='FieldNametd'><span>" + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + " - </span>");
+                                                                        otherfieldString1.Append("<a href=\"https://maps.google.com/maps?q=" + @center1 + "\" target='_blank'>Map</a>");
+                                                                        if (!string.IsNullOrEmpty(@item.Fieldlatitude) && !string.IsNullOrEmpty(@item.Fieldlongitude))
+                                                                        {
+                                                                            otherfieldString1.Append("<br />");
+
+                                                                            var _path = mapPinsList.Where(a => a.FieldName == item.FieldName).Select(a => a.strImagePath).FirstOrDefault();
+                                                                            var mapimageurl = MapPinsrc + _path;
+                                                                            if (!string.IsNullOrEmpty(_path))
+                                                                            {
+                                                                                otherfieldString1.Append("<img src=" + @mapimageurl + " height='25' width='20' />");
+
+                                                                                otherfieldString1.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
+                                                                            }
+                                                                        }
+                                                                        if (@item.isTimeStampCaptureRequired == true && !string.IsNullOrEmpty(@item.captureTimeStamp))
+                                                                        {
+                                                                            otherfieldString1.Append("<br />");
+                                                                            //otherfieldString1.Append("<span style='font-size:13px;' class='fieldvalue datetimespan'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
+                                                                            otherfieldString1.Append("<span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
+                                                                        }
+                                                                        otherfieldString1.Append("</td>");
                                                                     }
-                                                                    if (@item.isTimeStampCaptureRequired == true && !string.IsNullOrEmpty(@item.captureTimeStamp))
-                                                                    {
-                                                                        otherfieldString1.Append("<br />");
-                                                                        //otherfieldString1.Append("<span style='font-size:13px;' class='fieldvalue datetimespan'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
-                                                                        otherfieldString1.Append("<span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
-                                                                    }
-                                                                    otherfieldString1.Append("</td>");
-                                                                }
 
-                                                            }
-                                                            else
-                                                            {
-
-                                                                if (@item.strFilePath != null)
-                                                                {
-
-                                                                    otherfieldcount--;
                                                                 }
                                                                 else
                                                                 {
-                                                                    otherfieldString1.Append("<td width='25%' class='FieldNametd'><span>" + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + "</span>");
-                                                                    //if (@item.FieldName.ToLower() == "work completed")
-                                                                    //{
-                                                                    //    otherfieldString1.Append("<span class='fieldvalue'>" + (@item.FieldValues.ToLower() == "true" ? "Yes" : "No") + "</span>");
-                                                                    //}
-                                                                    //else
-                                                                    //{
-                                                                    otherfieldString1.Append("<br /><span class='fieldvalue'>" + @item.FieldValues + "</span>");
-                                                                    //}
 
-                                                                    if (@item.isLaLongCaptureRequired == true && @item.Fieldlatitude != "")
+                                                                    if (@item.strFilePath != null)
                                                                     {
-                                                                        var mapimageurl = @MapPinsrc + @mapPinsList.Where(a => a.FieldName == item.FieldName).Select(a => a.strImagePath).FirstOrDefault().ToString();
-                                                                        otherfieldString1.Append("<br />");
-                                                                        otherfieldString1.Append("<img src='" + @mapimageurl + "' height='25' width='20' />");
-                                                                        //otherfieldString1.Append("<img src='" + @LatImagesrc + "' height='25' width='20' />");
-                                                                        //otherfieldString1.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
-                                                                        otherfieldString1.Append("<span class='fieldvalue'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
+
+                                                                        otherfieldcount--;
                                                                     }
-                                                                    if (@item.isTimeStampCaptureRequired == true && !string.IsNullOrEmpty(@item.captureTimeStamp))
+                                                                    else
                                                                     {
-                                                                        otherfieldString1.Append("<br />");
-                                                                        //otherfieldString1.Append("<span style='font-size:13px;' class='fieldvalue datetimespan'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
-                                                                        otherfieldString1.Append(" <span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
+                                                                        otherfieldString1.Append("<td width='25%' class='FieldNametd'><span>" + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + "</span>");
+                                                                        //if (@item.FieldName.ToLower() == "work completed")
+                                                                        //{
+                                                                        //    otherfieldString1.Append("<span class='fieldvalue'>" + (@item.FieldValues.ToLower() == "true" ? "Yes" : "No") + "</span>");
+                                                                        //}
+                                                                        //else
+                                                                        //{
+                                                                        otherfieldString1.Append("<br /><span class='fieldvalue'>" + @item.FieldValues + "</span>");
+                                                                        //}
 
+                                                                        if (@item.isLaLongCaptureRequired == true && @item.Fieldlatitude != "")
+                                                                        {
+                                                                            var mapimageurl = @MapPinsrc + @mapPinsList.Where(a => a.FieldName == item.FieldName).Select(a => a.strImagePath).FirstOrDefault().ToString();
+                                                                            otherfieldString1.Append("<br />");
+                                                                            otherfieldString1.Append("<img src='" + @mapimageurl + "' height='25' width='20' />");
+                                                                            //otherfieldString1.Append("<img src='" + @LatImagesrc + "' height='25' width='20' />");
+                                                                            //otherfieldString1.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
+                                                                            otherfieldString1.Append("<span class='fieldvalue'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
+                                                                        }
+                                                                        if (@item.isTimeStampCaptureRequired == true && !string.IsNullOrEmpty(@item.captureTimeStamp))
+                                                                        {
+                                                                            otherfieldString1.Append("<br />");
+                                                                            //otherfieldString1.Append("<span style='font-size:13px;' class='fieldvalue datetimespan'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
+                                                                            otherfieldString1.Append(" <span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
+
+                                                                        }
+
+                                                                        otherfieldString1.Append("</td>");
                                                                     }
 
-                                                                    otherfieldString1.Append("</td>");
+
+
                                                                 }
 
-
-
-                                                            }
-
-                                                            otherfieldcount++;
-                                                            if (item11.ToList().Count == _TotalItemCount)
-                                                            {
-                                                                if (otherfieldString.Length > 0 || otherfieldString1.Length > 0)
+                                                                otherfieldcount++;
+                                                                if (item11.ToList().Count == _TotalItemCount)
                                                                 {
+                                                                    if (otherfieldString.Length > 0 || otherfieldString1.Length > 0)
+                                                                    {
                                                                     <tr style="page-break-inside:avoid;border:1px solid #000;">
                                                                         @if (otherfieldString.ToString() != "")
                                                                         {
@@ -626,17 +628,17 @@
 
                                                                         <td width='25%' class='FieldNametd'>&nbsp;&nbsp;</td>
                                                                     </tr>
+                                                                    }
+
+                                                                    otherfieldcount = 0;
+                                                                    otherfieldString.Remove(0, otherfieldString.Length);
+                                                                    otherfieldString1.Remove(0, otherfieldString1.Length);
                                                                 }
-
-                                                                otherfieldcount = 0;
-                                                                otherfieldString.Remove(0, otherfieldString.Length);
-                                                                otherfieldString1.Remove(0, otherfieldString1.Length);
                                                             }
-                                                        }
 
-                                                        else if (otherfieldcount == 2)
-                                                        {
-                                                            System.Text.StringBuilder otherfieldString3 = new System.Text.StringBuilder();
+                                                            else if (otherfieldcount == 2)
+                                                            {
+                                                                System.Text.StringBuilder otherfieldString3 = new System.Text.StringBuilder();
                                                             <tr style="page-break-inside:avoid;border:1px solid #000;">
 
                                                                 @if (item.FieldName.ToLower() == "gps location" || item.FieldName.ToLower() == "LOCATION/GPS".ToLower())
@@ -782,6 +784,7 @@
                                                                 }
 
                                                                 </tr>
+                                                            }
                                                         }
                                                     }
                                                 }
