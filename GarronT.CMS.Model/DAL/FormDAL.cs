@@ -224,82 +224,87 @@ namespace GarronT.CMS.Model.DAL
             CompassEntities CompassEntities = new CompassEntities();
             List<FormManagementViewModel> FormManagementViewModel = new List<FormManagementViewModel>();
             var FormSectionRelationdata = CompassEntities.tblFormSectionRelations.AsNoTracking().Where(o => o.Active == 1 && o.FormID == Formid).ToList();
-            foreach (var item in FormSectionRelationdata)
+            using (TransactionScope ts = new TransactionScope(TransactionScopeOption.Required, new TimeSpan(2, 0, 0)))
             {
-                FormManagementViewModel viewmodel = new FormManagementViewModel();
-                List<FormManagementFields> SectionFieldList = new List<FormManagementFields>();
-
-
-                viewmodel.SectionID = item.SectionId;
-                viewmodel.SectionName = item.SectionName;
-                viewmodel.SectionOrder = item.SortOrderNumber;
-
-                var FormSectionFieldRelation = CompassEntities.tblFormSectionFieldRelations.AsNoTracking().Where(o => o.Active == 1 && o.SectionId == viewmodel.SectionID).ToList();
-                if (FormSectionFieldRelation.Count > 0)
+                foreach (var item in FormSectionRelationdata)
                 {
-                    foreach (var FormSectionRelation in FormSectionFieldRelation)
+                    FormManagementViewModel viewmodel = new FormManagementViewModel();
+                    List<FormManagementFields> SectionFieldList = new List<FormManagementFields>();
+
+
+                    viewmodel.SectionID = item.SectionId;
+                    viewmodel.SectionName = item.SectionName;
+                    viewmodel.SectionOrder = item.SortOrderNumber;
+
+                    var FormSectionFieldRelation = CompassEntities.tblFormSectionFieldRelations.AsNoTracking().Where(o => o.Active == 1 && o.SectionId == viewmodel.SectionID).ToList();
+                    if (FormSectionFieldRelation.Count > 0)
                     {
-                        FormManagementFields SectionField = new FormManagementFields();
-                        var ProjectFieldProperty = CompassEntities.tblProjectFieldProperties.AsNoTracking().Where(o => o.Active == 1 && o.FormSectionFieldID == FormSectionRelation.FieldId).FirstOrDefault();
-                        if (ProjectFieldProperty != null)
+                        foreach (var FormSectionRelation in FormSectionFieldRelation)
                         {
-                            SectionField.field_ProjectID = ProjectFieldProperty.ProjectID;
-                            SectionField.field_SectionID = FormSectionRelation.SectionId.ToString();
-                            SectionField.field_FieldID = ProjectFieldProperty.FDID.Value;
-                            SectionField.field_FieldName = FormSectionRelation.FieldName;
-                            SectionField.field_FieldOrder = FormSectionRelation.FieldOrder;
-                            SectionField.field_DatatypeID = FormSectionRelation.TblFieldDataTypeMaster_Id.Value;
-                            // SectionField.field_DatatypeName=
+                            FormManagementFields SectionField = new FormManagementFields();
+                            var ProjectFieldProperty = CompassEntities.tblProjectFieldProperties.AsNoTracking().Where(o => o.Active == 1 && o.FormSectionFieldID == FormSectionRelation.FieldId).FirstOrDefault();
+                            if (ProjectFieldProperty != null)
+                            {
+                                SectionField.field_ProjectID = ProjectFieldProperty.ProjectID;
+                                SectionField.field_SectionID = FormSectionRelation.SectionId.ToString();
+                                SectionField.field_FieldID = ProjectFieldProperty.FDID.Value;
+                                SectionField.field_FieldName = FormSectionRelation.FieldName;
+                                SectionField.field_FieldOrder = FormSectionRelation.FieldOrder;
+                                SectionField.field_DatatypeID = FormSectionRelation.TblFieldDataTypeMaster_Id.Value;
+                                // SectionField.field_DatatypeName=
 
 
-                            SectionField.field_FieldLabel = ProjectFieldProperty.FieldLabel;
-                            SectionField.field_HideFieldLabel = ProjectFieldProperty.HideFieldLabel;
-                            SectionField.field_DefaultValue = ProjectFieldProperty.DefaultValue;
-                            SectionField.field_HintText = ProjectFieldProperty.HintText;
-                            SectionField.field_FieldFilterkey = ProjectFieldProperty.FieldFilterkey;
-                            SectionField.field_EnforceMinMax = Convert.ToBoolean(ProjectFieldProperty.EnforceMinMax);
-                            SectionField.field_AllowMultiSelection = ProjectFieldProperty.AllowMultiSelection;
-                            SectionField.field_MaxLengthValue = ProjectFieldProperty.MaxLengthValue;
-                            SectionField.field_MinLengthValue = ProjectFieldProperty.MinLengthValue;
-                            SectionField.field_IsRequired = Convert.ToBoolean(ProjectFieldProperty.IsRequired);
-                            SectionField.field_IsEnabled = Convert.ToBoolean(ProjectFieldProperty.IsEnabled);
-                            SectionField.field_CaptureGeolocation = Convert.ToBoolean(ProjectFieldProperty.CaptureGeolocation);
-                            SectionField.field_CaptureTimestamp = Convert.ToBoolean(ProjectFieldProperty.CaptureTimestamp);
-                            SectionField.field_HasAlert = ProjectFieldProperty.HasAlert;
+                                SectionField.field_FieldLabel = ProjectFieldProperty.FieldLabel;
+                                SectionField.field_HideFieldLabel = ProjectFieldProperty.HideFieldLabel;
+                                SectionField.field_DefaultValue = ProjectFieldProperty.DefaultValue;
+                                SectionField.field_HintText = ProjectFieldProperty.HintText;
+                                SectionField.field_FieldFilterkey = ProjectFieldProperty.FieldFilterkey;
+                                SectionField.field_EnforceMinMax = Convert.ToBoolean(ProjectFieldProperty.EnforceMinMax);
+                                SectionField.field_AllowMultiSelection = ProjectFieldProperty.AllowMultiSelection;
+                                SectionField.field_MaxLengthValue = ProjectFieldProperty.MaxLengthValue;
+                                SectionField.field_MinLengthValue = ProjectFieldProperty.MinLengthValue;
+                                SectionField.field_IsRequired = Convert.ToBoolean(ProjectFieldProperty.IsRequired);
+                                SectionField.field_IsEnabled = Convert.ToBoolean(ProjectFieldProperty.IsEnabled);
+                                SectionField.field_CaptureGeolocation = Convert.ToBoolean(ProjectFieldProperty.CaptureGeolocation);
+                                SectionField.field_CaptureTimestamp = Convert.ToBoolean(ProjectFieldProperty.CaptureTimestamp);
+                                SectionField.field_HasAlert = ProjectFieldProperty.HasAlert;
 
 
 
-                            SectionField.field_PhotoQuality = ProjectFieldProperty.PhotoQuality;
-                            SectionField.field_PhotoLibraryEnabled = Convert.ToBoolean(ProjectFieldProperty.PhotoLibraryEnabled);
-                            SectionField.field_AllowAnnotation = Convert.ToBoolean(ProjectFieldProperty.AllowAnnotation);
-                            SectionField.field_CameraEnabled = Convert.ToBoolean(ProjectFieldProperty.CameraEnabled);
-                            SectionField.field_GPSTagging = Convert.ToBoolean(ProjectFieldProperty.GPSTagging);
-                            SectionField.field_ExcludeonSync = Convert.ToBoolean(ProjectFieldProperty.ExcludeonSync);
-                            SectionField.field_MaximumHeight = ProjectFieldProperty.MaximumHeight;
-                            SectionField.field_MaximumWidth = ProjectFieldProperty.MaximumWidth;
-                            SectionField.field_AcknowlegementText = ProjectFieldProperty.AcknowlegementText;
-                            SectionField.field_AcknowlegementButtonText = ProjectFieldProperty.AcknowlegementButtonText;
-                            SectionField.field_AcknowlegementClickedButtonText = ProjectFieldProperty.AcknowlegementClickedButtonText;
-                            SectionField.field_PhotoLibraryEnabled = Convert.ToBoolean(ProjectFieldProperty.PhotoLibraryEnabled);
-                            SectionField.field_MaxrecordabletimeInSeconds = ProjectFieldProperty.MaxrecordabletimeInSeconds;
-                            SectionField.field_VideoQuality = ProjectFieldProperty.VideoQuality;
+                                SectionField.field_PhotoQuality = ProjectFieldProperty.PhotoQuality;
+                                SectionField.field_PhotoLibraryEnabled = Convert.ToBoolean(ProjectFieldProperty.PhotoLibraryEnabled);
+                                SectionField.field_AllowAnnotation = Convert.ToBoolean(ProjectFieldProperty.AllowAnnotation);
+                                SectionField.field_CameraEnabled = Convert.ToBoolean(ProjectFieldProperty.CameraEnabled);
+                                SectionField.field_GPSTagging = Convert.ToBoolean(ProjectFieldProperty.GPSTagging);
+                                SectionField.field_ExcludeonSync = Convert.ToBoolean(ProjectFieldProperty.ExcludeonSync);
+                                SectionField.field_MaximumHeight = ProjectFieldProperty.MaximumHeight;
+                                SectionField.field_MaximumWidth = ProjectFieldProperty.MaximumWidth;
+                                SectionField.field_AcknowlegementText = ProjectFieldProperty.AcknowlegementText;
+                                SectionField.field_AcknowlegementButtonText = ProjectFieldProperty.AcknowlegementButtonText;
+                                SectionField.field_AcknowlegementClickedButtonText = ProjectFieldProperty.AcknowlegementClickedButtonText;
+                                SectionField.field_PhotoLibraryEnabled = Convert.ToBoolean(ProjectFieldProperty.PhotoLibraryEnabled);
+                                SectionField.field_MaxrecordabletimeInSeconds = ProjectFieldProperty.MaxrecordabletimeInSeconds;
+                                SectionField.field_VideoQuality = ProjectFieldProperty.VideoQuality;
 
-                            //AddedBy AniketJ on 03-Mar-2016
-                            SectionField.field_FieldCalculation = ProjectFieldProperty.FieldCalculation;
-                            SectionField.field_AllowRepeat = ProjectFieldProperty.AllowRepeat;
+                                //AddedBy AniketJ on 03-Mar-2016
+                                SectionField.field_FieldCalculation = ProjectFieldProperty.FieldCalculation;
+                                SectionField.field_AllowRepeat = ProjectFieldProperty.AllowRepeat;
 
 
-                            //AddedBy AniketJ on 15-Feb-2018
-                            SectionField.field_SynchFlag = ProjectFieldProperty.SynchFlag;
+                                //AddedBy AniketJ on 15-Feb-2018
+                                SectionField.field_SynchFlag = ProjectFieldProperty.SynchFlag;
 
-                            SectionFieldList.Add(SectionField);
+                                SectionFieldList.Add(SectionField);
+                            }
                         }
                     }
-                }
 
-                viewmodel.SectionFields = SectionFieldList;
-                FormManagementViewModel.Add(viewmodel);
+                    viewmodel.SectionFields = SectionFieldList;
+                    FormManagementViewModel.Add(viewmodel);
+                }
+                ts.Complete();
             }
+            
             FormManagementViewModel = FormManagementViewModel.OrderByDescending(a => a.SectionOrder).ToList();
             return FormManagementViewModel;
 
@@ -311,55 +316,48 @@ namespace GarronT.CMS.Model.DAL
             CompassEntities CompassEntities = new CompassEntities();
             List<ListOptionViewModel> ListOptionViewModel = new List<ListOptionViewModel>();
             var FormSectionRelationdata = CompassEntities.tblFormSectionRelations.AsNoTracking().Where(o => o.Active == 1 && o.FormID == Formid).ToList();
-            foreach (var item in FormSectionRelationdata)
+            using (TransactionScope ts = new TransactionScope(TransactionScopeOption.Required, new TimeSpan(2, 0, 0)))
             {
-
-
-
-
-
-                var FormSectionFieldRelation = CompassEntities.tblFormSectionFieldRelations.AsNoTracking().Where(o => o.Active == 1 && o.SectionId == item.SectionId).ToList();
-
-                if (FormSectionFieldRelation.Count > 0)
+                foreach (var item in FormSectionRelationdata)
                 {
+                    var FormSectionFieldRelation = CompassEntities.tblFormSectionFieldRelations.AsNoTracking().Where(o => o.Active == 1 && o.SectionId == item.SectionId).ToList();
 
-                    foreach (var FormSectionRelation in FormSectionFieldRelation)
+                    if (FormSectionFieldRelation.Count > 0)
                     {
-
-
-                        var ProjectFieldDDLMastersList = CompassEntities.tblProjectFieldDDLMasters.AsNoTracking().Where(o => o.Active == 1 && o.FormSectionFieldID == FormSectionRelation.FieldId).ToList();
-                        if (ProjectFieldDDLMastersList != null)
+                        foreach (var FormSectionRelation in FormSectionFieldRelation)
                         {
-                            ListOptionViewModel viewmodel = new ListOptionViewModel();
-                            List<ListOptions> optionListList = new List<ListOptions>();
-
-                            viewmodel.SectionID = item.SectionId;
-                            viewmodel.SectionName = item.SectionName;
-                            foreach (var ProjectFieldDDLMasters in ProjectFieldDDLMastersList)
+                            var ProjectFieldDDLMastersList = CompassEntities.tblProjectFieldDDLMasters.AsNoTracking().Where(o => o.Active == 1 && o.FormSectionFieldID == FormSectionRelation.FieldId).ToList();
+                            if (ProjectFieldDDLMastersList != null)
                             {
-                                ListOptions ListOption = new ListOptions();
-                                viewmodel.FieldName = FormSectionRelation.FieldName;
-                                ListOption.FieldName = FormSectionRelation.FieldName;
-                                ListOption.optionID = ProjectFieldDDLMasters.ID;
-                                ListOption.FieldText = ProjectFieldDDLMasters.FieldText;
-                                ListOption.FieldValue = ProjectFieldDDLMasters.FieldValue;
-                                ListOption.FieldFilterkey = ProjectFieldDDLMasters.FieldFilterkey;
-                                ListOption.OrderNo = ProjectFieldDDLMasters.SortOrderNumber;
+                                ListOptionViewModel viewmodel = new ListOptionViewModel();
+                                List<ListOptions> optionListList = new List<ListOptions>();
 
-                                optionListList.Add(ListOption);
+                                viewmodel.SectionID = item.SectionId;
+                                viewmodel.SectionName = item.SectionName;
+                                foreach (var ProjectFieldDDLMasters in ProjectFieldDDLMastersList)
+                                {
+                                    ListOptions ListOption = new ListOptions();
+                                    viewmodel.FieldName = FormSectionRelation.FieldName;
+                                    ListOption.FieldName = FormSectionRelation.FieldName;
+                                    ListOption.optionID = ProjectFieldDDLMasters.ID;
+                                    ListOption.FieldText = ProjectFieldDDLMasters.FieldText;
+                                    ListOption.FieldValue = ProjectFieldDDLMasters.FieldValue;
+                                    ListOption.FieldFilterkey = ProjectFieldDDLMasters.FieldFilterkey;
+                                    ListOption.OrderNo = ProjectFieldDDLMasters.SortOrderNumber;
+
+                                    optionListList.Add(ListOption);
+                                }
+
+                                viewmodel.OptionList = optionListList;
+                                ListOptionViewModel.Add(viewmodel);
                             }
-
-                            viewmodel.OptionList = optionListList;
-                            ListOptionViewModel.Add(viewmodel);
                         }
                     }
                 }
-
-
+                ts.Complete();
             }
             //ListOptionViewModel = ListOptionViewModel.OrderByDescending(a => a.).ToList();
             return ListOptionViewModel;
-
         }
 
 
@@ -381,7 +379,8 @@ namespace GarronT.CMS.Model.DAL
                                        && b.FormId != ObjectToCreaetOrUpdate.FormId
                                         select b).FirstOrDefault();
 
-                using (TransactionScope ts = new TransactionScope())
+                //using (TransactionScope ts = new TransactionScope())
+                using (TransactionScope ts = new TransactionScope(TransactionScopeOption.Required, new TimeSpan(2, 0, 0)))
                 {
                     if (objChk == null)//No duplicate records
                     {
@@ -542,21 +541,33 @@ namespace GarronT.CMS.Model.DAL
                                                 {
                                                     if (options.OptionList != null)
                                                     {
-                                                        foreach (var optionitem in options.OptionList)
+                                                        try
                                                         {
-                                                            tblProjectFieldDDLMaster tblProjectFieldDDLMaster = new tblProjectFieldDDLMaster();
-                                                            tblProjectFieldDDLMaster.FormSectionFieldID = tblFormSectionFieldRelation.FieldId;
-                                                            tblProjectFieldDDLMaster.FormID = createOrUpdate.FormId;
-                                                            tblProjectFieldDDLMaster.FieldText = optionitem.FieldText.Trim();
-                                                            tblProjectFieldDDLMaster.FieldValue = optionitem.FieldValue.Trim();
-                                                            tblProjectFieldDDLMaster.FieldFilterkey = optionitem.FieldFilterkey != null ? optionitem.FieldFilterkey.Trim() : "";
-                                                            tblProjectFieldDDLMaster.SortOrderNumber = optionitem.OrderNo;
+                                                            // Note:- TransactionScope The max limit is 2 min.
+                                                            using (TransactionScope traScope = new TransactionScope(TransactionScopeOption.Required, new TimeSpan(2, 0, 0)))
+                                                            {
+                                                                foreach (var optionitem in options.OptionList)
+                                                                {
+                                                                    tblProjectFieldDDLMaster tblProjectFieldDDLMaster = new tblProjectFieldDDLMaster();
+                                                                    tblProjectFieldDDLMaster.FormSectionFieldID = tblFormSectionFieldRelation.FieldId;
+                                                                    tblProjectFieldDDLMaster.FormID = createOrUpdate.FormId;
+                                                                    tblProjectFieldDDLMaster.FieldText = optionitem.FieldText.Trim();
+                                                                    tblProjectFieldDDLMaster.FieldValue = optionitem.FieldValue.Trim();
+                                                                    tblProjectFieldDDLMaster.FieldFilterkey = optionitem.FieldFilterkey != null ? optionitem.FieldFilterkey.Trim() : "";
+                                                                    tblProjectFieldDDLMaster.SortOrderNumber = optionitem.OrderNo;
 
-                                                            tblProjectFieldDDLMaster.Active = 1;
-                                                            tblProjectFieldDDLMaster.CreatedOn = currentDate;
-                                                            tblProjectFieldDDLMaster.CreatedBy = loggeduserid;
-                                                            CompassEntities.tblProjectFieldDDLMasters.Add(tblProjectFieldDDLMaster);
-                                                            CompassEntities.SaveChanges();
+                                                                    tblProjectFieldDDLMaster.Active = 1;
+                                                                    tblProjectFieldDDLMaster.CreatedOn = currentDate;
+                                                                    tblProjectFieldDDLMaster.CreatedBy = loggeduserid;
+                                                                    CompassEntities.tblProjectFieldDDLMasters.Add(tblProjectFieldDDLMaster);
+                                                                    CompassEntities.SaveChanges();
+                                                                }
+                                                                traScope.Complete();
+                                                            }
+                                                        }
+                                                        catch (Exception ex)
+                                                        {
+
                                                         }
                                                     }
                                                 }

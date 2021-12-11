@@ -1058,7 +1058,7 @@ function _searchClick() {
                                                 return '<a href="#" id=' + full.ID + ' onclick="EditRecords(' + full.InstallerId + ',' + +full.ProjectId + ',' + full.ID + ',' + full.FormId + ');" class="btn btn-primary btn-xs rep_btn_primary" role="button" alt="Edit" title="Edit"><i class="fa fa-pencil"></i></a>'
                                                     // '<a href="/admin/Reports/DownloadFile?id=' + full.ID + '&frmID=' + full.FormId + '" title="PDF" target="_blank"><i class="fa fa-file-text"></i></a>';
                                                     + '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="PDFRecords(this);"  title="PDF" >  <i class="fa fa-file-text"></i></a>' +
-                                                    '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="Reopen(' + full.ID + ',' + full.InstallerId + ',' + full.FormId + ',\'' + full.CategoryType + '\',' + full.NewMeterNo + ',' + full.NEWRADIONUMBER + ');"  title="Reopen" >  <i class="fa fa-retweet"></i></a>' +
+                                                    '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="Reopen(' + full.ID + ',' + full.InstallerId + ',' + full.FormId + ',\'' + full.CategoryType + '\',\'' + full.NewMeterNo + '\',\'' + full.NEWRADIONUMBER + '\');"  title="Reopen" >  <i class="fa fa-retweet"></i></a>' +
                                                     ' <a href="#" id=' + full.ID + ' class="btn btn-default btn-circle" name=' + full.FormId + ' onclick="GetAuditData(' + full.ID + ',' + full.InstallerId + ',' + full.FormId + ');"  title="Audit Status - Add To Audit " > <i class="fa fa-font" aria-hidden="true"></i></a>' +
                                                     '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="ViewImages(' + full.ID + ');"  title="View Images" > <i class="fa fa-eye" aria-hidden="true"></i></a>';
                                             }
@@ -1066,7 +1066,7 @@ function _searchClick() {
                                                 return '<a href="#" id=' + full.ID + ' onclick="EditRecords(' + full.InstallerId + ',' + +full.ProjectId + ',' + full.ID + ',' + full.FormId + ');" class="btn btn-primary btn-xs rep_btn_primary" role="button" alt="Edit" title="Edit"><i class="fa fa-pencil"></i></a>'
                                                     // '<a href="/admin/Reports/DownloadFile?id=' + full.ID + '&frmID=' + full.FormId + '" title="PDF" target="_blank"><i class="fa fa-file-text"></i></a>';
                                                     + '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="PDFRecords(this);"  title="PDF" >  <i class="fa fa-file-text"></i></a>' +
-                                                    '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="Reopen(' + full.ID + ',' + full.InstallerId + ',' + full.FormId + ',\'' + full.CategoryType + '\',' + full.NewMeterNo + ',' + full.NEWRADIONUMBER + ');"  title="Reopen" >  <i class="fa fa-retweet"></i></a>' +
+                                                    '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="Reopen(' + full.ID + ',' + full.InstallerId + ',' + full.FormId + ',\'' + full.CategoryType + '\',\'' + full.NewMeterNo + '\',\'' + full.NEWRADIONUMBER + '\');"  title="Reopen" >  <i class="fa fa-retweet"></i></a>' +
                                                     ' <a href="#" id=' + full.ID + ' class="btn btn-primary btn-circle" name=' + full.FormId + ' onclick="GetAuditView(' + full.ID + ',' + full.InstallerId + ',' + full.FormId + ');"  title="Audit Status - Pending" > <i class="fa fa-font" aria-hidden="true"></i></a>'
                                                 + '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="ViewImages(' + full.ID + ');"  title="View Images" > <i class="fa fa-eye" aria-hidden="true"></i></a>';
 
@@ -1075,7 +1075,7 @@ function _searchClick() {
                                                 return '<a href="#" id=' + full.ID + ' onclick="EditRecords(' + full.InstallerId + ',' + +full.ProjectId + ',' + full.ID + ',' + full.FormId + ');" class="btn btn-primary btn-xs rep_btn_primary" role="button" alt="Edit" title="Edit"><i class="fa fa-pencil"></i></a>'
                                                     // '<a href="/admin/Reports/DownloadFile?id=' + full.ID + '&frmID=' + full.FormId + '" title="PDF" target="_blank"><i class="fa fa-file-text"></i></a>';
                                                     + '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="PDFRecords(this);"  title="PDF" >  <i class="fa fa-file-text"></i></a>' +
-                                                    '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="Reopen(' + full.ID + ',' + full.InstallerId + ',' + full.FormId + ',\'' + full.CategoryType + '\',' + full.NewMeterNo + ',' + full.NEWRADIONUMBER + ');"  title="Reopen" >  <i class="fa fa-retweet"></i></a>' +
+                                                    '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="Reopen(' + full.ID + ',' + full.InstallerId + ',' + full.FormId + ',\'' + full.CategoryType + '\',\'' + full.NewMeterNo + '\',\'' + full.NEWRADIONUMBER + '\');"  title="Reopen" >  <i class="fa fa-retweet"></i></a>' +
                                                     ' <a href="#" id=' + full.ID + ' class="btn btn-success btn-circle" name=' + full.FormId + ' onclick="GetAuditView(' + full.ID + ',' + full.InstallerId + ',' + full.FormId + ');"  title="Audit Status - Completed" > <i class="fa fa-font" aria-hidden="true"></i></a>'
                                                 + '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="ViewImages(' + full.ID + ');"  title="View Images" > <i class="fa fa-eye" aria-hidden="true"></i></a>';
                                             }
@@ -1083,7 +1083,7 @@ function _searchClick() {
                                             else {
                                                 return '<a href="#" id=' + full.ID + ' onclick="EditRecords(' + full.InstallerId + ',' + +full.ProjectId + ',' + full.ID + ',' + full.FormId + ');" class="btn btn-primary btn-xs rep_btn_primary" role="button" alt="Edit" title="Edit"><i class="fa fa-pencil"></i></a>'
                                                     + '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="PDFRecords(this);"  title="PDF" >  <i class="fa fa-file-text"></i></a>' +
-                                                    '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="Reopen(' + full.ID + ',' + full.InstallerId + ',' + full.FormId + ',\'' + full.CategoryType + '\',' + full.NewMeterNo + ',' + full.NEWRADIONUMBER + ');"  title="Reopen" >  <i class="fa fa-retweet"></i></a>'
+                                                    '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="Reopen(' + full.ID + ',' + full.InstallerId + ',' + full.FormId + ',\'' + full.CategoryType + '\',\'' + full.NewMeterNo + '\',\'' + full.NEWRADIONUMBER + '\');"  title="Reopen" >  <i class="fa fa-retweet"></i></a>'
                                                 + '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="ViewImages(' + full.ID + ');"  title="View Images" > <i class="fa fa-eye" aria-hidden="true"></i></a>';
                                             }
                                         } else {
@@ -1194,7 +1194,7 @@ $('#btnReopen').click(function () {
     var oldInstallerId = $('#oldInstallerId').val();
     //var strstartDate = $('#txtFromDate').val();
     //var strendDate = $('#txtToDate').val();
-
+    debugger;
     $.ajax({
         type: 'GET',
         url: UrlReopen,

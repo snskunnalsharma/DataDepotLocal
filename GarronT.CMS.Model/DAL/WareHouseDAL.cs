@@ -847,7 +847,10 @@ namespace GarronT.CMS.Model.DAL
                             stockdetailRecord.ModifiedOn = new CommonFunctions().ServerDate();
 
 
-                            var ObjList = dbcontext.StockDetails.Where(o => o.Active == 1 && o.BalanceQty == 0 && o.IsSerialNumber == 1 && o.SerialNumber == "").ToList();
+                            //var ObjList = dbcontext.StockDetails.Where(o => o.Active == 1 && o.BalanceQty == 0 && o.IsSerialNumber == 1 && o.SerialNumber == "").ToList();
+                            // Change this code
+                            //var ObjList = dbcontext.StockDetails.Where(o => o.Active == 1 && o.BalanceQty == 0 && o.IsSerialNumber == 1 && o.SerialNumber == stockdetailRecord.SerialNumber).ToList();
+                            var ObjList = dbcontext.StockDetails.Where(o => o.BalanceQty == 0 && o.IsSerialNumber == 1 && o.SerialNumber == stockdetailRecord.SerialNumber).ToList();
 
                             foreach (var item in ObjList)
                             {
@@ -864,14 +867,27 @@ namespace GarronT.CMS.Model.DAL
                                     item1.ModifiedBy = userId;
                                     item1.ModifiedOn = new CommonFunctions().ServerDate();
                                 }
-
                             }
-                            var inwardDeatil = dbcontext.InwardDetails.Where(a => a.Id == stockdetailRecord.FKInwardDetailId).FirstOrDefault();
+                            /*var inwardDeatil = dbcontext.InwardDetails.Where(a => a.Id == stockdetailRecord.FKInwardDetailId).FirstOrDefault();
                             inwardDeatil.Active = 0;
                             inwardDeatil.ModifiedBy = userId;
-                            inwardDeatil.ModifiedOn = new CommonFunctions().ServerDate();
+                            inwardDeatil.ModifiedOn = new CommonFunctions().ServerDate();*/
 
+                            //Change code
+                            var inwardDeatil = dbcontext.InwardDetails.Where(a => a.SerialNumber == stockdetailRecord.SerialNumber && a.Active==1).ToList(); ;
+                            foreach (var objInward in inwardDeatil)
+                            {
+                                objInward.Active = 0;
+                                objInward.ModifiedBy = userId;
+                                objInward.ModifiedOn = new CommonFunctions().ServerDate();
+                            }
 
+                            var serialNumberSummary = dbcontext.SerialNumberSummary.Where(a => a.SerialNumber == stockdetailRecord.SerialNumber && a.Active == 1).ToList();
+                            foreach (var objSrNo in serialNumberSummary)
+                            {
+                                objSrNo.Active = 0;
+                            }
+                            //end hare
                             dbcontext.SaveChanges();
                             statusMessage.Success = true;
                             statusMessage.Message = "Record Deleted Successfully.";
