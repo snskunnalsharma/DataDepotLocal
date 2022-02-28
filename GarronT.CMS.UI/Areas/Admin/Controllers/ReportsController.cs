@@ -2546,7 +2546,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         //hh = end.Subtract(start).Hours.ToString("00");
                         //mm = end.Subtract(start).Minutes.ToString("00");
                         //ss = end.Subtract(start).Seconds.ToString("00");
-                        diff = TimeSpan.Parse(end.ToString("hh:mm:ss")) - TimeSpan.Parse(start.ToString("hh:mm:ss"));
+                        diff = TimeSpan.Parse(end.ToString("HH:mm:ss")) - TimeSpan.Parse(start.ToString("HH:mm:ss"));
                     }
                     //@ViewBag.MeterAfterBeforeBoxDiffTime = hh + ":" + mm + ":" + ss;
                     @ViewBag.MeterAfterBeforeBoxDiffTime = diff;
@@ -2715,7 +2715,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     {
                         DateTime start = Convert.ToDateTime(beforeTime);
                         DateTime end = Convert.ToDateTime(afterTime);
-                        diff = TimeSpan.Parse(end.ToString("hh:mm:ss")) - TimeSpan.Parse(start.ToString("hh:mm:ss"));
+                        diff = TimeSpan.Parse(end.ToString("HH:mm:ss")) - TimeSpan.Parse(start.ToString("HH:mm:ss"));
                     }
                     @ViewBag.MeterAfterBeforeBoxDiffTime = diff;
                 }
@@ -2949,7 +2949,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 {
                     DateTime start = Convert.ToDateTime(beforeTime);
                     DateTime end = Convert.ToDateTime(afterTime);
-                    diff = TimeSpan.Parse(end.ToString("hh:mm:ss")) - TimeSpan.Parse(start.ToString("hh:mm:ss"));
+                    diff = TimeSpan.Parse(end.ToString("HH:mm:ss")) - TimeSpan.Parse(start.ToString("HH:mm:ss"));
                 }
             }
             // ends hare

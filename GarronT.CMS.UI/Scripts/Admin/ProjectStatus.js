@@ -494,7 +494,8 @@ function ShowMap(objectMap) {
             (function (marker, data) {
 
                 //google.maps.event.addListener(marker, 'click', function (e) {
-                google.maps.event.addListener(marker, 'mouseover', function (e) {
+                //google.maps.event.addListener(marker, 'mouseover', function (e) {
+                google.maps.event.addListener(marker, 'click', function (e) {
 
                     infoWindow.setContent(data.street, data.latitude, data.longitude);
 

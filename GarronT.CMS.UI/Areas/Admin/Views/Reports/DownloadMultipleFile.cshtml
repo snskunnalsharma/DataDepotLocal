@@ -163,7 +163,7 @@
                                                     <table border="0" style='font-family:calibri; border-radius:5px;width:96%;border-collapse:collapse;margin: 0 auto;'>
                                                         <tr style="page-break-inside:avoid;border:1px solid #000;">
                                                             <td width='25%' class='FieldNametd'><span>Installer Name</span><br /><span class="fieldvalue">@System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((SingleReport.InstallerName.ToLower()))</span></td>
-                                                            <td width='25%' class='FieldNametd'><span>Service Date</span><br /><span class="fieldvalue">@SingleReport.VisitedDate</span></td>
+                                                            <td width='25%' class='FieldNametd'><span>Service Date</span><br /><span class="fieldvalue">@DateTime.Parse(SingleReport.VisitedDate.ToString()).ToString("MMM-dd-yyyy HH:mm")</span></td>
                                                             <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
                                                             @*@if (SingleReport.ProjectId == 10075)
                                                             {
@@ -451,7 +451,7 @@
                                                                         {
                                                                             otherfieldString.Append("<br />");
                                                                             //otherfieldString.Append("<span style='font-size:13px; ' class='fieldvalue datetimespan'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
-                                                                            otherfieldString.Append("<span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
+                                                                            otherfieldString.Append("<span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy HH:mm") + "</span>");
                                                                         }
                                                                         otherfieldString.Append("</td>");
                                                                     }
@@ -492,7 +492,7 @@
                                                                         {
                                                                             otherfieldString.Append("<br />");
                                                                             //otherfieldString.Append("<span style='font-size:13px;' class='fieldvalue datetimespan'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
-                                                                            otherfieldString.Append(" <span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
+                                                                            otherfieldString.Append(" <span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy HH:mm") + "</span>");
                                                                         }
 
                                                                         otherfieldString.Append("</td>");
@@ -568,7 +568,7 @@
                                                                         {
                                                                             otherfieldString1.Append("<br />");
                                                                             //otherfieldString1.Append("<span style='font-size:13px;' class='fieldvalue datetimespan'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
-                                                                            otherfieldString1.Append("<span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
+                                                                            otherfieldString1.Append("<span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy HH:mm") + "</span>");
                                                                         }
                                                                         otherfieldString1.Append("</td>");
                                                                     }
@@ -607,7 +607,7 @@
                                                                         {
                                                                             otherfieldString1.Append("<br />");
                                                                             //otherfieldString1.Append("<span style='font-size:13px;' class='fieldvalue datetimespan'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
-                                                                            otherfieldString1.Append(" <span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
+                                                                            otherfieldString1.Append(" <span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy HH:mm") + "</span>");
 
                                                                         }
 
@@ -700,7 +700,7 @@
                                                                             @if (item.isTimeStampCaptureRequired == true && !string.IsNullOrEmpty(item.captureTimeStamp))
                                                                             {
                                                                                 <br />
-                                                                                <span style='font-size:13px;' class='fieldvalue datetimespan'>(  @DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") )</span>
+                                                                                <span style='font-size:13px;' class='fieldvalue datetimespan'>(  @DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy HH:mm") )</span>
                                                                             }
                                                                         </td>
                                                                     }
@@ -789,7 +789,7 @@
                                                                         {
                                                                             otherfieldString3.Append("<br />");
                                                                             //otherfieldString3.Append("<span style='font-size:13px;' class='fieldvalue datetimespan'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
-                                                                            otherfieldString3.Append(" <span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
+                                                                            otherfieldString3.Append(" <span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy HH:mm") + "</span>");
                                                                         }
                                                                         otherfieldString3.Append("</td>");
                                                                         @Html.Raw(otherfieldString3)
@@ -1032,7 +1032,7 @@
                                                                     {
                                                                         otherfieldString.Append("<br />");
                                                                         //otherfieldString.Append("<span style='font-size:13px;' class='fieldvalue datetimespan'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
-                                                                        otherfieldString.Append("<span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
+                                                                        otherfieldString.Append("<span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy HH:mm") + "</span>");
                                                                     }
                                                                     otherfieldString.Append("</td>");
 
@@ -1146,7 +1146,7 @@
                                                                     {
                                                                         otherfieldString1.Append("<br />");
                                                                         //otherfieldString1.Append("<span style='font-size:13px;' class='fieldvalue datetimespan'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
-                                                                        otherfieldString1.Append("<span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
+                                                                        otherfieldString1.Append("<span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy HH:mm") + "</span>");
                                                                     }
                                                                     otherfieldString1.Append("</td>");
 
@@ -1265,7 +1265,7 @@
                                                                     {
                                                                         otherfieldString2.Append("<br />");
                                                                         //otherfieldString2.Append("<span style='font-size:13px;' class='fieldvalue datetimespan'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
-                                                                        otherfieldString2.Append("<span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
+                                                                        otherfieldString2.Append("<span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy HH:mm") + "</span>");
                                                                     }
                                                                     otherfieldString2.Append("</td>");
 
@@ -1415,7 +1415,7 @@
                                                                         {
                                                                             otherfieldString3.Append("<br />");
                                                                             //otherfieldString3.Append("<span style='font-size:13px;' class='fieldvalue datetimespan'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
-                                                                            otherfieldString3.Append("<span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
+                                                                            otherfieldString3.Append("<span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy HH:mm") + "</span>");
                                                                         }
 
                                                                         otherfieldString3.Append("</td>");
