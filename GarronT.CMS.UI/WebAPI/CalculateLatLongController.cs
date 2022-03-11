@@ -842,6 +842,46 @@ namespace GarronT.CMS.UI.WebAPI
             }
 
         }
+
+        public void updateVisitIdGroupId(long projetID)
+        {
+            CompassEntities objCompassEntities = new CompassEntities();
+            try
+            {
+                var projectDataList = objCompassEntities.UploadedExcelDatas.Where(o => o.Active == 1 && o.FKProjectId == projetID
+                   && (o.VisitId == string.Empty || o.VisitId == null || o.GroupId == string.Empty || o.GroupId == null)).ToList();
+
+                if (projectDataList != null && projectDataList.Count > 0)
+                {
+                    foreach (var item in projectDataList)
+                    {
+                        string lat = string.Empty;
+                        string lng = string.Empty;
+                        string id = string.Empty;
+
+                        id = Convert.ToString(item.Id.ToString());
+                        lat = item.AddressLatitude;
+                        lng = item.AddressLongitude;
+                        if (lat != string.Empty && lng != string.Empty)
+                        {
+                            String DynamicColumnName = Get_DynamicColumnName(Convert.ToString(projetID));
+                            String StreetValue = Get_StreetValue(Convert.ToString(projetID), id, DynamicColumnName);
+                            String VisitId = Get_Create_VisitId(Convert.ToString(projetID), StreetValue, DynamicColumnName);
+                            String GroupId = Get_Create_GroupId(Convert.ToString(projetID), lat, lng);
+                            item.VisitId = VisitId;
+                            item.GroupId = GroupId;
+                            objCompassEntities.SaveChanges();     // one by one records save
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+
+        }
+
+
         public string Get_DynamicColumnName(String ProjectID)
         {
             try

@@ -415,7 +415,7 @@ function selectStatus() {
 
 function GetExistingProjectDetails() {
 
-
+    debugger;
     $('#txtProjectId').val('');
     $('#txtProjectName').val('');
     $('#txtProDes').val('');
@@ -584,8 +584,17 @@ function GetExistingProjectDetails() {
             } else {
                 $("#ddlWarehouseHeader").addClass("ddlHeader").text(selectedlilength + " Warehouse selected")
             }
-
-
+            debugger;
+            console.log("MapWithState == " + data.mapWithStateStatus);
+            if (data.mapWithStateStatus === true)
+            {
+                console.log("set checkbox status");
+                $("#chkMapWithState").prop("checked", true);
+            }
+            else
+            {
+                $("#chkMapWithState").prop("checked", false);
+            }
             //#endregion
 
 
@@ -814,7 +823,7 @@ function checkTab1Status() {
         return false;
     }
     else if ($('#ddlState').val() < 1) {
-        var $toast = toastr["error"]('Please select state name', 'Notification');
+        var $toast = toastr["error"]('Please select state name', 'Notification');  // State and City not required as per client
         return false;
     }
     else if ($('#ddlCity').val() < 1) {
@@ -874,7 +883,7 @@ function checkTab1Status() {
 //Save Project Details
 function saveData() {
 
-
+    debugger;
     var urlSaveData = $('#SaveTab1Url').val();
 
 
@@ -898,8 +907,16 @@ function saveData() {
     FormData.dataSynch = $('#txtdataSynch').val();
     FormData.ProjectAppointmentUrl = $('#ProjectAppointmentUrl').val();
     FormData.ManageInventory = $('#ManageInventory').val();
-
-
+    debugger;
+    FormData.mapWithStateStatus = false;
+    if ($("#chkMapWithState").is(":checked"))
+    {
+        console.log("checked");
+        FormData.mapWithStateStatus = true;
+    } else {
+        FormData.mapWithStateStatus = false;
+    }
+    debugger;
 
     var objWarehouseList = [];
 

@@ -1279,6 +1279,7 @@
                     <Property Name="ManageInventory" Type="varchar" MaxLength="50" />
                     <Property Name="IsCloned" Type="bit" />
                     <Property Name="CloneProjectId" Type="bigint" />
+                    <Property Name="MapWithState" Type="bit" />
                 </EntityType>
                 <EntityType Name="TblProjectCustomeFieldReletion">
                     <Key>
@@ -1957,6 +1958,18 @@
                     <Property Name="RefCol56" Type="varchar" MaxLength="500" />
                     <Property Name="RefCol57" Type="varchar" MaxLength="500" />
                     <Property Name="RefCol58" Type="varchar" MaxLength="500" />
+                    <Property Name="RefCol59" Type="varchar" MaxLength="500" />
+                    <Property Name="RefCol60" Type="varchar" MaxLength="500" />
+                    <Property Name="RefCol61" Type="varchar" MaxLength="500" />
+                    <Property Name="RefCol62" Type="varchar" MaxLength="500" />
+                    <Property Name="RefCol63" Type="varchar" MaxLength="500" />
+                    <Property Name="RefCol64" Type="varchar" MaxLength="500" />
+                    <Property Name="RefCol65" Type="varchar" MaxLength="500" />
+                    <Property Name="RefCol66" Type="varchar" MaxLength="500" />
+                    <Property Name="RefCol67" Type="varchar" MaxLength="500" />
+                    <Property Name="RefCol68" Type="varchar" MaxLength="500" />
+                    <Property Name="RefCol69" Type="varchar" MaxLength="500" />
+                    <Property Name="RefCol70" Type="varchar" MaxLength="500" />
                 </EntityType>
                 <EntityType Name="UserIcard">
                     <Key>
@@ -6911,6 +6924,18 @@
                     <Property Name="RefCol56" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
                     <Property Name="RefCol57" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
                     <Property Name="RefCol58" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+                    <Property Name="RefCol59" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+                    <Property Name="RefCol60" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+                    <Property Name="RefCol61" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+                    <Property Name="RefCol62" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+                    <Property Name="RefCol63" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+                    <Property Name="RefCol64" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+                    <Property Name="RefCol65" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+                    <Property Name="RefCol66" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+                    <Property Name="RefCol67" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+                    <Property Name="RefCol68" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+                    <Property Name="RefCol69" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+                    <Property Name="RefCol70" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
                     <NavigationProperty Name="UserTimeClockDetails" Relationship="CompassModel.FK_UserTimeClockDetail_UploadedExcelData" FromRole="UploadedExcelData" ToRole="UserTimeClockDetail" />
                 </EntityType>
                 <ComplexType Name="PROC_ReportPDF_GetReportHeaderFields_Result">
@@ -9636,6 +9661,7 @@
                     <Property Name="ManageInventory" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
                     <Property Name="IsCloned" Type="Boolean" />
                     <Property Name="CloneProjectId" Type="Int64" />
+                    <Property Name="MapWithState" Type="Boolean" />
                     <NavigationProperty Name="ProjectServiceProductRelations" Relationship="CompassModel.FK_ProjectServiceProductRelation_tblProject" FromRole="tblProject" ToRole="ProjectServiceProductRelation" />
                     <NavigationProperty Name="ProjectWarehouseRelations" Relationship="CompassModel.FK_ProjectWarehouseRelation_tblProject" FromRole="tblProject" ToRole="ProjectWarehouseRelation" />
                     <NavigationProperty Name="StockDetails" Relationship="CompassModel.FK_StockDetails_tblProject" FromRole="tblProject" ToRole="StockDetail" />
@@ -11759,6 +11785,18 @@
                     <EntitySetMapping Name="UploadedExcelDatas">
                         <EntityTypeMapping TypeName="CompassModel.UploadedExcelData">
                             <MappingFragment StoreEntitySet="UploadedExcelData">
+                                <ScalarProperty Name="RefCol70" ColumnName="RefCol70" />
+                                <ScalarProperty Name="RefCol69" ColumnName="RefCol69" />
+                                <ScalarProperty Name="RefCol68" ColumnName="RefCol68" />
+                                <ScalarProperty Name="RefCol67" ColumnName="RefCol67" />
+                                <ScalarProperty Name="RefCol66" ColumnName="RefCol66" />
+                                <ScalarProperty Name="RefCol65" ColumnName="RefCol65" />
+                                <ScalarProperty Name="RefCol64" ColumnName="RefCol64" />
+                                <ScalarProperty Name="RefCol63" ColumnName="RefCol63" />
+                                <ScalarProperty Name="RefCol62" ColumnName="RefCol62" />
+                                <ScalarProperty Name="RefCol61" ColumnName="RefCol61" />
+                                <ScalarProperty Name="RefCol60" ColumnName="RefCol60" />
+                                <ScalarProperty Name="RefCol59" ColumnName="RefCol59" />
                                 <ScalarProperty Name="RefCol58" ColumnName="RefCol58" />
                                 <ScalarProperty Name="RefCol57" ColumnName="RefCol57" />
                                 <ScalarProperty Name="RefCol56" ColumnName="RefCol56" />
@@ -13969,6 +14007,7 @@
                     <EntitySetMapping Name="tblProjects">
                         <EntityTypeMapping TypeName="CompassModel.tblProject">
                             <MappingFragment StoreEntitySet="tblProject">
+                                <ScalarProperty Name="MapWithState" ColumnName="MapWithState" />
                                 <ScalarProperty Name="CloneProjectId" ColumnName="CloneProjectId" />
                                 <ScalarProperty Name="IsCloned" ColumnName="IsCloned" />
                                 <ScalarProperty Name="ManageInventory" ColumnName="ManageInventory" />

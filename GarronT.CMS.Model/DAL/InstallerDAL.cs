@@ -2991,7 +2991,8 @@ namespace GarronT.CMS.Model.DAL
                 cmd.Parameters.Add("@installerId", InstallerID);
                 cmd.Parameters.Add("@FromDate", fromDate);
                 cmd.Parameters.Add("@ToDate", toDate);
-
+                //cmd.CommandTimeout = 300;
+                cmd.CommandTimeout = sqlConnection1.ConnectionTimeout;
                 sqlConnection1.Open();
 
                 reader = cmd.ExecuteReader();

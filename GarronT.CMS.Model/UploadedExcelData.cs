@@ -94,7 +94,19 @@ namespace GarronT.CMS.Model
         public string RefCol56 { get; set; }
         public string RefCol57 { get; set; }
         public string RefCol58 { get; set; }
-    
+        public string RefCol59 { get; set; }
+        public string RefCol60 { get; set; }
+        public string RefCol61 { get; set; }
+        public string RefCol62 { get; set; }
+        public string RefCol63 { get; set; }
+        public string RefCol64 { get; set; }
+        public string RefCol65 { get; set; }
+        public string RefCol66 { get; set; }
+        public string RefCol67 { get; set; }
+        public string RefCol68 { get; set; }
+        public string RefCol69 { get; set; }
+        public string RefCol70 { get; set; }
+
         public virtual ICollection<UserTimeClockDetail> UserTimeClockDetails { get; set; }
     }
 }

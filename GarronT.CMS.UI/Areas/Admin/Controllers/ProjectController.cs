@@ -707,6 +707,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         {
                             //new CalculateLatLongController().CalculateNullLatLongbyProjectID(ProjectID); // Old method
                             new CalculateLatLongController().GetLatLongForProject(ProjectID);
+                            new CalculateLatLongController().updateVisitIdGroupId(ProjectID);
                         });
 
                         MSg = returnMessage;
@@ -1365,6 +1366,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 {
                     //new CalculateLatLongController().CalculatPendingLatLongbyProjectID(ProjectId);
                     new CalculateLatLongController().CalPendingLatLongForProject(ProjectId);
+                    new CalculateLatLongController().updateVisitIdGroupId(ProjectId);
                 });
 
                 return Json(new { success = true, resultMessage = "Pending Lat Lon Calculation Started Successfully...!" }, JsonRequestBehavior.AllowGet);

@@ -353,7 +353,8 @@ namespace GarronT.CMS.Model.DAL
                         objtblProject.AutoDataSyncInterval = objProject.dataSynch;
                         objtblProject.AppointmentUrl = objProject.ProjectAppointmentUrl;   //Added by sominath on 23/12/2016
                         objtblProject.PartialSynch = (objProject.SyncType == 1 ? 1 : 0);
-
+                        //objtblProject.MapWithState = objProject.mapWithStateStatus;
+                        objtblProject.MapWithState = (objProject.mapWithStateStatus == true ? true : false);
 
 
                         /// added by bharat to manage the inventory on off for the project 
@@ -489,6 +490,7 @@ namespace GarronT.CMS.Model.DAL
                             objtblProject.AutoDataSyncInterval = objProject.dataSynch;
                             objtblProject.PartialSynch = (objProject.SyncType == 1 ? 1 : 0);
                             objtblProject.AppointmentUrl = objProject.ProjectAppointmentUrl;   //Added by sominath on 23/12/2016
+                            objtblProject.MapWithState = (objProject.mapWithStateStatus == true ? true : false);
 
                             /// added by bharat to manage the inventory on off for the project
                             objtblProject.ManageInventory = objProject.ManageInventory;
@@ -530,20 +532,11 @@ namespace GarronT.CMS.Model.DAL
 
 
                             }
-
-
                             CompassEntities.SaveChanges();
                             result = true;
                             returnMessage = CommonFunctions.strRecordUpdated;
-
-
                         }
-
-
                     }
-
-
-
                     proId = objtblProject.ProjectId;
 
                     #endregion
@@ -1804,7 +1797,8 @@ namespace GarronT.CMS.Model.DAL
                                       dataSynch = o.AutoDataSyncInterval == null ? 0 : int.Parse(o.AutoDataSyncInterval.ToString()),
                                       SyncType = o.PartialSynch == null ? 2 : (int.Parse(o.PartialSynch.ToString()) == 1 ? 1 : 2),
                                       ProjectAppointmentUrl = Convert.ToString(o.AppointmentUrl),
-                                      ManageInventory = o.ManageInventory
+                                      ManageInventory = o.ManageInventory,
+                                      mapWithStateStatus= o.MapWithState != null ? o.MapWithState.Value : false
                                   }).FirstOrDefault();
 
 
@@ -2438,7 +2432,7 @@ namespace GarronT.CMS.Model.DAL
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Connection = sqlConnection1;
                     cmd.Parameters.Add("@projectId", ProjectID);
-
+                    cmd.CommandTimeout = sqlConnection1.ConnectionTimeout;
 
                     sqlConnection1.Open();
 
