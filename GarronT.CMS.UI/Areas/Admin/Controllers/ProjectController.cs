@@ -237,6 +237,18 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             return Json(objList1, JsonRequestBehavior.AllowGet);
         }
 
+        public ActionResult GetStateList()
+        {
+            List<StateModel> objStateList = new List<StateModel>();
+
+            using (ProjectMasterDAL obj = new ProjectMasterDAL())
+            {
+                objStateList = obj.GetActiveStateRecords();
+            }
+
+            return Json(objStateList, JsonRequestBehavior.AllowGet);
+        }
+
         public ActionResult GetCityList(long stateId, string cityName)
         {
             List<CityModel> objList1 = new List<CityModel>();

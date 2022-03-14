@@ -29,7 +29,7 @@ namespace GarronT.CMS.Model.BO
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-        public bool mapWithStateStatus { get; set; }
+        public int valueMapBy { get; set; }
         public long ProjectId { get; set; }
         public long CloneId { get; set; }
         public bool IsCloneProject { get; set; }

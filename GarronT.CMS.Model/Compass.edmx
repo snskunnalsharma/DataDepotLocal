@@ -1279,7 +1279,7 @@
                     <Property Name="ManageInventory" Type="varchar" MaxLength="50" />
                     <Property Name="IsCloned" Type="bit" />
                     <Property Name="CloneProjectId" Type="bigint" />
-                    <Property Name="MapWithState" Type="bit" />
+                    <Property Name="mapBy" Type="int" />
                 </EntityType>
                 <EntityType Name="TblProjectCustomeFieldReletion">
                     <Key>
@@ -9661,7 +9661,7 @@
                     <Property Name="ManageInventory" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
                     <Property Name="IsCloned" Type="Boolean" />
                     <Property Name="CloneProjectId" Type="Int64" />
-                    <Property Name="MapWithState" Type="Boolean" />
+                    <Property Name="mapBy" Type="Int32" />
                     <NavigationProperty Name="ProjectServiceProductRelations" Relationship="CompassModel.FK_ProjectServiceProductRelation_tblProject" FromRole="tblProject" ToRole="ProjectServiceProductRelation" />
                     <NavigationProperty Name="ProjectWarehouseRelations" Relationship="CompassModel.FK_ProjectWarehouseRelation_tblProject" FromRole="tblProject" ToRole="ProjectWarehouseRelation" />
                     <NavigationProperty Name="StockDetails" Relationship="CompassModel.FK_StockDetails_tblProject" FromRole="tblProject" ToRole="StockDetail" />
@@ -14007,7 +14007,7 @@
                     <EntitySetMapping Name="tblProjects">
                         <EntityTypeMapping TypeName="CompassModel.tblProject">
                             <MappingFragment StoreEntitySet="tblProject">
-                                <ScalarProperty Name="MapWithState" ColumnName="MapWithState" />
+                                <ScalarProperty Name="mapBy" ColumnName="mapBy" />
                                 <ScalarProperty Name="CloneProjectId" ColumnName="CloneProjectId" />
                                 <ScalarProperty Name="IsCloned" ColumnName="IsCloned" />
                                 <ScalarProperty Name="ManageInventory" ColumnName="ManageInventory" />

@@ -287,8 +287,8 @@ namespace GarronT.CMS.Model.DAL
                     ProjectId = o.ProjectId,
                     ProjectName = o.ProjectName,
                     ClientName = o.ClientName,
-                    CityName = o.cityname,
-                    StateName = o.statename,
+                    /*CityName = o.cityname,
+                    StateName = o.statename,   */ // But Sate and city name comming from procedure
                     stringFromDate = o.FromDate != null ? DateTime.Parse(o.FromDate.ToString()).ToString("MMM-dd-yyyy") : "",
                     stringToDate = o.ToDate != null ? DateTime.Parse(o.ToDate.ToString()).ToString("MMM-dd-yyyy") : "",
                     ProjectStatus = o.ProjectStatus,
@@ -302,6 +302,11 @@ namespace GarronT.CMS.Model.DAL
                 var latLongCount = objCompassEntities.UploadedExcelDatas.Where(o => o.FKProjectId == item.ProjectId && o.Active == 1 && o.AddressLatitude != null
                     && o.AddressLongitude != null).Count();
                 item.LatLongStatus = Convert.ToString(latLongCount) + " / " + Convert.ToString(item.TotalRecords);
+
+                // Getting state and City name hare
+                var proDetail = objCompassEntities.tblProjects.Where(o => o.ProjectId == item.ProjectId).FirstOrDefault();
+                item.StateName = objCompassEntities.tblStateMasters.Where(o => o.StateId == proDetail.StateId).Select(o => o.StateName).FirstOrDefault();
+                item.CityName = objCompassEntities.TblCityMasters.Where(o => o.CityId == proDetail.CityId && o.Active == 1).Select(o => o.CityName).FirstOrDefault();
             }
 
             data1 = data;
@@ -353,8 +358,7 @@ namespace GarronT.CMS.Model.DAL
                         objtblProject.AutoDataSyncInterval = objProject.dataSynch;
                         objtblProject.AppointmentUrl = objProject.ProjectAppointmentUrl;   //Added by sominath on 23/12/2016
                         objtblProject.PartialSynch = (objProject.SyncType == 1 ? 1 : 0);
-                        //objtblProject.MapWithState = objProject.mapWithStateStatus;
-                        objtblProject.MapWithState = (objProject.mapWithStateStatus == true ? true : false);
+                        objtblProject.mapBy = objProject.valueMapBy;
 
 
                         /// added by bharat to manage the inventory on off for the project 
@@ -490,7 +494,7 @@ namespace GarronT.CMS.Model.DAL
                             objtblProject.AutoDataSyncInterval = objProject.dataSynch;
                             objtblProject.PartialSynch = (objProject.SyncType == 1 ? 1 : 0);
                             objtblProject.AppointmentUrl = objProject.ProjectAppointmentUrl;   //Added by sominath on 23/12/2016
-                            objtblProject.MapWithState = (objProject.mapWithStateStatus == true ? true : false);
+                            objtblProject.mapBy = objProject.valueMapBy;
 
                             /// added by bharat to manage the inventory on off for the project
                             objtblProject.ManageInventory = objProject.ManageInventory;
@@ -1787,8 +1791,10 @@ namespace GarronT.CMS.Model.DAL
                                       ProjectName = o.ProjectName,
                                       ProjectDescription = o.ProjectDecsription,
                                       ClientId = long.Parse(o.ClientId.ToString()),
-                                      StateId = long.Parse(o.StateId.ToString()),
-                                      CityId = long.Parse(o.CityId.ToString()),
+                                      /*StateId = long.Parse(o.StateId.ToString()),
+                                      CityId = long.Parse(o.CityId.ToString()),*/
+                                      StateId = o.StateId.ToString() == null ? 0 : (long.Parse(o.StateId.ToString())),
+                                      CityId = o.CityId.ToString() == null ? 0 : (long.Parse(o.CityId.ToString())),
                                       ContactId = o.ContactId,
                                       Utilitytype = o.Utilitytype,
                                       stringFromDate = DateTime.Parse(o.FromDate.ToString()).ToString("MMM-dd-yyyy"),
@@ -1798,7 +1804,7 @@ namespace GarronT.CMS.Model.DAL
                                       SyncType = o.PartialSynch == null ? 2 : (int.Parse(o.PartialSynch.ToString()) == 1 ? 1 : 2),
                                       ProjectAppointmentUrl = Convert.ToString(o.AppointmentUrl),
                                       ManageInventory = o.ManageInventory,
-                                      mapWithStateStatus= o.MapWithState != null ? o.MapWithState.Value : false
+                                      valueMapBy = Convert.ToInt32(o.mapBy)
                                   }).FirstOrDefault();
 
 

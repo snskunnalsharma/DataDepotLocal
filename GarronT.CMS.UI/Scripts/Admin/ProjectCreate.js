@@ -585,15 +585,18 @@ function GetExistingProjectDetails() {
                 $("#ddlWarehouseHeader").addClass("ddlHeader").text(selectedlilength + " Warehouse selected")
             }
             debugger;
-            console.log("MapWithState == " + data.mapWithStateStatus);
-            if (data.mapWithStateStatus === true)
+            console.log("Map With Nation Wide == " + data.valueMapBy);
+            if (data.valueMapBy === 1)      // 1 for nation wise and 0 for state and city wide
             {
                 console.log("set checkbox status");
-                $("#chkMapWithState").prop("checked", true);
+                $("#chkMapWithNationWide").prop("checked", true);
+
+                $('#divState .chosen-drop').css('display', 'none');
+                $('#divCity .chosen-drop').css('display', 'none');
             }
             else
             {
-                $("#chkMapWithState").prop("checked", false);
+                $("#chkMapWithNationWide").prop("checked", false);
             }
             //#endregion
 
@@ -798,6 +801,26 @@ $('#ddlState').change(function () {
 
 });
 
+function getStateList() {
+
+    $('#ddlState').prop('disabled', false);
+    $('#ddlState').empty();
+    debugger;
+    //waitingDialog.show('Please Wait Loading Cities...');
+    var urlStateData = $('#StateListUrl').val();
+    $.ajax({
+        type: 'GET',
+        url: urlStateData,
+        success: function (data) {
+            $.each(data, function (index, item) {
+                if (index == 0) { $('#ddlState').append($('<option></option>').val('0').html("")); }
+                $('#ddlState').append($('<option></option>').val(item.StateID).html(item.StateName));
+            });
+            $('#ddlState').trigger('chosen:updated');
+            waitingDialog.hide();
+        },
+    });
+}
 
 
 function checkTab1Status() {
@@ -821,15 +844,15 @@ function checkTab1Status() {
     else if ($('#txtToDate').val() == '') {
         var $toast = toastr["error"]('Please select to date', 'Notification');
         return false;
-    }
-    else if ($('#ddlState').val() < 1) {
+    }   
+    /*if ($('#ddlState').val() < 1) {
         var $toast = toastr["error"]('Please select state name', 'Notification');  // State and City not required as per client
         return false;
     }
-    else if ($('#ddlCity').val() < 1) {
+    if ($('#ddlCity').val() < 1) {
         var $toast = toastr["error"]('Please select city name', 'Notification');
         return false;
-    }
+    }*/
     else if ($('#ddlUtilitytype').val() == 0) {
         var $toast = toastr["error"]('Please select Utility type', 'Notification');
         return false;
@@ -876,6 +899,20 @@ function checkTab1Status() {
 
     }
 
+    if ($("#chkMapWithNationWide").is(":checked")) {
+        console.log("Check Box Checked ==> State and City not required");
+    }
+    else {
+        if ($('#ddlState').val() < 1) {
+            var $toast = toastr["error"]('Please select state name', 'Notification');  // State and City not required as per client
+            return false;
+        }
+        if ($('#ddlCity').val() < 1) {
+            var $toast = toastr["error"]('Please select city name', 'Notification');
+            return false;
+        }
+    }
+
 
 }
 
@@ -908,13 +945,15 @@ function saveData() {
     FormData.ProjectAppointmentUrl = $('#ProjectAppointmentUrl').val();
     FormData.ManageInventory = $('#ManageInventory').val();
     debugger;
-    FormData.mapWithStateStatus = false;
-    if ($("#chkMapWithState").is(":checked"))
+    //FormData.valueMapBy = false;
+    if ($("#chkMapWithNationWide").is(":checked"))
     {
         console.log("checked");
-        FormData.mapWithStateStatus = true;
-    } else {
-        FormData.mapWithStateStatus = false;
+        FormData.valueMapBy = "1";  // 1 Nation wise set peoject
+    }
+    else
+    {
+        FormData.valueMapBy = "0";  // 0 Means State wise
     }
     debugger;
 
@@ -2341,3 +2380,33 @@ function ResetServiceProduct() {
     productAddEdit = "Add";
 
 }
+
+//#region chkMapWithNationWide
+debugger;
+$('#chkMapWithNationWide').change(function () {
+
+    if ($(this).is(":checked")) {
+        $('#ddlState').prop('disabled', false);
+        $('#ddlState').empty();
+        $('#ddlState').append($('<option></option>').val('0').html("")).trigger('chosen:updated');
+        $('#ddlCity').prop('disabled', false);
+        $('#ddlCity').empty();
+        $('#ddlCity').append($('<option></option>').val('0').html("")).trigger('chosen:updated');
+
+        $('#divState .chosen-drop').css('display', 'none');
+        $('#divCity .chosen-drop').css('display', 'none');
+    }
+    else {
+        $('#divState .chosen-drop').css('display', 'block');
+        $('#divCity .chosen-drop').css('display', 'block');
+        
+        getStateList();
+
+        $('#ddlCity').prop('disabled', false);
+        $('#ddlCity').empty();
+        $('#ddlCity').append($('<option></option>').val('0').html("")).trigger('chosen:updated');
+
+        
+    }
+});
+//#endregion

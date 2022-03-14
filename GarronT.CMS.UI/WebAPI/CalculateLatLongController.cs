@@ -624,8 +624,22 @@ namespace GarronT.CMS.UI.WebAPI
             var project = objCompassEntities.tblProjects.Where(a => a.ProjectId == projetID && a.Active == 1).FirstOrDefault();
 
             // var city = (from c in CompassEntities.TblCityMasters where c.CityId == project.CityId select c).FirstOrDefault();
-            var state = (from st in objCompassEntities.tblStateMasters where st.StateId == project.StateId select st).FirstOrDefault();
-            var cityname = objCompassEntities.TblCityMasters.Where(o => o.CityId == project.CityId).Select(o => o.CityName).FirstOrDefault();
+            string objCityName = string.Empty;
+            string objStateName = string.Empty;
+            if (project.mapBy == 0)
+            {
+                var state = (from st in objCompassEntities.tblStateMasters where st.StateId == project.StateId select st).FirstOrDefault();
+                var cityname = objCompassEntities.TblCityMasters.Where(o => o.CityId == project.CityId).Select(o => o.CityName).FirstOrDefault();
+                objStateName = Convert.ToString(state.StateName).ToString();
+                objCityName = Convert.ToString(cityname).ToString();
+
+            }
+            else
+            {
+                objStateName = "Texas";
+                objCityName = "OMAHA";
+            }
+            
             try
             {
                 string address = string.Empty;
@@ -652,7 +666,8 @@ namespace GarronT.CMS.UI.WebAPI
 
 
                     //Added by Sanjiv to get City and state Lat Long
-                    FindCityCoordinates(Convert.ToString(cityname) + ", " + state.StateName + ", USA", out Citylat, out Citylng);
+                    //FindCityCoordinates(Convert.ToString(cityname) + ", " + state.StateName + ", USA", out Citylat, out Citylng);
+                    FindCityCoordinates(Convert.ToString(objCityName) + ", " + objStateName + ", USA", out Citylat, out Citylng);
 
                     foreach (var item in projectDataList)
                     {
@@ -706,11 +721,13 @@ namespace GarronT.CMS.UI.WebAPI
                                     int endIndex = _streetAddress.IndexOf('#'); ;
                                     int length = endIndex - startIndex - 1;
                                     String computeddress = _streetAddress.Substring(0, length);
-                                    address = computeddress + ", " + Convert.ToString(cityname) + ", " + state.StateName + ", USA";
+                                    //address = computeddress + ", " + Convert.ToString(cityname) + ", " + state.StateName + ", USA";
+                                    address = computeddress + ", " + objCityName + ", " + objStateName + ", USA";
                                 }
                                 else
                                 {
-                                    address = _streetAddress + ", " + Convert.ToString(cityname) + ", " + state.StateName + ", USA";
+                                    //address = _streetAddress + ", " + Convert.ToString(cityname) + ", " + state.StateName + ", USA";
+                                    address = _streetAddress + ", " + objCityName + ", " + objStateName + ", USA";
                                 }
                                 if (!string.IsNullOrEmpty(address))
                                 {
@@ -777,11 +794,13 @@ namespace GarronT.CMS.UI.WebAPI
                                     int endIndex = _streetAddress.IndexOf('#'); ;
                                     int length = endIndex - startIndex - 1;
                                     String computeddress = _streetAddress.Substring(0, length);
-                                    address = computeddress + ", " + Convert.ToString(cityname) + ", " + state.StateName + ", USA";
+                                    //address = computeddress + ", " + Convert.ToString(cityname) + ", " + state.StateName + ", USA";
+                                    address = computeddress + ", " + objCityName + ", " + objStateName + ", USA";
                                 }
                                 else
                                 {
-                                    address = _streetAddress + ", " + Convert.ToString(cityname) + ", " + state.StateName + ", USA";
+                                    //address = _streetAddress + ", " + Convert.ToString(cityname) + ", " + state.StateName + ", USA";
+                                    address = _streetAddress + ", " + objCityName + ", " + objStateName + ", USA";
 
                                 }
                                 if (!string.IsNullOrEmpty(address))
@@ -855,14 +874,14 @@ namespace GarronT.CMS.UI.WebAPI
                 {
                     foreach (var item in projectDataList)
                     {
-                        string lat = string.Empty;
-                        string lng = string.Empty;
-                        string id = string.Empty;
+                        string lat = "";
+                        string lng = "";
+                        string id = "";
 
                         id = Convert.ToString(item.Id.ToString());
                         lat = item.AddressLatitude;
                         lng = item.AddressLongitude;
-                        if (lat != string.Empty && lng != string.Empty)
+                        if (lat != string.Empty && lat != null && lng != string.Empty && lng != null)
                         {
                             String DynamicColumnName = Get_DynamicColumnName(Convert.ToString(projetID));
                             String StreetValue = Get_StreetValue(Convert.ToString(projetID), id, DynamicColumnName);

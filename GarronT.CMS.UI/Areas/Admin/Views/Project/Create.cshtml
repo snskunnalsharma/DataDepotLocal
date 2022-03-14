@@ -6643,31 +6643,23 @@
                             <div class="col-lg-7 col-md-7 col-sm-12  col-xs-12 col-xxs-12 sm-mbot1 location-head-div">
 
                                 <div class="col-lg-2 col-sm-3 col-xs-9 col-xxs-12 cty_drp_btn sm-nopaddingleft sm-nopaddingright xs-nopaddingleft xs-nopaddingright xxs-paddingleft-2 xxs-nopaddingright" style="padding:0">
-                                    <input type="checkbox" name="mapWithState" id="chkMapWithState">Map With State
-                                    @*<div>
-                                        <input type="radio" id="huey" name="drone" value="0"
-                                               checked>
-                                        <label for="huey">Citywide</label>
-                                    </div>
-
-                                    <div>
-                                        <input type="radio" id="dewey" name="drone" value="1">
-                                        <label for="dewey">Statewide</label>
-                                    </div>
-
-                                    <div>
-                                        <input type="radio" id="louie" name="drone" value="2">
-                                        <label for="louie">National</label>
-                                    </div>*@
-                                </div>
-                                <label for="name" class="col-lg-2 col-sm-3 col-xs-3 col-xxs-12 labelcolor_name control-label cre_sta_label">State<span style="color:red">*</span></label>
-                                <div class="col-lg-3 col-sm-4 col-xs-9 col-xxs-12 state_drp_btn sm-nopaddingleft xxs-paddingleft-2 xxs-nopaddingright">
-                                    <select id="ddlState" data-placeholder="Select State" name="StateID" class="inputclass form-control input_shadow"></select>
+                                    <input type="checkbox" name="mapWithNationWide" id="chkMapWithNationWide">NationWide
                                 </div>
 
-                                <label class="col-lg-1 col-sm-2 col-xs-3 col-xxs-12 labelcolor_name  control-label cre_cty_label xs-clear">City<span style="color:red">*</span></label>
-                                <div class="col-lg-3 col-sm-3 col-xs-9 col-xxs-12 cty_drp_btn sm-nopaddingleft sm-nopaddingright xs-nopaddingleft xs-nopaddingright xxs-paddingleft-2 xxs-nopaddingright">
-                                    <select id="ddlCity" data-placeholder="Select City" name="CityId" class="inputclass form-control input_shadow"></select>
+                                @*<label for="name" class="col-lg-2 col-sm-3 col-xs-3 col-xxs-12 labelcolor_name control-label cre_sta_label">State<span style="color:red">*</span></label>*@
+                                <label for="name" class="col-lg-2 col-sm-3 col-xs-3 col-xxs-12 labelcolor_name control-label cre_sta_label">State</label>
+                                <div id="divState">
+                                    <div class="col-lg-3 col-sm-4 col-xs-9 col-xxs-12 state_drp_btn sm-nopaddingleft xxs-paddingleft-2 xxs-nopaddingright">
+                                        <select id="ddlState" data-placeholder="Select State" name="StateID" class="inputclass form-control input_shadow"></select>
+                                    </div>
+                                </div>
+
+                                @*<label class="col-lg-1 col-sm-2 col-xs-3 col-xxs-12 labelcolor_name  control-label cre_cty_label xs-clear">City<span style="color:red">*</span></label>*@
+                                <label class="col-lg-1 col-sm-2 col-xs-3 col-xxs-12 labelcolor_name  control-label cre_cty_label xs-clear">City</label>
+                                <div id="divCity">
+                                    <div class="col-lg-3 col-sm-3 col-xs-9 col-xxs-12 cty_drp_btn sm-nopaddingleft sm-nopaddingright xs-nopaddingleft xs-nopaddingright xxs-paddingleft-2 xxs-nopaddingright">
+                                        <select id="ddlCity" data-placeholder="Select City" name="CityId" class="inputclass form-control input_shadow"></select>
+                                    </div>
                                 </div>
 
                             </div>

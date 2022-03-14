@@ -47,7 +47,7 @@ namespace GarronT.CMS.Model
         public string ManageInventory { get; set; }
         public Nullable<bool> IsCloned { get; set; }
         public Nullable<long> CloneProjectId { get; set; }
-        public Nullable<bool> MapWithState { get; set; }
+        public Nullable<int> mapBy { get; set; }
 
         public virtual ICollection<ProjectServiceProductRelation> ProjectServiceProductRelations { get; set; }
         public virtual ICollection<ProjectWarehouseRelation> ProjectWarehouseRelations { get; set; }
