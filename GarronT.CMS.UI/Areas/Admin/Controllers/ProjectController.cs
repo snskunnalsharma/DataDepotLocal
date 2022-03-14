@@ -994,7 +994,20 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             }
         }
 
-
+        static bool isExcel(FileInfo wbook)
+        {
+            bool isOpened = true;
+            
+            try
+            {
+                ExcelPackage xlPackage = new ExcelPackage(wbook);
+            }
+            catch (Exception)
+            {
+                isOpened = false;
+            }
+            return isOpened;
+        }
 
         /// <summary>
         /// 
@@ -1009,84 +1022,133 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             {
 
                 #region getExcel data
+                string[] fileTypeArray = newFilePath.Split('.');
+                string fileType = fileTypeArray[1];
                 System.Data.DataTable dt = new System.Data.DataTable();
                 List1 = null;
                 FileInfo existingFile = new FileInfo(newFilePath);
-                using (ExcelPackage xlPackage = new ExcelPackage(existingFile))
+                if (isExcel(existingFile))
                 {
-                    ExcelWorksheet worksheet = xlPackage.Workbook.Worksheets[1];
-                    dt = new DataTable();
-                    //adding columns  
-                    int iCol = 1;
-                    int iRow = 1;
-                    bool CanRead = true;
-                    while (CanRead)
+                    using (ExcelPackage xlPackage = new ExcelPackage(existingFile))
                     {
-                        if (worksheet.Cells[iRow, iCol].Value != null)
+                        ExcelWorksheet worksheet = xlPackage.Workbook.Worksheets[1];
+                        dt = new DataTable();
+                        //adding columns  
+                        int iCol = 1;
+                        int iRow = 1;
+                        bool CanRead = true;
+                        while (CanRead)
                         {
-                            if (worksheet.Cells[iRow, iCol].Value != DBNull.Value && !string.IsNullOrEmpty(Convert.ToString(worksheet.Cells[iRow, iCol].Value)))
+                            if (worksheet.Cells[iRow, iCol].Value != null)
                             {
-                                dt.Columns.Add(Convert.ToString(worksheet.Cells[iRow, iCol].Value));
-                                objList1.Add(Convert.ToString(worksheet.Cells[iRow, iCol].Value));
-                                iCol++;
+                                if (worksheet.Cells[iRow, iCol].Value != DBNull.Value && !string.IsNullOrEmpty(Convert.ToString(worksheet.Cells[iRow, iCol].Value)))
+                                {
+                                    dt.Columns.Add(Convert.ToString(worksheet.Cells[iRow, iCol].Value));
+                                    objList1.Add(Convert.ToString(worksheet.Cells[iRow, iCol].Value));
+                                    iCol++;
 
+                                }
+                                else
+                                {
+                                    CanRead = false;
+                                }
                             }
                             else
                             {
                                 CanRead = false;
                             }
+
                         }
-                        else
+                        //adding rows  
+                        iRow = 2;
+                        bool canRowRead = true;
+                        while (canRowRead)
                         {
-                            CanRead = false;
-                        }
-
-                    }
-                    //adding rows  
-                    iRow = 2;
-                    bool canRowRead = true;
-                    while (canRowRead)
-                    {
 
 
 
-                        DataRow dr = dt.NewRow();
-                        bool rowVal = true;
-                        int colCount = 1;
-                        while (colCount <= iCol)
-                        {
-                            if (worksheet.Cells[iRow, colCount].Value != DBNull.Value && !string.IsNullOrEmpty(Convert.ToString(worksheet.Cells[iRow, colCount].Value)))
+                            DataRow dr = dt.NewRow();
+                            bool rowVal = true;
+                            int colCount = 1;
+                            while (colCount <= iCol)
                             {
-                                try
+                                if (worksheet.Cells[iRow, colCount].Value != DBNull.Value && !string.IsNullOrEmpty(Convert.ToString(worksheet.Cells[iRow, colCount].Value)))
                                 {
-                                    dr[colCount - 1] = worksheet.Cells[iRow, colCount].Value;
+                                    try
+                                    {
+                                        dr[colCount - 1] = worksheet.Cells[iRow, colCount].Value;
+                                    }
+                                    catch
+                                    {
+                                    }
+                                    rowVal = false;
                                 }
-                                catch
-                                {
-                                }
-                                rowVal = false;
+                                colCount++;
                             }
-                            colCount++;
+
+
+
+                            if (rowVal)
+                            {
+                                canRowRead = false;
+                            }
+                            else
+                            {
+                                dt.Rows.Add(dr);
+                                iRow++;
+                            }
+
                         }
 
-
-
-                        if (rowVal)
-                        {
-                            canRowRead = false;
-                        }
-                        else
-                        {
-                            dt.Rows.Add(dr);
-                            iRow++;
-                        }
-
+                        TempData["ExcelData"] = dt;
+                        TempData.Keep("ExcelData");
                     }
-
-                    TempData["ExcelData"] = dt;
-                    TempData.Keep("ExcelData");
+                    #endregion
                 }
-                #endregion
+                else
+                {
+                    //csv file
+                    string Fulltext;
+                    using (StreamReader sr = new StreamReader(newFilePath))
+                    {
+                        dt = new DataTable();
+                        while (!sr.EndOfStream)
+                        {
+                            Fulltext = sr.ReadToEnd().ToString(); //read full file text  
+                            string[] rows = Fulltext.Split('\n'); //split full file text into rows  
+                            for (int i = 0; i < rows.Count() - 1; i++)
+                            {
+                                string[] rowValues = rows[i].Split(','); //split each row with comma to get individual values  
+                                {
+                                    if (i == 0)
+                                    {
+                                        for (int j = 0; j < rowValues.Count(); j++)
+                                        {
+                                            string rvalue = rowValues[j].TrimStart(' ', '"');
+                                            rvalue = rvalue.TrimEnd('"');
+                                            dt.Columns.Add(rvalue); //add headers 
+                                            objList1.Add(rvalue);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        DataRow dr = dt.NewRow();
+                                        for (int k = 0; k < rowValues.Count(); k++)
+                                        {
+                                            string rvalue = rowValues[k].ToString().TrimStart(' ', '"');
+                                            rvalue = rvalue.TrimEnd('"');
+                                            dr[k] = rvalue;
+                                        }
+                                        dt.Rows.Add(dr); //add other rows  
+                                    }
+                                }
+                            }
+                        }
+                        TempData["ExcelData"] = dt;
+                        TempData.Keep("ExcelData");
+                    }
+                }
+
 
                 return List1 = objList1;
 

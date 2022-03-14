@@ -171,14 +171,14 @@ $(document).ready(function () {
             var $toast = toastr["error"]("Please, select any file first to upload", "Error Notification");
             return;
         }
-        var fileExtension = ['xlsx'];
+        var fileExtension = ['xlsx','csv'];
         if ($.inArray($("#fileInput").val().split('.').pop().toLowerCase(), fileExtension) == -1) {
-            var $toast = toastr["error"]("Please, select only .xlsx file to upload.", "Error Notification");
+            var $toast = toastr["error"]("Please, select only .xlsx or .csv file to upload.", "Error Notification");
             return;
         }
 
 
-        waitingDialog.show('Please Wait Uploading Excel...');
+        waitingDialog.show('Please Wait Uploading File...');
 
         var projId = $("#txtProjectId").val();
         var fileUploadAction = $("#getFileUploadPartialURL").val();
