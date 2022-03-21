@@ -2883,6 +2883,7 @@ angularApp
                         var Iconename = item.FieldDataTypeName.replace(/ /g, '').replace("/", '').replace("/", '');
                         var IconPath = $rootScope.projectPath + "Angular/views/icon/" + Iconename + ".png";
                         if (ismappedtoexcel == "1" && _selectedFieldText != "LOCATION/GPS") {
+                        //if (_selectedFieldText != "LOCATION/GPS") {
                             $scope.DivListOptionShow = false;
                             if (item.FieldDataTypeName.toLowerCase().trim() == "List".toLowerCase()) {
                                 var sampledata = {
@@ -3002,8 +3003,8 @@ angularApp
 
                         $("#sortable2").children("li[id='" + selectedFieldID + "']").addClass("dataSaved")
                         var isoptionsexist = false;
-                        if (ismappedtoexcel == "0") {
-
+                        //if (ismappedtoexcel == "0") {
+                        if (ismappedtoexcel == "0" || ismappedtoexcel == "1") {
                             if ($.trim(selectedData.selectedData.text) == "List") {
                                 $("#ListOptionsTable").empty();
                                 $scope.DivListOptionShow = true;
@@ -3034,7 +3035,8 @@ angularApp
                         $scope.finishLoading = function () {
 
                             var isoptionsexist = false;
-                            if (ismappedtoexcel == "0") {
+                            //if (ismappedtoexcel == "0") {
+                            if (ismappedtoexcel == "0" || ismappedtoexcel == "1") {
                                 if ($.trim(selectedData.selectedData.text) == "List") {
                                     $("#ListOptionsTable").empty();
                                     $scope.DivListOptionShow = true;

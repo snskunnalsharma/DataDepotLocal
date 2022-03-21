@@ -1,4 +1,5 @@
 ﻿using GarronT.CMS.Model;
+using GarronT.CMS.Model.DAL;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -785,8 +786,40 @@ namespace GarronT.CMS.UI.WebAPI
 
                                 //var barProperty = item.GetType().GetProperty(dynamicColumnName);
                                 // string s = barProperty.GetValue(item, null) as string;
-                                string _streetAddress = Convert.ToString(s2);
 
+                                // Added new Code as per Project cerate Nation wide State and City Upload by Excel file.
+                                InstallerDAL inDal = new InstallerDAL();
+                                string dyZipColName = inDal.getDynamicColumnName("ZIP", Convert.ToString(projetID));
+                                string dyCityColName = inDal.getDynamicColumnName("CITY", Convert.ToString(projetID));
+                                string dyStateColName = inDal.getDynamicColumnName("STATE", Convert.ToString(projetID));
+
+                                if (!string.IsNullOrEmpty(dyZipColName))
+                                {
+                                    var Zip = PropertyInfos.Where(o => o.Name == dyZipColName).Select(o => o.GetValue(item, null)).FirstOrDefault();
+                                    if (!string.IsNullOrEmpty(Zip.ToString()))
+                                    {
+                                        s2 += ", " + Zip.ToString();
+                                    }
+                                }
+                                if (!string.IsNullOrEmpty(dyCityColName))
+                                {
+                                    var City = PropertyInfos.Where(o => o.Name == dyCityColName).Select(o => o.GetValue(item, null)).FirstOrDefault();
+                                    if (!string.IsNullOrEmpty(City.ToString()))
+                                    {
+                                        objCityName = City.ToString();
+                                    }
+                                }
+                                if (!string.IsNullOrEmpty(dyStateColName))
+                                {
+                                    var State = PropertyInfos.Where(o => o.Name == dyStateColName).Select(o => o.GetValue(item, null)).FirstOrDefault();
+                                    if (!string.IsNullOrEmpty(State.ToString()))
+                                    {
+                                        objStateName = State.ToString();
+                                    }
+                                }
+                                // End hare
+
+                                string _streetAddress = Convert.ToString(s2);
 
                                 if (Convert.ToString(_streetAddress).Trim().Contains('#'))
                                 {
@@ -881,7 +914,7 @@ namespace GarronT.CMS.UI.WebAPI
                         id = Convert.ToString(item.Id.ToString());
                         lat = item.AddressLatitude;
                         lng = item.AddressLongitude;
-                        if (lat != string.Empty && lat != null && lng != string.Empty && lng != null)
+                        if (lat != "" && lng != "")
                         {
                             String DynamicColumnName = Get_DynamicColumnName(Convert.ToString(projetID));
                             String StreetValue = Get_StreetValue(Convert.ToString(projetID), id, DynamicColumnName);
@@ -944,7 +977,7 @@ namespace GarronT.CMS.UI.WebAPI
                 _sqlCon.Close();
                 return StreetValue;
             }
-            catch
+            catch (Exception ex)
             {
                 return "";
             }
@@ -956,12 +989,27 @@ namespace GarronT.CMS.UI.WebAPI
             {
                 string VisitId = "";
                 CompassEntities dbcontext = new CompassEntities();
-                SqlConnection _sqlCon = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
+                long _ProjectID = long.Parse(ProjectID);
+                //var _objVisitId = dbcontext.UploadedExcelDatas.Where(o => o.FKProjectId == Convert.ToInt64(ProjectID) && (o.GetType().GetProperties(o => o.Name == DynamicColumnName)).ToString() == Street.ToString() && o.VisitId != null && o.VisitId != "").FirstOrDefault();
+                var _objVisitId = dbcontext.UploadedExcelDatas.Where(o => o.FKProjectId == _ProjectID && o.Street12 == Street && o.VisitId != null && o.VisitId != "").FirstOrDefault();
+                if (_objVisitId != null)
+                {
+                    VisitId = _objVisitId.VisitId.ToString();       // This code has been chnaged because street address comming With apostrophe s(')
+                }
+                else
+                {
+                    // not availabe VisitId then generate new id
+                    Guid objVisitId = Guid.NewGuid();
+                    VisitId = objVisitId.ToString().ToUpper();
+                }
+
+                /*SqlConnection _sqlCon = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
                 _sqlCon.Open();
-                SqlCommand _cmd = new SqlCommand("Select top 1 VisitId from UploadedExcelData where FKProjectId='" + ProjectID + "' and " + DynamicColumnName + "='" + Street + "' and [VisitId] is not null ", _sqlCon);
+                SqlCommand _cmd = new SqlCommand("Select top 1 VisitId from UploadedExcelData where FKProjectId='" + ProjectID + "' and " + DynamicColumnName + "='" + Street + "' and VisitId !='' and VisitId is not null ", _sqlCon);
                 SqlDataAdapter sda = new SqlDataAdapter(_cmd);
                 DataTable dt = new DataTable();
                 sda.Fill(dt);
+                //var UpData=dbcontext.UploadedExcelDatas.Where()
                 if (dt.Rows.Count > 0)
                 {
                     // availabe VisitId id
@@ -973,10 +1021,10 @@ namespace GarronT.CMS.UI.WebAPI
                     Guid objVisitId = Guid.NewGuid();
                     VisitId = objVisitId.ToString().ToUpper();
                 }
-                _sqlCon.Close();
+                _sqlCon.Close();*/
                 return VisitId;
             }
-            catch
+            catch(Exception ex)
             {
                 return "";
             }
@@ -989,7 +1037,7 @@ namespace GarronT.CMS.UI.WebAPI
                 CompassEntities dbcontext = new CompassEntities();
                 SqlConnection _sqlCon = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
                 _sqlCon.Open();
-                SqlCommand _cmd = new SqlCommand("Select top 1 GroupId from UploadedExcelData where FKProjectId='" + ProjectID + "' and AddressLatitude='" + let + "' and AddressLongitude='" + lng + "' and GroupId is not null", _sqlCon);
+                SqlCommand _cmd = new SqlCommand("Select top 1 GroupId from UploadedExcelData where FKProjectId='" + ProjectID + "' and AddressLatitude='" + let + "' and AddressLongitude='" + lng + "' and GroupId !='' and GroupId is not null", _sqlCon);
                 SqlDataAdapter sda = new SqlDataAdapter(_cmd);
                 DataTable dt = new DataTable();
                 sda.Fill(dt);
@@ -1007,7 +1055,7 @@ namespace GarronT.CMS.UI.WebAPI
                 _sqlCon.Close();
                 return GroupId;
             }
-            catch
+            catch (Exception ex)
             {
                 return "";
             }
@@ -1212,8 +1260,21 @@ namespace GarronT.CMS.UI.WebAPI
             CompassEntities objCompassEntities = new CompassEntities();
             var project = objCompassEntities.tblProjects.Where(a => a.ProjectId == projetID && a.Active == 1).FirstOrDefault();
 
-            var state = (from st in objCompassEntities.tblStateMasters where st.StateId == project.StateId select st).FirstOrDefault();
-            var cityname = objCompassEntities.TblCityMasters.Where(o => o.CityId == project.CityId).Select(o => o.CityName).FirstOrDefault();
+            string objCityName = string.Empty;
+            string objStateName = string.Empty;
+            if (project.mapBy == 0)
+            {
+                var state = (from st in objCompassEntities.tblStateMasters where st.StateId == project.StateId select st).FirstOrDefault();
+                var cityname = objCompassEntities.TblCityMasters.Where(o => o.CityId == project.CityId).Select(o => o.CityName).FirstOrDefault();
+                objStateName = Convert.ToString(state.StateName).ToString();
+                objCityName = Convert.ToString(cityname).ToString();
+
+            }
+            else
+            {
+                objStateName = "Texas";
+                objCityName = "OMAHA";
+            }
             try
             {
                 string address = string.Empty;
@@ -1233,7 +1294,8 @@ namespace GarronT.CMS.UI.WebAPI
                 if (projectDataList != null && projectDataList.Count > 0)
                 {
 
-                    FindCityCoordinates(Convert.ToString(cityname) + ", " + state.StateName + ", USA", out Citylat, out Citylng);
+                    //FindCityCoordinates(Convert.ToString(cityname) + ", " + state.StateName + ", USA", out Citylat, out Citylng);
+                    FindCityCoordinates(Convert.ToString(objCityName) + ", " + objStateName + ", USA", out Citylat, out Citylng);
                     foreach (var item in projectDataList)
                     {
                         id = Convert.ToString(item.Id.ToString());
@@ -1248,8 +1310,7 @@ namespace GarronT.CMS.UI.WebAPI
                             string longValue = Convert.ToString(currentProperty1.GetValue(item));
 
 
-                            if (!string.IsNullOrEmpty(latValue) && latValue.Length > 0 && latValue != "0"
-                      && !string.IsNullOrEmpty(longValue) && longValue.Trim().Length > 0 && longValue != "0")
+                            if (!string.IsNullOrEmpty(latValue) && latValue.Length > 0 && latValue != "0" && !string.IsNullOrEmpty(longValue) && longValue.Trim().Length > 0 && longValue != "0")
                             {
                                 bool a = FindCoordinates(latValue, longValue, Citylat, Citylng);
                                 //if lat lon correct then no change but if lat long is out of city then null will updated
@@ -1269,11 +1330,13 @@ namespace GarronT.CMS.UI.WebAPI
                                     int endIndex = _streetAddress.IndexOf('#'); ;
                                     int length = endIndex - startIndex - 1;
                                     String computeddress = _streetAddress.Substring(0, length);
-                                    address = computeddress + ", " + Convert.ToString(cityname) + ", " + state.StateName + ", USA";
+                                    //address = computeddress + ", " + Convert.ToString(cityname) + ", " + state.StateName + ", USA";
+                                    address = computeddress + ", " + objCityName + ", " + objStateName + ", USA";
                                 }
                                 else
                                 {
-                                    address = _streetAddress + ", " + Convert.ToString(cityname) + ", " + state.StateName + ", USA";
+                                    //address = _streetAddress + ", " + Convert.ToString(cityname) + ", " + state.StateName + ", USA";
+                                    address = _streetAddress + ", " + objCityName + ", " + objStateName + ", USA";
 
                                 }
                                 if (!string.IsNullOrEmpty(address))
@@ -1294,6 +1357,38 @@ namespace GarronT.CMS.UI.WebAPI
                         {
                             //Changed by Sanjiv to remove # from address
                             string _streetAddress = item.GetType().GetProperty(streetColumn).GetValue(item, null) as string;
+                            var PropertyInfos = item.GetType().GetProperties();
+                            // Added new Code as per Project cerate Nation wide State and City Upload by Excel file.
+                            InstallerDAL inDal = new InstallerDAL();
+                            string dyZipColName = inDal.getDynamicColumnName("ZIP", Convert.ToString(projetID));
+                            string dyCityColName = inDal.getDynamicColumnName("CITY", Convert.ToString(projetID));
+                            string dyStateColName = inDal.getDynamicColumnName("STATE", Convert.ToString(projetID));
+
+                            if (!string.IsNullOrEmpty(dyZipColName))
+                            {
+                                var Zip = PropertyInfos.Where(o => o.Name == dyZipColName).Select(o => o.GetValue(item, null)).FirstOrDefault();
+                                if (!string.IsNullOrEmpty(Zip.ToString()))
+                                {
+                                    _streetAddress += ", " + Zip.ToString();
+                                }
+                            }
+                            if (!string.IsNullOrEmpty(dyCityColName))
+                            {
+                                var City = PropertyInfos.Where(o => o.Name == dyCityColName).Select(o => o.GetValue(item, null)).FirstOrDefault();
+                                if (!string.IsNullOrEmpty(City.ToString()))
+                                {
+                                    objCityName = City.ToString();
+                                }
+                            }
+                            if (!string.IsNullOrEmpty(dyStateColName))
+                            {
+                                var State = PropertyInfos.Where(o => o.Name == dyStateColName).Select(o => o.GetValue(item, null)).FirstOrDefault();
+                                if (!string.IsNullOrEmpty(State.ToString()))
+                                {
+                                    objStateName = State.ToString();
+                                }
+                            }
+                            // End hare
 
                             if (Convert.ToString(_streetAddress).Trim().Contains('#'))
                             {
@@ -1301,12 +1396,13 @@ namespace GarronT.CMS.UI.WebAPI
                                 int endIndex = _streetAddress.IndexOf('#'); ;
                                 int length = endIndex - startIndex - 1;
                                 String computeddress = _streetAddress.Substring(0, length);
-                                address = computeddress + ", " + Convert.ToString(cityname) + ", " + state.StateName + ", USA";
+                                //address = computeddress + ", " + Convert.ToString(cityname) + ", " + state.StateName + ", USA";
+                                address = computeddress + ", " + objCityName + ", " + objStateName + ", USA";
                             }
                             else
                             {
-                                address = _streetAddress + ", " + Convert.ToString(cityname) + ", " + state.StateName + ", USA";
-
+                                //address = _streetAddress + ", " + Convert.ToString(cityname) + ", " + state.StateName + ", USA";
+                                address = _streetAddress + ", " + objCityName + ", " + objStateName + ", USA";
                             }
                             if (!string.IsNullOrEmpty(address))
                             {

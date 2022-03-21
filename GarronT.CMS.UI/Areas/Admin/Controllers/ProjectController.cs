@@ -718,8 +718,11 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         Task.Factory.StartNew(() =>
                         {
                             //new CalculateLatLongController().CalculateNullLatLongbyProjectID(ProjectID); // Old method
-                            new CalculateLatLongController().GetLatLongForProject(ProjectID);
-                            new CalculateLatLongController().updateVisitIdGroupId(ProjectID);
+                            /*new CalculateLatLongController().GetLatLongForProject(ProjectID);
+                            new CalculateLatLongController().updateVisitIdGroupId(ProjectID);*/
+                            CalculateLatLongController ca = new CalculateLatLongController();
+                            ca.GetLatLongForProject(ProjectID);
+                            ca.updateVisitIdGroupId(ProjectID);
                         });
 
                         MSg = returnMessage;
@@ -1132,14 +1135,23 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                                     }
                                     else
                                     {
-                                        DataRow dr = dt.NewRow();
-                                        for (int k = 0; k < rowValues.Count(); k++)
+                                        try
                                         {
-                                            string rvalue = rowValues[k].ToString().TrimStart(' ', '"');
-                                            rvalue = rvalue.TrimEnd('"');
-                                            dr[k] = rvalue;
+                                            DataRow dr = dt.NewRow();
+                                            for (int k = 0; k < rowValues.Count(); k++)
+                                            {
+                                                string rvalue = rowValues[k].ToString().TrimStart(' ', '"');
+                                                rvalue = rvalue.TrimEnd('"');
+                                                dr[k] = rvalue;
+                                            }
+                                            dt.Rows.Add(dr); //add other rows  
                                         }
-                                        dt.Rows.Add(dr); //add other rows  
+                                        catch (Exception ex)
+                                        {
+                                            string obj = ex.Message.ToString();
+                                            log.Info("Error at File Uploading - " + DateTime.Now.ToString() + " -" + ex.Message);
+                                        }
+                                        
                                     }
                                 }
                             }
@@ -1439,8 +1451,11 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 Task.Factory.StartNew(() =>
                 {
                     //new CalculateLatLongController().CalculatPendingLatLongbyProjectID(ProjectId);
-                    new CalculateLatLongController().CalPendingLatLongForProject(ProjectId);
-                    new CalculateLatLongController().updateVisitIdGroupId(ProjectId);
+                    /*new CalculateLatLongController().CalPendingLatLongForProject(ProjectId);
+                    new CalculateLatLongController().updateVisitIdGroupId(ProjectId);*/
+                    CalculateLatLongController ca = new CalculateLatLongController();
+                    ca.CalPendingLatLongForProject(ProjectId);
+                    ca.updateVisitIdGroupId(ProjectId);
                 });
 
                 return Json(new { success = true, resultMessage = "Pending Lat Lon Calculation Started Successfully...!" }, JsonRequestBehavior.AllowGet);

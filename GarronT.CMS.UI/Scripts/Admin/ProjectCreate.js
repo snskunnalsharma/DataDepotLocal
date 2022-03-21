@@ -490,10 +490,22 @@ function GetExistingProjectDetails() {
 
                 $('#ddlCity').val(data.CityId).attr("selected", "selected").trigger('chosen:updated');
 
-                if ($('#txtProjectName').val().trim().length > 0) {
+                /*if ($('#txtProjectName').val().trim().length > 0) {
                     $('#lblProjectName').text(' - ' + $('#txtProjectName').val().trim() + ', ' + $('#ddlCity option:selected').text() +
                         ', ' + $('#ddlState option:selected').text());
+                }*/
+                var projectName = "";
+                if ($('#txtProjectName').val().trim().length > 0) {
+                    projectName += ' - ' + $('#txtProjectName').val().trim();
                 }
+                if ($('#ddlCity option:selected').text().length > 0) {
+                    projectName += ', ' + $('#ddlCity option:selected').text();
+                }
+                if ($('#ddlState option:selected').text().length > 0) {
+                    projectName += ', ' + $('#ddlState option:selected').text();
+                }
+                $('#lblProjectName').text(projectName);
+
             }
             /*End City dropdown*/
 
@@ -978,8 +990,21 @@ function saveData() {
                 $("#txtCloneId").val('0');
 
                 var $toast = toastr["success"]("Project information saved successfully.");
-                $('#lblProjectName').text(' - ' + $('#txtProjectName').val().trim() + ', '
-                    + $('#ddlCity option:selected').text() + ', ' + $('#ddlState option:selected').text());
+
+                /*$('#lblProjectName').text(' - ' + $('#txtProjectName').val().trim() + ', '
+                    + $('#ddlCity option:selected').text() + ', ' + $('#ddlState option:selected').text());*/
+
+                var projectName = "";
+                if ($('#txtProjectName').val().trim().length > 0) {
+                    projectName += ' - ' + $('#txtProjectName').val().trim();
+                }
+                if ($('#ddlCity option:selected').text().length > 0) {
+                    projectName += ', ' + $('#ddlCity option:selected').text();
+                }
+                if ($('#ddlState option:selected').text().length > 0) {
+                    projectName += ', ' + $('#ddlState option:selected').text();
+                }
+                $('#lblProjectName').text(projectName);
 
             } else {
                 if (data1.returnMessage != "") {
