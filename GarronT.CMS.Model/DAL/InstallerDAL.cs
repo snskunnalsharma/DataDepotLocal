@@ -1773,7 +1773,7 @@ namespace GarronT.CMS.Model.DAL
             {
 
 
-                var ProjectModel = (from b in dbcontext.tblProjects
+                /*var ProjectModel = (from b in dbcontext.tblProjects
                                     join c in dbcontext.tblStateMasters on b.StateId equals c.StateId
                                     join d in dbcontext.TblCityMasters on b.CityId equals d.CityId
                                     where b.ProjectId == InstallerMap.ProjectID
@@ -1783,8 +1783,23 @@ namespace GarronT.CMS.Model.DAL
                                         StateName = c.StateName,
                                         CityName = d.CityName,
                                         Utilitytype = b.Utilitytype
-                                    }).FirstOrDefault();
+                                    }).FirstOrDefault();*/
 
+                var ProjectModel = (from b in dbcontext.tblProjects
+                                    join c in dbcontext.tblStateMasters on b.StateId equals c.StateId
+                                    into s
+                                    from st in s.DefaultIfEmpty()                 // Changes query because project creation (State or City) and (NationWide)
+                                    join d in dbcontext.TblCityMasters on b.CityId equals d.CityId
+                                    into c
+                                    from ct in c.DefaultIfEmpty()
+                                    where b.ProjectId == InstallerMap.ProjectID
+                                    select new ProjectModel
+                                    {
+                                        ProjectName = b.ProjectName,
+                                        StateName = st.StateName,
+                                        CityName = ct.CityName,
+                                        Utilitytype = b.Utilitytype
+                                    }).FirstOrDefault();
 
                 var Message = GetMessage();
                 var InstallorName = dbcontext.tblUsers.Where(n => n.UserID == InstallerMap.InstallerID).FirstOrDefault();
@@ -1812,18 +1827,22 @@ namespace GarronT.CMS.Model.DAL
                                   "<td style='border:none;'><b>Utility Type</b></td>" +
                                   "<td style='border:none;'><b>:</b></td>" +
                                   "<td style='border:none;' colspan='4'>" + ProjectModel.Utilitytype + "</td>" +
-                              "</tr>" +
+                              "</tr>");
 
-                              "<tr>" +
-                                  "<td style='border:none;'><b>City:</b></td>" +
-                                  "<td style='border:none;'><b>:</b></td>" +
-                                 " <td style='border:none;'>" + ProjectModel.CityName.ToUpper() + " &nbsp;&nbsp;</td>" +
+                if (!String.IsNullOrEmpty(ProjectModel.CityName) && !String.IsNullOrEmpty(ProjectModel.StateName))
+                {
+                    sb.Append("<tr>" +
+                                       "<td style='border:none;'><b>City:</b></td>" +
+                                       "<td style='border:none;'><b>:</b></td>" +
+                                       " <td style='border:none;'>" + ProjectModel.CityName.ToUpper() + " &nbsp;&nbsp;</td>" +
 
-                                 " <td style='border:none;'><b>State</b></td>" +
-                                 " <td style='border:none;'><b>:</b></td>" +
-                                  "<td style='border:none;'>" + ProjectModel.StateName.ToUpper() + "</td>" +
-                             " </tr>" +
-                             "<tr>" +
+                                       " <td style='border:none;'><b>State</b></td>" +
+                                       " <td style='border:none;'><b>:</b></td>" +
+                                       "<td style='border:none;'>" + ProjectModel.StateName.ToUpper() + "</td>" +
+                                       " </tr>");
+                }
+
+                sb.Append("<tr>" +
                                  " <td style='border:none;'><b>Visit Start Date</b></td>" +
                                  " <td style='border:none;'><b>:</b></td>" +
                                   "<td style='border:none;'>" + InstallerMap.FromDate + "   &nbsp;&nbsp;</td>" +

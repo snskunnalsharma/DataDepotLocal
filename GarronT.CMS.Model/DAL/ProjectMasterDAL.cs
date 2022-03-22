@@ -2244,6 +2244,12 @@ namespace GarronT.CMS.Model.DAL
                                             objCompassEntities1.UploadedExcelDatas.Add(objRecord);
                                             objCompassEntities1.SaveChanges();
 
+                                            bool statusCycleOfficeMerge = Boolean.Parse(ConfigurationManager.AppSettings["mergeCycleOfficeColumn"]);
+                                            if (statusCycleOfficeMerge)     // This Changes applied for TNMP ==> Electric City Project
+                                            {
+                                                mergeColumnData(ProjectID, objRecord.Id);
+                                            }
+
                                             skipedRecordsCount--;
                                             newRecordsCount++;
 
@@ -2264,16 +2270,10 @@ namespace GarronT.CMS.Model.DAL
                             }
                             //objCompassEntities1.SaveChanges();
                         }
-
                     }
-
-
                     dt1 = dt;
                     #endregion
                 }
-
-
-
             }
             catch (Exception ex)
             {
@@ -2283,7 +2283,57 @@ namespace GarronT.CMS.Model.DAL
             return result;
         }
 
+        public void mergeColumnData(long projetID, long uploadedId)
+        {
+            try
+            {
+                CompassEntities dbcontext = new CompassEntities();
+                InstallerDAL inDal = new InstallerDAL();
+                string dyCycleColName = inDal.getDynamicColumnName("CYCLE", Convert.ToString(projetID));
+                string dyOfficeColName = inDal.getDynamicColumnName("OFFICE", Convert.ToString(projetID));
+                string dyStreetColName = inDal.getDynamicColumnName("STREET", Convert.ToString(projetID));
+                string dyUnitColName = inDal.getDynamicColumnName("UNIT", Convert.ToString(projetID));
 
+                var objRecord = dbcontext.UploadedExcelDatas.Where(o => o.FKProjectId == projetID && o.Id == uploadedId).FirstOrDefault();
+                Type tClass = objRecord.GetType();
+                PropertyInfo[] pClass = tClass.GetProperties();
+                PropertyInfo currentProperty;
+                if (!string.IsNullOrEmpty(dyCycleColName) && !string.IsNullOrEmpty(dyOfficeColName))
+                {
+                    var propertyInfoCycle = objRecord.GetType().GetProperty(dyCycleColName);
+                    var cycleValue = propertyInfoCycle.GetValue(objRecord);
+
+                    var propertyInfoOffice = objRecord.GetType().GetProperty(dyOfficeColName);
+                    var officeValue = propertyInfoOffice.GetValue(objRecord);
+
+                    currentProperty = pClass.Where(o => o.Name == dyCycleColName).FirstOrDefault();
+                    currentProperty.SetValue(objRecord, (officeValue+" "+cycleValue), null);        // Merge value Cycle and Office
+                    /*currentProperty = pClass.Where(o => o.Name == dyOfficeColName).FirstOrDefault();
+                    currentProperty.SetValue(objRecord, officeValue, null);*/
+                }
+                if (!string.IsNullOrEmpty(dyStreetColName) && !string.IsNullOrEmpty(dyUnitColName))
+                {
+                    var propertyInfoStreet = objRecord.GetType().GetProperty(dyStreetColName);
+                    var streetValue = propertyInfoStreet.GetValue(objRecord);
+
+                    var propertyInfoUnit = objRecord.GetType().GetProperty(dyUnitColName);
+                    var unitValue = propertyInfoUnit.GetValue(objRecord);
+
+                    if (!string.IsNullOrEmpty(unitValue.ToString()))
+                    {
+                        currentProperty = pClass.Where(o => o.Name == dyStreetColName).FirstOrDefault();
+                        currentProperty.SetValue(objRecord, (streetValue+" "+ unitValue), null);     // Merge value Street and Unit
+                        objRecord.Street12 = (streetValue + " " + unitValue).ToString(); // Street/ Address value stored in two columns in table
+                    }
+                }
+                dbcontext.SaveChanges();
+
+            }
+            catch (Exception ex)
+            {
+            }
+
+        }
 
         protected void FindCoordinates(string Address, out string Lat, out string lng)
         {

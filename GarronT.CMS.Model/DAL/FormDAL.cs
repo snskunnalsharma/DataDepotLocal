@@ -527,9 +527,9 @@ namespace GarronT.CMS.Model.DAL
                                         CompassEntities.SaveChanges();
 
 
-
+                                        //if (itemFields.field_DatatypeID == 10 && (itemFields.field_MappedtoExcel == "0" || itemFields.field_MappedtoExcel == "1"))
                                         if (itemFields.field_DatatypeID == 10 && itemFields.field_MappedtoExcel == "0")
-                                        {
+                                        { 
                                             var sectionname = itemsection.SectionName.Trim();
                                             var FildNamename = itemFields.field_FieldName;
 
@@ -789,7 +789,7 @@ namespace GarronT.CMS.Model.DAL
                                             CompassEntities.tblProjectFieldProperties.Add(tfp);
                                             CompassEntities.SaveChanges();
 
-
+                                            //if (itemFields.field_DatatypeID == 10 && (itemFields.field_MappedtoExcel == "0" || itemFields.field_MappedtoExcel == null || itemFields.field_MappedtoExcel == "1"))
                                             if (itemFields.field_DatatypeID == 10 && (itemFields.field_MappedtoExcel == "0" || itemFields.field_MappedtoExcel == null))
                                             {
                                                 var sectionname = itemsection.SectionName.Trim();
