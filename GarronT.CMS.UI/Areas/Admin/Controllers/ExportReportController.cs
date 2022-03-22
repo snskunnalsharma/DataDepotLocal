@@ -989,7 +989,6 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             string _webUrl = System.Configuration.ConfigurationManager.AppSettings["WebURL"].ToString();
             List<ExportReport_CompletedRecords> objList = new List<ExportReport_CompletedRecords>();
             List<string> ExportColumnNameList = new List<string>();
-            DataTable ExportReportLableList = new DataTable();
 
             ExportColumnNameList.Add("ATTENDANT NAME");
             ExportColumnNameList.Add("VISIT ATTENDED DATETIME");
@@ -1016,7 +1015,6 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 DataTable ExcelUploadedData = exportReportDAL.GetExcelDataForCompleteRecords(formTypeId, projectId, fromDate, toDate);
                 long currentUserId = new UserDetails().GetUserId(User.Identity.GetUserId());
                 ExportColumnNameList = exportReportDAL.GetExportColumnNameList(formTypeId, projectId, int.Parse(currentUserId.ToString()));
-                ExportReportLableList = exportReportDAL.GetExportColumnReportLableList(formTypeId, projectId, int.Parse(currentUserId.ToString()));
                 ProjectAllFields = exportReportDAL.GetAllFieldsOfProject(projectId);
 
                 objServiceListForproject = exportReportDAL.GetListOfServices(formTypeId, projectId);
@@ -1396,21 +1394,6 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         item[item1] = "-";
                     }
                 }
-            }
-            int cnt = 0;
-            foreach (DataColumn column in dt.Columns)
-            {
-                string colname = column.ColumnName;
-                for (int i = 0; i < ExportReportLableList.Rows.Count; i++)
-                {
-                    var labelName = ExportReportLableList.Rows[i]["ReportFieldName"].ToString();
-                    var fieldName = ExportReportLableList.Rows[i]["FieldName"].ToString();
-                    if (colname.Equals(fieldName))
-                    {
-                        dt.Columns[cnt].ColumnName = labelName;
-                    }
-                }
-                cnt++;
             }
              
             return dt;
@@ -3517,6 +3500,12 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         {
             DataTable dt = new DataTable();
             columnNameList1 = new List<string>();
+            DataTable ExportReportLableList = new DataTable();
+            using (ExportReportDAL exportReportDAL = new ExportReportDAL())
+            {
+                long currentUserId = new UserDetails().GetUserId(User.Identity.GetUserId());
+                ExportReportLableList = exportReportDAL.GetExportColumnReportLableList(formTypeId, projectId, int.Parse(currentUserId.ToString()));
+            }
 
             if (visitStatus.Contains("Completed"))
             {
@@ -3666,7 +3655,6 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 #endregion
             }
 
-
             foreach (DataRow item in dt.Rows)
             {
                 foreach (DataColumn item1 in dt.Columns)
@@ -3677,6 +3665,23 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     }
                 }
             }
+
+            int cnt = 0;
+            foreach (DataColumn column in dt.Columns)
+            {
+                string colname = column.ColumnName;
+                for (int i = 0; i < ExportReportLableList.Rows.Count; i++)
+                {
+                    var labelName = ExportReportLableList.Rows[i]["ReportFieldName"].ToString();
+                    var fieldName = ExportReportLableList.Rows[i]["FieldName"].ToString();
+                    if (colname.Equals(fieldName))
+                    {
+                        dt.Columns[cnt].ColumnName = labelName;
+                    }
+                }
+                cnt++;
+            }
+
             return dt;
         }
 
