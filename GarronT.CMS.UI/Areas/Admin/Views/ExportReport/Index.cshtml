@@ -73,7 +73,7 @@
     }
 
 
-    ul.source, ul.target {
+    ul.source, ul.target, ul.colName {
         min-height: 500px;
         margin: 0px 25px 10px 0px;
         padding: 2px;
@@ -87,15 +87,15 @@
         /*width: 20em;*/
     }
 
-    ul.source {
+    ul.source  {
         border-color: #f8e0b1;
     }
 
-    ul.target {
+    ul.target, ul.colName {
         border-color: #add38d;
     }
 
-    .source li, .target li {
+    .source li, .target li, .colName li {
         margin: 2px;
         padding: 8px 0px !important;
         -webkit-border-radius: 4px;
@@ -111,7 +111,7 @@
         color: #c09853;
     }
 
-    .target li {
+    .target li, .colName li {
         background-color: #ebf5e6;
         border: 1px solid #d6e9c6;
         color: #468847;
@@ -939,7 +939,7 @@
                                     <form id="form3" class="cmxform form-horizontal tasi-form">
                                         <div class="col-lg-12 col-xs-12 col-sm-12 sideBySide" style="overflow:auto">
                                             <div class="col-lg-2"></div>
-                                            <div class="col-lg-3 col-xs-6 col-sm-5 ">
+                                            <div class="col-lg-3 col-xs-4 col-sm-4 ">
                                                 <label class="control-label exp-src"> Source Fields</label>
 
 
@@ -949,12 +949,17 @@
                                                 <ul class="source connected exp-src-connect" id="sourceFields1"></ul>
                                             </div>
 
-                                            <div class="col-lg-3 col-xs-6 col-sm-5 repfld-div " style="">
+                                            <div class="col-lg-3 col-xs-4 col-sm-4 repfld-div " style="">
                                                 <label class="control-label exp-rep"> Report Fields </label>
 
                                                 <ul class="target connected exp-rep-conect" id="destinationFields1"></ul>
                                             </div>
-                                            <div class="col-lg-2" style="height:10px;"></div>
+                                            <div class="col-lg-3 col-xs-4 col-sm-4 repfld-div " style="">
+                                                <label class="control-label exp-rep"> Report Column Name </label>
+
+                                                <ul class="colName connected exp-rep-conect" id="lableFields"></ul>
+                                            </div>
+                                            <!--<div class="col-lg-2" style="height:10px;"></div> -->
 
                                         </div>
                                     </form>
@@ -973,6 +978,43 @@
         </div>
     </section>
 </section>
+<div class="modal fade modal-dialog-center" id="myModalChangeLable" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content-wrap">
+            <div class="modal-content create_cus_mod">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Custom Field.</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="panel-body">
+                        <div class="form-group ">
+
+                            <div class="col-lg-12">
+                                <label for="name" class="col-lg-3 create_fld_nm">Field Name :<span style="color:red">*</span></label>
+                                <input type="hidden" name="newCustomFieldId" id="txtnewCustomFieldId" />
+                                @*
+                                    This Class allowalphanumeric checkalphanumeric not allow to Special chechter and like {hypen(-) Underscore(_)}
+                                    <input type="text" name="newCustomFieldName" id="txtnewCustomFieldName" class="col-lg-9 allowalphanumeric checkalphanumeric fld_txt" maxlength="200" />*@
+                                <input type="text" name="newCustomFieldName" id="txtnewCustomFieldName" class="col-lg-9 fld_txt" maxlength="200" />
+                            </div>
+
+                        </div>
+                        <br />
+                        <div class="form-group col-lg-10 cust_btn" style="">
+
+                            <button id="btnChangeField" class="btn btn-success" type="button">Save</button>
+                            <button id="btnChangeFieldCancel" class="btn btn-danger" type="button">Cancel</button>
+                            
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <link href="~/Scripts/js/style.css" rel="stylesheet" />
 <link href="~/Scripts/js/jquery-ui.css" rel="stylesheet"

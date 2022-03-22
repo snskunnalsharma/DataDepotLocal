@@ -87,7 +87,7 @@ angularApp
     .controller('FormManagementCtrl', ['$scope', 'ngDialog', '$compile', '$dialog', '$rootScope', '$location', function ($scope, ngDialog, $compile, $dialog, $rootScope, $location) {
 
 
-
+        debugger;
         recordaddEdit = "Add";
         $scope.AddFormUrl = $rootScope.projectPath + "FormManagement/Add";
 
@@ -1355,8 +1355,6 @@ angularApp
                                         SectionID: data.formdata[i].SectionID,
                                         SectionName: data.formdata[i].SectionName
                                     }
-
-
 
                                     $scope.sectionList.push(section);
                                     setTimeout(function () { $scope.$apply(); });
@@ -2994,7 +2992,7 @@ angularApp
                         })
 
                         var htmlfilename = selectedData.selectedData.text.replace(/ /g, '').replace("/", '').replace("/", '');
-
+                        console.log('htmlfilename == ' + htmlfilename);
                         $scope.$apply(function () {
                             $scope.FieldTemplateName = $rootScope.projectPath + "Angular/views/Form/field/" + htmlfilename + ".html";
                         });

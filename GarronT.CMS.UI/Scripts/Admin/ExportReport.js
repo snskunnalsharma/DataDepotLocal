@@ -112,12 +112,15 @@ $("#btnSave").click(function () {
     var GetField = $('#urlSaveFieldsNew').val();
     var arrFieldDetail = [];
     var arrFieldDetail1 = [];
+    var arrFieldDetail2 = [];
 
     //get source fld records
     $('#sourceFields1 li').each(function () { arrFieldDetail.push({ value: this.value, text: this.innerText }); });
 
     //get destination fld records
     $('#destinationFields1 li').each(function () { arrFieldDetail1.push({ value: this.value, text: this.innerText }); });
+
+    $('#lableFields li').each(function () { arrFieldDetail2.push({ value: this.value, text: this.innerText }); });
 
     if (Project1 == null || Project1 == "" || Project1 == "0") {
         var $toast = toastr["error"]("Please select the project.", "Notification");
@@ -138,7 +141,7 @@ $("#btnSave").click(function () {
 
         $.ajax({
             url: GetField,
-            data: { arrFieldDetail: arrFieldDetail, arrFieldDetail1: arrFieldDetail1, formTypeId: ddlformType, projectId: Project1 },
+            data: { arrFieldDetail: arrFieldDetail, arrFieldDetail1: arrFieldDetail1, arrFieldDetail2: arrFieldDetail2, formTypeId: ddlformType, projectId: Project1 },
             type: 'POST',
             dataType: 'json',
             success: function (msg) {
@@ -149,6 +152,13 @@ $("#btnSave").click(function () {
                     var $toast = toastr["error"]("something seems wrong", " Notification");
                 }
                 waitingDialog.hide();
+                /*$('#lableFields').html('');
+                $('#destinationFields1 li').each(function () {
+                    $('#lableFields').append(
+                        $('<li class="lableName" onclick="changeLable(this)"></li>').val(this.value).html(this.innerText)
+                    );
+                });*/
+                $('#ddlformtype').trigger('change');
             },
             error: function () {
                 alert("something seems wrong");
@@ -368,11 +378,59 @@ $('#ddlProject').change(function () {
     }
 });
 
+function changeLable(obj) {
+    console.log('Do something with ');
+    var liText = obj.innerText;
+    var liVal = obj.value;
+    console.log('testing == ' + liText);
+    $("#myModalChangeLable").modal({
+        show: true,
+        backdrop: 'static',
+        keyboard: false
+    });
+    $('#myModalChangeLable').on('shown.bs.modal', function () {
+        $('#txtnewCustomFieldName').focus();
+        $('#txtnewCustomFieldName').val(liText);
+        $('#txtnewCustomFieldId').val(liVal);
+    })
+}
+$("#btnChangeField").click(function () {
+    debugger;
+    $("#txtnewCustomFieldName").focus();
+    if ($('#txtnewCustomFieldName').val() == '') {
+        var $toast = toastr["error"]("Please enter the custom field name.", "Error Notification");
+    }
+    else {
+        //waitingDialog.show('Please Wait...');
+        $('#lableFields li').each(function () {
+            //debugger;
+            var liVal = $(this).val();
+            var liId = $('#txtnewCustomFieldId').val();
+            console.log(liVal + ',' + liId);
+            if (liVal == liId) {
+                //debugger;
+                $(this).html($('#txtnewCustomFieldName').val());
+            }
+        });
+        
+        $("#myModalChangeLable").modal('hide');
+        $("#txtnewCustomFieldId").val('');
+        $("#txtnewCustomFieldName").val('');
+    }
+
+})
+$("#btnChangeFieldCancel").click(function () {
+
+    $("#txtnewCustomFieldName").val('');
+    $("#txtnewCustomFieldId").val('');
+    $("#myModalChangeLable").modal('hide');
+})
 $('#ddlformtype').change(function () {
    // debugger;
 
     $('#sourceFields1').empty();
     $('#destinationFields1').empty();
+    $('#lableFields').empty();
     var Project = $("#ddlProject").val();
     var fromtype = $("#ddlformtype").val();
 
@@ -399,13 +457,16 @@ $('#ddlformtype').change(function () {
                         //debugger;
                         if (item.Flag == 0) {
                             $('#sourceFields1').append(
-                                                  $('<li></li>').val(item.Id).html(item.FieldName)
+                                $('<li></li>').val(item.Id).html(item.FieldName)
                                             );
                         }
                         else {
                             $('#destinationFields1').append(
-                                                  $('<li></li>').val(item.Id).html(item.FieldName)
-                                            );
+                                $('<li></li>').val(item.Id).html(item.FieldName)
+                            );
+                            $('#lableFields').append(
+                                $('<li class="lableName" onclick="changeLable(this)"></li>').val(item.Id).html(item.ReportFieldName)
+                            );
                         }
                     });
 

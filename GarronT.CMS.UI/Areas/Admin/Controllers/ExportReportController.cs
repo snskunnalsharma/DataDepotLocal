@@ -120,6 +120,12 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             public string text { get; set; }
         }
 
+        public class arrayReportLablefield
+        {
+            public string value { get; set; }
+            public string text { get; set; }
+        }
+
 
 
         /// <summary>
@@ -129,7 +135,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         /// <param name="arrFieldDetail1"></param>
         /// <param name="formId"></param>
         /// <returns></returns>
-        public ActionResult SaveFields(List<arraysourcefield> arrFieldDetail, List<arrayDestinationfield> arrFieldDetail1, long formId)
+        public ActionResult SaveFields(List<arraysourcefield> arrFieldDetail, List<arrayDestinationfield> arrFieldDetail1, List<arrayReportLablefield> arrFieldDetail2, long formId)
         {
 
             try
@@ -165,16 +171,26 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         }
                     }
                     int i = 1;
+                    var lableCnt = arrFieldDetail2.Count;
                     foreach (var item in arrFieldDetail1)
                     {
                         var currentField = currentFieldsInfo.Where(o => o.FieldName == item.text).FirstOrDefault();
-
+                        var reportFieldName = "";
+                        if (lableCnt == 0)
+                        {
+                            reportFieldName = item.text;
+                        }
+                        else
+                        {
+                            reportFieldName = getReportLableName(item.value, arrFieldDetail2);
+                        }
                         TblExportReport exportreport1 = new TblExportReport()
                         {
                             FormId = formId,
                             //FieldId = Convert.ToInt32(item.value),
                             FieldId = currentField.IsExcelMapFieldFlag == 1 ? currentField.TableId : currentField.FieldId,
                             FieldName = item.text,
+                            ReportFieldName = reportFieldName,
                             Flag = 1,
                             SortOrder = i,
                             Active = 1,
@@ -195,8 +211,20 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
         }
 
+        public string getReportLableName(string fieldId, List<arrayReportLablefield> arrLable)
+        {
+            string lableName = "";
+            foreach (var item in arrLable)
+            {
+                if (item.value.Equals(fieldId))
+                {
+                    lableName = item.text;
+                }
+            }
+            return lableName;
+        }
 
-        public ActionResult SaveFieldsNew(List<arraysourcefield> arrFieldDetail, List<arrayDestinationfield> arrFieldDetail1, long formTypeId, long projectId)
+        public ActionResult SaveFieldsNew(List<arraysourcefield> arrFieldDetail, List<arrayDestinationfield> arrFieldDetail1, List<arrayReportLablefield> arrFieldDetail2, long formTypeId, long projectId)
         {
 
             var objPermissionCheck = UserPermissionCheck.checkUserStatus("ExportReport", "Add");
@@ -224,6 +252,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                                 FKProjectId = projectId,
                                 FKFormTypeId = formTypeId,
                                 FieldName = o.text,
+                                ReportFieldName = o.text,
                                 Flag = 0,
                                 SortOrder = 0,
                                 Active = 1,
@@ -233,22 +262,53 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
                         }
                         int i = 1;
+                        var lableCnt = arrFieldDetail2 != null ? arrFieldDetail2.Count :0;
                         //foreach (var item in arrFieldDetail1)
                         //{
-                        ReportList.AddRange(arrFieldDetail1.Select(o => new TblExportReport()
+                        /*ReportList.AddRange(arrFieldDetail1.Select(o => new TblExportReport()
                         {
                             FKProjectId = projectId,
                             FKFormTypeId = formTypeId,
                             FieldName = o.text,
+                            ReportFieldName = lableCnt > 0 ? arrFieldDetail2.Where(m => m.value == o.value).FirstOrDefault().text != null ? arrFieldDetail2.Where(m => m.value == o.value).FirstOrDefault().text : o.text : o.text,
                             Flag = 1,
                             SortOrder = i++,
                             Active = 1,
                             CreatedOn = currentDate,
                             CreatedBy = int.Parse(currentUserId.ToString())
 
-                        }).ToList());
+                        }).ToList());*/
 
-
+                        foreach (var item in arrFieldDetail1)
+                        {
+                            var reportFieldName = "";
+                            if (lableCnt == 0)
+                            {
+                                reportFieldName = item.text;
+                            }
+                            else
+                            {
+                                reportFieldName = getReportLableName(item.value, arrFieldDetail2);
+                                if (reportFieldName.Equals(""))
+                                {
+                                    reportFieldName = item.text;
+                                }
+                            }
+                            TblExportReport exportreport1 = new TblExportReport()
+                            {
+                                FKProjectId = projectId,
+                                FKFormTypeId = formTypeId,
+                                FieldName = item.text,
+                                ReportFieldName = reportFieldName,
+                                Flag = 1,
+                                SortOrder = i++,
+                                Active = 1,
+                                CreatedOn = currentDate,
+                                CreatedBy = int.Parse(currentUserId.ToString())
+                            };
+                            ReportList.Add(exportreport1);
+                            i++;
+                        }
 
                         objPermissionCheck = exportReportDAL.SaveDataNew(ReportList, int.Parse(currentUserId.ToString()));
 
@@ -929,6 +989,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             string _webUrl = System.Configuration.ConfigurationManager.AppSettings["WebURL"].ToString();
             List<ExportReport_CompletedRecords> objList = new List<ExportReport_CompletedRecords>();
             List<string> ExportColumnNameList = new List<string>();
+            DataTable ExportReportLableList = new DataTable();
 
             ExportColumnNameList.Add("ATTENDANT NAME");
             ExportColumnNameList.Add("VISIT ATTENDED DATETIME");
@@ -955,7 +1016,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 DataTable ExcelUploadedData = exportReportDAL.GetExcelDataForCompleteRecords(formTypeId, projectId, fromDate, toDate);
                 long currentUserId = new UserDetails().GetUserId(User.Identity.GetUserId());
                 ExportColumnNameList = exportReportDAL.GetExportColumnNameList(formTypeId, projectId, int.Parse(currentUserId.ToString()));
-
+                ExportReportLableList = exportReportDAL.GetExportColumnReportLableList(formTypeId, projectId, int.Parse(currentUserId.ToString()));
                 ProjectAllFields = exportReportDAL.GetAllFieldsOfProject(projectId);
 
                 objServiceListForproject = exportReportDAL.GetListOfServices(formTypeId, projectId);
@@ -1336,7 +1397,22 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     }
                 }
             }
-
+            int cnt = 0;
+            foreach (DataColumn column in dt.Columns)
+            {
+                string colname = column.ColumnName;
+                for (int i = 0; i < ExportReportLableList.Rows.Count; i++)
+                {
+                    var labelName = ExportReportLableList.Rows[i]["ReportFieldName"].ToString();
+                    var fieldName = ExportReportLableList.Rows[i]["FieldName"].ToString();
+                    if (colname.Equals(fieldName))
+                    {
+                        dt.Columns[cnt].ColumnName = labelName;
+                    }
+                }
+                cnt++;
+            }
+             
             return dt;
 
         }

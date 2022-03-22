@@ -559,6 +559,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             tblProject data = new tblProject();
             int? status = 0;
             bool success = false;
+            string utilitytype = "";
             try
             {
                 CompassEntities CompassEntities = new CompassEntities();
@@ -569,6 +570,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 {
                     status = data.IsLatLongCalculated;
                     success = true;
+                    utilitytype = data.Utilitytype;
                 }
             }
             catch (Exception)
@@ -580,7 +582,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             //return data;
 
 
-            return Json(new { success = success, status = status }, JsonRequestBehavior.AllowGet);
+            return Json(new { success = success, status = status, utilitytype = utilitytype }, JsonRequestBehavior.AllowGet);
         }
 
     }

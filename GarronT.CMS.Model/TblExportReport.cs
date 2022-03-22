@@ -20,6 +20,7 @@ namespace GarronT.CMS.Model
         public Nullable<long> FKFormTypeId { get; set; }
         public Nullable<long> FieldId { get; set; }
         public string FieldName { get; set; }
+        public string ReportFieldName { get; set; }
         public Nullable<int> Flag { get; set; }
         public Nullable<int> IsExcelMapFieldFlag { get; set; }
         public Nullable<int> SortOrder { get; set; }

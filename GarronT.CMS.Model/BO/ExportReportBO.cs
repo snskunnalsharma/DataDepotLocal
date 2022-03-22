@@ -35,6 +35,7 @@ namespace GarronT.CMS.Model.BO
         public long FieldId { get; set; }
         public long TableId { get; set; }
         public string FieldName { get; set; }
+        public string ReportFieldName { get; set; }
         public int SortOrder { get; set; }
         public int Flag { get; set; }
         public int IsExcelMapFieldFlag { get; set; }

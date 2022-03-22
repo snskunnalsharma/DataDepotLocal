@@ -168,6 +168,7 @@ namespace GarronT.CMS.Model.DAL
                                 result.FieldId = item.FieldId;
                                 result.IsExcelMapFieldFlag = item.IsExcelMapFieldFlag;
                                 result.FieldName = item.FieldName;
+                                result.ReportFieldName = item.FieldName;
                                 result.FormId = item.FormId;
                                 result.Flag = (item.Flag == 1 ? 1 : 0);
                                 result.SortOrder = (item.Flag == 1 ? item.SortOrder : 0);
@@ -177,6 +178,7 @@ namespace GarronT.CMS.Model.DAL
                             else
                             {
                                 result.FieldName = item.FieldName;
+                                result.ReportFieldName = item.ReportFieldName;
                                 result.Flag = (item.Flag == 1 ? 1 : 0);
                                 result.SortOrder = (item.Flag == 1 ? item.SortOrder : 0);
                                 result.ModifiedOn = item.CreatedOn;
@@ -238,6 +240,7 @@ namespace GarronT.CMS.Model.DAL
                                 result.FieldId = item.FieldId;
                                 result.IsExcelMapFieldFlag = item.IsExcelMapFieldFlag;
                                 result.FieldName = item.FieldName;
+                                result.ReportFieldName = item.ReportFieldName;
                                 //result.FormId = item.FormId;
                                 result.Flag = (item.Flag == 1 ? 1 : 0);
                                 result.SortOrder = (item.Flag == 1 ? item.SortOrder : 0);
@@ -248,6 +251,7 @@ namespace GarronT.CMS.Model.DAL
                             else
                             {
                                 result.FieldName = item.FieldName;
+                                result.ReportFieldName = item.ReportFieldName;
                                 result.Flag = (item.Flag == 1 ? 1 : 0);
                                 result.SortOrder = (item.Flag == 1 ? item.SortOrder : 0);
                                 result.ModifiedOn = item.CreatedOn;
@@ -269,7 +273,23 @@ namespace GarronT.CMS.Model.DAL
 
             return isCreated;
         }
-
+        public class arrayReportLablefield
+        {
+            public string value { get; set; }
+            public string text { get; set; }
+        }
+        public string getReportLableName(string fieldId, List<arrayReportLablefield> arrLable)
+        {
+            string lableName = "";
+            foreach (var item in arrLable)
+            {
+                if (item.value.Equals(fieldId))
+                {
+                    lableName = item.text;
+                }
+            }
+            return lableName;
+        }
         public bool checkFieldSavedForExport(long formId)
         {
             CompassEntities objCompassEntities = new CompassEntities();
@@ -914,6 +934,42 @@ namespace GarronT.CMS.Model.DAL
             return data;
         }
 
+        public DataTable GetExportColumnReportLableList(long formTypeId, long projectId, int UserId)
+        {
+            List<string> result = new List<string>();
+            CompassEntities objCompassEntities = new CompassEntities();
+            /*var data = objCompassEntities.TblExportReports.Where(o => o.Active == 1 && o.CreatedBy == UserId  && o.FKFormTypeId == formTypeId
+                && o.FKProjectId== projectId  && o.Flag == 1).OrderBy(o => o.SortOrder).Select(o => o.FieldName).ToList();
+            return data;*/
+            string query = "select FieldName,ReportFieldName from TblExportReport where Active=1 and CreatedBy = " + UserId + " and FKFormTypeId = " + formTypeId + " and FKProjectId = " + projectId + "  and Flag = 1 order by SortOrder";
+
+            SqlConnection sqlConnection1 = new SqlConnection(objCompassEntities.Database.Connection.ConnectionString);
+            sqlConnection1.Open();
+            SqlCommand cmd = new SqlCommand(query, sqlConnection1);
+            DataTable dt = new DataTable();
+
+
+            using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+            {
+                da.Fill(dt);
+                
+            }
+            
+           /* for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                var labelName = dt.Rows[i]["ReportFieldName"].ToString();
+                result.Add(labelName);
+
+            }*/
+            
+            sqlConnection1.Close();
+
+            cmd.Dispose();
+            sqlConnection1.Dispose();
+
+            return dt;
+        }
+
         public List<PROC_WebService_GetFieldInfoForProject_Result> GetAllFieldsForProject(long formId)
         {
             CompassEntities objCompassEntities = new CompassEntities();
@@ -1072,6 +1128,7 @@ namespace GarronT.CMS.Model.DAL
                         if (item.Flag == 1)
                         {
                             a.Flag = 1;
+                            a.ReportFieldName = item.ReportFieldName;
                             a.SortOrder = int.Parse(item.SortOrder.ToString());
                         }
                     }

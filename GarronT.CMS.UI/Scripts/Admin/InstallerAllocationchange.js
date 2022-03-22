@@ -497,6 +497,7 @@ $('#ddlProject').unbind().change(function () {
 
                 if (returndata.success) {
                     var statusnew = returndata.status;
+                    var utilitytype = returndata.utilitytype;
                     if (statusnew == 0) {
                         var $toast = toastr["success"]("Latitude & Longitude yet not calculated for this project,you can not proceed further and allocate addresses.", "");
                         $("#btnReset").trigger("click");
@@ -513,7 +514,9 @@ $('#ddlProject').unbind().change(function () {
                         return false;
                     }
                     else if (statusnew == 1) {
+                        if (utilitytype == "Electric") {
 
+                        }
                     }
                 }
             },
