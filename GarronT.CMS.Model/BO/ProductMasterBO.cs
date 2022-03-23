@@ -27,7 +27,7 @@ namespace GarronT.CMS.Model.BO
 
         [Required(ErrorMessage = "Part Number is required")]
         [StringLength(50, ErrorMessage = "Part Number must be at least {2} and max {1} characters long.", MinimumLength = 1)]
-        [RegularExpression(@"[A-Z0-9-]{3,25}$", ErrorMessage = "Part Number must hold numbers & capital letters only")]
+        //[RegularExpression(@"[A-Z0-9-]{3,25}$", ErrorMessage = "Part Number must hold numbers & capital letters only")] // Allow Special Charectors as per clent request
         public string ProductPartNumber { get; set; }
 
         //
