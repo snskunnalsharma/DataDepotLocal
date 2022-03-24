@@ -4250,8 +4250,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 }
                 if (dt.Columns.Contains("COMMENT"))
                 {
-                    //dt.Columns.Remove("COMMENT");
-                    dt.Columns["COMMENT"].ColumnName = "v_comments";
+                    dt.Columns.Remove("COMMENT");
                 }
 
                 return dt;
