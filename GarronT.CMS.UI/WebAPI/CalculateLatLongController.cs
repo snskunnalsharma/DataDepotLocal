@@ -992,6 +992,7 @@ namespace GarronT.CMS.UI.WebAPI
                 long _ProjectID = long.Parse(ProjectID);
                 //var _objVisitId = dbcontext.UploadedExcelDatas.Where(o => o.FKProjectId == Convert.ToInt64(ProjectID) && (o.GetType().GetProperties(o => o.Name == DynamicColumnName)).ToString() == Street.ToString() && o.VisitId != null && o.VisitId != "").FirstOrDefault();
                 var _objVisitId = dbcontext.UploadedExcelDatas.Where(o => o.FKProjectId == _ProjectID && o.Street12 == Street && o.VisitId != null && o.VisitId != "").FirstOrDefault();
+                //var oldObject = dbcontext.UploadedExcelDatas.Where(o => o.FKProjectId == _ProjectID && (string)o.GetType().GetProperty(DynamicColumnName).GetValue(o) == Street && o.VisitId != null && o.VisitId != "").FirstOrDefault();
                 if (_objVisitId != null)
                 {
                     VisitId = _objVisitId.VisitId.ToString();       // This code has been chnaged because street address comming With apostrophe s(')

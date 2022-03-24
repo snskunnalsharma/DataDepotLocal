@@ -3498,6 +3498,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         public DataTable AllRecordDataTable(long formTypeId, long projectId, string[] visitStatus, DateTime fromDate, DateTime toDate,
             int latlongRequired, int mediaRequired, out List<string> columnNameList1)
         {
+            TempData["tempProjectId"] = projectId;
             DataTable dt = new DataTable();
             columnNameList1 = new List<string>();
             DataTable ExportReportLableList = new DataTable();
@@ -4103,7 +4104,15 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             ProjectMasterDAL projectMasterDAL = new ProjectMasterDAL();
             DataTable data = TempData["ExportDataList"] as DataTable;
 
-
+            CompassEntities objCE = new CompassEntities();
+            long projectId =long.Parse(TempData["tempProjectId"].ToString());
+            var objUtilitytype = objCE.tblProjects.Where(o => o.ProjectId == projectId).Select(o => o.Utilitytype).FirstOrDefault();
+            if (objUtilitytype == "Electric")
+            {
+                DownloadCSVExport(data);
+                return null;
+            }
+            
             #region Export to excel
             GridView gv = new GridView();
             gv.DataSource = data;// data.OrderBy(a => a.Latitude).ThenBy(a => a.Longitude).ThenBy(a => a.Street).ToList();
@@ -4133,6 +4142,124 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             return null;
             //return RedirectToAction("Index");
             // return View("Index");
+        }
+
+        public void DownloadCSVExport(DataTable dt)
+        {
+            try
+            {
+                Response.Clear();
+                Response.Buffer = true;
+                Response.AddHeader("content-disposition", "attachment;filename=ExportReport.csv");
+                Response.Charset = "";
+                Response.ContentType = "application/text";
+                StringBuilder sb = new StringBuilder();
+                //DataTable dt = Session["TillReportData"] as DataTable;
+                // Hide/Remove columns from csv.
+                dt.Columns.RemoveAt(1); // Removes the column at the specified index
+                dt = datatableColumnChnages(dt);     // Remove column not requied for TNMP project ==> Electric project
+                //dt.Columns.Remove("ATTENDANT NAME"); // Removes DataColumn object that has the specified name
+                //dt.Columns.Remove("VISIT ATTENDED DATETIME");
+                //dt.Columns.Remove("VISIT STATUS");
+                for (int k = 0; k < dt.Columns.Count; k++)
+                {
+                    sb.Append(dt.Columns[k].ColumnName + ',');
+                }
+                sb.Append("\r\n");
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    for (int k = 0; k < dt.Columns.Count; k++)
+                    {
+                        sb.Append(dt.Rows[i][k].ToString().Replace(",", ";") + ',');
+                    }
+                    sb.Append("\r\n");
+                }
+                Response.Output.Write(sb.ToString());
+                Response.Flush();
+                Response.End();
+            }
+            catch (Exception ex)
+            {
+                
+            }
+            
+        }
+
+        public DataTable datatableColumnChnages(DataTable dt)
+        {
+            // Dtatable Column chnages applied for Electricty Project
+            try
+            {
+                if (dt.Columns.Contains("OFFICE"))
+                {
+                    for (int k = 0; k < dt.Rows.Count; k++)
+                    {
+                        string objOffice = dt.Rows[k]["OFFICE"].ToString();
+                        string objCycle = dt.Rows[k]["CYCLE"].ToString();
+                        if (!string.IsNullOrEmpty(objOffice))
+                        {
+                            objCycle = objCycle.Replace(objOffice, "");
+                            dt.Rows[k]["CYCLE"] = objCycle.Trim();
+                        }
+                    }
+                }
+                if (dt.Columns.Contains("UNIT"))
+                {
+                    for (int k = 0; k < dt.Rows.Count; k++)
+                    {
+                        string objUnit = dt.Rows[k]["UNIT"].ToString();
+                        string objStreet = dt.Rows[k]["STREET"].ToString();
+                        if (!string.IsNullOrEmpty(objUnit))
+                        {
+                            int i = objUnit.Length + 1; // 1 Add because remove white space(In Steet and Unit merge time)
+                            objStreet = objStreet.Remove(objStreet.Length - i);
+                            dt.Rows[k]["STREET"] = objStreet;
+                        }
+                    }
+                }
+
+                if (dt.Columns.Contains("ATTENDANT NAME"))
+                {
+                    //dt.Columns.Remove("ATTENDANT NAME");
+                    dt.Columns["ATTENDANT NAME"].ColumnName = "v_installer";
+                }
+                if (dt.Columns.Contains("VISIT ATTENDED DATETIME"))
+                {
+                    //dt.Columns.Remove("VISIT ATTENDED DATETIME");
+                    dt.Columns["VISIT ATTENDED DATETIME"].ColumnName = "v_completion_date";
+                }
+                if (dt.Columns.Contains("VISIT STATUS"))
+                {
+                    dt.Columns.Remove("VISIT STATUS");
+                }
+                if (dt.Columns.Contains("Form Name"))
+                {
+                    dt.Columns.Remove("Form Name");
+                }
+                if (dt.Columns.Contains("VISIT START DATE"))
+                {
+                    dt.Columns.Remove("VISIT START DATE");
+                }
+                if (dt.Columns.Contains("VISIT END DATE"))
+                {
+                    dt.Columns.Remove("VISIT END DATE");
+                }
+                if (dt.Columns.Contains("REASON"))
+                {
+                    dt.Columns.Remove("REASON");
+                }
+                if (dt.Columns.Contains("COMMENT"))
+                {
+                    //dt.Columns.Remove("COMMENT");
+                    dt.Columns["COMMENT"].ColumnName = "v_comments";
+                }
+
+                return dt;
+            }
+            catch (Exception ex)
+            {
+                return dt;
+            }
         }
 
         public void GetServiceInfo(long projectId, List<STP_ExportReport_Service_Result> objServiceListForproject, out List<STP_ExportReport_Service_Result> objRegulorServiceList, out List<STP_ExportReport_Service_Result> objAdditionalServiceList)
