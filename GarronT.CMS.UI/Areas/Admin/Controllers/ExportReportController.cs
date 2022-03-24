@@ -4203,6 +4203,15 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         }
                     }
                 }
+                else
+                {
+                    for (int k = 0; k < dt.Rows.Count; k++)
+                    {
+                        string objCycle = dt.Rows[k]["CYCLE"].ToString();
+                        string[] arrCycle = objCycle.Split(' ');   // Office text remove
+                        dt.Rows[k]["CYCLE"] = (arrCycle[1].ToString()).Trim();
+                    }
+                }
                 if (dt.Columns.Contains("UNIT"))
                 {
                     for (int k = 0; k < dt.Rows.Count; k++)
