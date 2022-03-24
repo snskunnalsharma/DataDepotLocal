@@ -3611,7 +3611,7 @@ angularApp
             $scope.AddOptionsindisable = function () {
                 var newName = $("#txtnewName").val();
                 var newValue = $("#txtnewValue").val();
-                if (newName != "" && newValue != "") {
+                if (newName != "" ) {
                     return false;
                 } else {
                     return true;
