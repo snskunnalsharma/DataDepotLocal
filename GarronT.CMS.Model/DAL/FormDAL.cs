@@ -551,15 +551,15 @@ namespace GarronT.CMS.Model.DAL
                                                                     tblProjectFieldDDLMaster tblProjectFieldDDLMaster = new tblProjectFieldDDLMaster();
                                                                     tblProjectFieldDDLMaster.FormSectionFieldID = tblFormSectionFieldRelation.FieldId;
                                                                     tblProjectFieldDDLMaster.FormID = createOrUpdate.FormId;
-                                                                    tblProjectFieldDDLMaster.FieldText = optionitem.FieldText.Trim();
-                                                                    if (optionitem.FieldValue != null)
+                                                                    if (optionitem.FieldText != null)
                                                                     {
-                                                                        tblProjectFieldDDLMaster.FieldValue = optionitem.FieldValue.Trim();
+                                                                        tblProjectFieldDDLMaster.FieldText = optionitem.FieldText.Trim();
                                                                     }
                                                                     else
                                                                     {
-                                                                        tblProjectFieldDDLMaster.FieldValue = "";
+                                                                        tblProjectFieldDDLMaster.FieldText = "";
                                                                     }
+                                                                    tblProjectFieldDDLMaster.FieldValue = optionitem.FieldValue.Trim();
                                                                     //tblProjectFieldDDLMaster.FieldValue = optionitem.FieldValue.Trim();
                                                                     tblProjectFieldDDLMaster.FieldFilterkey = optionitem.FieldFilterkey != null ? optionitem.FieldFilterkey.Trim() : "";
                                                                     tblProjectFieldDDLMaster.SortOrderNumber = optionitem.OrderNo;
@@ -817,16 +817,17 @@ namespace GarronT.CMS.Model.DAL
                                                                 tblProjectFieldDDLMaster tblProjectFieldDDLMaster = new tblProjectFieldDDLMaster();
                                                                 tblProjectFieldDDLMaster.FormSectionFieldID = tblFormSectionFieldRelation.FieldId;
                                                                 tblProjectFieldDDLMaster.FormID = FormMasters.FormId;
-                                                                tblProjectFieldDDLMaster.FieldText = optionitem.FieldText.Trim();
-                                                                if(optionitem.FieldValue != null)
+                                                                //tblProjectFieldDDLMaster.FieldText = optionitem.FieldText.Trim();
+                                                                if(optionitem.FieldText != null)
                                                                 {
-                                                                    tblProjectFieldDDLMaster.FieldValue = optionitem.FieldValue.Trim();
+                                                                    tblProjectFieldDDLMaster.FieldText = optionitem.FieldText.Trim();
                                                                 }
                                                                 else
                                                                 {
-                                                                    tblProjectFieldDDLMaster.FieldValue = "";
+                                                                    tblProjectFieldDDLMaster.FieldText = "";
                                                                 }
-                                                                
+                                                                tblProjectFieldDDLMaster.FieldValue = optionitem.FieldValue.Trim();
+
                                                                 tblProjectFieldDDLMaster.FieldFilterkey = optionitem.FieldFilterkey != null ? optionitem.FieldFilterkey.Trim() : "";
                                                                 tblProjectFieldDDLMaster.SortOrderNumber = optionitem.OrderNo;
 
