@@ -4156,7 +4156,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 StringBuilder sb = new StringBuilder();
                 //DataTable dt = Session["TillReportData"] as DataTable;
                 // Hide/Remove columns from csv.
-                dt.Columns.RemoveAt(1); // Removes the column at the specified index
+                //dt.Columns.RemoveAt(1); // Removes the column at the specified index
                 dt = datatableColumnChnages(dt);     // Remove column not requied for TNMP project ==> Electric project
                 //dt.Columns.Remove("ATTENDANT NAME"); // Removes DataColumn object that has the specified name
                 //dt.Columns.Remove("VISIT ATTENDED DATETIME");
@@ -4190,43 +4190,6 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             // Dtatable Column chnages applied for Electricty Project
             try
             {
-                if (dt.Columns.Contains("OFFICE"))
-                {
-                    for (int k = 0; k < dt.Rows.Count; k++)
-                    {
-                        string objOffice = dt.Rows[k]["OFFICE"].ToString();
-                        string objCycle = dt.Rows[k]["CYCLE"].ToString();
-                        if (!string.IsNullOrEmpty(objOffice))
-                        {
-                            objCycle = objCycle.Replace(objOffice, "");
-                            dt.Rows[k]["CYCLE"] = objCycle.Trim();
-                        }
-                    }
-                }
-                else
-                {
-                    for (int k = 0; k < dt.Rows.Count; k++)
-                    {
-                        string objCycle = dt.Rows[k]["CYCLE"].ToString();
-                        string[] arrCycle = objCycle.Split(' ');   // Office text remove
-                        dt.Rows[k]["CYCLE"] = (arrCycle[1].ToString()).Trim();
-                    }
-                }
-                if (dt.Columns.Contains("UNIT"))
-                {
-                    for (int k = 0; k < dt.Rows.Count; k++)
-                    {
-                        string objUnit = dt.Rows[k]["UNIT"].ToString();
-                        string objStreet = dt.Rows[k]["STREET"].ToString();
-                        if (!string.IsNullOrEmpty(objUnit))
-                        {
-                            int i = objUnit.Length + 1; // 1 Add because remove white space(In Steet and Unit merge time)
-                            objStreet = objStreet.Remove(objStreet.Length - i);
-                            dt.Rows[k]["STREET"] = objStreet;
-                        }
-                    }
-                }
-
                 if (dt.Columns.Contains("ATTENDANT NAME"))
                 {
                     //dt.Columns.Remove("ATTENDANT NAME");
@@ -4235,7 +4198,13 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 if (dt.Columns.Contains("VISIT ATTENDED DATETIME"))
                 {
                     //dt.Columns.Remove("VISIT ATTENDED DATETIME");
-                    dt.Columns["VISIT ATTENDED DATETIME"].ColumnName = "v_completion_date";
+                    dt.Columns["VISIT ATTENDED DATETIME"].ColumnName = "v_completion_date"; // Column Name chnage
+                    for (int k = 0; k < dt.Rows.Count; k++)
+                    {                                           // Complet date time formate chnage
+                        DateTime obj =Convert.ToDateTime(dt.Rows[k]["v_completion_date"].ToString());
+                        string CompletDate = obj.ToString("MMddyyyy HH:mm");
+                        dt.Rows[k]["v_completion_date"] = CompletDate;
+                    }
                 }
                 if (dt.Columns.Contains("VISIT STATUS"))
                 {
@@ -4260,6 +4229,43 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 if (dt.Columns.Contains("COMMENT"))
                 {
                     dt.Columns.Remove("COMMENT");
+                }
+
+                if (dt.Columns.Contains("OFFICE"))
+                {
+                    for (int k = 0; k < dt.Rows.Count; k++)
+                    {
+                        string objOffice = dt.Rows[k]["OFFICE"].ToString();
+                        string objCycle = dt.Rows[k]["V_CYCLE"].ToString();
+                        if (!string.IsNullOrEmpty(objOffice))
+                        {
+                            objCycle = objCycle.Replace(objOffice, "");
+                            dt.Rows[k]["V_CYCLE"] = objCycle.Trim();
+                        }
+                    }
+                }
+                else
+                {
+                    for (int k = 0; k < dt.Rows.Count; k++)
+                    {
+                        string objCycle = dt.Rows[k]["V_CYCLE"].ToString();
+                        string[] arrCycle = objCycle.Split(' ');   // Office text remove
+                        dt.Rows[k]["V_CYCLE"] = (arrCycle[1].ToString()).Trim();
+                    }
+                }
+                if (dt.Columns.Contains("UNIT"))
+                {
+                    for (int k = 0; k < dt.Rows.Count; k++)
+                    {
+                        string objUnit = dt.Rows[k]["UNIT"].ToString();
+                        string objStreet = dt.Rows[k]["STREET"].ToString();
+                        if (!string.IsNullOrEmpty(objUnit))
+                        {
+                            int i = objUnit.Length + 1; // 1 Add because remove white space(In Steet and Unit merge time)
+                            objStreet = objStreet.Remove(objStreet.Length - i);
+                            dt.Rows[k]["STREET"] = objStreet;
+                        }
+                    }
                 }
 
                 return dt;
