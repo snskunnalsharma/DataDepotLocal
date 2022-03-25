@@ -2531,8 +2531,8 @@ namespace GarronT.CMS.Model.DAL
             using (CompassEntities dbcontext = new CompassEntities())
             {
                 var TotalRecords = dbcontext.UploadedExcelDatas.Where(o => o.FKProjectId == ProjectID && o.Active == 1).Count();
-                var latLongCount = dbcontext.UploadedExcelDatas.Where(o => o.FKProjectId == ProjectID && o.Active == 1 && o.AddressLatitude != null
-                    && o.AddressLongitude != null).Count();
+                var latLongCount = dbcontext.UploadedExcelDatas.Where(o => o.FKProjectId == ProjectID && o.Active == 1 && !string.IsNullOrEmpty(o.AddressLatitude)
+                    && !string.IsNullOrEmpty(o.AddressLongitude)).Count();
 
                 return (TotalRecords == latLongCount ? false : true);
             }

@@ -793,14 +793,14 @@ namespace GarronT.CMS.UI.WebAPI
                                 string dyCityColName = inDal.getDynamicColumnName("CITY", Convert.ToString(projetID));
                                 string dyStateColName = inDal.getDynamicColumnName("STATE", Convert.ToString(projetID));
 
-                                if (!string.IsNullOrEmpty(dyZipColName))
+                                /*if (!string.IsNullOrEmpty(dyZipColName))
                                 {
                                     var Zip = PropertyInfos.Where(o => o.Name == dyZipColName).Select(o => o.GetValue(item, null)).FirstOrDefault();
                                     if (!string.IsNullOrEmpty(Zip.ToString()))
                                     {
                                         s2 += ", " + Zip.ToString();
                                     }
-                                }
+                                }*/
                                 if (!string.IsNullOrEmpty(dyCityColName))
                                 {
                                     var City = PropertyInfos.Where(o => o.Name == dyCityColName).Select(o => o.GetValue(item, null)).FirstOrDefault();
@@ -1365,14 +1365,14 @@ namespace GarronT.CMS.UI.WebAPI
                             string dyCityColName = inDal.getDynamicColumnName("CITY", Convert.ToString(projetID));
                             string dyStateColName = inDal.getDynamicColumnName("STATE", Convert.ToString(projetID));
 
-                            if (!string.IsNullOrEmpty(dyZipColName))
+                            /*if (!string.IsNullOrEmpty(dyZipColName))
                             {
                                 var Zip = PropertyInfos.Where(o => o.Name == dyZipColName).Select(o => o.GetValue(item, null)).FirstOrDefault();
                                 if (!string.IsNullOrEmpty(Zip.ToString()))
                                 {
                                     _streetAddress += ", " + Zip.ToString();
                                 }
-                            }
+                            }*/
                             if (!string.IsNullOrEmpty(dyCityColName))
                             {
                                 var City = PropertyInfos.Where(o => o.Name == dyCityColName).Select(o => o.GetValue(item, null)).FirstOrDefault();
