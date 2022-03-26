@@ -4279,7 +4279,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     for (int k = 0; k < dt.Rows.Count; k++)
                     {
                         string objStreet = dt.Rows[k]["STREET"].ToString();
-                        dt.Rows[k]["STREET"] = $@"""{objStreet}""";
+                        dt.Rows[k]["STREET"] = $@"""{objStreet}""";     // Add Double qoute with string
                     }
                 }
                 if (dt.Columns.Contains("UNIT"))
@@ -4307,6 +4307,11 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         dt.Rows[k]["CITY"] = $@"""{objCITY}""";
                     }
                 }
+                dt.Columns["v_completion_date"].SetOrdinal(28);     // Change dt column index
+                dt.AcceptChanges();
+                dt.Columns["v_installer"].SetOrdinal(28);
+                dt.AcceptChanges();
+
                 return dt;
             }
             catch (Exception ex)
