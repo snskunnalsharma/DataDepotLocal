@@ -4200,10 +4200,17 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     //dt.Columns.Remove("VISIT ATTENDED DATETIME");
                     dt.Columns["VISIT ATTENDED DATETIME"].ColumnName = "v_completion_date"; // Column Name chnage
                     for (int k = 0; k < dt.Rows.Count; k++)
-                    {                                           // Complet date time formate chnage
-                        DateTime obj =Convert.ToDateTime(dt.Rows[k]["v_completion_date"].ToString());
-                        string CompletDate = obj.ToString("MMddyyyy HH:mm");
-                        dt.Rows[k]["v_completion_date"] = CompletDate;
+                    {
+                        if (dt.Rows[k]["VISIT STATUS"].ToString().Equals("COMPLETED"))  // Complet date time formate chnage
+                        {
+                            DateTime obj = Convert.ToDateTime(dt.Rows[k]["v_completion_date"].ToString());
+                            string CompletDate = obj.ToString("MMddyyyy HH:mm");
+                            dt.Rows[k]["v_completion_date"] = CompletDate;
+                        }
+                        else
+                        {
+                            dt.Rows[k]["v_completion_date"] = "";
+                        }
                     }
                 }
                 if (dt.Columns.Contains("VISIT STATUS"))
@@ -4263,10 +4270,20 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         {
                             int i = objUnit.Length + 1; // 1 Add because remove white space(In Steet and Unit merge time)
                             objStreet = objStreet.Remove(objStreet.Length - i);
-                            dt.Rows[k]["STREET"] = objStreet;
+                            dt.Rows[k]["STREET"] = ""+objStreet+"";
                         }
                     }
                 }
+                /*if (dt.Columns.Contains("STREET"))
+                {
+                    for (int k = 0; k < dt.Rows.Count; k++)
+                    {
+                        string objStreet = dt.Rows[k]["STREET"].ToString();
+                        
+                        dt.Rows[k]["STREET"] = "" + objStreet + "";
+                    }
+                }*/
+
 
                 return dt;
             }

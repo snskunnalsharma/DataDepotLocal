@@ -623,7 +623,7 @@ namespace GarronT.CMS.UI.WebAPI
             CompassEntities objCompassEntities = new CompassEntities();
 
             var project = objCompassEntities.tblProjects.Where(a => a.ProjectId == projetID && a.Active == 1).FirstOrDefault();
-
+            
             // var city = (from c in CompassEntities.TblCityMasters where c.CityId == project.CityId select c).FirstOrDefault();
             string objCityName = string.Empty;
             string objStateName = string.Empty;
@@ -692,16 +692,23 @@ namespace GarronT.CMS.UI.WebAPI
                                 /// under current city & state
                                 try
                                 {
-                                    bool a = FindCoordinates(latValue, longValue, Citylat, Citylng);
-                                    //if lat lon correct then no change but if lat long is out of city then null will updated
-                                    // in the database.
-                                    item.AddressLatitude = a ? Convert.ToString(currentProperty.GetValue(item)) : null;
-                                    item.AddressLongitude = a ? Convert.ToString(currentProperty1.GetValue(item)) : null;
-                                    //currentProperty.SetValue(item, (a ? item.AddressLatitude : null), null);
-                                    // currentProperty1.SetValue(item, (a ? item.AddressLongitude : null), null);
+                                    if (project.Utilitytype == "Electric")
+                                    {
+                                        item.AddressLatitude = Convert.ToString(currentProperty.GetValue(item));
+                                        item.AddressLongitude = Convert.ToString(currentProperty1.GetValue(item));
+                                    }
+                                    else
+                                    {
+                                        bool a = FindCoordinates(latValue, longValue, Citylat, Citylng);
+                                        //if lat lon correct then no change but if lat long is out of city then null will updated
+                                        // in the database.
+                                        item.AddressLatitude = a ? Convert.ToString(currentProperty.GetValue(item)) : null;
+                                        item.AddressLongitude = a ? Convert.ToString(currentProperty1.GetValue(item)) : null;
+                                        //currentProperty.SetValue(item, (a ? item.AddressLatitude : null), null);
+                                        // currentProperty1.SetValue(item, (a ? item.AddressLongitude : null), null);
+                                        //objCompassEntities.SaveChanges(); // one by one not save save all record in one time see in below
 
-                                    //objCompassEntities.SaveChanges(); // one by one not save save all record in one time see in below
-
+                                    }
                                 }
                                 catch
                                 {
@@ -1313,12 +1320,20 @@ namespace GarronT.CMS.UI.WebAPI
 
                             if (!string.IsNullOrEmpty(latValue) && latValue.Length > 0 && latValue != "0" && !string.IsNullOrEmpty(longValue) && longValue.Trim().Length > 0 && longValue != "0")
                             {
-                                bool a = FindCoordinates(latValue, longValue, Citylat, Citylng);
-                                //if lat lon correct then no change but if lat long is out of city then null will updated
-                                // in the database.
-                                item.AddressLatitude = a ? Convert.ToString(currentProperty.GetValue(item)) : null;
-                                item.AddressLongitude = a ? Convert.ToString(currentProperty1.GetValue(item)) : null;
-                                //objCompassEntities.SaveChanges();  // one by one not save save all record in one time see in below
+                                if (project.Utilitytype == "Electric")
+                                {
+                                    item.AddressLatitude = Convert.ToString(currentProperty.GetValue(item));
+                                    item.AddressLongitude = Convert.ToString(currentProperty1.GetValue(item));
+                                }
+                                else
+                                {
+                                    bool a = FindCoordinates(latValue, longValue, Citylat, Citylng);
+                                    //if lat lon correct then no change but if lat long is out of city then null will updated
+                                    // in the database.
+                                    item.AddressLatitude = a ? Convert.ToString(currentProperty.GetValue(item)) : null;
+                                    item.AddressLongitude = a ? Convert.ToString(currentProperty1.GetValue(item)) : null;
+                                    //objCompassEntities.SaveChanges();  // one by one not save save all record in one time see in below
+                                }
                             }
                             else
                             {
