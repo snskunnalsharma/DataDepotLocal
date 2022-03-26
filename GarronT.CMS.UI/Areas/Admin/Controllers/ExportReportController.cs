@@ -4274,17 +4274,39 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         }
                     }
                 }
-                /*if (dt.Columns.Contains("STREET"))
+                if (dt.Columns.Contains("STREET"))
                 {
                     for (int k = 0; k < dt.Rows.Count; k++)
                     {
                         string objStreet = dt.Rows[k]["STREET"].ToString();
-                        
-                        dt.Rows[k]["STREET"] = "" + objStreet + "";
+                        dt.Rows[k]["STREET"] = $@"""{objStreet}""";
                     }
-                }*/
-
-
+                }
+                if (dt.Columns.Contains("UNIT"))
+                {
+                    for (int k = 0; k < dt.Rows.Count; k++)
+                    {
+                        string objUNIT = dt.Rows[k]["UNIT"].ToString();
+                        dt.Rows[k]["UNIT"] = $@"""{objUNIT}""";
+                    }
+                }
+                if (dt.Columns.Contains("c_v_prem_line4"))
+                {
+                    //dt.Columns["addr-line4"].ColumnName = "c_v_prem_line4"; // Column Name chnage
+                    for (int k = 0; k < dt.Rows.Count; k++)
+                    {
+                        string objc_v_prem_line4 = dt.Rows[k]["c_v_prem_line4"].ToString();
+                        dt.Rows[k]["c_v_prem_line4"] = $@"""{objc_v_prem_line4}""";
+                    }
+                }
+                if (dt.Columns.Contains("CITY"))
+                {
+                    for (int k = 0; k < dt.Rows.Count; k++)
+                    {
+                        string objCITY = dt.Rows[k]["CITY"].ToString();
+                        dt.Rows[k]["CITY"] = $@"""{objCITY}""";
+                    }
+                }
                 return dt;
             }
             catch (Exception ex)
