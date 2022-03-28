@@ -118,10 +118,11 @@ namespace GarronT.CMS.Model.DAL
                             reason = "<strong>" + item.Account + " | " + item.FormName + "  </br>Reason- </br>" + item.Reason + " </br>" + (string.IsNullOrEmpty(item.Comment) ? "" : "Comment- </br>" + item.Comment) + "</strong></br>";
                         }
                         street = "<div class='scrollFixMAP'><strong>Installer Name:" + item.InstallerName + "</strong></br><strong>Street:</strong> " + street + "</br>" +
+                             "<strong>Cycle:</strong>" + Convert.ToString(item.Cycle) + ",&nbsp;&nbsp;&nbsp;&nbsp; <strong>Route:</strong>" + Convert.ToString(item.Route) + "</br>" +
                              "<strong>Pending :" + Convert.ToString(item.TotalPendingCount) + "</strong></br>" +
-                               "<strong>Complete :" + Convert.ToString(item.TotalCompletedCount) + "</strong></br>" +
+                             "<strong>Complete :" + Convert.ToString(item.TotalCompletedCount) + "</strong></br>" +
                             //"<strong>Total :" + Convert.ToString(item.TotalRecordCount) + "</strong></br>" +                          
-                            "<strong>Skip :" + Convert.ToString(item.TotalSkipedCount) + "</strong></br>" +
+                             "<strong>Skip :" + Convert.ToString(item.TotalSkipedCount) + "</strong></br>" +
                              "<strong>RTU :" + Convert.ToString(item.TotalRTUCount) + "</strong></br>";
                         if (item.VisitDate != null)
                         {
@@ -251,6 +252,8 @@ namespace GarronT.CMS.Model.DAL
                             RTU = int.Parse(Convert.ToString(item["RTU"])),
                             Skipped = int.Parse(Convert.ToString(item["Skipped"])),
                             street = Convert.ToString(item["street"]),
+                            Cycle = Convert.ToString(item["Cycle"]),
+                            Route = Convert.ToString(item["Route"]),
                             TotalCompletedCount = int.Parse(Convert.ToString(item["TotalCompletedCount"])),
                             TotalPendingCount = int.Parse(Convert.ToString(item["TotalPendingCount"])),
                             TotalRecordCount = int.Parse(Convert.ToString(item["TotalRecordCount"])),
@@ -291,7 +294,8 @@ namespace GarronT.CMS.Model.DAL
                             reason = "<strong>" + item.Account + " | " + item.FormName + "  </br>Reason- </br>" + item.Reason + " </br>" + (string.IsNullOrEmpty(item.Comment) ? "" : "Comment- </br>" + item.Comment) + "</strong></br>";
                         }
                         street = "<div class='scrollFixMAP'><strong>Installer Name:" + item.InstallerName + "</strong></br><strong>Street:</strong> " + street + "</br>" +
-                            //"<strong>Total Visits:" + Convert.ToString(item.TotalRecordCount) + "</strong></br>" +
+                           //"<strong>Total Visits:" + Convert.ToString(item.TotalRecordCount) + "</strong></br>" +
+                           "<strong>Cycle:</strong>" + Convert.ToString(item.Cycle) + ",&nbsp;&nbsp;&nbsp;&nbsp; <strong>Route:</strong>" + Convert.ToString(item.Route) + "</br>" +
                            "<strong>Pending:" + Convert.ToString(item.TotalPendingCount) + "</strong></br>" +
                            "<strong>Complete:" + Convert.ToString(item.TotalCompletedCount) + "</strong></br>" +
                            "<strong>Skip:" + Convert.ToString(item.TotalSkipedCount) + "</strong></br>" +

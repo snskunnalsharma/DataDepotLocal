@@ -6965,6 +6965,8 @@
                     <Property Type="String" Name="ID" Nullable="true" MaxLength="250" />
                     <Property Type="String" Name="Account" Nullable="true" MaxLength="50" />
                     <Property Type="String" Name="street" Nullable="true" MaxLength="250" />
+                    <Property Type="String" Name="Cycle" Nullable="true" MaxLength="50" />
+                    <Property Type="String" Name="Route" Nullable="true" MaxLength="50" />
                     <Property Type="String" Name="Latitude" Nullable="true" MaxLength="50" />
                     <Property Type="String" Name="Longitude" Nullable="true" MaxLength="50" />
                     <Property Type="Int64" Name="InstallerMapId" Nullable="true" />
@@ -6997,6 +6999,8 @@
                     <Property Type="String" Name="ID" Nullable="true" MaxLength="250" />
                     <Property Type="String" Name="Account" Nullable="true" MaxLength="50" />
                     <Property Type="String" Name="street" Nullable="true" MaxLength="250" />
+                    <Property Type="String" Name="Cycle" Nullable="true" MaxLength="50" />
+                    <Property Type="String" Name="Route" Nullable="true" MaxLength="50" />
                     <Property Type="String" Name="Latitude" Nullable="true" MaxLength="50" />
                     <Property Type="String" Name="Longitude" Nullable="true" MaxLength="50" />
                     <Property Type="Int64" Name="InstallerMapId" Nullable="true" />
@@ -11913,6 +11917,8 @@
                                 <ScalarProperty Name="ID" ColumnName="ID" />
                                 <ScalarProperty Name="Account" ColumnName="Account" />
                                 <ScalarProperty Name="street" ColumnName="street" />
+                                <ScalarProperty Name="Cycle" ColumnName="Cycle" />
+                                <ScalarProperty Name="Route" ColumnName="Route" />
                                 <ScalarProperty Name="Latitude" ColumnName="Latitude" />
                                 <ScalarProperty Name="Longitude" ColumnName="Longitude" />
                                 <ScalarProperty Name="InstallerMapId" ColumnName="InstallerMapId" />
@@ -11949,6 +11955,8 @@
                                 <ScalarProperty Name="ID" ColumnName="ID" />
                                 <ScalarProperty Name="Account" ColumnName="Account" />
                                 <ScalarProperty Name="street" ColumnName="street" />
+                                <ScalarProperty Name="Cycle" ColumnName="Cycle" />
+                                <ScalarProperty Name="Route" ColumnName="Route" />
                                 <ScalarProperty Name="Latitude" ColumnName="Latitude" />
                                 <ScalarProperty Name="Longitude" ColumnName="Longitude" />
                                 <ScalarProperty Name="InstallerMapId" ColumnName="InstallerMapId" />

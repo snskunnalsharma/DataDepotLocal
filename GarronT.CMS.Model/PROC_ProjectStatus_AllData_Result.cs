@@ -17,6 +17,8 @@ namespace GarronT.CMS.Model
         public string ID { get; set; }
         public string Account { get; set; }
         public string street { get; set; }
+        public string Cycle { get; set; }
+        public string Route { get; set; }
         public string Latitude { get; set; }
         public string Longitude { get; set; }
         public Nullable<long> InstallerMapId { get; set; }
