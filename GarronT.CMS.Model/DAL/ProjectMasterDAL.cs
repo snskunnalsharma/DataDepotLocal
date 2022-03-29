@@ -2220,7 +2220,12 @@ namespace GarronT.CMS.Model.DAL
 
                                         foreach (DataColumn dtCol in dt.Columns)
                                         {
+                                            /*if (dtCol.ColumnName.ToLower() == "latitude")
+                                            { }
+                                            string col = dtCol.ColumnName.Replace("\r\n", "").Replace("\r", "").Replace("\n", "");
+                                            col = col.ToString().Trim();*/
                                             var mappedColumnName = GetExcelColumnMapList.Where(o => o.ExcelFieldName == dtCol.ColumnName).FirstOrDefault();
+                                            //var mappedColumnName = GetExcelColumnMapList.Where(o => o.ExcelFieldName.Replace("\r\n", "").Replace("\r", "").Replace("\n", "").ToString().Trim() == col).FirstOrDefault();
                                             if (mappedColumnName != null)
                                             {
                                                 string sCurrentData = Convert.ToString(dtRow[dtCol]);

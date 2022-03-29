@@ -1124,7 +1124,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                             for (int i = 0; i < rows.Count() - 1; i++)
                             {
                                 //string[] rowValues = rows[i].Split(','); //split each row with comma to get individual values  
-                                String[] rowValues = CSVParser.Split(rows[i]);
+                                string[] rowValues = CSVParser.Split(rows[i]);
                                 {
                                     if (i == 0)
                                     {
@@ -1132,6 +1132,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                                         {
                                             string rvalue = rowValues[j].TrimStart(' ', '"');
                                             rvalue = rvalue.TrimEnd('"');
+                                            rvalue = rvalue.Replace("\r\n", "").Replace("\r", "").Replace("\n", "");
+                                            rvalue = rvalue.ToString().TrimEnd();
                                             dt.Columns.Add(rvalue); //add headers 
                                             objList1.Add(rvalue);
                                         }
@@ -1145,6 +1147,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                                             {
                                                 string rvalue = rowValues[k].ToString().TrimStart(' ', '"');
                                                 rvalue = rvalue.TrimEnd('"');
+                                                rvalue = rvalue.Replace("\r\n", "").Replace("\r", "").Replace("\n", "");
+                                                rvalue = rvalue.ToString().TrimEnd();
                                                 dr[k] = rvalue;
                                             }
                                             dt.Rows.Add(dr); //add other rows  
