@@ -3656,13 +3656,31 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 #endregion
             }
 
-            foreach (DataRow item in dt.Rows)
+            CompassEntities objCE = new CompassEntities();
+            var objUtilitytype = objCE.tblProjects.Where(o => o.ProjectId == projectId).Select(o => o.Utilitytype).FirstOrDefault();
+            if (objUtilitytype == "Electric")
             {
-                foreach (DataColumn item1 in dt.Columns)
+                foreach (DataRow item in dt.Rows)
                 {
-                    if (item[item1] == DBNull.Value)
+                    foreach (DataColumn item1 in dt.Columns)
                     {
-                        item[item1] = "-";
+                        if (item[item1] == DBNull.Value || item[item1].ToString() == "-")
+                        {
+                            item[item1] = "";
+                        }
+                    }
+                }
+            }
+            else
+            {
+                foreach (DataRow item in dt.Rows)
+                {
+                    foreach (DataColumn item1 in dt.Columns)
+                    {
+                        if (item[item1] == DBNull.Value)
+                        {
+                            item[item1] = "-";
+                        }
                     }
                 }
             }
@@ -4150,7 +4168,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             {
                 Response.Clear();
                 Response.Buffer = true;
-                Response.AddHeader("content-disposition", "attachment;filename=ExportReport.csv");
+                Response.AddHeader("content-disposition", "attachment;filename=meter_exchange_CMS_" + DateTime.Now.ToString("yyyyMMdd") + ".csv");
                 Response.Charset = "";
                 Response.ContentType = "application/text";
                 StringBuilder sb = new StringBuilder();
