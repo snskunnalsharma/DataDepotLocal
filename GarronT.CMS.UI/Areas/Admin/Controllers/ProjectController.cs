@@ -20,6 +20,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using log4net;
 using System.Web.Script.Serialization;
 using GarronT.CMS.UI.CustomHelpers;
+using System.Text.RegularExpressions;
 
 namespace GarronT.CMS.UI.Areas.Admin.Controllers
 {
@@ -1114,6 +1115,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     string Fulltext;
                     using (StreamReader sr = new StreamReader(newFilePath))
                     {
+                        Regex CSVParser = new Regex(",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))");
                         dt = new DataTable();
                         while (!sr.EndOfStream)
                         {
@@ -1121,7 +1123,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                             string[] rows = Fulltext.Split('\n'); //split full file text into rows  
                             for (int i = 0; i < rows.Count() - 1; i++)
                             {
-                                string[] rowValues = rows[i].Split(','); //split each row with comma to get individual values  
+                                //string[] rowValues = rows[i].Split(','); //split each row with comma to get individual values  
+                                String[] rowValues = CSVParser.Split(rows[i]);
                                 {
                                     if (i == 0)
                                     {
