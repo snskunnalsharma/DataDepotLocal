@@ -636,6 +636,7 @@
                     <Property Name="ProductName" Type="varchar" MaxLength="250" Nullable="false" />
                     <Property Name="ProductDescription" Type="varchar" MaxLength="250" />
                     <Property Name="PartNumber" Type="varchar" MaxLength="50" />
+                    <Property Name="Base" Type="varchar" MaxLength="50" />
                     <Property Name="UPCCode" Type="varchar" MaxLength="20" />
                     <Property Name="ProductCategoryId" Type="bigint" Nullable="false" />
                     <Property Name="SerialNumberRequired" Type="bit" Nullable="false" />
@@ -7998,6 +7999,7 @@
                     <Property Name="ProductName" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="false" />
                     <Property Name="ProductDescription" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
                     <Property Name="PartNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+                    <Property Name="Base" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
                     <Property Name="UPCCode" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
                     <Property Name="ProductCategoryId" Type="Int64" Nullable="false" />
                     <Property Name="SerialNumberRequired" Type="Boolean" Nullable="false" />
@@ -9335,6 +9337,8 @@
                     <Property Type="Int64" Name="MeterMakeId" Nullable="false" />
                     <Property Type="Int64" Name="MeterSizeId" Nullable="false" />
                     <Property Type="Int64" Name="MeterTypeId" Nullable="false" />
+                    <Property Type="String" Name="PartNumber" Nullable="true" MaxLength="50" />
+                    <Property Type="String" Name="Base" Nullable="true" MaxLength="50" />
                     <Property Type="String" Name="SerialNumber" Nullable="true" MaxLength="50" />
                     <Property Type="Int32" Name="BalanceQty" Nullable="true" />
                 </ComplexType>
@@ -12906,6 +12910,7 @@
                                 <ScalarProperty Name="ProductCategoryId" ColumnName="ProductCategoryId" />
                                 <ScalarProperty Name="UPCCode" ColumnName="UPCCode" />
                                 <ScalarProperty Name="PartNumber" ColumnName="PartNumber" />
+                                <ScalarProperty Name="Base" ColumnName="Base" />
                                 <ScalarProperty Name="ProductDescription" ColumnName="ProductDescription" />
                                 <ScalarProperty Name="ProductName" ColumnName="ProductName" />
                                 <ScalarProperty Name="Id" ColumnName="Id" />
@@ -13738,6 +13743,8 @@
                                 <ScalarProperty Name="MeterMakeId" ColumnName="MeterMakeId" />
                                 <ScalarProperty Name="MeterSizeId" ColumnName="MeterSizeId" />
                                 <ScalarProperty Name="MeterTypeId" ColumnName="MeterTypeId" />
+                                <ScalarProperty Name="PartNumber" ColumnName="PartNumber" />
+                                <ScalarProperty Name="Base" ColumnName="Base" />
                                 <ScalarProperty Name="SerialNumber" ColumnName="SerialNumber" />
                                 <ScalarProperty Name="BalanceQty" ColumnName="BalanceQty" />
                             </ComplexTypeMapping>

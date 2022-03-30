@@ -2159,7 +2159,11 @@ namespace GarronT.CMS.Model.DAL
                         {
                             //var watch1 = System.Diagnostics.Stopwatch.StartNew();//*****
                             //var watch2 = System.Diagnostics.Stopwatch.StartNew();//*****
-
+                            InstallerDAL inDal = new InstallerDAL();
+                            string dyCycleColName = inDal.getDynamicColumnName("CYCLE", Convert.ToString(ProjectID));
+                            string dyOfficeColName = inDal.getDynamicColumnName("OFFICE", Convert.ToString(ProjectID));
+                            string dyStreetColName = inDal.getDynamicColumnName("STREET", Convert.ToString(ProjectID));
+                            string dyUnitColName = inDal.getDynamicColumnName("UNIT", Convert.ToString(ProjectID));
                             foreach (DataRow dtRow in dt.Rows)
                             {
 
@@ -2243,18 +2247,49 @@ namespace GarronT.CMS.Model.DAL
                                             objRecord.CreatedBy = long.Parse(userId.ToString());
                                             objRecord.SyncEnable = 1;
 
-                                            objCompassEntities1.Configuration.AutoDetectChangesEnabled = false;
-                                            objCompassEntities1.Configuration.AutoDetectChangesEnabled = false;
-                                            objCompassEntities1.Configuration.ValidateOnSaveEnabled = false;
-                                            objCompassEntities1.UploadedExcelDatas.Add(objRecord);
-                                            objCompassEntities1.SaveChanges();
+                                            //objCompassEntities1.Configuration.AutoDetectChangesEnabled = false;
+                                            //objCompassEntities1.Configuration.AutoDetectChangesEnabled = false;
+                                            //objCompassEntities1.Configuration.ValidateOnSaveEnabled = false;
+                                            //objCompassEntities1.UploadedExcelDatas.Add(objRecord);
+                                            //objCompassEntities1.SaveChanges();
 
                                             bool statusCycleOfficeMerge = Boolean.Parse(ConfigurationManager.AppSettings["mergeCycleOfficeColumn"]);
                                             if (statusCycleOfficeMerge)     // This Changes applied for TNMP ==> Electric City Project
                                             {
-                                                mergeColumnData(ProjectID, objRecord.Id);
-                                            }
+                                                //mergeColumnData(ProjectID, objRecord.Id);
+                                                if (!string.IsNullOrEmpty(dyCycleColName) && !string.IsNullOrEmpty(dyOfficeColName))
+                                                {
+                                                    var propertyInfoCycle = objRecord.GetType().GetProperty(dyCycleColName);
+                                                    var cycleValue = propertyInfoCycle.GetValue(objRecord);
 
+                                                    var propertyInfoOffice = objRecord.GetType().GetProperty(dyOfficeColName);
+                                                    var officeValue = propertyInfoOffice.GetValue(objRecord);
+
+                                                    PropertyInfo currentProperty = pClass.Where(o => o.Name == dyCycleColName).FirstOrDefault();
+                                                    currentProperty.SetValue(objRecord, (officeValue + " " + cycleValue), null);        // Merge value Cycle and Office
+                                                                                                                                        /*currentProperty = pClass.Where(o => o.Name == dyOfficeColName).FirstOrDefault();
+                                                                                                                                        currentProperty.SetValue(objRecord, officeValue, null);*/
+                                                }
+                                                if (!string.IsNullOrEmpty(dyStreetColName) && !string.IsNullOrEmpty(dyUnitColName))
+                                                {
+                                                    var propertyInfoStreet = objRecord.GetType().GetProperty(dyStreetColName);
+                                                    var streetValue = propertyInfoStreet.GetValue(objRecord);
+
+                                                    var propertyInfoUnit = objRecord.GetType().GetProperty(dyUnitColName);
+                                                    var unitValue = propertyInfoUnit.GetValue(objRecord);
+
+                                                    if (!string.IsNullOrEmpty(unitValue.ToString()))
+                                                    {
+                                                        PropertyInfo currentProperty = pClass.Where(o => o.Name == dyStreetColName).FirstOrDefault();
+                                                        currentProperty.SetValue(objRecord, (streetValue + " " + unitValue), null);     // Merge value Street and Unit
+                                                        objRecord.Street12 = (streetValue + " " + unitValue).ToString(); // Street/ Address value stored in two columns in table
+                                                    }
+                                                }
+                                            }
+                                            objCompassEntities1.Configuration.AutoDetectChangesEnabled = false;
+                                            objCompassEntities1.Configuration.AutoDetectChangesEnabled = false;
+                                            objCompassEntities1.Configuration.ValidateOnSaveEnabled = false;
+                                            objCompassEntities1.UploadedExcelDatas.Add(objRecord);
                                             skipedRecordsCount--;
                                             newRecordsCount++;
 
@@ -2266,14 +2301,14 @@ namespace GarronT.CMS.Model.DAL
                                         result = true;
                                     }
                                 }
-                                catch
+                                catch(Exception ex)
                                 {
-
+                                    var errmsg = ex.Message;
 
                                 }
                                 #endregion
                             }
-                            //objCompassEntities1.SaveChanges();
+                            objCompassEntities1.SaveChanges();
                         }
                     }
                     dt1 = dt;

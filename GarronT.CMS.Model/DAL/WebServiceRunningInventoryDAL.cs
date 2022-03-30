@@ -239,7 +239,7 @@ namespace GarronT.CMS.Model.DAL
                                     meterSize = objCompassEntities.tblMeterSizes.AsNoTracking().Where(o => o.ID == item.MeterSizeId && o.Active == 1).Select(o => o.MeterSize).FirstOrDefault();
                                 if (item.MeterTypeId > 0)
                                     meterType = objCompassEntities.tblMeterTypes.AsNoTracking().Where(o => o.ID == item.MeterTypeId && o.Active == 1).Select(o => o.MeterType).FirstOrDefault();
-                                objSerialList.Add(new TransferredSerialStock { ProjectId = item1.ProjectId, ProductId = item.FKProductId, ProductName = item.ProductName, ProductMake = meterMake, ProductSize = meterSize, ProductType=meterType, SerialNumber = item.SerialNumber, ProductQuantity = int.Parse(item.BalanceQty.ToString()) });
+                                objSerialList.Add(new TransferredSerialStock { ProjectId = item1.ProjectId, ProductId = item.FKProductId, ProductName = item.ProductName, ProductMake = meterMake, ProductSize = meterSize, ProductType=meterType, PartNumber = item.PartNumber, Base = item.Base, SerialNumber = item.SerialNumber, ProductQuantity = int.Parse(item.BalanceQty.ToString()) });
 
                                 objAutoSynchInventory.TransferRequestId = 0;
                             }

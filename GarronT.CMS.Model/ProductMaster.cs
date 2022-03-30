@@ -32,6 +32,7 @@ namespace GarronT.CMS.Model
         public long Id { get; set; }
         public string ProductName { get; set; }
         public string ProductDescription { get; set; }
+        public string Base { get; set; }
         public string PartNumber { get; set; }
         public string UPCCode { get; set; }
         public long ProductCategoryId { get; set; }
