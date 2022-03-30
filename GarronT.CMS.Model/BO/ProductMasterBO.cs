@@ -51,6 +51,7 @@ namespace GarronT.CMS.Model.BO
         public string CategoryName { get; set; }
         public string Size { get; set; }
         public string Type { get; set; }
+        public string Base { get; set; }
         public string Make { get; set; }
         public string Utility { get; set; }
         public string strSerialNumberTracking { get; set; }

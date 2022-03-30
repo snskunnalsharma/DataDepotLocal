@@ -672,206 +672,215 @@ namespace GarronT.CMS.UI.WebAPI
 
                     foreach (var item in projectDataList)
                     {
-                        id = Convert.ToString(item.Id.ToString());
-
-                        if (!string.IsNullOrEmpty(latColumn) && !string.IsNullOrEmpty(longColumn))
+                        try
                         {
-                            Type tClass = item.GetType();
-                            PropertyInfo[] pClass = tClass.GetProperties();
-                            PropertyInfo currentProperty = pClass.Where(o => o.Name == latColumn).FirstOrDefault();
-                            string latValue = Convert.ToString(currentProperty.GetValue(item));
-                            PropertyInfo currentProperty1 = pClass.Where(o => o.Name == longColumn).FirstOrDefault();
-                            string longValue = Convert.ToString(currentProperty1.GetValue(item));
+                            id = Convert.ToString(item.Id.ToString());
 
-
-                            if (!string.IsNullOrEmpty(latValue) && latValue.Trim().Length > 0 && latValue != "0"
-                           && !string.IsNullOrEmpty(longValue) && longValue.Trim().Length > 0 && longValue != "0")
+                            if (!string.IsNullOrEmpty(latColumn) && !string.IsNullOrEmpty(longColumn))
                             {
-                                #region check lat long is correct
-                                /// check the lat long uploaded from excel is correct & comes
-                                /// under current city & state
-                                try
+                                Type tClass = item.GetType();
+                                PropertyInfo[] pClass = tClass.GetProperties();
+                                PropertyInfo currentProperty = pClass.Where(o => o.Name == latColumn).FirstOrDefault();
+                                string latValue = Convert.ToString(currentProperty.GetValue(item));
+                                PropertyInfo currentProperty1 = pClass.Where(o => o.Name == longColumn).FirstOrDefault();
+                                string longValue = Convert.ToString(currentProperty1.GetValue(item));
+
+
+                                if (!string.IsNullOrEmpty(latValue) && latValue.Trim().Length > 0 && latValue != "0"
+                               && !string.IsNullOrEmpty(longValue) && longValue.Trim().Length > 0 && longValue != "0")
                                 {
-                                    if (project.Utilitytype == "Electric")
+                                    #region check lat long is correct
+                                    /// check the lat long uploaded from excel is correct & comes
+                                    /// under current city & state
+                                    try
                                     {
-                                        item.AddressLatitude = Convert.ToString(currentProperty.GetValue(item));
-                                        item.AddressLongitude = Convert.ToString(currentProperty1.GetValue(item));
+                                        if (project.Utilitytype == "Electric")
+                                        {
+                                            item.AddressLatitude = Convert.ToString(currentProperty.GetValue(item));
+                                            item.AddressLongitude = Convert.ToString(currentProperty1.GetValue(item));
+                                        }
+                                        else
+                                        {
+                                            bool a = FindCoordinates(latValue, longValue, Citylat, Citylng);
+                                            //if lat lon correct then no change but if lat long is out of city then null will updated
+                                            // in the database.
+                                            item.AddressLatitude = a ? Convert.ToString(currentProperty.GetValue(item)) : null;
+                                            item.AddressLongitude = a ? Convert.ToString(currentProperty1.GetValue(item)) : null;
+                                            //currentProperty.SetValue(item, (a ? item.AddressLatitude : null), null);
+                                            // currentProperty1.SetValue(item, (a ? item.AddressLongitude : null), null);
+                                            //objCompassEntities.SaveChanges(); // one by one not save save all record in one time see in below
+
+                                        }
+                                    }
+                                    catch
+                                    {
+                                    }
+                                    #endregion
+                                }
+                                else
+                                {
+                                    #region
+                                    var PropertyInfos = item.GetType().GetProperties();
+                                    var s2 = PropertyInfos.Where(o => o.Name == streetColumn).Select(o => o.GetValue(item, null)).FirstOrDefault();
+                                    string _streetAddress = Convert.ToString(s2);
+
+
+                                    if (Convert.ToString(_streetAddress).Trim().Contains('#'))
+                                    {
+                                        int startIndex = 0;
+                                        int endIndex = _streetAddress.IndexOf('#'); ;
+                                        int length = endIndex - startIndex - 1;
+                                        String computeddress = _streetAddress.Substring(0, length);
+                                        //address = computeddress + ", " + Convert.ToString(cityname) + ", " + state.StateName + ", USA";
+                                        address = computeddress + ", " + objCityName + ", " + objStateName + ", USA";
                                     }
                                     else
                                     {
-                                        bool a = FindCoordinates(latValue, longValue, Citylat, Citylng);
+                                        //address = _streetAddress + ", " + Convert.ToString(cityname) + ", " + state.StateName + ", USA";
+                                        address = _streetAddress + ", " + objCityName + ", " + objStateName + ", USA";
+                                    }
+                                    if (!string.IsNullOrEmpty(address))
+                                    {
+                                        //System.Threading.Thread.Sleep(100);
+
+                                        FindCoordinates(address, out lat, out lng, Citylat, Citylng);
+                                        if (!string.IsNullOrEmpty(lat) && !string.IsNullOrEmpty(lng))
+                                        {
+                                            item.AddressLatitude = lat;
+                                            item.AddressLongitude = lng;
+                                        }
+
+                                    }
+                                    //objCompassEntities.SaveChanges(); // one by one not save save all record in one time see in below
+                                    #endregion
+                                }
+                            }
+                            else
+                            {
+
+                                if (!string.IsNullOrEmpty(item.AddressLatitude) && item.AddressLatitude.Trim().Length > 0 && item.AddressLatitude != "0"
+                                && !string.IsNullOrEmpty(item.AddressLongitude) && item.AddressLongitude.Trim().Length > 0 && item.AddressLongitude != "0")
+                                {
+                                    #region check lat long is correct
+                                    /// check the lat long uploaded from excel is correct & comes
+                                    /// under current city & state
+                                    try
+                                    {
+                                        bool a = FindCoordinates(item.AddressLatitude.ToString(), item.AddressLongitude.ToString(), Citylat, Citylng);
                                         //if lat lon correct then no change but if lat long is out of city then null will updated
                                         // in the database.
-                                        item.AddressLatitude = a ? Convert.ToString(currentProperty.GetValue(item)) : null;
-                                        item.AddressLongitude = a ? Convert.ToString(currentProperty1.GetValue(item)) : null;
-                                        //currentProperty.SetValue(item, (a ? item.AddressLatitude : null), null);
-                                        // currentProperty1.SetValue(item, (a ? item.AddressLongitude : null), null);
+                                        item.AddressLatitude = a ? item.AddressLatitude : null;
+                                        item.AddressLongitude = a ? item.AddressLongitude : null;
                                         //objCompassEntities.SaveChanges(); // one by one not save save all record in one time see in below
 
                                     }
-                                }
-                                catch
-                                {
-                                }
-                                #endregion
-                            }
-                            else
-                            {
-                                #region
-                                var PropertyInfos = item.GetType().GetProperties();
-                                var s2 = PropertyInfos.Where(o => o.Name == streetColumn).Select(o => o.GetValue(item, null)).FirstOrDefault();
-                                string _streetAddress = Convert.ToString(s2);
-
-
-                                if (Convert.ToString(_streetAddress).Trim().Contains('#'))
-                                {
-                                    int startIndex = 0;
-                                    int endIndex = _streetAddress.IndexOf('#'); ;
-                                    int length = endIndex - startIndex - 1;
-                                    String computeddress = _streetAddress.Substring(0, length);
-                                    //address = computeddress + ", " + Convert.ToString(cityname) + ", " + state.StateName + ", USA";
-                                    address = computeddress + ", " + objCityName + ", " + objStateName + ", USA";
+                                    catch
+                                    {
+                                    }
+                                    #endregion
                                 }
                                 else
                                 {
-                                    //address = _streetAddress + ", " + Convert.ToString(cityname) + ", " + state.StateName + ", USA";
-                                    address = _streetAddress + ", " + objCityName + ", " + objStateName + ", USA";
-                                }
-                                if (!string.IsNullOrEmpty(address))
-                                {
-                                    //System.Threading.Thread.Sleep(100);
+                                    #region
+                                    //Changed by Sanjiv to remove # from address
 
-                                    FindCoordinates(address, out lat, out lng, Citylat, Citylng);
-                                    if (!string.IsNullOrEmpty(lat) && !string.IsNullOrEmpty(lng))
+                                    var PropertyInfos = item.GetType().GetProperties();
+                                    //foreach (PropertyInfo pInfo in PropertyInfos)
+                                    //{
+                                    //    string propertyName = pInfo.Name; //gets the name of the property
+                                    //    string s1 = Convert.ToString(pInfo.GetValue(item, null));
+                                    //}
+
+                                    var s2 = PropertyInfos.Where(o => o.Name == streetColumn).Select(o => o.GetValue(item, null)).FirstOrDefault();
+
+                                    //var barProperty = item.GetType().GetProperty(dynamicColumnName);
+                                    // string s = barProperty.GetValue(item, null) as string;
+
+                                    // Added new Code as per Project cerate Nation wide State and City Upload by Excel file.
+                                    InstallerDAL inDal = new InstallerDAL();
+                                    string dyZipColName = inDal.getDynamicColumnName("ZIP", Convert.ToString(projetID));
+                                    string dyCityColName = inDal.getDynamicColumnName("CITY", Convert.ToString(projetID));
+                                    string dyStateColName = inDal.getDynamicColumnName("STATE", Convert.ToString(projetID));
+
+                                    /*if (!string.IsNullOrEmpty(dyZipColName))
                                     {
-                                        item.AddressLatitude = lat;
-                                        item.AddressLongitude = lng;
+                                        var Zip = PropertyInfos.Where(o => o.Name == dyZipColName).Select(o => o.GetValue(item, null)).FirstOrDefault();
+                                        if (!string.IsNullOrEmpty(Zip.ToString()))
+                                        {
+                                            s2 += ", " + Zip.ToString();
+                                        }
+                                    }*/
+                                    if (!string.IsNullOrEmpty(dyCityColName))
+                                    {
+                                        var City = PropertyInfos.Where(o => o.Name == dyCityColName).Select(o => o.GetValue(item, null)).FirstOrDefault();
+                                        if (!string.IsNullOrEmpty(City.ToString()))
+                                        {
+                                            objCityName = City.ToString();
+                                        }
                                     }
+                                    if (!string.IsNullOrEmpty(dyStateColName))
+                                    {
+                                        var State = PropertyInfos.Where(o => o.Name == dyStateColName).Select(o => o.GetValue(item, null)).FirstOrDefault();
+                                        if (!string.IsNullOrEmpty(State.ToString()))
+                                        {
+                                            objStateName = State.ToString();
+                                        }
+                                    }
+                                    // End hare
 
+                                    string _streetAddress = Convert.ToString(s2);
+
+                                    if (Convert.ToString(_streetAddress).Trim().Contains('#'))
+                                    {
+                                        int startIndex = 0;
+                                        int endIndex = _streetAddress.IndexOf('#'); ;
+                                        int length = endIndex - startIndex - 1;
+                                        String computeddress = _streetAddress.Substring(0, length);
+                                        //address = computeddress + ", " + Convert.ToString(cityname) + ", " + state.StateName + ", USA";
+                                        address = computeddress + ", " + objCityName + ", " + objStateName + ", USA";
+                                    }
+                                    else
+                                    {
+                                        //address = _streetAddress + ", " + Convert.ToString(cityname) + ", " + state.StateName + ", USA";
+                                        address = _streetAddress + ", " + objCityName + ", " + objStateName + ", USA";
+
+                                    }
+                                    if (!string.IsNullOrEmpty(address))
+                                    {
+                                        //System.Threading.Thread.Sleep(100);
+
+                                        FindCoordinates(address, out lat, out lng, Citylat, Citylng);
+                                        if (!string.IsNullOrEmpty(lat) && !string.IsNullOrEmpty(lng))
+                                        {
+                                            item.AddressLatitude = lat;
+                                            item.AddressLongitude = lng;
+                                        }
+
+                                    }
+                                    //objCompassEntities.SaveChanges();   // one by one not save save all record in one time see in below
+
+                                    #endregion
                                 }
-                                //objCompassEntities.SaveChanges(); // one by one not save save all record in one time see in below
-                                #endregion
+                            }
+                            //objCompassEntities.SaveChanges();     // one by one records save
+                            if (lat != string.Empty && lng != string.Empty)
+                            {
+                                String DynamicColumnName = Get_DynamicColumnName(Convert.ToString(projetID));
+                                String StreetValue = Get_StreetValue(Convert.ToString(projetID), id, DynamicColumnName);
+                                String VisitId = Get_Create_VisitId(Convert.ToString(projetID), StreetValue, DynamicColumnName);
+                                String GroupId = Get_Create_GroupId(Convert.ToString(projetID), lat, lng);
+                                item.VisitId = VisitId;
+                                item.GroupId = GroupId;
+                                //objCompassEntities.SaveChanges();     // one by one records save
                             }
                         }
-                        else
+                        catch
                         {
 
-                            if (!string.IsNullOrEmpty(item.AddressLatitude) && item.AddressLatitude.Trim().Length > 0 && item.AddressLatitude != "0"
-                            && !string.IsNullOrEmpty(item.AddressLongitude) && item.AddressLongitude.Trim().Length > 0 && item.AddressLongitude != "0")
-                            {
-                                #region check lat long is correct
-                                /// check the lat long uploaded from excel is correct & comes
-                                /// under current city & state
-                                try
-                                {
-                                    bool a = FindCoordinates(item.AddressLatitude.ToString(), item.AddressLongitude.ToString(), Citylat, Citylng);
-                                    //if lat lon correct then no change but if lat long is out of city then null will updated
-                                    // in the database.
-                                    item.AddressLatitude = a ? item.AddressLatitude : null;
-                                    item.AddressLongitude = a ? item.AddressLongitude : null;
-                                    //objCompassEntities.SaveChanges(); // one by one not save save all record in one time see in below
-
-                                }
-                                catch
-                                {
-                                }
-                                #endregion
-                            }
-                            else
-                            {
-                                #region
-                                //Changed by Sanjiv to remove # from address
-
-                                var PropertyInfos = item.GetType().GetProperties();
-                                //foreach (PropertyInfo pInfo in PropertyInfos)
-                                //{
-                                //    string propertyName = pInfo.Name; //gets the name of the property
-                                //    string s1 = Convert.ToString(pInfo.GetValue(item, null));
-                                //}
-
-                                var s2 = PropertyInfos.Where(o => o.Name == streetColumn).Select(o => o.GetValue(item, null)).FirstOrDefault();
-
-                                //var barProperty = item.GetType().GetProperty(dynamicColumnName);
-                                // string s = barProperty.GetValue(item, null) as string;
-
-                                // Added new Code as per Project cerate Nation wide State and City Upload by Excel file.
-                                InstallerDAL inDal = new InstallerDAL();
-                                string dyZipColName = inDal.getDynamicColumnName("ZIP", Convert.ToString(projetID));
-                                string dyCityColName = inDal.getDynamicColumnName("CITY", Convert.ToString(projetID));
-                                string dyStateColName = inDal.getDynamicColumnName("STATE", Convert.ToString(projetID));
-
-                                /*if (!string.IsNullOrEmpty(dyZipColName))
-                                {
-                                    var Zip = PropertyInfos.Where(o => o.Name == dyZipColName).Select(o => o.GetValue(item, null)).FirstOrDefault();
-                                    if (!string.IsNullOrEmpty(Zip.ToString()))
-                                    {
-                                        s2 += ", " + Zip.ToString();
-                                    }
-                                }*/
-                                if (!string.IsNullOrEmpty(dyCityColName))
-                                {
-                                    var City = PropertyInfos.Where(o => o.Name == dyCityColName).Select(o => o.GetValue(item, null)).FirstOrDefault();
-                                    if (!string.IsNullOrEmpty(City.ToString()))
-                                    {
-                                        objCityName = City.ToString();
-                                    }
-                                }
-                                if (!string.IsNullOrEmpty(dyStateColName))
-                                {
-                                    var State = PropertyInfos.Where(o => o.Name == dyStateColName).Select(o => o.GetValue(item, null)).FirstOrDefault();
-                                    if (!string.IsNullOrEmpty(State.ToString()))
-                                    {
-                                        objStateName = State.ToString();
-                                    }
-                                }
-                                // End hare
-
-                                string _streetAddress = Convert.ToString(s2);
-
-                                if (Convert.ToString(_streetAddress).Trim().Contains('#'))
-                                {
-                                    int startIndex = 0;
-                                    int endIndex = _streetAddress.IndexOf('#'); ;
-                                    int length = endIndex - startIndex - 1;
-                                    String computeddress = _streetAddress.Substring(0, length);
-                                    //address = computeddress + ", " + Convert.ToString(cityname) + ", " + state.StateName + ", USA";
-                                    address = computeddress + ", " + objCityName + ", " + objStateName + ", USA";
-                                }
-                                else
-                                {
-                                    //address = _streetAddress + ", " + Convert.ToString(cityname) + ", " + state.StateName + ", USA";
-                                    address = _streetAddress + ", " + objCityName + ", " + objStateName + ", USA";
-
-                                }
-                                if (!string.IsNullOrEmpty(address))
-                                {
-                                    //System.Threading.Thread.Sleep(100);
-
-                                    FindCoordinates(address, out lat, out lng, Citylat, Citylng);
-                                    if (!string.IsNullOrEmpty(lat) && !string.IsNullOrEmpty(lng))
-                                    {
-                                        item.AddressLatitude = lat;
-                                        item.AddressLongitude = lng;
-                                    }
-
-                                }
-                                //objCompassEntities.SaveChanges();   // one by one not save save all record in one time see in below
-
-                                #endregion
-                            }
                         }
-                        objCompassEntities.SaveChanges();     // one by one records save
-                        if (lat != string.Empty && lng != string.Empty)
-                        {
-                            String DynamicColumnName = Get_DynamicColumnName(Convert.ToString(projetID));
-                            String StreetValue = Get_StreetValue(Convert.ToString(projetID), id, DynamicColumnName);
-                            String VisitId = Get_Create_VisitId(Convert.ToString(projetID), StreetValue, DynamicColumnName);
-                            String GroupId = Get_Create_GroupId(Convert.ToString(projetID), lat, lng);
-                            item.VisitId = VisitId;
-                            item.GroupId = GroupId;
-                            objCompassEntities.SaveChanges();     // one by one records save
-                        }
+                        
                     }
+                    objCompassEntities.SaveChanges();
 
                 }
 
@@ -914,24 +923,33 @@ namespace GarronT.CMS.UI.WebAPI
                 {
                     foreach (var item in projectDataList)
                     {
-                        string lat = "";
-                        string lng = "";
-                        string id = "";
-
-                        id = Convert.ToString(item.Id.ToString());
-                        lat = item.AddressLatitude;
-                        lng = item.AddressLongitude;
-                        if (lat != "" && lng != "")
+                        try
                         {
-                            String DynamicColumnName = Get_DynamicColumnName(Convert.ToString(projetID));
-                            String StreetValue = Get_StreetValue(Convert.ToString(projetID), id, DynamicColumnName);
-                            String VisitId = Get_Create_VisitId(Convert.ToString(projetID), StreetValue, DynamicColumnName);
-                            String GroupId = Get_Create_GroupId(Convert.ToString(projetID), lat, lng);
-                            item.VisitId = VisitId;
-                            item.GroupId = GroupId;
-                            objCompassEntities.SaveChanges();     // one by one records save
+                            string lat = "";
+                            string lng = "";
+                            string id = "";
+
+                            id = Convert.ToString(item.Id.ToString());
+                            lat = item.AddressLatitude;
+                            lng = item.AddressLongitude;
+                            if (lat != "" && lng != "")
+                            {
+                                String DynamicColumnName = Get_DynamicColumnName(Convert.ToString(projetID));
+                                String StreetValue = Get_StreetValue(Convert.ToString(projetID), id, DynamicColumnName);
+                                String VisitId = Get_Create_VisitId(Convert.ToString(projetID), StreetValue, DynamicColumnName);
+                                String GroupId = Get_Create_GroupId(Convert.ToString(projetID), lat, lng);
+                                item.VisitId = VisitId;
+                                item.GroupId = GroupId;
+                                objCompassEntities.SaveChanges();     // one by one records save
+                            }
                         }
+                        catch
+                        {
+
+                        }
+                        
                     }
+                    //objCompassEntities.SaveChanges();
                 }
             }
             catch (Exception ex)
@@ -1433,7 +1451,7 @@ namespace GarronT.CMS.UI.WebAPI
                             }
                             //objCompassEntities.SaveChanges(); // one by one not save save all record in one time see in below
                         }
-                        objCompassEntities.SaveChanges();     // one by one records save
+                        
                         if (lat != string.Empty && lng != string.Empty)
                         {
                             String DynamicColumnName = Get_DynamicColumnName(Convert.ToString(projetID));
@@ -1445,6 +1463,7 @@ namespace GarronT.CMS.UI.WebAPI
                             objCompassEntities.SaveChanges();     // one by one records save
                         }
                     }
+                    objCompassEntities.SaveChanges();     // one by one records save
                 }
 
                 if (project != null)

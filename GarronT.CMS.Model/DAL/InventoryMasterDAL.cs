@@ -85,6 +85,7 @@ namespace GarronT.CMS.Model.DAL
                                 ProductDescription = o.ProductDescription,
                                 ProductUPCCode = o.UPCCode,
                                 ProductPartNumber = o.PartNumber,
+                                Base = o.Base,
                                 CategoryId = o.Category.CategoryId,
                                 // BarcodeRequired = (o.BarcodeRequired == 0 ? false : true),
                                 //SelectedUtilityTypeList = o.ProductMasterFields.Where(o1 => o1.Active == 1 && o1.FieldNameId == 1).Select(o1 => o1.FKFieldMasterId).ToList(),
@@ -268,7 +269,7 @@ namespace GarronT.CMS.Model.DAL
                         obj.ProductDescription = ObjectToCreateOrUpdate.ProductDescription;
                         //obj.BarcodeRequired = ObjectToCreateOrUpdate.BarcodeRequired == true ? 1 : 0;
                         obj.PartNumber = ObjectToCreateOrUpdate.ProductPartNumber;
-
+                        obj.Base = ObjectToCreateOrUpdate.Base;
                         if (string.IsNullOrEmpty(ObjectToCreateOrUpdate.ProductUPCCode))
                         {
                             var tempId = DateTime.Now.ToString("yyyyMMddhhmms");
@@ -365,6 +366,7 @@ namespace GarronT.CMS.Model.DAL
                         //obj.BarcodeRequired = ObjectToCreateOrUpdate.BarcodeRequired == true ? 1 : 0;
                         obj.PartNumber = ObjectToCreateOrUpdate.ProductPartNumber;
                         obj.UPCCode = ObjectToCreateOrUpdate.ProductUPCCode;
+                        obj.Base = ObjectToCreateOrUpdate.Base;
                         //obj.SerialNumberRequired = ObjectToCreateOrUpdate.SerialNumberTracking;
                         obj.SerialNumberRequired = ObjectToCreateOrUpdate.SerialNumberRequired;
                         obj.GenerateBarcode = ObjectToCreateOrUpdate.GenerateBarcode;
@@ -478,6 +480,7 @@ namespace GarronT.CMS.Model.DAL
                         obj.ProductDescription = ObjectToCreateOrUpdate.ProductDescription;
                         //obj.BarcodeRequired = ObjectToCreateOrUpdate.BarcodeRequired == true ? 1 : 0;
                         obj.PartNumber = ObjectToCreateOrUpdate.ProductPartNumber;
+                        obj.Base = ObjectToCreateOrUpdate.Base;
                         obj.UPCCode = ObjectToCreateOrUpdate.ProductUPCCode;
                         // obj.SerialNumberRequired = ObjectToCreateOrUpdate.SerialNumberTracking;
                         obj.SerialNumberRequired = ObjectToCreateOrUpdate.SerialNumberRequired;
@@ -623,12 +626,11 @@ namespace GarronT.CMS.Model.DAL
                         else
                         {
 
-
-
                             obj.ProductName = ObjectToCreateOrUpdate.ProductName;
                             obj.ProductDescription = ObjectToCreateOrUpdate.ProductDescription;
                             //obj.BarcodeRequired = ObjectToCreateOrUpdate.BarcodeRequired == true ? 1 : 0;
                             obj.PartNumber = ObjectToCreateOrUpdate.ProductPartNumber;
+                            obj.Base = ObjectToCreateOrUpdate.Base;
                             obj.UPCCode = ObjectToCreateOrUpdate.ProductUPCCode;
                             //obj.SerialNumberRequired = ObjectToCreateOrUpdate.SerialNumberTracking;
                             obj.SerialNumberRequired = ObjectToCreateOrUpdate.SerialNumberRequired;

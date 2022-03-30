@@ -32,6 +32,8 @@ namespace GarronT.CMS.Model.BO
         public String ProductSize { get; set; }
         public String ProductMake { get; set; }
         public String ProductType { get; set; }
+        public String PartNumber { get; set; }
+        public string Base { get; set; }
         public int ProductQuantity { get; set; }
     }
 }

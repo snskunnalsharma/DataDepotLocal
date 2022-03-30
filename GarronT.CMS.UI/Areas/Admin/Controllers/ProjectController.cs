@@ -27,7 +27,6 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
     [OutputCache(Duration = 0, VaryByParam = "none")]
     [SessionExpire]
     [Authorize]
-    [RBAC]
     public class ProjectController : Controller
     {
         #region Create Object ILog for Logger write
@@ -1111,6 +1110,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 }
                 else
                 {
+                    #region getCSV data
                     //csv file
                     string Fulltext;
                     using (StreamReader sr = new StreamReader(newFilePath))
@@ -1162,6 +1162,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         TempData["ExcelData"] = dt;
                         TempData.Keep("ExcelData");
                     }
+                    #endregion
                 }
 
 

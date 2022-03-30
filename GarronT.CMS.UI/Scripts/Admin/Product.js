@@ -182,7 +182,7 @@ function fnValidateDynamicContent(element) {
 $(document).on("click", '#btnSave', function () {
 
 
-
+    
     var form = $("#formAddEdit");
 
     form.validate();
@@ -213,14 +213,14 @@ $(document).on("click", '#btnSave', function () {
         //    debugger;
         //    FormObject[obj.name] = obj.value;
         //});
-
+        debugger;
         FormObject['Id'] = parseInt($("#Id").val());
         FormObject['CategoryId'] = $("#CategoryId").val();
         FormObject['UtilityId'] = $("#UtilityId").val();
         FormObject['MeterMakeId'] = $("#MeterMakeId").val();
         FormObject['MeterSizeId'] = $("#MeterSizeId").val();
         FormObject['MeterTypeId'] = $("#MeterTypeId").val();
-
+        FormObject['Base'] = $("#Base").val();
         FormObject['ProductName'] = $("#ProductName").val();
         FormObject['ProductDescription'] = $("#ProductDescription").val();
 
