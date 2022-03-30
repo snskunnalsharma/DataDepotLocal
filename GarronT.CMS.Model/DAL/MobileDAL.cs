@@ -372,277 +372,278 @@ namespace GarronT.CMS.Model.DAL
                     foreach (var item3 in fieldResultList)
                     {
                         #region
+                        //var au = objCompassEntities.tblProjectFieldProperties.Where(o => o.FormSectionFieldID == item3.FieldId && o.Active == 1).FirstOrDefault();                               
                         var au = objCompassEntities.tblProjectFieldProperties.Where(o => o.FormSectionFieldID == item3.FieldId
-                            && o.Active == 1).FirstOrDefault();
-                        SectionFieldBO objSectionFieldBO = new SectionFieldBO();
-                        objSectionFieldBO.acknowlegementButtonText = au.AcknowlegementButtonText;
-                        objSectionFieldBO.acknowlegementClickedButtonText = au.AcknowlegementClickedButtonText;
-                        objSectionFieldBO.acknowlegementText = au.AcknowlegementText;
-                        objSectionFieldBO.allowAnnotation = au.AllowAnnotation != null ? bool.Parse(au.AllowAnnotation.ToString()) : false;
-                        objSectionFieldBO.allowMultiSelection = au.AllowMultiSelection != null ? bool.Parse(au.AllowMultiSelection.ToString()) : false;
-                        objSectionFieldBO.allowNotApplicable = au.AllowNotApplicable != null ? bool.Parse(au.AllowNotApplicable.ToString()) : false;
-                        objSectionFieldBO.allowprii = au.allowprii != null ? bool.Parse(au.allowprii.ToString()) : false;
-                        objSectionFieldBO.audioQuality = au.AudioQuality;
-                        objSectionFieldBO.cameraEnabled = au.CameraEnabled != null ? bool.Parse(au.CameraEnabled.ToString()) : false;
-                        objSectionFieldBO.captureGeolocation = au.CaptureGeolocation != null ? bool.Parse(au.CaptureGeolocation.ToString()) : false;
-                        objSectionFieldBO.captureMode = au.CaptureMode;
-                        objSectionFieldBO.captureTimestamp = au.CaptureTimestamp != null ? bool.Parse(au.CaptureTimestamp.ToString()) : false;
-                        objSectionFieldBO.decimalPositions = au.DecimalPositions;
-                        objSectionFieldBO.defaultValue = au.DefaultValue;
-                        objSectionFieldBO.hideFieldLabel = au.HideFieldLabel != null ? bool.Parse(au.HideFieldLabel.ToString()) : false;
-                        objSectionFieldBO.displayMask = au.DisplayMask;
-                        objSectionFieldBO.enforceMinMax = au.EnforceMinMax != null ? bool.Parse(au.EnforceMinMax.ToString()) : false;
-                        objSectionFieldBO.excludeonSync = au.ExcludeonSync != null ? bool.Parse(au.ExcludeonSync.ToString()) : false;
-
-                        var fieldddID = objCompassEntities.tblFormSectionFieldRelations.
-                            Where(o => o.FieldId == au.FormSectionFieldID && o.Active == 1).Select(o => o).FirstOrDefault();
-                        var au1 = objCompassEntities.TblFieldDataTypeMasters.Where(o => o.DataTypeId == fieldddID.TblFieldDataTypeMaster_Id
-                            && o.Active == 1).FirstOrDefault();
-
-                        objSectionFieldBO.fieldDataTypeName = au1.FieldDataTypeName;
-                        objSectionFieldBO.fieldFilterkey = au.FieldFilterkey;
-                        objSectionFieldBO.fieldId = fieldddID.FieldId;
-                        objSectionFieldBO.fieldLabel = au.FieldLabel;
-                        objSectionFieldBO.fieldName = fieldddID.FieldName;
-                        objSectionFieldBO.fieldOrder = fieldddID.FieldOrder;
-
-                        objSectionFieldBO.formatMask = au.FormatMask;
-                        objSectionFieldBO.gpsTagging = au.GPSTagging != null ? bool.Parse(au.GPSTagging.ToString()) : false;
-                        objSectionFieldBO.hasAlert = au.HasAlert != null ? bool.Parse(au.HasAlert.ToString()) : false;
-                        objSectionFieldBO.hasFile = au.HasFile != null ? bool.Parse(au.HasFile.ToString()) : false;
-                        objSectionFieldBO.hasValues = au.HasValues != null ? bool.Parse(au.HasValues.ToString()) : false;
-                        objSectionFieldBO.hintText = au.HintText;
-                        objSectionFieldBO.isEnabled = au.IsEnabled != null ? bool.Parse(au.IsEnabled.ToString()) : false;
-                        objSectionFieldBO.isRequired = au.IsRequired != null ? bool.Parse(au.IsRequired.ToString()) : false;
-                        objSectionFieldBO.keyboardType = au.KeyboardType != null ? bool.Parse(au.KeyboardType.ToString()) : false;
-
-                        objSectionFieldBO.maximumHeight = au.MaximumHeight;
-                        objSectionFieldBO.maximumWidth = au.MaximumWidth;
-                        objSectionFieldBO.maxLengthValue = !string.IsNullOrEmpty(au.MaxLengthValue) ? int.Parse(au.MaxLengthValue) : 250;
-                        objSectionFieldBO.minLengthValue = !string.IsNullOrEmpty(au.MinLengthValue) ? int.Parse(au.MinLengthValue) : 250;
-                        objSectionFieldBO.numberOfColumnsForPhones = au.NumberOfColumnsForPhones;
-                        objSectionFieldBO.numberOfColumnsForTablets = au.NumberOfColumnsForTablets;
-                        objSectionFieldBO.photoFile = au.PhotoFile != null ? bool.Parse(au.PhotoFile.ToString()) : false;
-                        objSectionFieldBO.photoLibraryEnabled = au.PhotoLibraryEnabled != null ? bool.Parse(au.PhotoLibraryEnabled.ToString()) : false;
-                        objSectionFieldBO.photoQuality = au.PhotoQuality;
-
-
-                        objSectionFieldBO.ratingLabels = au.RatingLabels != null ? bool.Parse(au.RatingLabels.ToString()) : false;
-                        objSectionFieldBO.ratingMax = au.RatingMax != null ? bool.Parse(au.RatingMax.ToString()) : false;
-                        objSectionFieldBO.sectionId = fieldddID.SectionId;
-                        objSectionFieldBO.secure = au.Secure != null ? bool.Parse(au.Secure.ToString()) : false;
-                        objSectionFieldBO.showMultiselect = au.ShowMultiselect != null ? bool.Parse(au.ShowMultiselect.ToString()) : false;
-                        objSectionFieldBO.showRatingLabels = au.ShowRatingLabels != null ? bool.Parse(au.ShowRatingLabels.ToString()) : false;
-                        objSectionFieldBO.maxrecordabletimeInSeconds = au.MaxrecordabletimeInSeconds;
-                        objSectionFieldBO.videoQuality = au.VideoQuality;
-
-
-                        List<FieldInitialData> objFieldInitialDataList = new List<FieldInitialData>();
-
-                        if (objSectionFieldBO.fieldName.ToLower().Trim() == "NEW METER SIZE".ToLower())
+                                 && o.Active == 1 && o.HideFieldLabel != true).FirstOrDefault(); // Added HideFieldLabel where condition because HideFieldLabel==True on form filed are hide
+                        if (au != null)
                         {
-                            var res = objCompassEntities.TblProjectMasterFieldRelations.Where(o => o.MasterTableName.ToLower() == "tblMeterSize"
-                                && o.ProjectID == objProjectFormBO.projectId && o.Active == 1).ToList();
-                            foreach (var itemres in res)
+                            SectionFieldBO objSectionFieldBO = new SectionFieldBO();
+                            objSectionFieldBO.acknowlegementButtonText = au.AcknowlegementButtonText;
+                            objSectionFieldBO.acknowlegementClickedButtonText = au.AcknowlegementClickedButtonText;
+                            objSectionFieldBO.acknowlegementText = au.AcknowlegementText;
+                            objSectionFieldBO.allowAnnotation = au.AllowAnnotation != null ? bool.Parse(au.AllowAnnotation.ToString()) : false;
+                            objSectionFieldBO.allowMultiSelection = au.AllowMultiSelection != null ? bool.Parse(au.AllowMultiSelection.ToString()) : false;
+                            objSectionFieldBO.allowNotApplicable = au.AllowNotApplicable != null ? bool.Parse(au.AllowNotApplicable.ToString()) : false;
+                            objSectionFieldBO.allowprii = au.allowprii != null ? bool.Parse(au.allowprii.ToString()) : false;
+                            objSectionFieldBO.audioQuality = au.AudioQuality;
+                            objSectionFieldBO.cameraEnabled = au.CameraEnabled != null ? bool.Parse(au.CameraEnabled.ToString()) : false;
+                            objSectionFieldBO.captureGeolocation = au.CaptureGeolocation != null ? bool.Parse(au.CaptureGeolocation.ToString()) : false;
+                            objSectionFieldBO.captureMode = au.CaptureMode;
+                            objSectionFieldBO.captureTimestamp = au.CaptureTimestamp != null ? bool.Parse(au.CaptureTimestamp.ToString()) : false;
+                            objSectionFieldBO.decimalPositions = au.DecimalPositions;
+                            objSectionFieldBO.defaultValue = au.DefaultValue;
+                            objSectionFieldBO.hideFieldLabel = au.HideFieldLabel != null ? bool.Parse(au.HideFieldLabel.ToString()) : false;
+                            objSectionFieldBO.displayMask = au.DisplayMask;
+                            objSectionFieldBO.enforceMinMax = au.EnforceMinMax != null ? bool.Parse(au.EnforceMinMax.ToString()) : false;
+                            objSectionFieldBO.excludeonSync = au.ExcludeonSync != null ? bool.Parse(au.ExcludeonSync.ToString()) : false;
+
+                            var fieldddID = objCompassEntities.tblFormSectionFieldRelations.
+                                Where(o => o.FieldId == au.FormSectionFieldID && o.Active == 1).Select(o => o).FirstOrDefault();
+                            var au1 = objCompassEntities.TblFieldDataTypeMasters.Where(o => o.DataTypeId == fieldddID.TblFieldDataTypeMaster_Id
+                                && o.Active == 1).FirstOrDefault();
+
+                            objSectionFieldBO.fieldDataTypeName = au1.FieldDataTypeName;
+                            objSectionFieldBO.fieldFilterkey = au.FieldFilterkey;
+                            objSectionFieldBO.fieldId = fieldddID.FieldId;
+                            objSectionFieldBO.fieldLabel = au.FieldLabel;
+                            objSectionFieldBO.fieldName = fieldddID.FieldName;
+                            objSectionFieldBO.fieldOrder = fieldddID.FieldOrder;
+
+                            objSectionFieldBO.formatMask = au.FormatMask;
+                            objSectionFieldBO.gpsTagging = au.GPSTagging != null ? bool.Parse(au.GPSTagging.ToString()) : false;
+                            objSectionFieldBO.hasAlert = au.HasAlert != null ? bool.Parse(au.HasAlert.ToString()) : false;
+                            objSectionFieldBO.hasFile = au.HasFile != null ? bool.Parse(au.HasFile.ToString()) : false;
+                            objSectionFieldBO.hasValues = au.HasValues != null ? bool.Parse(au.HasValues.ToString()) : false;
+                            objSectionFieldBO.hintText = au.HintText;
+                            objSectionFieldBO.isEnabled = au.IsEnabled != null ? bool.Parse(au.IsEnabled.ToString()) : false;
+                            objSectionFieldBO.isRequired = au.IsRequired != null ? bool.Parse(au.IsRequired.ToString()) : false;
+                            objSectionFieldBO.keyboardType = au.KeyboardType != null ? bool.Parse(au.KeyboardType.ToString()) : false;
+
+                            objSectionFieldBO.maximumHeight = au.MaximumHeight;
+                            objSectionFieldBO.maximumWidth = au.MaximumWidth;
+                            objSectionFieldBO.maxLengthValue = !string.IsNullOrEmpty(au.MaxLengthValue) ? int.Parse(au.MaxLengthValue) : 250;
+                            objSectionFieldBO.minLengthValue = !string.IsNullOrEmpty(au.MinLengthValue) ? int.Parse(au.MinLengthValue) : 250;
+                            objSectionFieldBO.numberOfColumnsForPhones = au.NumberOfColumnsForPhones;
+                            objSectionFieldBO.numberOfColumnsForTablets = au.NumberOfColumnsForTablets;
+                            objSectionFieldBO.photoFile = au.PhotoFile != null ? bool.Parse(au.PhotoFile.ToString()) : false;
+                            objSectionFieldBO.photoLibraryEnabled = au.PhotoLibraryEnabled != null ? bool.Parse(au.PhotoLibraryEnabled.ToString()) : false;
+                            objSectionFieldBO.photoQuality = au.PhotoQuality;
+
+
+                            objSectionFieldBO.ratingLabels = au.RatingLabels != null ? bool.Parse(au.RatingLabels.ToString()) : false;
+                            objSectionFieldBO.ratingMax = au.RatingMax != null ? bool.Parse(au.RatingMax.ToString()) : false;
+                            objSectionFieldBO.sectionId = fieldddID.SectionId;
+                            objSectionFieldBO.secure = au.Secure != null ? bool.Parse(au.Secure.ToString()) : false;
+                            objSectionFieldBO.showMultiselect = au.ShowMultiselect != null ? bool.Parse(au.ShowMultiselect.ToString()) : false;
+                            objSectionFieldBO.showRatingLabels = au.ShowRatingLabels != null ? bool.Parse(au.ShowRatingLabels.ToString()) : false;
+                            objSectionFieldBO.maxrecordabletimeInSeconds = au.MaxrecordabletimeInSeconds;
+                            objSectionFieldBO.videoQuality = au.VideoQuality;
+
+
+                            List<FieldInitialData> objFieldInitialDataList = new List<FieldInitialData>();
+
+                            if (objSectionFieldBO.fieldName.ToLower().Trim() == "NEW METER SIZE".ToLower())
                             {
-                                var getmasterRecord = objCompassEntities.tblMeterSizes.Where(o => o.ID == itemres.MasterFieldID
-                                    && o.Active == 1).FirstOrDefault();
-                                FieldInitialData objFieldInitialData = new FieldInitialData();
-                                objFieldInitialData.initialFieldId = getmasterRecord.ID;
-                                objFieldInitialData.initialFieldValue = getmasterRecord.MeterSize;
-                                objFieldInitialDataList.Add(objFieldInitialData);
-                            }
-                        }
-                        else if (objSectionFieldBO.fieldName.ToLower().Trim() == "NEW METER MAKE".ToLower())
-                        {
-                            var res = objCompassEntities.TblProjectMasterFieldRelations.Where(o => o.MasterTableName.ToLower() == "tblMeterMake"
-                                && o.ProjectID == objProjectFormBO.projectId && o.Active == 1).ToList();
-                            foreach (var itemres in res)
-                            {
-                                var getmasterRecord = objCompassEntities.tblMeterMakes.Where(o => o.ID == itemres.MasterFieldID
-                                     && o.Active == 1).FirstOrDefault();
-                                FieldInitialData objFieldInitialData = new FieldInitialData();
-                                objFieldInitialData.initialFieldId = getmasterRecord.ID;
-                                objFieldInitialData.initialFieldValue = getmasterRecord.Make;
-                                objFieldInitialDataList.Add(objFieldInitialData);
-                            }
-                        }
-                        else if (objSectionFieldBO.fieldName.ToLower().Trim() == "NEW METER TYPE".ToLower())
-                        {
-                            var res = objCompassEntities.TblProjectMasterFieldRelations.Where(o => o.MasterTableName.ToLower() == "tblMeterType"
-                                && o.ProjectID == objProjectFormBO.projectId && o.Active == 1).ToList();
-                            foreach (var itemres in res)
-                            {
-                                var getmasterRecord = objCompassEntities.tblMeterTypes.Where(o => o.ID == itemres.MasterFieldID
-                                     && o.Active == 1).FirstOrDefault();
-                                FieldInitialData objFieldInitialData = new FieldInitialData();
-                                objFieldInitialData.initialFieldId = getmasterRecord.ID;
-                                objFieldInitialData.initialFieldValue = getmasterRecord.MeterType;
-                                objFieldInitialDataList.Add(objFieldInitialData);
-                            }
-                        }
-                        else if (objSectionFieldBO.fieldName.ToLower().Trim() == "Installer Name".ToLower())
-                        {
-                            var res = objCompassEntities.AuditDatas.Where(o => o.FK_UploadId == initialId && o.Active == 1).FirstOrDefault();
-                            var userbo = objCompassEntities.tblUsers.Where(o => o.UserID == res.Fk_InstallerId).FirstOrDefault();
-                            FieldInitialData objFieldInitialData = new FieldInitialData();
-                            objFieldInitialData.initialFieldId = objSectionFieldBO.fieldId;
-                            objFieldInitialData.initialFieldValue = userbo.FirstName;
-                            objFieldInitialDataList.Add(objFieldInitialData);
-                        }
-                        else if (objSectionFieldBO.fieldName.ToLower().Trim() == "Visit DateTime".ToLower())
-                        {
-                            var res = objCompassEntities.AuditDatas.Where(o => o.FK_UploadId == initialId && o.Active == 1).FirstOrDefault();
-
-                            FieldInitialData objFieldInitialData = new FieldInitialData();
-                            objFieldInitialData.initialFieldId = objSectionFieldBO.fieldId;
-                            objFieldInitialData.initialFieldValue = res.VisitDate.ToString();
-                            objFieldInitialDataList.Add(objFieldInitialData);
-
-                        }
-                        else if (objSectionFieldBO.fieldName.ToLower().Trim() == "SERVICES".ToLower())
-                        {
-                            var res = objCompassEntities.TblProjectMasterFieldRelations.Where(o => o.MasterTableName.ToLower() == "tblService"
-                                && o.ProjectID == objProjectFormBO.projectId && o.Active == 1 && o.IsAdditionalService == false).ToList();
-                            foreach (var itemres in res)
-                            {
-                                var getmasterRecord = objCompassEntities.tblServices.Where(o => o.ID == itemres.MasterFieldID && o.Active == 1).FirstOrDefault();
-                                FieldInitialData objFieldInitialData = new FieldInitialData();
-                                objFieldInitialData.initialFieldId = getmasterRecord.ID;
-                                objFieldInitialData.initialFieldValue = getmasterRecord.Service;
-                                objFieldInitialData.isAdditionalService = false;
-                                serviceInitialData objserviceInitialData = new serviceInitialData();
-                                objserviceInitialData.flagCaptureAudio = getmasterRecord.AudioRequired == null ? false : bool.Parse(getmasterRecord.AudioRequired.ToString());
-                                objserviceInitialData.flagCaptureVideo = getmasterRecord.VideoRequired == null ? false : bool.Parse(getmasterRecord.VideoRequired.ToString());
-
-                                var pictureList = objCompassEntities.TblServicePictures.
-                                    Where(o => o.Active == 1 && o.tblService_ServiceId == getmasterRecord.ID).Select(o => o.tblPicture_PictureId).ToList();
-                                List<string> obj1List = new List<string>();
-                                if (pictureList != null)
-                                {
-                                    foreach (var item in pictureList)
-                                    {
-                                        var pictureName = objCompassEntities.tblPictures.Where(o => o.ID == item).Select(o => o.Picture).FirstOrDefault();
-                                        obj1List.Add(pictureName);
-                                    }
-                                }
-
-                                objserviceInitialData.imageList = obj1List;
-                                objFieldInitialData.objserviceInitialData = objserviceInitialData;
-                                objFieldInitialDataList.Add(objFieldInitialData);
-                            }
-                        }
-                        else if (objSectionFieldBO.fieldName.ToLower().Trim() == "ADDITIONAL SERVICES".ToLower())
-                        {
-
-                            var res1 = objCompassEntities.TblProjectMasterFieldRelations.Where(o => o.MasterTableName.ToLower() == "tblService"
-                                && o.ProjectID == objProjectFormBO.projectId && o.Active == 1 && o.IsAdditionalService == true).ToList();
-                            var objAllServices = objCompassEntities.tblServices.Where(o => o.Active == 1).Select(o => o).ToList();
-
-                            foreach (var itemres in res1)
-                            {
-
-                                var getmasterRecord1 = objAllServices.Where(o => o.ID == itemres.MasterFieldID && o.Active == 1).FirstOrDefault();
-
-                                FieldInitialData objFieldInitialData = new FieldInitialData();
-                                objFieldInitialData.initialFieldId = getmasterRecord1.ID;
-                                objFieldInitialData.initialFieldValue = getmasterRecord1.Service;
-                                objFieldInitialData.isAdditionalService = true;
-                                serviceInitialData objserviceInitialData = new serviceInitialData();
-                                objserviceInitialData.flagCaptureAudio = getmasterRecord1.AudioRequired == null ? false : bool.Parse(getmasterRecord1.AudioRequired.ToString());
-                                objserviceInitialData.flagCaptureVideo = getmasterRecord1.VideoRequired == null ? false : bool.Parse(getmasterRecord1.VideoRequired.ToString());
-
-                                var pictureList = objCompassEntities.TblServicePictures.
-                                    Where(o => o.Active == 1 && o.tblService_ServiceId == itemres.MasterFieldID).Select(o => o.tblPicture_PictureId).ToList();
-                                List<string> obj1List = new List<string>();
-                                if (pictureList != null)
-                                {
-                                    foreach (var item in pictureList)
-                                    {
-                                        var pictureName = objCompassEntities.tblPictures.Where(o => o.ID == item).Select(o => o.Picture).FirstOrDefault();
-                                        obj1List.Add(pictureName);
-                                    }
-                                }
-
-                                objserviceInitialData.imageList = obj1List;
-                                objFieldInitialData.objserviceInitialData = objserviceInitialData;
-                                objFieldInitialDataList.Add(objFieldInitialData);
-
-                            }
-                        }
-                        else
-                        {
-                            // var checkMappedToExcel = objCompassEntities.SP_GetFieldInfoForProject(obj.ProjectId).ToList();
-
-                            var checkfield = checkMappedColumnsToExcel.Where(o => o.FieldName == item3.FieldName).FirstOrDefault();
-
-                            if (checkfield != null && checkfield.isMappedToExcel == 1 && checkfield.FieldName != "LOCATION/GPS")
-                            {
-
-                                var itemres = objCompassEntities.UploadedExcelDatas.Where(o => o.Id == initialId && o.Active == 1).FirstOrDefault();
-                                FieldInitialData objFieldInitialData = new FieldInitialData();
-                                objFieldInitialData.initialFieldId = itemres.Id;
-                                //src.GetType().GetProperty(propName).GetValue(src, null);
-                                if (checkfield.FieldName.ToLower() == "account")
-                                {
-                                    // objFieldInitialData.initialFieldValue = itemres.Account;
-                                    var formVisitedStatus = objCompassEntities.TblProjectFieldDatas.Where(o => o.FormId == oo.formId &&
-                                        o.InstallerId == userId && o.FK_UploadedExcelData_Id == itemres.Id && o.Active == 1).FirstOrDefault();
-                                    if (formVisitedStatus == null)
-                                    {
-                                        objFieldInitialData.isVisitedForForm = false;
-                                        objFieldInitialData.isPreviousSkipped = false;
-                                    }
-                                    else if (formVisitedStatus.IsSkipped == true)
-                                    {
-                                        objFieldInitialData.isVisitedForForm = false;
-                                        objFieldInitialData.isPreviousSkipped = true;
-                                    }
-                                    else
-                                    {
-                                        objFieldInitialData.isVisitedForForm = true;
-                                        objFieldInitialData.isPreviousSkipped = false;
-                                    }
-                                }
-
-                                var _columnName = checkMappedColumnsToExcel.Where(o => o.FieldName.ToLower() == checkfield.FieldName.ToLower()).FirstOrDefault();
-
-                                if (_columnName != null)
-                                {
-                                    Type tClass = itemres.GetType();
-                                    PropertyInfo[] pClass = tClass.GetProperties();
-                                    PropertyInfo currentProperty = pClass.Where(o => o.Name == _columnName.FKUploadedExcelDataDynamicColumn).FirstOrDefault();
-                                    objFieldInitialData.initialFieldValue = Convert.ToString(currentProperty.GetValue(itemres));
-                                }
-
-
-                                objFieldInitialDataList.Add(objFieldInitialData);
-
-
-
-                            }
-                            else
-                            {
-                                //var res = objCompassEntities.tblProjectFieldDDLMasters.Where(o => o.FormSectionFieldID == au.ID && o.Active == 1).ToList();
-                                var res = objCompassEntities.tblProjectFieldDDLMasters.Where(o => o.FormSectionFieldID == item3.FieldId && o.Active == 1).ToList();
+                                var res = objCompassEntities.TblProjectMasterFieldRelations.Where(o => o.MasterTableName.ToLower() == "tblMeterSize"
+                                    && o.ProjectID == objProjectFormBO.projectId && o.Active == 1).ToList();
                                 foreach (var itemres in res)
                                 {
+                                    var getmasterRecord = objCompassEntities.tblMeterSizes.Where(o => o.ID == itemres.MasterFieldID
+                                        && o.Active == 1).FirstOrDefault();
                                     FieldInitialData objFieldInitialData = new FieldInitialData();
-                                    objFieldInitialData.initialFieldId = itemres.ID;
-                                    objFieldInitialData.initialFieldValue = itemres.FieldValue;
+                                    objFieldInitialData.initialFieldId = getmasterRecord.ID;
+                                    objFieldInitialData.initialFieldValue = getmasterRecord.MeterSize;
                                     objFieldInitialDataList.Add(objFieldInitialData);
                                 }
                             }
+                            else if (objSectionFieldBO.fieldName.ToLower().Trim() == "NEW METER MAKE".ToLower())
+                            {
+                                var res = objCompassEntities.TblProjectMasterFieldRelations.Where(o => o.MasterTableName.ToLower() == "tblMeterMake"
+                                    && o.ProjectID == objProjectFormBO.projectId && o.Active == 1).ToList();
+                                foreach (var itemres in res)
+                                {
+                                    var getmasterRecord = objCompassEntities.tblMeterMakes.Where(o => o.ID == itemres.MasterFieldID
+                                         && o.Active == 1).FirstOrDefault();
+                                    FieldInitialData objFieldInitialData = new FieldInitialData();
+                                    objFieldInitialData.initialFieldId = getmasterRecord.ID;
+                                    objFieldInitialData.initialFieldValue = getmasterRecord.Make;
+                                    objFieldInitialDataList.Add(objFieldInitialData);
+                                }
+                            }
+                            else if (objSectionFieldBO.fieldName.ToLower().Trim() == "NEW METER TYPE".ToLower())
+                            {
+                                var res = objCompassEntities.TblProjectMasterFieldRelations.Where(o => o.MasterTableName.ToLower() == "tblMeterType"
+                                    && o.ProjectID == objProjectFormBO.projectId && o.Active == 1).ToList();
+                                foreach (var itemres in res)
+                                {
+                                    var getmasterRecord = objCompassEntities.tblMeterTypes.Where(o => o.ID == itemres.MasterFieldID
+                                         && o.Active == 1).FirstOrDefault();
+                                    FieldInitialData objFieldInitialData = new FieldInitialData();
+                                    objFieldInitialData.initialFieldId = getmasterRecord.ID;
+                                    objFieldInitialData.initialFieldValue = getmasterRecord.MeterType;
+                                    objFieldInitialDataList.Add(objFieldInitialData);
+                                }
+                            }
+                            else if (objSectionFieldBO.fieldName.ToLower().Trim() == "Installer Name".ToLower())
+                            {
+                                var res = objCompassEntities.AuditDatas.Where(o => o.FK_UploadId == initialId && o.Active == 1).FirstOrDefault();
+                                var userbo = objCompassEntities.tblUsers.Where(o => o.UserID == res.Fk_InstallerId).FirstOrDefault();
+                                FieldInitialData objFieldInitialData = new FieldInitialData();
+                                objFieldInitialData.initialFieldId = objSectionFieldBO.fieldId;
+                                objFieldInitialData.initialFieldValue = userbo.FirstName;
+                                objFieldInitialDataList.Add(objFieldInitialData);
+                            }
+                            else if (objSectionFieldBO.fieldName.ToLower().Trim() == "Visit DateTime".ToLower())
+                            {
+                                var res = objCompassEntities.AuditDatas.Where(o => o.FK_UploadId == initialId && o.Active == 1).FirstOrDefault();
+
+                                FieldInitialData objFieldInitialData = new FieldInitialData();
+                                objFieldInitialData.initialFieldId = objSectionFieldBO.fieldId;
+                                objFieldInitialData.initialFieldValue = res.VisitDate.ToString();
+                                objFieldInitialDataList.Add(objFieldInitialData);
+
+                            }
+                            else if (objSectionFieldBO.fieldName.ToLower().Trim() == "SERVICES".ToLower())
+                            {
+                                var res = objCompassEntities.TblProjectMasterFieldRelations.Where(o => o.MasterTableName.ToLower() == "tblService"
+                                    && o.ProjectID == objProjectFormBO.projectId && o.Active == 1 && o.IsAdditionalService == false).ToList();
+                                foreach (var itemres in res)
+                                {
+                                    var getmasterRecord = objCompassEntities.tblServices.Where(o => o.ID == itemres.MasterFieldID && o.Active == 1).FirstOrDefault();
+                                    FieldInitialData objFieldInitialData = new FieldInitialData();
+                                    objFieldInitialData.initialFieldId = getmasterRecord.ID;
+                                    objFieldInitialData.initialFieldValue = getmasterRecord.Service;
+                                    objFieldInitialData.isAdditionalService = false;
+                                    serviceInitialData objserviceInitialData = new serviceInitialData();
+                                    objserviceInitialData.flagCaptureAudio = getmasterRecord.AudioRequired == null ? false : bool.Parse(getmasterRecord.AudioRequired.ToString());
+                                    objserviceInitialData.flagCaptureVideo = getmasterRecord.VideoRequired == null ? false : bool.Parse(getmasterRecord.VideoRequired.ToString());
+
+                                    var pictureList = objCompassEntities.TblServicePictures.
+                                        Where(o => o.Active == 1 && o.tblService_ServiceId == getmasterRecord.ID).Select(o => o.tblPicture_PictureId).ToList();
+                                    List<string> obj1List = new List<string>();
+                                    if (pictureList != null)
+                                    {
+                                        foreach (var item in pictureList)
+                                        {
+                                            var pictureName = objCompassEntities.tblPictures.Where(o => o.ID == item).Select(o => o.Picture).FirstOrDefault();
+                                            obj1List.Add(pictureName);
+                                        }
+                                    }
+
+                                    objserviceInitialData.imageList = obj1List;
+                                    objFieldInitialData.objserviceInitialData = objserviceInitialData;
+                                    objFieldInitialDataList.Add(objFieldInitialData);
+                                }
+                            }
+                            else if (objSectionFieldBO.fieldName.ToLower().Trim() == "ADDITIONAL SERVICES".ToLower())
+                            {
+
+                                var res1 = objCompassEntities.TblProjectMasterFieldRelations.Where(o => o.MasterTableName.ToLower() == "tblService"
+                                    && o.ProjectID == objProjectFormBO.projectId && o.Active == 1 && o.IsAdditionalService == true).ToList();
+                                var objAllServices = objCompassEntities.tblServices.Where(o => o.Active == 1).Select(o => o).ToList();
+
+                                foreach (var itemres in res1)
+                                {
+
+                                    var getmasterRecord1 = objAllServices.Where(o => o.ID == itemres.MasterFieldID && o.Active == 1).FirstOrDefault();
+
+                                    FieldInitialData objFieldInitialData = new FieldInitialData();
+                                    objFieldInitialData.initialFieldId = getmasterRecord1.ID;
+                                    objFieldInitialData.initialFieldValue = getmasterRecord1.Service;
+                                    objFieldInitialData.isAdditionalService = true;
+                                    serviceInitialData objserviceInitialData = new serviceInitialData();
+                                    objserviceInitialData.flagCaptureAudio = getmasterRecord1.AudioRequired == null ? false : bool.Parse(getmasterRecord1.AudioRequired.ToString());
+                                    objserviceInitialData.flagCaptureVideo = getmasterRecord1.VideoRequired == null ? false : bool.Parse(getmasterRecord1.VideoRequired.ToString());
+
+                                    var pictureList = objCompassEntities.TblServicePictures.
+                                        Where(o => o.Active == 1 && o.tblService_ServiceId == itemres.MasterFieldID).Select(o => o.tblPicture_PictureId).ToList();
+                                    List<string> obj1List = new List<string>();
+                                    if (pictureList != null)
+                                    {
+                                        foreach (var item in pictureList)
+                                        {
+                                            var pictureName = objCompassEntities.tblPictures.Where(o => o.ID == item).Select(o => o.Picture).FirstOrDefault();
+                                            obj1List.Add(pictureName);
+                                        }
+                                    }
+
+                                    objserviceInitialData.imageList = obj1List;
+                                    objFieldInitialData.objserviceInitialData = objserviceInitialData;
+                                    objFieldInitialDataList.Add(objFieldInitialData);
+
+                                }
+                            }
+                            else
+                            {
+                                // var checkMappedToExcel = objCompassEntities.SP_GetFieldInfoForProject(obj.ProjectId).ToList();
+
+                                var checkfield = checkMappedColumnsToExcel.Where(o => o.FieldName == item3.FieldName).FirstOrDefault();
+
+                                if (checkfield != null && checkfield.isMappedToExcel == 1 && checkfield.FieldName != "LOCATION/GPS")
+                                {
+
+                                    var itemres = objCompassEntities.UploadedExcelDatas.Where(o => o.Id == initialId && o.Active == 1).FirstOrDefault();
+                                    FieldInitialData objFieldInitialData = new FieldInitialData();
+                                    objFieldInitialData.initialFieldId = itemres.Id;
+                                    //src.GetType().GetProperty(propName).GetValue(src, null);
+                                    if (checkfield.FieldName.ToLower() == "account")
+                                    {
+                                        // objFieldInitialData.initialFieldValue = itemres.Account;
+                                        var formVisitedStatus = objCompassEntities.TblProjectFieldDatas.Where(o => o.FormId == oo.formId &&
+                                            o.InstallerId == userId && o.FK_UploadedExcelData_Id == itemres.Id && o.Active == 1).FirstOrDefault();
+                                        if (formVisitedStatus == null)
+                                        {
+                                            objFieldInitialData.isVisitedForForm = false;
+                                            objFieldInitialData.isPreviousSkipped = false;
+                                        }
+                                        else if (formVisitedStatus.IsSkipped == true)
+                                        {
+                                            objFieldInitialData.isVisitedForForm = false;
+                                            objFieldInitialData.isPreviousSkipped = true;
+                                        }
+                                        else
+                                        {
+                                            objFieldInitialData.isVisitedForForm = true;
+                                            objFieldInitialData.isPreviousSkipped = false;
+                                        }
+                                    }
+
+                                    var _columnName = checkMappedColumnsToExcel.Where(o => o.FieldName.ToLower() == checkfield.FieldName.ToLower()).FirstOrDefault();
+
+                                    if (_columnName != null)
+                                    {
+                                        Type tClass = itemres.GetType();
+                                        PropertyInfo[] pClass = tClass.GetProperties();
+                                        PropertyInfo currentProperty = pClass.Where(o => o.Name == _columnName.FKUploadedExcelDataDynamicColumn).FirstOrDefault();
+                                        objFieldInitialData.initialFieldValue = Convert.ToString(currentProperty.GetValue(itemres));
+                                    }
 
 
-                        }
+                                    objFieldInitialDataList.Add(objFieldInitialData);
 
 
-                        objSectionFieldBO.fieldInitialDataList = objFieldInitialDataList;
-                        objSectionFieldBOList.Add(objSectionFieldBO);
-                        #endregion
-                    }//field end
 
+                                }
+                                else
+                                {
+                                    //var res = objCompassEntities.tblProjectFieldDDLMasters.Where(o => o.FormSectionFieldID == au.ID && o.Active == 1).ToList();
+                                    var res = objCompassEntities.tblProjectFieldDDLMasters.Where(o => o.FormSectionFieldID == item3.FieldId && o.Active == 1).ToList();
+                                    foreach (var itemres in res)
+                                    {
+                                        FieldInitialData objFieldInitialData = new FieldInitialData();
+                                        objFieldInitialData.initialFieldId = itemres.ID;
+                                        objFieldInitialData.initialFieldValue = itemres.FieldValue;
+                                        objFieldInitialDataList.Add(objFieldInitialData);
+                                    }
+                                }
+
+
+                            }
+                            objSectionFieldBO.fieldInitialDataList = objFieldInitialDataList;
+                            objSectionFieldBOList.Add(objSectionFieldBO);
+                            #endregion
+                        }//field end
+                    }
                     obj1.FieldList = objSectionFieldBOList;
 
                     objMobileSectionBO.Add(obj1);
