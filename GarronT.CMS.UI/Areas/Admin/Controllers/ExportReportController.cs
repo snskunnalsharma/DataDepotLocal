@@ -4325,6 +4325,25 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         dt.Rows[k]["CITY"] = $@"""{objCITY}""";
                     }
                 }
+
+                if (dt.Columns.Contains("V_NEW_SERIAL_NUM"))
+                {
+                    for (int k = 0; k < dt.Rows.Count; k++)
+                    {
+                        string objNewMeterNum = dt.Rows[k]["V_NEW_SERIAL_NUM"].ToString();
+                        if (!string.IsNullOrEmpty(objNewMeterNum))
+                        {
+                            string result = objNewMeterNum.Substring(0, 3);
+                            if (result.ToUpper().Equals("1NF"))
+                            {
+                                string finalSeNo = objNewMeterNum.Replace(result, "");  // Remove frist 3 cher
+                                //string finalSeNo2nd = objNewMeterNum.Remove(0, 3);
+                                dt.Rows[k]["V_NEW_SERIAL_NUM"] = finalSeNo;
+                            }
+                        }
+                    }
+                }
+
                 dt.Columns["v_completion_date"].SetOrdinal(28);     // Change dt column index
                 dt.AcceptChanges();
                 dt.Columns["v_installer"].SetOrdinal(28);
