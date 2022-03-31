@@ -4188,7 +4188,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 {
                     for (int k = 0; k < dt.Columns.Count; k++)
                     {
-                        sb.Append(dt.Rows[i][k].ToString().Replace(",", ";") + ',');
+                        //sb.Append(dt.Rows[i][k].ToString().Replace(",", ";") + ',');
+                        sb.Append(dt.Rows[i][k].ToString() + ',');
                     }
                     sb.Append("\r\n");
                 }
@@ -4341,6 +4342,14 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                                 dt.Rows[k]["V_NEW_SERIAL_NUM"] = finalSeNo;
                             }
                         }
+                    }
+                }
+                if (dt.Columns.Contains("LOCATION/GPS"))
+                {
+                    for (int k = 0; k < dt.Rows.Count; k++)
+                    {
+                        string objLocGPS = dt.Rows[k]["LOCATION/GPS"].ToString();
+                        dt.Rows[k]["LOCATION/GPS"] = $@"""{objLocGPS}""";
                     }
                 }
 

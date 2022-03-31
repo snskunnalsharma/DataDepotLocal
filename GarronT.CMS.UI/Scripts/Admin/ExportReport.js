@@ -94,7 +94,13 @@
     });
 
     //#endregion
-
+    var checkAdmin = document.querySelector('.classCheckAdmin').id;
+    if (checkAdmin == 1) {             // 1 for admin
+        $('#' + checkAdmin + '').show();
+    }
+    else {
+        $('#' + checkAdmin + '').hide();
+    }
 
 });
 
