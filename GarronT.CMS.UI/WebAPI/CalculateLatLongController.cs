@@ -863,7 +863,7 @@ namespace GarronT.CMS.UI.WebAPI
                                 }
                             }
                             //objCompassEntities.SaveChanges();     // one by one records save
-                            if (lat != string.Empty && lng != string.Empty)
+                            /*if (lat != string.Empty && lng != string.Empty)
                             {
                                 String DynamicColumnName = Get_DynamicColumnName(Convert.ToString(projetID));
                                 String StreetValue = Get_StreetValue(Convert.ToString(projetID), id, DynamicColumnName);
@@ -872,7 +872,7 @@ namespace GarronT.CMS.UI.WebAPI
                                 item.VisitId = VisitId;
                                 item.GroupId = GroupId;
                                 //objCompassEntities.SaveChanges();     // one by one records save
-                            }
+                            }*/
                         }
                         catch
                         {
@@ -934,9 +934,9 @@ namespace GarronT.CMS.UI.WebAPI
                             lng = item.AddressLongitude;
                             if (lat != "" && lng != "")
                             {
-                                String DynamicColumnName = Get_DynamicColumnName(Convert.ToString(projetID));
-                                String StreetValue = Get_StreetValue(Convert.ToString(projetID), id, DynamicColumnName);
-                                String VisitId = Get_Create_VisitId(Convert.ToString(projetID), StreetValue, DynamicColumnName);
+                                //String DynamicColumnName = Get_DynamicColumnName(Convert.ToString(projetID));
+                                //String StreetValue = Get_StreetValue(Convert.ToString(projetID), id, DynamicColumnName);
+                                String VisitId = Get_Create_VisitId(Convert.ToString(projetID), item.Street12,null);
                                 String GroupId = Get_Create_GroupId(Convert.ToString(projetID), lat, lng);
                                 item.VisitId = VisitId;
                                 item.GroupId = GroupId;
@@ -1061,16 +1061,13 @@ namespace GarronT.CMS.UI.WebAPI
             {
                 string GroupId = "";
                 CompassEntities dbcontext = new CompassEntities();
-                SqlConnection _sqlCon = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
-                _sqlCon.Open();
-                SqlCommand _cmd = new SqlCommand("Select top 1 GroupId from UploadedExcelData where FKProjectId='" + ProjectID + "' and AddressLatitude='" + let + "' and AddressLongitude='" + lng + "' and GroupId !='' and GroupId is not null", _sqlCon);
-                SqlDataAdapter sda = new SqlDataAdapter(_cmd);
-                DataTable dt = new DataTable();
-                sda.Fill(dt);
-                if (dt.Rows.Count > 0)
+                long _ProjectID = long.Parse(ProjectID);
+                //var _objVisitId = dbcontext.UploadedExcelDatas.Where(o => o.FKProjectId == Convert.ToInt64(ProjectID) && (o.GetType().GetProperties(o => o.Name == DynamicColumnName)).ToString() == Street.ToString() && o.VisitId != null && o.VisitId != "").FirstOrDefault();
+                var _objGroupId = dbcontext.UploadedExcelDatas.Where(o => o.FKProjectId == _ProjectID && o.AddressLatitude == let && o.AddressLongitude == lng && o.GroupId != null && o.GroupId != "").FirstOrDefault();
+                //var oldObject = dbcontext.UploadedExcelDatas.Where(o => o.FKProjectId == _ProjectID && (string)o.GetType().GetProperty(DynamicColumnName).GetValue(o) == Street && o.VisitId != null && o.VisitId != "").FirstOrDefault();
+                if (_objGroupId != null)
                 {
-                    // availabe VisitId id
-                    GroupId = dt.Rows[0]["GroupId"].ToString();
+                    GroupId = _objGroupId.GroupId.ToString();       // This code has been chnaged because street address comming With apostrophe s(')
                 }
                 else
                 {
@@ -1078,7 +1075,7 @@ namespace GarronT.CMS.UI.WebAPI
                     Guid objGroupId = Guid.NewGuid();
                     GroupId = objGroupId.ToString().ToUpper();
                 }
-                _sqlCon.Close();
+                
                 return GroupId;
             }
             catch (Exception ex)
@@ -1452,7 +1449,7 @@ namespace GarronT.CMS.UI.WebAPI
                             //objCompassEntities.SaveChanges(); // one by one not save save all record in one time see in below
                         }
                         
-                        if (lat != string.Empty && lng != string.Empty)
+                        /*if (lat != string.Empty && lng != string.Empty)
                         {
                             String DynamicColumnName = Get_DynamicColumnName(Convert.ToString(projetID));
                             String StreetValue = Get_StreetValue(Convert.ToString(projetID), id, DynamicColumnName);
@@ -1461,7 +1458,7 @@ namespace GarronT.CMS.UI.WebAPI
                             item.VisitId = VisitId;
                             item.GroupId = GroupId;
                             objCompassEntities.SaveChanges();     // one by one records save
-                        }
+                        }*/
                     }
                     objCompassEntities.SaveChanges();     // one by one records save
                 }
