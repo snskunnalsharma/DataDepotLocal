@@ -29,6 +29,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         // GET: /Admin/ExportReport/
         public ActionResult Index()
         {
+            long currentLoggedInUserID = GetLoggedInUserID();
+            TempData["currentLoggedInUserID"] = currentLoggedInUserID;
             return View();
         }
 
@@ -74,11 +76,17 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     }
 
                 }
-
                 return base.Json(data, JsonRequestBehavior.AllowGet);
             }
         }
 
+        public long GetLoggedInUserID()
+        {
+            var vr = User.Identity.Name;
+            CompassEntities AIBCARMEntities = new CompassEntities();
+            var userid = AIBCARMEntities.tblUsers.Where(x => x.UserName == vr).Select(x => x.UserID).FirstOrDefault();
+            return userid;
+        }
 
         public JsonResult GetFormType()
         {

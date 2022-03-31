@@ -94,12 +94,13 @@
     });
 
     //#endregion
-    var checkAdmin = document.querySelector('.classCheckAdmin').id;
-    if (checkAdmin == 1) {             // 1 for admin
-        $('#' + checkAdmin + '').show();
+    
+    var currentUserId = document.querySelector('.classUserId').id;
+    if (currentUserId == 14) {             // 14 for Garron id only show Report column only for garron as clent requirement
+        $('#' + currentUserId + '').show();
     }
     else {
-        $('#' + checkAdmin + '').hide();
+        $('#' + currentUserId + '').hide();
     }
 
 });
