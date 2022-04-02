@@ -561,6 +561,7 @@ namespace GarronT.CMS.Model.BO
     {
         public string cycle { get; set; }
         public string route { get; set; }
+        public string classification { get; set; }
     }
 
     public class newMobileOffline2
@@ -648,6 +649,7 @@ namespace GarronT.CMS.Model.BO
         public string UpdatedDate { get; set; }
         public string cycle { get; set; }
         public string route { get; set; }
+        public string classification { get; set; }
 
     }
 

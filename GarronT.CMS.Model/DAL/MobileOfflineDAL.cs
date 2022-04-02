@@ -2797,6 +2797,7 @@ namespace GarronT.CMS.Model.DAL
                                         objMapVisits.UpdatedDate = Convert.ToString(item1["ModifiedOn"]);
                                         objMapVisits.cycle = cycleRoute.cycle;
                                         objMapVisits.route = cycleRoute.route;
+                                        objMapVisits.classification = cycleRoute.classification;
                                         objListMapVisits.Add(objMapVisits);
 
                                         #endregion
@@ -2869,6 +2870,7 @@ namespace GarronT.CMS.Model.DAL
                                         objMapVisits.totalVisits = totalVisits;
                                         objMapVisits.cycle = cycleRoute.cycle;
                                         objMapVisits.route = cycleRoute.route;
+                                        objMapVisits.classification = cycleRoute.classification;
 
 
                                         var _totalAccount = currentProData.AsEnumerable().Where(o => o.Field<string>("AddressLatitude") == item1["AddressLatitude"].ToString() &&
@@ -4544,12 +4546,14 @@ namespace GarronT.CMS.Model.DAL
                         Select(o => new
                         {
                             cycle = o.Field<string>("cycle"),
-                            route = o.Field<string>("route")
+                            route = o.Field<string>("route"),
+                            classification = o.Field<string>("classification")
                         }).Distinct().ToList();
                         foreach (var dataId in resultDict)
                         {
                             result.cycle = dataId.cycle;
                             result.route = dataId.route;
+                            result.classification = dataId.classification;
                         }
                     }
                     cmd.Clone();
