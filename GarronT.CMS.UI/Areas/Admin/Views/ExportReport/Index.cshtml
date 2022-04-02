@@ -954,7 +954,11 @@
 
                                                 <ul class="target connected exp-rep-conect" id="destinationFields1"></ul>
                                             </div>
-                                            <div class="col-lg-3 col-xs-4 col-sm-4 repfld-div " style="">
+                                            @{
+                                                string checkAdmin = @HttpContext.Current.Session["CurrentUserIsAdmin"].ToString();
+                                                var currentUserId = TempData["currentLoggedInUserID"];  // Garron User id only allow this div
+                                            }
+                                            <div id="@currentUserId" class="col-lg-3 col-xs-4 col-sm-4 repfld-div classUserId" style="">
                                                 <label class="control-label exp-rep"> Report Column Name </label>
 
                                                 <ul class="colName connected exp-rep-conect" id="lableFields"></ul>

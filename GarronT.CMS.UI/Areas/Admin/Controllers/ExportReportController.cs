@@ -29,6 +29,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         // GET: /Admin/ExportReport/
         public ActionResult Index()
         {
+            long currentLoggedInUserID = GetLoggedInUserID();
+            TempData["currentLoggedInUserID"] = currentLoggedInUserID;
             return View();
         }
 
@@ -74,11 +76,17 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     }
 
                 }
-
                 return base.Json(data, JsonRequestBehavior.AllowGet);
             }
         }
 
+        public long GetLoggedInUserID()
+        {
+            var vr = User.Identity.Name;
+            CompassEntities AIBCARMEntities = new CompassEntities();
+            var userid = AIBCARMEntities.tblUsers.Where(x => x.UserName == vr).Select(x => x.UserID).FirstOrDefault();
+            return userid;
+        }
 
         public JsonResult GetFormType()
         {
@@ -4188,7 +4196,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 {
                     for (int k = 0; k < dt.Columns.Count; k++)
                     {
-                        sb.Append(dt.Rows[i][k].ToString().Replace(",", ";") + ',');
+                        //sb.Append(dt.Rows[i][k].ToString().Replace(",", ";") + ',');
+                        sb.Append(dt.Rows[i][k].ToString() + ',');
                     }
                     sb.Append("\r\n");
                 }
@@ -4341,6 +4350,14 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                                 dt.Rows[k]["V_NEW_SERIAL_NUM"] = finalSeNo;
                             }
                         }
+                    }
+                }
+                if (dt.Columns.Contains("LOCATION/GPS"))
+                {
+                    for (int k = 0; k < dt.Rows.Count; k++)
+                    {
+                        string objLocGPS = dt.Rows[k]["LOCATION/GPS"].ToString();
+                        dt.Rows[k]["LOCATION/GPS"] = $@"""{objLocGPS}""";
                     }
                 }
 

@@ -941,8 +941,16 @@ namespace GarronT.CMS.Model.DAL
                     if (taskStatus == "COMPLETED")
                     {
                         List<string> serialList = new List<string>();
-                        serialList.Add(meterId);
-                        serialList.Add(radioId);
+                        if (!string.IsNullOrEmpty(meterId))
+                        {
+                            serialList.Add(meterId);
+                        }
+                        if (!string.IsNullOrEmpty(radioId))
+                        {
+                            serialList.Add(radioId);
+                        }
+                        /*serialList.Add(meterId);
+                        serialList.Add(radioId);*/
                         foreach(string serialNo in serialList)
                         {
                             DataTable dt = new DataTable();
@@ -1406,6 +1414,7 @@ namespace GarronT.CMS.Model.DAL
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Connection = sqlConnection1;
             cmd.Parameters.Add("@ProjectId", ProjectID);
+            cmd.CommandTimeout = sqlConnection1.ConnectionTimeout;
             sqlConnection1.Open();
 
             reader = cmd.ExecuteReader();

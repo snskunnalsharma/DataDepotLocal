@@ -2114,31 +2114,33 @@ namespace GarronT.CMS.Model.DAL
                     {
                         /// check if lat long is avilable then validate the same address with different
 
-
-                        foreach (DataRow dtRow in dt.Rows)
+                        if (projectObject.Utilitytype != "Electric")    
                         {
-                            var checkLatLon = dt.AsEnumerable().Where(o => o.Field<string>("ROWNO") != (string)dtRow["ROWNO"] && o.Field<string>(sStreet) == Convert.ToString(dtRow[sStreet]) &&
-                                (o.Field<string>(sAddressLatitude) != Convert.ToString(dtRow[sAddressLatitude]) || o.Field<string>(sAddressLongitude) != Convert.ToString(dtRow[sAddressLongitude]))).Count();
-                            if (checkLatLon > 0)
+                            foreach (DataRow dtRow in dt.Rows)
                             {
-                                //if same street & different lat long avilable then add # and number infront of existing street name.
-                                bool notExist = false;
-                                int streetNumber = 1;
-                                string newStreet = "";
-                                while (notExist == false)
+                                var checkLatLon = dt.AsEnumerable().Where(o => o.Field<string>("ROWNO") != (string)dtRow["ROWNO"] && o.Field<string>(sStreet) == Convert.ToString(dtRow[sStreet]) &&
+                                    (o.Field<string>(sAddressLatitude) != Convert.ToString(dtRow[sAddressLatitude]) || o.Field<string>(sAddressLongitude) != Convert.ToString(dtRow[sAddressLongitude]))).Count();
+                                if (checkLatLon > 0)
                                 {
-                                    newStreet = Convert.ToString(dtRow[sStreet]) + " #" + streetNumber.ToString();
-                                    var checkNewStreet = dt.AsEnumerable().Where(o => o.Field<string>("ROWNO") != (string)dtRow["ROWNO"] && o.Field<string>(sStreet) == newStreet).Count();
-                                    if (checkNewStreet == 0)
+                                    //if same street & different lat long avilable then add # and number infront of existing street name.
+                                    bool notExist = false;
+                                    int streetNumber = 1;
+                                    string newStreet = "";
+                                    while (notExist == false)
                                     {
-                                        notExist = true;
+                                        newStreet = Convert.ToString(dtRow[sStreet]) + " #" + streetNumber.ToString();
+                                        var checkNewStreet = dt.AsEnumerable().Where(o => o.Field<string>("ROWNO") != (string)dtRow["ROWNO"] && o.Field<string>(sStreet) == newStreet).Count();
+                                        if (checkNewStreet == 0)
+                                        {
+                                            notExist = true;
+                                        }
+                                        else
+                                        {
+                                            streetNumber++;
+                                        }
                                     }
-                                    else
-                                    {
-                                        streetNumber++;
-                                    }
+                                    dtRow[sStreet] = newStreet;
                                 }
-                                dtRow[sStreet] = newStreet;
                             }
                         }
                     }
@@ -2224,12 +2226,7 @@ namespace GarronT.CMS.Model.DAL
 
                                         foreach (DataColumn dtCol in dt.Columns)
                                         {
-                                            /*if (dtCol.ColumnName.ToLower() == "latitude")
-                                            { }
-                                            string col = dtCol.ColumnName.Replace("\r\n", "").Replace("\r", "").Replace("\n", "");
-                                            col = col.ToString().Trim();*/
                                             var mappedColumnName = GetExcelColumnMapList.Where(o => o.ExcelFieldName == dtCol.ColumnName).FirstOrDefault();
-                                            //var mappedColumnName = GetExcelColumnMapList.Where(o => o.ExcelFieldName.Replace("\r\n", "").Replace("\r", "").Replace("\n", "").ToString().Trim() == col).FirstOrDefault();
                                             if (mappedColumnName != null)
                                             {
                                                 string sCurrentData = Convert.ToString(dtRow[dtCol]);
