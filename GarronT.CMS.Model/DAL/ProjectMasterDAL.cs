@@ -2154,7 +2154,7 @@ namespace GarronT.CMS.Model.DAL
                         {
                             item.UploadStatus = 0;
                         }
-                        objCompassEntities.SaveChanges();
+                        objCE.SaveChanges();
                     }
 
                     var standardFieldAccount = objCompassEntities1.VW_GETTab6DropdownData.Where(o => o.ProjectID == ProjectID && o.FieldName == "ACCOUNT" && o.FieldType == 2).FirstOrDefault();
@@ -2204,8 +2204,8 @@ namespace GarronT.CMS.Model.DAL
                                         }
                                         else
                                         {
-                                            var checkDataSubmitted = objCompassEntities1.TblProjectFieldDatas.Where(o => o.tblUploadedData_Id == oldObject.Id && o.Active == 1).Count();
-
+                                            //var checkDataSubmitted = objCompassEntities1.TblProjectFieldDatas.Where(o => o.tblUploadedData_Id == oldObject.Id && o.Active == 1).Count();
+                                            var checkDataSubmitted = objCompassEntities1.TblProjectFieldDatas.Where(o => o.FK_UploadedExcelData_Id == oldObject.Id && o.Active == 1).Count();
                                             if (checkDataSubmitted > 0)
                                             {
                                                 skipedRecordsCount++;   // Count Skipt records
@@ -2213,7 +2213,16 @@ namespace GarronT.CMS.Model.DAL
                                                 visitDone = true;
                                                 if (projectObject.Utilitytype == "Electric")
                                                 {
-                                                    oldObject.UploadStatus = 2;     // Visit done upload status set for TNMP project
+                                                    oldObject.UploadStatus = 2;     //Account already Completed Visit done upload status set for TNMP project
+                                                    //objCompassEntities1.SaveChanges();
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if (projectObject.Utilitytype == "Electric")
+                                                {
+                                                    oldObject.UploadStatus = 1;     //Account present in DB Added this condtion fro TNMP project
+                                                    //objCompassEntities1.SaveChanges();
                                                 }
                                             }
                                         }
@@ -2248,10 +2257,7 @@ namespace GarronT.CMS.Model.DAL
                                                 currentProperty.SetValue(objRecord, sCurrentData, null);
                                             }
                                         }
-                                        if (projectObject.Utilitytype == "Electric")
-                                        {
-                                            objRecord.UploadStatus = 1; // Added this condtion fro TNMP project
-                                        }
+
                                         if (flagInsert)
                                         {
                                             i++;
@@ -2296,6 +2302,10 @@ namespace GarronT.CMS.Model.DAL
                                                         objRecord.Street12 = (streetValue + " " + unitValue).ToString(); // Street/ Address value stored in two columns in table
                                                     }
                                                 }
+                                            }
+                                            if (projectObject.Utilitytype == "Electric")
+                                            {
+                                                objRecord.UploadStatus = 1; // Added this condtion fro TNMP project
                                             }
                                             objCompassEntities1.Configuration.AutoDetectChangesEnabled = false;
                                             objCompassEntities1.Configuration.AutoDetectChangesEnabled = false;
@@ -2344,6 +2354,14 @@ namespace GarronT.CMS.Model.DAL
             var list = obj.UploadedExcelDatas.Where(o => o.FKProjectId == projectID && o.Active == 1 && o.UploadStatus == 0).ToList();
             foreach (var item in list)
             {
+                var checkAllocation = obj.tblInstallerMapDatas.Where(o => o.FK_UploadedExcelData_Id == item.Id && o.Active == 1).ToList();
+                if (checkAllocation.Count > 0)
+                {
+                    foreach (var ca in checkAllocation)
+                    {
+                        ca.Active = 0;
+                    }
+                }
                 item.Active = 0;
             }
             obj.SaveChanges();
