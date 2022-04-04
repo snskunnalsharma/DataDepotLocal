@@ -921,6 +921,8 @@ namespace GarronT.CMS.UI.WebAPI
 
                 if (projectDataList != null && projectDataList.Count > 0)
                 {
+                    string visitId = "";
+                    string groupId = "";
                     foreach (var item in projectDataList)
                     {
                         try
@@ -934,13 +936,35 @@ namespace GarronT.CMS.UI.WebAPI
                             lng = item.AddressLongitude;
                             if (lat != "" && lng != "")
                             {
+                                visitId = "";
+                                groupId = "";
+                                visitId = projectDataList.AsEnumerable().Where(o => o.FKProjectId == item.FKProjectId && o.Street12 == item.Street12 && o.VisitId != null && o.VisitId != "").Select(o => o.VisitId).FirstOrDefault();
+                                groupId = projectDataList.AsEnumerable().Where(o => o.FKProjectId == item.FKProjectId && o.AddressLatitude == item.AddressLatitude && o.AddressLongitude == item.AddressLongitude && o.GroupId != null && o.GroupId != "").Select(o => o.GroupId).FirstOrDefault();
                                 //String DynamicColumnName = Get_DynamicColumnName(Convert.ToString(projetID));
                                 //String StreetValue = Get_StreetValue(Convert.ToString(projetID), id, DynamicColumnName);
-                                String VisitId = Get_Create_VisitId(Convert.ToString(projetID), item.Street12,null);
-                                String GroupId = Get_Create_GroupId(Convert.ToString(projetID), lat, lng);
-                                item.VisitId = VisitId;
-                                item.GroupId = GroupId;
-                                objCompassEntities.SaveChanges();     // one by one records save
+                                if (string.IsNullOrEmpty(visitId))
+                                {
+                                    //visitId = Get_Create_VisitId(Convert.ToString(projetID), item.Street12, null);
+                                    visitId = objCompassEntities.UploadedExcelDatas.Where(o => o.FKProjectId == item.FKProjectId && o.Street12 == item.Street12 && o.VisitId != null && o.VisitId != "").Select(o => o.VisitId).FirstOrDefault();
+                                    if (string.IsNullOrEmpty(visitId))
+                                    {
+                                        Guid objVisitId = Guid.NewGuid();
+                                        visitId = objVisitId.ToString().ToUpper();
+                                    }
+                                }
+                                if (string.IsNullOrEmpty(groupId))
+                                {
+                                    //groupId = Get_Create_GroupId(Convert.ToString(projetID), lat, lng);
+                                    groupId = objCompassEntities.UploadedExcelDatas.Where(o => o.FKProjectId == item.FKProjectId && o.AddressLatitude == item.AddressLatitude && o.AddressLongitude == item.AddressLongitude && o.GroupId != null && o.GroupId != "").Select(o => o.GroupId).FirstOrDefault();
+                                    if (string.IsNullOrEmpty(groupId))
+                                    {
+                                        Guid objGroupId = Guid.NewGuid();
+                                        groupId = objGroupId.ToString().ToUpper();
+                                    }
+                                }
+                                item.VisitId = visitId;
+                                item.GroupId = groupId;
+                                //objCompassEntities.SaveChanges();     // one by one records save
                             }
                         }
                         catch
@@ -949,7 +973,7 @@ namespace GarronT.CMS.UI.WebAPI
                         }
                         
                     }
-                    //objCompassEntities.SaveChanges();
+                    objCompassEntities.SaveChanges();
                 }
             }
             catch (Exception ex)
