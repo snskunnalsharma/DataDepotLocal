@@ -4187,17 +4187,36 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 //dt.Columns.Remove("ATTENDANT NAME"); // Removes DataColumn object that has the specified name
                 //dt.Columns.Remove("VISIT ATTENDED DATETIME");
                 //dt.Columns.Remove("VISIT STATUS");
+                int totalCount = dt.Columns.Count;
                 for (int k = 0; k < dt.Columns.Count; k++)
                 {
-                    sb.Append(dt.Columns[k].ColumnName + ',');
+                    if ((totalCount - 1) == k)
+                    {
+                        sb.Append(dt.Columns[k].ColumnName);    // Remove last comma(,) in row
+                    }
+                    else
+                    {
+                        sb.Append(dt.Columns[k].ColumnName + ',');
+                    }
                 }
                 sb.Append("\r\n");
+                totalCount = 0;
                 for (int i = 0; i < dt.Rows.Count; i++)
                 {
+                    //for (int k = 0; k < dt.Columns.Count; k++)
+                    totalCount = dt.Columns.Count;
                     for (int k = 0; k < dt.Columns.Count; k++)
                     {
-                        //sb.Append(dt.Rows[i][k].ToString().Replace(",", ";") + ',');
-                        sb.Append(dt.Rows[i][k].ToString() + ',');
+                        if ((totalCount - 1) == k)
+                        {
+                            sb.Append(dt.Rows[i][k].ToString());    // Remove last comma(,) in row
+                        }
+                        else
+                        {
+                            //sb.Append(dt.Rows[i][k].ToString().Replace(",", ";") + ',');
+                            sb.Append(dt.Rows[i][k].ToString() + ',');
+                        }
+                        
                     }
                     sb.Append("\r\n");
                 }
@@ -4278,7 +4297,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         }
                     }
                 }
-                else
+                if (dt.Columns.Contains("V_CYCLE"))
                 {
                     for (int k = 0; k < dt.Rows.Count; k++)
                     {
@@ -4358,6 +4377,23 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     {
                         string objLocGPS = dt.Rows[k]["LOCATION/GPS"].ToString();
                         dt.Rows[k]["LOCATION/GPS"] = $@"""{objLocGPS}""";
+                    }
+                }
+
+                if (dt.Columns.Contains("V_RTU_DATA"))
+                {
+                    for (int k = 0; k < dt.Rows.Count; k++)
+                    {
+                        string objRtuData = dt.Rows[k]["V_RTU_DATA"].ToString();    // Remove new line in text
+                        dt.Rows[k]["V_RTU_DATA"] = objRtuData.Replace("\r\n", " ").Replace("\r", " ").Replace("\n", " ");
+                    }
+                }
+                if (dt.Columns.Contains("V_COMMENTS"))
+                {
+                    for (int k = 0; k < dt.Rows.Count; k++)
+                    {
+                        string objComment = dt.Rows[k]["V_COMMENTS"].ToString();    // Remove new line in text
+                        dt.Rows[k]["V_COMMENTS"] = objComment.Replace("\r\n", " ").Replace("\r", " ").Replace("\n", " ");
                     }
                 }
 

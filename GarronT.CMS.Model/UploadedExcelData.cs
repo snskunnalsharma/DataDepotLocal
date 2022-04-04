@@ -106,6 +106,7 @@ namespace GarronT.CMS.Model
         public string RefCol68 { get; set; }
         public string RefCol69 { get; set; }
         public string RefCol70 { get; set; }
+        public Nullable<int> UploadStatus { get; set; }
 
         public virtual ICollection<UserTimeClockDetail> UserTimeClockDetails { get; set; }
     }

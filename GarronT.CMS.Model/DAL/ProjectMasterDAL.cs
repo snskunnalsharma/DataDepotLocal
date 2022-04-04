@@ -1453,7 +1453,7 @@ namespace GarronT.CMS.Model.DAL
                         {
                             foreach (var _iten in newobj)
                             {
-                                var exist = CompassEntities.tblMeterPays.AsEnumerable().Where(o => o.FK_Project_Id == projectId && o.FK_MeterSize_Id == _iten.MeterSizeId && o.FK_MeterType_Id==_iten.MeterTypeId).FirstOrDefault();
+                                var exist = CompassEntities.tblMeterPays.AsEnumerable().Where(o => o.FK_Project_Id == projectId && o.FK_MeterSize_Id == _iten.MeterSizeId && o.FK_MeterType_Id == _iten.MeterTypeId).FirstOrDefault();
                                 if (exist == null)
                                 {
                                     exist = new tblMeterPay();
@@ -1479,28 +1479,28 @@ namespace GarronT.CMS.Model.DAL
                                     CompassEntities.SaveChanges();
                                 }
                             }
-                            
+
                         }
-                       /* if (obj == null)
-                        {
-                            obj = new tblMeterPay();
-                            obj.FK_Project_Id = projectId;
-                            obj.FK_MeterSize_Id = long.Parse(item);
-                            obj.Description = "";   // don't required description
-                            obj.Pay = 0;            // defualt set 0 and then set meter pay rete next page
-                            obj.Active = 1;
-                            obj.CreatedBy = userId;
-                            obj.CreatedOn = new CommonFunctions().ServerDate();
-                            CompassEntities.tblMeterPays.Add(obj);
-                            CompassEntities.SaveChanges();
-                        }
-                        else
-                        {
-                            obj.ModifiedBy = userId;
-                            obj.Active = 1;
-                            obj.ModifiedOn = new CommonFunctions().ServerDate();
-                            CompassEntities.SaveChanges();
-                        }*/
+                        /* if (obj == null)
+                         {
+                             obj = new tblMeterPay();
+                             obj.FK_Project_Id = projectId;
+                             obj.FK_MeterSize_Id = long.Parse(item);
+                             obj.Description = "";   // don't required description
+                             obj.Pay = 0;            // defualt set 0 and then set meter pay rete next page
+                             obj.Active = 1;
+                             obj.CreatedBy = userId;
+                             obj.CreatedOn = new CommonFunctions().ServerDate();
+                             CompassEntities.tblMeterPays.Add(obj);
+                             CompassEntities.SaveChanges();
+                         }
+                         else
+                         {
+                             obj.ModifiedBy = userId;
+                             obj.Active = 1;
+                             obj.ModifiedOn = new CommonFunctions().ServerDate();
+                             CompassEntities.SaveChanges();
+                         }*/
                     }
                 }
                 //
@@ -2114,7 +2114,7 @@ namespace GarronT.CMS.Model.DAL
                     {
                         /// check if lat long is avilable then validate the same address with different
 
-                        if (projectObject.Utilitytype != "Electric")    
+                        if (projectObject.Utilitytype != "Electric")
                         {
                             foreach (DataRow dtRow in dt.Rows)
                             {
@@ -2145,7 +2145,17 @@ namespace GarronT.CMS.Model.DAL
                         }
                     }
 
-
+                    if (projectObject.Utilitytype == "Electric")
+                    {
+                        CompassEntities objCE = new CompassEntities();
+                        //var obj = objCompassEntities.UploadedExcelDatas.Where(o => o.FKProjectId == ProjectID && o.Active==1 && o.UploadStatus != 2 && o.UploadStatus != null).ToList();
+                        var obj = objCE.UploadedExcelDatas.Where(o => o.FKProjectId == ProjectID && o.Active == 1 && o.UploadStatus != 2).ToList();
+                        foreach (var item in obj)
+                        {
+                            item.UploadStatus = 0;
+                        }
+                        objCompassEntities.SaveChanges();
+                    }
 
                     var standardFieldAccount = objCompassEntities1.VW_GETTab6DropdownData.Where(o => o.ProjectID == ProjectID && o.FieldName == "ACCOUNT" && o.FieldType == 2).FirstOrDefault();
                     var standardFieldOldMeter = objCompassEntities1.VW_GETTab6DropdownData.Where(o => o.ProjectID == ProjectID && o.FieldName == "OLD METER NUMBER" && o.FieldType == 2).FirstOrDefault();
@@ -2199,8 +2209,12 @@ namespace GarronT.CMS.Model.DAL
                                             if (checkDataSubmitted > 0)
                                             {
                                                 skipedRecordsCount++;   // Count Skipt records
-                                                skipedAccountsNo += "<br />"+ Convert.ToString(dtRow[sAccount]) + "";
+                                                skipedAccountsNo += "<br />" + Convert.ToString(dtRow[sAccount]) + "";
                                                 visitDone = true;
+                                                if (projectObject.Utilitytype == "Electric")
+                                                {
+                                                    oldObject.UploadStatus = 2;     // Visit done upload status set for TNMP project
+                                                }
                                             }
                                         }
                                     }
@@ -2234,8 +2248,10 @@ namespace GarronT.CMS.Model.DAL
                                                 currentProperty.SetValue(objRecord, sCurrentData, null);
                                             }
                                         }
-
-
+                                        if (projectObject.Utilitytype == "Electric")
+                                        {
+                                            objRecord.UploadStatus = 1; // Added this condtion fro TNMP project
+                                        }
                                         if (flagInsert)
                                         {
                                             i++;
@@ -2264,8 +2280,6 @@ namespace GarronT.CMS.Model.DAL
 
                                                     PropertyInfo currentProperty = pClass.Where(o => o.Name == dyCycleColName).FirstOrDefault();
                                                     currentProperty.SetValue(objRecord, (officeValue + " " + cycleValue), null);        // Merge value Cycle and Office
-                                                                                                                                        /*currentProperty = pClass.Where(o => o.Name == dyOfficeColName).FirstOrDefault();
-                                                                                                                                        currentProperty.SetValue(objRecord, officeValue, null);*/
                                                 }
                                                 if (!string.IsNullOrEmpty(dyStreetColName) && !string.IsNullOrEmpty(dyUnitColName))
                                                 {
@@ -2298,7 +2312,7 @@ namespace GarronT.CMS.Model.DAL
                                         result = true;
                                     }
                                 }
-                                catch(Exception ex)
+                                catch (Exception ex)
                                 {
                                     var errmsg = ex.Message;
 
@@ -2306,6 +2320,10 @@ namespace GarronT.CMS.Model.DAL
                                 #endregion
                             }
                             objCompassEntities1.SaveChanges();
+                            if (projectObject.Utilitytype == "Electric")
+                            {
+                                updateUploadStatus(ProjectID);
+                            }
                         }
                     }
                     dt1 = dt;
@@ -2318,6 +2336,17 @@ namespace GarronT.CMS.Model.DAL
                 result = false;
             }
             return result;
+        }
+
+        public void updateUploadStatus(long projectID)
+        {
+            CompassEntities obj = new CompassEntities();
+            var list = obj.UploadedExcelDatas.Where(o => o.FKProjectId == projectID && o.Active == 1 && o.UploadStatus == 0).ToList();
+            foreach (var item in list)
+            {
+                item.Active = 0;
+            }
+            obj.SaveChanges();
         }
 
         public void mergeColumnData(long projetID, long uploadedId)

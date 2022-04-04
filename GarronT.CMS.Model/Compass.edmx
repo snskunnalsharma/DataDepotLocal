@@ -1972,6 +1972,7 @@
                     <Property Name="RefCol68" Type="varchar" MaxLength="500" />
                     <Property Name="RefCol69" Type="varchar" MaxLength="500" />
                     <Property Name="RefCol70" Type="varchar" MaxLength="500" />
+                    <Property Name="UploadStatus" Type="int" />
                 </EntityType>
                 <EntityType Name="UserIcard">
                     <Key>
@@ -6938,6 +6939,7 @@
                     <Property Name="RefCol68" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
                     <Property Name="RefCol69" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
                     <Property Name="RefCol70" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+                    <Property Name="UploadStatus" Type="Int32" />
                     <NavigationProperty Name="UserTimeClockDetails" Relationship="CompassModel.FK_UserTimeClockDetail_UploadedExcelData" FromRole="UploadedExcelData" ToRole="UserTimeClockDetail" />
                 </EntityType>
                 <ComplexType Name="PROC_ReportPDF_GetReportHeaderFields_Result">
@@ -11795,6 +11797,7 @@
                     <EntitySetMapping Name="UploadedExcelDatas">
                         <EntityTypeMapping TypeName="CompassModel.UploadedExcelData">
                             <MappingFragment StoreEntitySet="UploadedExcelData">
+                                <ScalarProperty Name="UploadStatus" ColumnName="UploadStatus" />
                                 <ScalarProperty Name="RefCol70" ColumnName="RefCol70" />
                                 <ScalarProperty Name="RefCol69" ColumnName="RefCol69" />
                                 <ScalarProperty Name="RefCol68" ColumnName="RefCol68" />
