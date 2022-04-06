@@ -4371,14 +4371,38 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         }
                     }
                 }
-                if (dt.Columns.Contains("LOCATION/GPS"))
+                if (dt.Columns.Contains("v_new_latitude") && dt.Columns.Contains("v_new_longitude") && dt.Columns.Contains("ACCOUNT"))
+                {
+                    CompassEntities objComEn = new CompassEntities();
+                    for (int k = 0; k < dt.Rows.Count; k++)
+                    {
+                        string objAccount = dt.Rows[k]["ACCOUNT"].ToString();
+                        if (!string.IsNullOrEmpty(objAccount))
+                        {
+                            var obj = objComEn.tblProjectFieldDataMasters.Where(o => o.FieldValue == objAccount && o.Active == 1).FirstOrDefault();
+                            var objLatLong = objComEn.tblProjectFieldDataMasters.Where(o => o.TblProjectFieldData_Id == obj.TblProjectFieldData_Id && o.Active == 1 && o.InitialFieldName == "LOCATION/GPS").FirstOrDefault();
+                            if (!string.IsNullOrEmpty(objLatLong.FieldLatitude) && !string.IsNullOrEmpty(objLatLong.FieldLongitude))
+                            {
+                                dt.Rows[k]["v_new_latitude"] = objLatLong.FieldLatitude;
+                                dt.Rows[k]["v_new_longitude"] = objLatLong.FieldLongitude;
+                            }
+                            else
+                            {
+                                var objWorkCompletLatLong = objComEn.tblProjectFieldDataMasters.Where(o => o.TblProjectFieldData_Id == obj.TblProjectFieldData_Id && o.Active == 1 && o.InitialFieldName == "WORK COMPLETED").FirstOrDefault();
+                                dt.Rows[k]["v_new_latitude"] = objWorkCompletLatLong.FieldLatitude;
+                                dt.Rows[k]["v_new_longitude"] = objWorkCompletLatLong.FieldLongitude;
+                            }
+                        }
+                    }
+                }
+                /*if (dt.Columns.Contains("LOCATION/GPS"))
                 {
                     for (int k = 0; k < dt.Rows.Count; k++)
                     {
                         string objLocGPS = dt.Rows[k]["LOCATION/GPS"].ToString();
                         dt.Rows[k]["LOCATION/GPS"] = $@"""{objLocGPS}""";
                     }
-                }
+                }*/
 
                 if (dt.Columns.Contains("V_RTU_DATA"))
                 {

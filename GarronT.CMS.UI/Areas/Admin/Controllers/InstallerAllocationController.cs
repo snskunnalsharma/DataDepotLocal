@@ -146,7 +146,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     }
                 }
 
-
+                list = list.OrderBy(a => a.Street).ToList();    // Added new line because address order by street
                 JsonResult jsonResult = base.Json(new
                 {
                     AllAddress = list,
@@ -247,6 +247,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
             cyclelist = cyclelist.OrderBy(o => o.CycleId).Distinct().ToList();
             OrignalCycleList = OrignalCycleList.OrderBy(o => o.CycleId).Distinct().ToList();
+            /*cyclelist = cyclelist.Distinct().ToList();
+            OrignalCycleList = OrignalCycleList.Distinct().ToList();*/
             return base.Json(new { OrignalCycleList = OrignalCycleList, CycleList = cyclelist }, JsonRequestBehavior.AllowGet);
         }
 

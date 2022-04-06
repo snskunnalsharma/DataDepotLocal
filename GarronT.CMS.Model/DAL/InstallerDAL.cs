@@ -88,6 +88,7 @@ namespace GarronT.CMS.Model.DAL
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Connection = sqlConnection1;
             cmd.Parameters.Add(Param);
+            cmd.CommandTimeout = sqlConnection1.ConnectionTimeout;
             sqlConnection1.Open();
 
             reader = cmd.ExecuteReader();
