@@ -1121,7 +1121,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         {
                             Fulltext = sr.ReadToEnd().ToString(); //read full file text  
                             string[] rows = Fulltext.Split('\n'); //split full file text into rows  
-                            for (int i = 0; i < rows.Count() - 1; i++)
+                            for (int i = 0; i < rows.Count(); i++)
                             {
                                 //string[] rowValues = rows[i].Split(','); //split each row with comma to get individual values  
                                 string[] rowValues = CSVParser.Split(rows[i]);

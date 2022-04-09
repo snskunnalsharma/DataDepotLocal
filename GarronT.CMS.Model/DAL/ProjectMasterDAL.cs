@@ -2145,7 +2145,7 @@ namespace GarronT.CMS.Model.DAL
                         }
                     }
 
-                    if (projectObject.Utilitytype == "Electric")
+                    /*if (projectObject.Utilitytype == "Electric")
                     {
                         CompassEntities objCE = new CompassEntities();
                         //var obj = objCompassEntities.UploadedExcelDatas.Where(o => o.FKProjectId == ProjectID && o.Active==1 && o.UploadStatus != 2 && o.UploadStatus != null).ToList();
@@ -2155,7 +2155,7 @@ namespace GarronT.CMS.Model.DAL
                             item.UploadStatus = 0;
                         }
                         objCE.SaveChanges();
-                    }
+                    }*/
 
                     var standardFieldAccount = objCompassEntities1.VW_GETTab6DropdownData.Where(o => o.ProjectID == ProjectID && o.FieldName == "ACCOUNT" && o.FieldType == 2).FirstOrDefault();
                     var standardFieldOldMeter = objCompassEntities1.VW_GETTab6DropdownData.Where(o => o.ProjectID == ProjectID && o.FieldName == "OLD METER NUMBER" && o.FieldType == 2).FirstOrDefault();
@@ -2211,20 +2211,20 @@ namespace GarronT.CMS.Model.DAL
                                                 skipedRecordsCount++;   // Count Skipt records
                                                 skipedAccountsNo += "<br />" + Convert.ToString(dtRow[sAccount]) + "";
                                                 visitDone = true;
-                                                if (projectObject.Utilitytype == "Electric")
+                                                /*if (projectObject.Utilitytype == "Electric")
                                                 {
                                                     oldObject.UploadStatus = 2;     //Account already Completed Visit done upload status set for TNMP project
                                                     //objCompassEntities1.SaveChanges();
-                                                }
+                                                }*/
                                             }
-                                            else
+                                            /*else
                                             {
                                                 if (projectObject.Utilitytype == "Electric")
                                                 {
                                                     oldObject.UploadStatus = 1;     //Account present in DB Added this condtion fro TNMP project
                                                     //objCompassEntities1.SaveChanges();
                                                 }
-                                            }
+                                            }*/
                                         }
                                     }
                                     else
@@ -2303,10 +2303,10 @@ namespace GarronT.CMS.Model.DAL
                                                     }
                                                 }
                                             }
-                                            if (projectObject.Utilitytype == "Electric")
+                                            /*if (projectObject.Utilitytype == "Electric")
                                             {
                                                 objRecord.UploadStatus = 1; // Added this condtion fro TNMP project
-                                            }
+                                            }*/
                                             objCompassEntities1.Configuration.AutoDetectChangesEnabled = false;
                                             objCompassEntities1.Configuration.AutoDetectChangesEnabled = false;
                                             objCompassEntities1.Configuration.ValidateOnSaveEnabled = false;
@@ -2330,10 +2330,10 @@ namespace GarronT.CMS.Model.DAL
                                 #endregion
                             }
                             objCompassEntities1.SaveChanges();
-                            if (projectObject.Utilitytype == "Electric")
+                            /*if (projectObject.Utilitytype == "Electric")
                             {
                                 updateUploadStatus(ProjectID);
-                            }
+                            }*/
                         }
                     }
                     dt1 = dt;
