@@ -360,7 +360,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             IEnumerable<ServiceNotSelectedModel> objList2 = new List<ServiceNotSelectedModel>();
             //List<ProductServiceBo> objList3 = new List<ProductServiceBo>();
             IEnumerable<MeterSizePayRateBo> objList4 = new List<MeterSizePayRateBo>();
-            
+
             using (ProjectMasterDAL obj = new ProjectMasterDAL())
             {
                 objList1 = obj.GetActiveServiceRecords(projectId);
@@ -689,7 +689,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
                         success = new ProjectMasterDAL().CreateOrUpdateExcelMappingData(objTblProjectExcelMapping, ProjectID,
                             objobjExcelSheetBOList, UserId, dt, out returnMessage, out dt1, out isLatlongCalucalted,
-                            out newRecordsCount, out skipedRecordsCount,out updatedRecordsCount,out skipedAccountsNo);
+                            out newRecordsCount, out skipedRecordsCount, out updatedRecordsCount, out skipedAccountsNo);
 
                         CompassEntities objCompassEntities = new CompassEntities();
                         var objProjectdetail = objCompassEntities.tblProjects.Where(o => o.ProjectId == ProjectID).FirstOrDefault();
@@ -705,10 +705,10 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
                         string eMailBody = "Excel file uploaded successfully.<br /><br />" +
                                            "Project Name: <b>" + objProjectdetail.ProjectName + "</b><br />" +
-                                           "Project Id: <b>"+ ProjectID + "</b><br />" +
+                                           "Project Id: <b>" + ProjectID + "</b><br />" +
                                            "Total New Records: <b>" + newRecordsCount + "</b><br />" +
                                            "Total Skipped Records: <b>" + skipedRecordsCount + "</b><br />" +
-                                           "<br />" + skipedAccountsNo + ""+
+                                           "<br />" + skipedAccountsNo + "" +
                                            "<br /><br />Thanks and Regards,<br />Team CMS";
 
                         new GarronT.CMS.Model.clsMail().SendMail(mailto, mailcc, eMailBody, "Excel file uploaded");
@@ -717,6 +717,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         /// calculate the latitude
                         Task.Factory.StartNew(() =>
                         {
+                            ProjectMasterDAL pm = new ProjectMasterDAL();
+                            pm.updateUploadStatus(ProjectID, UserId);
                             //new CalculateLatLongController().CalculateNullLatLongbyProjectID(ProjectID); // Old method
                             /*new CalculateLatLongController().GetLatLongForProject(ProjectID);
                             new CalculateLatLongController().updateVisitIdGroupId(ProjectID);*/
@@ -728,7 +730,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         MSg = returnMessage;
                         //return Json(new { success = success, returnMessage = "Record Submitted Successfully. \n Processing in Background", filePath = fileName }, JsonRequestBehavior.AllowGet);
                         return Json(new { success = success, returnMessage = "File Uploaded Successfully Processing in Background", filePath = fileName }, JsonRequestBehavior.AllowGet);
-                        
+
                     }
 
                 }
@@ -1000,7 +1002,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         static bool isExcel(FileInfo wbook)
         {
             bool isOpened = true;
-            
+
             try
             {
                 ExcelPackage xlPackage = new ExcelPackage(wbook);
@@ -1021,6 +1023,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         private List<string> ValidateExcel1(string newFilePath, out List<string> List1)
         {
             List<string> objList1 = new List<string>();
+            TempData["ExcelData"] = null;
             try
             {
 
@@ -1102,7 +1105,6 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                             }
 
                         }
-
                         TempData["ExcelData"] = dt;
                         TempData.Keep("ExcelData");
                     }
@@ -1121,7 +1123,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         {
                             Fulltext = sr.ReadToEnd().ToString(); //read full file text  
                             string[] rows = Fulltext.Split('\n'); //split full file text into rows  
-                            for (int i = 0; i < rows.Count() - 1; i++)
+                            //for (int i = 0; i < rows.Count() - 1; i++)
+                            for (int i = 0; i < rows.Count(); i++)
                             {
                                 //string[] rowValues = rows[i].Split(','); //split each row with comma to get individual values  
                                 string[] rowValues = CSVParser.Split(rows[i]);
@@ -1158,7 +1161,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                                             string obj = ex.Message.ToString();
                                             log.Info("Error at File Uploading - " + DateTime.Now.ToString() + " -" + ex.Message);
                                         }
-                                        
+
                                     }
                                 }
                             }

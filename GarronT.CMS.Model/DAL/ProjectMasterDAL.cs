@@ -2147,14 +2147,15 @@ namespace GarronT.CMS.Model.DAL
 
                     if (projectObject.Utilitytype == "Electric")
                     {
-                        CompassEntities objCE = new CompassEntities();
+                        uploadStatus(ProjectID);
+                        /*CompassEntities objCE = new CompassEntities();
                         //var obj = objCompassEntities.UploadedExcelDatas.Where(o => o.FKProjectId == ProjectID && o.Active==1 && o.UploadStatus != 2 && o.UploadStatus != null).ToList();
                         var obj = objCE.UploadedExcelDatas.Where(o => o.FKProjectId == ProjectID && o.Active == 1 && o.UploadStatus != 2).ToList();
                         foreach (var item in obj)
                         {
                             item.UploadStatus = 0;
                         }
-                        objCE.SaveChanges();
+                        objCE.SaveChanges();*/
                     }
 
                     var standardFieldAccount = objCompassEntities1.VW_GETTab6DropdownData.Where(o => o.ProjectID == ProjectID && o.FieldName == "ACCOUNT" && o.FieldType == 2).FirstOrDefault();
@@ -2176,9 +2177,9 @@ namespace GarronT.CMS.Model.DAL
                             string dyOfficeColName = inDal.getDynamicColumnName("OFFICE", Convert.ToString(ProjectID));
                             string dyStreetColName = inDal.getDynamicColumnName("STREET", Convert.ToString(ProjectID));
                             string dyUnitColName = inDal.getDynamicColumnName("UNIT", Convert.ToString(ProjectID));
+                            var list = objCompassEntities1.UploadedExcelDatas.Where(o => o.FKProjectId == ProjectID && o.Active == 1).ToList();
                             foreach (DataRow dtRow in dt.Rows)
                             {
-
                                 #region
                                 try
                                 {
@@ -2186,14 +2187,13 @@ namespace GarronT.CMS.Model.DAL
                                     string account = Convert.ToString(dtRow[sAccount]).Trim();
                                     string oldMeterNo = Convert.ToString(dtRow[sOldMeterNo]).Trim();
 
-                                    var list = objCompassEntities1.UploadedExcelDatas.Where(o => o.FKProjectId == ProjectID && o.Active == 1).ToList();
+                                    //this line added to upper in line no. ==> 2179
+                                    //var list = objCompassEntities1.UploadedExcelDatas.Where(o => o.FKProjectId == ProjectID && o.Active == 1).ToList();
                                     bool visitDone = false;
                                     if (list != null && list.Count > 0)
                                     {
                                         var oldObject = list.Where(o => (string)o.GetType().GetProperty(accountColumn).GetValue(o) == account
                                           && (string)o.GetType().GetProperty(oldMeterColumn).GetValue(o) == oldMeterNo).FirstOrDefault();
-
-
 
                                         /// checked if data is already present in the database. 
                                         /// If yes then checked the record is visited or not in the field data table.
@@ -2214,6 +2214,8 @@ namespace GarronT.CMS.Model.DAL
                                                 if (projectObject.Utilitytype == "Electric")
                                                 {
                                                     oldObject.UploadStatus = 2;     //Account already Completed Visit done upload status set for TNMP project
+                                                    oldObject.ModifiedOn = new CommonFunctions().ServerDate();
+                                                    oldObject.ModifiedBy = long.Parse(userId.ToString());
                                                     //objCompassEntities1.SaveChanges();
                                                 }
                                             }
@@ -2222,6 +2224,8 @@ namespace GarronT.CMS.Model.DAL
                                                 if (projectObject.Utilitytype == "Electric")
                                                 {
                                                     oldObject.UploadStatus = 1;     //Account present in DB Added this condtion fro TNMP project
+                                                    oldObject.ModifiedOn = new CommonFunctions().ServerDate();
+                                                    oldObject.ModifiedBy = long.Parse(userId.ToString());
                                                     //objCompassEntities1.SaveChanges();
                                                 }
                                             }
@@ -2233,7 +2237,7 @@ namespace GarronT.CMS.Model.DAL
                                     }
 
 
-                                    if (visitDone == false)
+                                    /*if (visitDone == false)
                                     {
                                         int i = 0;
                                         //updatedRecordsCount++;
@@ -2313,27 +2317,121 @@ namespace GarronT.CMS.Model.DAL
                                             objCompassEntities1.UploadedExcelDatas.Add(objRecord);
                                             skipedRecordsCount--;
                                             newRecordsCount++;
-
                                         }
                                         if (i == 0)
                                         {
                                             skipedAccountsNo += "<br />" + Convert.ToString(dtRow[sAccount]) + "";
                                         }
                                         result = true;
+                                    }*/
+
+                                    //if (visitDone == false)
+                                    //int i = 0;
+                                    if (flagInsert)
+                                    {
+                                        //updatedRecordsCount++;
+                                        //skipedRecordsCount++;   // Count Skipt records only count skip records
+                                        UploadedExcelData objRecord = new UploadedExcelData();
+
+                                        objRecord.FKProjectId = ProjectID;
+                                        objRecord.Street12 = Convert.ToString(dtRow[sStreet]);
+                                        objRecord.Account12 = Convert.ToString(dtRow[sAccount]);
+
+                                        Type tClass = objRecord.GetType();
+                                        PropertyInfo[] pClass = tClass.GetProperties();
+
+                                        foreach (DataColumn dtCol in dt.Columns)
+                                        {
+                                            var mappedColumnName = GetExcelColumnMapList.Where(o => o.ExcelFieldName == dtCol.ColumnName).FirstOrDefault();
+                                            if (mappedColumnName != null)
+                                            {
+                                                string sCurrentData = Convert.ToString(dtRow[dtCol]);
+                                                PropertyInfo currentProperty = pClass.Where(o => o.Name == mappedColumnName.FKUploadedExcelDataDynamicColumn).FirstOrDefault();
+                                                currentProperty.SetValue(objRecord, sCurrentData, null);
+                                            }
+                                        }
+
+                                        //if (flagInsert)
+                                        //{
+                                        //i++;
+                                        objRecord.Active = 1;
+                                        objRecord.CreatedOn = new CommonFunctions().ServerDate();
+                                        objRecord.CreatedBy = long.Parse(userId.ToString());
+                                        objRecord.SyncEnable = 1;
+
+                                        //objCompassEntities1.Configuration.AutoDetectChangesEnabled = false;
+                                        //objCompassEntities1.Configuration.AutoDetectChangesEnabled = false;
+                                        //objCompassEntities1.Configuration.ValidateOnSaveEnabled = false;
+                                        //objCompassEntities1.UploadedExcelDatas.Add(objRecord);
+                                        //objCompassEntities1.SaveChanges();
+
+                                        bool statusCycleOfficeMerge = Boolean.Parse(ConfigurationManager.AppSettings["mergeCycleOfficeColumn"]);
+                                        if (statusCycleOfficeMerge)     // This Changes applied for TNMP ==> Electric City Project
+                                        {
+                                            //mergeColumnData(ProjectID, objRecord.Id);
+                                            if (!string.IsNullOrEmpty(dyCycleColName) && !string.IsNullOrEmpty(dyOfficeColName))
+                                            {
+                                                var propertyInfoCycle = objRecord.GetType().GetProperty(dyCycleColName);
+                                                var cycleValue = propertyInfoCycle.GetValue(objRecord);
+
+                                                var propertyInfoOffice = objRecord.GetType().GetProperty(dyOfficeColName);
+                                                var officeValue = propertyInfoOffice.GetValue(objRecord);
+
+                                                PropertyInfo currentProperty = pClass.Where(o => o.Name == dyCycleColName).FirstOrDefault();
+                                                currentProperty.SetValue(objRecord, (officeValue + " " + cycleValue), null);        // Merge value Cycle and Office
+                                            }
+                                            if (!string.IsNullOrEmpty(dyStreetColName) && !string.IsNullOrEmpty(dyUnitColName))
+                                            {
+                                                var propertyInfoStreet = objRecord.GetType().GetProperty(dyStreetColName);
+                                                var streetValue = propertyInfoStreet.GetValue(objRecord);
+
+                                                var propertyInfoUnit = objRecord.GetType().GetProperty(dyUnitColName);
+                                                var unitValue = propertyInfoUnit.GetValue(objRecord);
+
+                                                if (!string.IsNullOrEmpty(unitValue.ToString()))
+                                                {
+                                                    PropertyInfo currentProperty = pClass.Where(o => o.Name == dyStreetColName).FirstOrDefault();
+                                                    currentProperty.SetValue(objRecord, (streetValue + " " + unitValue), null);     // Merge value Street and Unit
+                                                    objRecord.Street12 = (streetValue + " " + unitValue).ToString(); // Street/ Address value stored in two columns in table
+                                                }
+                                            }
+                                        }
+                                        if (projectObject.Utilitytype == "Electric")
+                                        {
+                                            objRecord.UploadStatus = 1; // Added this condtion fro TNMP project
+                                        }
+                                        objCompassEntities1.Configuration.AutoDetectChangesEnabled = false;
+                                        objCompassEntities1.Configuration.AutoDetectChangesEnabled = false;
+                                        objCompassEntities1.Configuration.ValidateOnSaveEnabled = false;
+                                        objCompassEntities1.UploadedExcelDatas.Add(objRecord);
+                                        //skipedRecordsCount--;
+                                        newRecordsCount++;
+                                        //}
+                                        //result = true;
                                     }
+                                    else
+                                    {
+                                        skipedRecordsCount++;   // Count Skipt records only count skip records
+                                        skipedAccountsNo += "<br />" + Convert.ToString(dtRow[sAccount]) + "";
+                                    }
+                                    result = true;
                                 }
                                 catch (Exception ex)
                                 {
-                                    var errmsg = ex.Message;
-
+                                    returnMessage += "<br/>" + ex.Message;
+                                    result = false;
                                 }
                                 #endregion
                             }
                             objCompassEntities1.SaveChanges();
-                            if (projectObject.Utilitytype == "Electric")
+                            /*if (projectObject.Utilitytype == "Electric")
                             {
-                                updateUploadStatus(ProjectID);
-                            }
+                                //Task.Run(() => updateUploadStatus(ProjectID));
+                                Task.Factory.StartNew(() =>
+                                {
+                                    updateUploadStatus(ProjectID);
+                                });
+                            }*/
                         }
                     }
                     dt1 = dt;
@@ -2348,7 +2446,26 @@ namespace GarronT.CMS.Model.DAL
             return result;
         }
 
-        public void updateUploadStatus(long projectID)
+        public void uploadStatus(long projectID)
+        {
+            try
+            {
+                CompassEntities dbcontext = new CompassEntities();
+                SqlConnection _sqlCon = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
+                _sqlCon.Open();
+                string query = "Update Uploadedexceldata Set UploadStatus=0 where Active=1 and FKProjectId = '" + projectID + "' and (UploadStatus != 2 or UploadStatus is null)";
+                SqlCommand _cmd = new SqlCommand(query, _sqlCon);
+                _cmd.ExecuteNonQuery();
+                _sqlCon.Close();
+            }
+            catch(Exception ex)
+            {
+
+            }
+            
+        }
+
+        public void updateUploadStatus(long projectID, long userId)
         {
             CompassEntities obj = new CompassEntities();
             var list = obj.UploadedExcelDatas.Where(o => o.FKProjectId == projectID && o.Active == 1 && o.UploadStatus == 0).ToList();
@@ -2360,8 +2477,12 @@ namespace GarronT.CMS.Model.DAL
                     foreach (var ca in checkAllocation)
                     {
                         ca.Active = 0;
+                        ca.ModifiedOn = new CommonFunctions().ServerDate();
+                        ca.ModifiedBy = int.Parse(userId.ToString());
                     }
                 }
+                item.ModifiedOn = new CommonFunctions().ServerDate();
+                item.ModifiedBy = long.Parse(userId.ToString());
                 item.Active = 0;
             }
             obj.SaveChanges();
@@ -2391,7 +2512,7 @@ namespace GarronT.CMS.Model.DAL
                     var officeValue = propertyInfoOffice.GetValue(objRecord);
 
                     currentProperty = pClass.Where(o => o.Name == dyCycleColName).FirstOrDefault();
-                    currentProperty.SetValue(objRecord, (officeValue+" "+cycleValue), null);        // Merge value Cycle and Office
+                    currentProperty.SetValue(objRecord, (officeValue + " " + cycleValue), null);        // Merge value Cycle and Office
                     /*currentProperty = pClass.Where(o => o.Name == dyOfficeColName).FirstOrDefault();
                     currentProperty.SetValue(objRecord, officeValue, null);*/
                 }
@@ -2406,7 +2527,7 @@ namespace GarronT.CMS.Model.DAL
                     if (!string.IsNullOrEmpty(unitValue.ToString()))
                     {
                         currentProperty = pClass.Where(o => o.Name == dyStreetColName).FirstOrDefault();
-                        currentProperty.SetValue(objRecord, (streetValue+" "+ unitValue), null);     // Merge value Street and Unit
+                        currentProperty.SetValue(objRecord, (streetValue + " " + unitValue), null);     // Merge value Street and Unit
                         objRecord.Street12 = (streetValue + " " + unitValue).ToString(); // Street/ Address value stored in two columns in table
                     }
                 }
@@ -2720,7 +2841,7 @@ namespace GarronT.CMS.Model.DAL
 
                     var getDynamicColumnName = dbcontext.TblProjectExcelMappings.Where(o => o.ProjectID == getData.FKProjectId && o.Active == 1).ToList();
 
-                    htmlData.Append("<input type='hidden' name='Id' id='"+ getData.Id + "' value="+ getData.Id + "  class='inputclass form-control' />");
+                    htmlData.Append("<input type='hidden' name='Id' id='" + getData.Id + "' value=" + getData.Id + "  class='inputclass form-control' />");
 
                     // Note:- Two times loop applied because data show order wise Account, Cycle And Route
                     foreach (var item in getDynamicColumnName)
@@ -2798,7 +2919,7 @@ namespace GarronT.CMS.Model.DAL
                                             "' value=\"" + dynamicColValue + "\"></input>" +
                                             "</div>" +
                                             "</div>");
-                            
+
                         }
                     }
 
@@ -3070,7 +3191,7 @@ namespace GarronT.CMS.Model.DAL
                     ProjectServiceProductRelation objmodel = new ProjectServiceProductRelation();
                     objmodel.FKProductId = productid;
                     objmodel.FKProjectID = ProjectID;
-                    objmodel.FKServiceId = serviceId1; 
+                    objmodel.FKServiceId = serviceId1;
                     objmodel.Quantity = quantity;
                     objmodel.Active = 1;
                     objmodel.CreatedBy = 1;
