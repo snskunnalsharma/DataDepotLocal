@@ -2408,21 +2408,21 @@ namespace GarronT.CMS.Model.DAL
                                 }
                                 catch (Exception ex)
                                 {
-                                    returnMessage += "<br/>" + ex.Message;
-                                    result = false;
+                                    
                                 }
                                 #endregion
                             }
                             objCompassEntities1.SaveChanges();
-                            /*if (projectObject.Utilitytype == "Electric")
+                            if (projectObject.Utilitytype == "Electric")
                             {
+                                updateUploadStatus(ProjectID, userId);
                                 //Task.Run(() => updateUploadStatus(ProjectID));
-                                Task.Factory.StartNew(() =>
+                                /*Task.Factory.StartNew(() =>
                                 {
                                     updateUploadStatus(ProjectID);
-                                });
+                                });*/
 
-                            }*/
+                            }
                         }
                     }
                     dt1 = dt;

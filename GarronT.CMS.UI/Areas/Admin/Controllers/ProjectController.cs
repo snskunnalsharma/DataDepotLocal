@@ -717,8 +717,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         /// calculate the latitude
                         Task.Factory.StartNew(() =>
                         {
-                            ProjectMasterDAL pm = new ProjectMasterDAL();
-                            pm.updateUploadStatus(ProjectID, UserId);
+                            //ProjectMasterDAL pm = new ProjectMasterDAL();
+                            //pm.updateUploadStatus(ProjectID, UserId);
                             //new CalculateLatLongController().CalculateNullLatLongbyProjectID(ProjectID); // Old method
                             /*new CalculateLatLongController().GetLatLongForProject(ProjectID);
                             new CalculateLatLongController().updateVisitIdGroupId(ProjectID);*/
