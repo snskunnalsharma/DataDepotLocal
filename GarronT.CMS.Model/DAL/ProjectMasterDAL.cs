@@ -19,13 +19,13 @@ using System.Threading.Tasks;
 using System.Transactions;
 using System.Xml;
 using System.Xml.Linq;
+using log4net;
 
 
 namespace GarronT.CMS.Model.DAL
 {
     public class ProjectMasterDAL : IDisposable
     {
-
         bool disposed;
         protected virtual void Dispose(bool disposing)
         {
@@ -2198,7 +2198,7 @@ namespace GarronT.CMS.Model.DAL
                                         else
                                         {
                                             //var checkDataSubmitted = objCompassEntities1.TblProjectFieldDatas.Where(o => o.tblUploadedData_Id == oldObject.Id && o.Active == 1).Count();
-                                            var checkDataSubmitted = objCompassEntities1.TblProjectFieldDatas.Where(o => o.FK_UploadedExcelData_Id == oldObject.Id && o.Active == 1).Count();
+                                            var checkDataSubmitted = objCompassEntities1.TblProjectFieldDatas.Where(o => o.FK_UploadedExcelData_Id == oldObject.Id && o.Active == 1 && (o.IsSkipped == false || o.IsSkipped == null)).Count();
                                             if (checkDataSubmitted > 0)
                                             {
                                                 skipedRecordsCount++;   // Count Skipt records
