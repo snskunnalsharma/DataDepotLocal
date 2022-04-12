@@ -2518,6 +2518,8 @@ namespace GarronT.CMS.Model.DAL
                                     var workStatus = objForm.currentAccountData.accountFieldDataList.Where(o => o.fieldName.ToLower() == "WORK COMPLETED".ToLower() && o.fieldValue == "true").Count();
                                     if (workStatus == 1)
                                     {
+                                        var excelData = objCompassEntities.UploadedExcelDatas.Where(o => o.Id == objForm.currentAccountData.initialFieldId && o.Active == 1).FirstOrDefault();
+                                        excelData.UploadStatus = 2;
                                         AuditData objAudit = new AuditData();
 
                                         objAudit.Fk_InstallerId = objTblProjectFieldData.InstallerId;
