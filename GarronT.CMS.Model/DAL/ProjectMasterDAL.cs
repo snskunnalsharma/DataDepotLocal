@@ -2170,7 +2170,9 @@ namespace GarronT.CMS.Model.DAL
                             string dyOfficeColName = inDal.getDynamicColumnName("OFFICE", Convert.ToString(ProjectID));
                             string dyStreetColName = inDal.getDynamicColumnName("STREET", Convert.ToString(ProjectID));
                             string dyUnitColName = inDal.getDynamicColumnName("UNIT", Convert.ToString(ProjectID));
-                            var list = objCompassEntities1.UploadedExcelDatas.Where(o => o.FKProjectId == ProjectID && o.Active == 1).ToList();
+                            //var list = objCompassEntities1.UploadedExcelDatas.Where(o => o.FKProjectId == ProjectID && o.Active == 1).ToList();
+                            CompassEntities _obj = new CompassEntities();
+                            var list = _obj.UploadedExcelDatas.Where(o => o.FKProjectId == ProjectID && o.Active == 1).ToList();
                             foreach (DataRow dtRow in dt.Rows)
                             {
                                 #region
@@ -2412,6 +2414,7 @@ namespace GarronT.CMS.Model.DAL
                                 }
                                 #endregion
                             }
+                            _obj.SaveChanges();
                             objCompassEntities1.SaveChanges();
                             if (projectObject.Utilitytype == "Electric")
                             {
