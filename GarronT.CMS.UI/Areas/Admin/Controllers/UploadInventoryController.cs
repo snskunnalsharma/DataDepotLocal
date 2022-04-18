@@ -277,8 +277,10 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     TempData["UploadInventryVM"] = uploadInventryVM;
 
                     TempData["ProductModelList"] = productModelList;
-
-                    return Json(new { success = true, excelData1 = "File uploaded successfully.", varData = productModelList }, JsonRequestBehavior.AllowGet);
+                    var jsonResult = Json(new { success = true, excelData1 = "File uploaded successfully.", varData = productModelList }, JsonRequestBehavior.AllowGet);
+                    jsonResult.MaxJsonLength = int.MaxValue;
+                    return jsonResult;
+                    //return Json(new { success = true, excelData1 = "File uploaded successfully.", varData = productModelList }, JsonRequestBehavior.AllowGet);
                 }
             }
             catch (Exception ex)
