@@ -12,4 +12,11 @@ namespace GarronT.CMS.Model.BO
         public long FieldType { get; set; }
         public string FieldName { get; set; }
     }
+
+    public class officeCollection
+    {
+        public string accountNo { set; get; }
+        public string officeName { set; get; }
+        public string type { set; get; }
+    }
 }

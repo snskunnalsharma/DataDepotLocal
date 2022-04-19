@@ -691,7 +691,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         string skipedAccountsNo = string.Empty;
                         string newAccountsNo = string.Empty;
                         string removeAccountsNo = string.Empty;
-
+                        List<officeCollection> objofficeCollection = new List<officeCollection>();
                         /*success = new ProjectMasterDAL().CreateOrUpdateExcelMappingData(objTblProjectExcelMapping, ProjectID,
                             objobjExcelSheetBOList, UserId, dt, out returnMessage, out dt1, out isLatlongCalucalted,
                             out newRecordsCount, out skipedRecordsCount, out skipedAccountsNo, out updatedRecordsCount);*/
@@ -701,7 +701,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                             out newRecordsCount, out newAccountsNo,
                             out skipedRecordsCount, out skipedAccountsNo,
                             out removeRecordsCount, out removeAccountsNo,
-                            out updatedRecordsCount);
+                            out updatedRecordsCount,out objofficeCollection);
 
                         CompassEntities objCompassEntities = new CompassEntities();
                         var objProjectdetail = objCompassEntities.tblProjects.Where(o => o.ProjectId == ProjectID).FirstOrDefault();
@@ -718,17 +718,57 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         string eMailBody = string.Empty;
                         if (objProjectdetail.Utilitytype == "Electric")
                         {
-                            eMailBody = "Excel file uploaded successfully.<br /><br />" +
+                            /*eMailBody = "Excel file uploaded successfully.<br /><br />" +
                                                "Project Name: <b>" + objProjectdetail.ProjectName + "</b><br />" +
                                                "Project Id: <b>" + ProjectID + "</b><br />" +
                                                "Total New Records: <b>" + newRecordsCount + "</b><br />" +
                                                "Total Skipped Records: <b>" + skipedRecordsCount + "</b><br />" +
                                                "Total Removed Records: <b>" + removeRecordsCount + "</b><br />" +
                                                "<br /><b>Accounts Number Summary</b><br /><br />" +
-                                               /*"<b>New Account No:</b>" + newAccountsNo + "<br /><br />" +
-                                               "<b>Skipped Account No:</b>" + skipedAccountsNo + "<br /><br />" +*/
+                                               *//*"<b>New Account No:</b>" + newAccountsNo + "<br /><br />" +
+                                               "<b>Skipped Account No:</b>" + skipedAccountsNo + "<br /><br />" +*//*
                                                "<b>Removed Account No and Office:</b>" + removeAccountsNo + "<br /><br />" +
-                                               "<br />Thanks and Regards,<br />Team CMS";
+                                               "<br />Thanks and Regards,<br />Team CMS";*/
+                            eMailBody = "Excel file uploaded successfully.<br /><br />" +
+                                        "Project Name: <b>" + objProjectdetail.ProjectName + "</b><br />" +
+                                        "Project Id: <b>" + ProjectID + "</b><br />" +
+                                        "Total New Records: <b>" + newRecordsCount + "</b><br />" +
+                                        "Total Skipped Records: <b>" + skipedRecordsCount + "</b><br />" +
+                                        "Total Removed Records: <b>" + removeRecordsCount + "</b><br /><br />" +
+                                        "<br /><b>Accounts Number Summary</b><br /><br />";
+
+                            eMailBody += "<div class='container'>" +
+                                        "<table class='table table-bordered' border=" + 1 + " cellpadding=" + 0 + " cellspacing=" + 0 + " width = " + 100 + "%" + ">" +
+                                        "<tr bgcolor='#80b2df'>" +
+                                        "<td><b><center>Office Name</center></b></td> " +
+                                        "<td><b><center>New</center></b></td> " +
+                                        "<td><b><center>Skipped</center></b></td>" +
+                                        "<td><b><center>Removed</center></b></td>" +
+                                        "</tr>";
+                            var groupedOfficeNameWise = from c in objofficeCollection
+                                                         group c by new { objOfcName = c.officeName } into groupby
+                                                         select new
+                                                         {
+                                                             Value = groupby.Key,
+                                                             ColumnValues = groupby
+                                                         };
+                            foreach (var item in groupedOfficeNameWise.ToList())
+                            {
+                                string ofcName = item.Value.objOfcName.ToString();
+                                //Console.WriteLine(item.ColumnValues.Count());
+                                var newCount = item.ColumnValues.Where(o => o.type == "New").Count();
+                                var skipCount = item.ColumnValues.Where(o => o.type == "Skip").Count();
+                                var removeCount = item.ColumnValues.Where(o => o.type == "Remove").Count();
+                                eMailBody += "<tr>" +
+                                             "<td><center>" + ofcName + "</center></td>" +
+                                             "<td><center>" + newCount + "</center></td>" +
+                                             "<td><center>" + skipCount + "</center></td>" +
+                                             "<td><center>" + removeCount + "</center></td>" +
+                                             "</tr>";
+                            }
+                            
+                            eMailBody += "</table></div>";
+                            eMailBody += "<br /><br />Thanks and Regards,<br />Team CMS";
                         }
                         else
                         {
@@ -768,7 +808,13 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 return Json(new { success = false, returnMessage = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
-
+        
+        /*public class officeCollection
+        {
+            public string accountNo { set; get; }
+            public string officeName { set; get; }
+            public string type { set; get; }
+        }*/
         /// <summary>
         /// 
         /// </summary>

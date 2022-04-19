@@ -1968,7 +1968,7 @@ namespace GarronT.CMS.Model.DAL
             out int newRecordsCount, out string newAccountsNo,
             out int skipedRecordsCount, out string skipedAccountsNo,
             out int removeRecordsCount, out string removeAccountsNo,
-            out int updatedRecordsCount)
+            out int updatedRecordsCount, out List<officeCollection> objofficeCollection)
         {
             IsLatLongCalculated = false;
             bool result = false;
@@ -1982,6 +1982,7 @@ namespace GarronT.CMS.Model.DAL
             removeAccountsNo = "";
 
             updatedRecordsCount = 0;
+            objofficeCollection = new List<officeCollection>();
 
             CompassEntities objCompassEntities = new CompassEntities();
             try
@@ -2426,11 +2427,15 @@ namespace GarronT.CMS.Model.DAL
                                         newAccountsNo += "<br />" + Convert.ToString(dtRow[sAccount]) + "";
                                         //}
                                         //result = true;
+                                        var temoObj = new List<officeCollection> { new officeCollection { accountNo = Convert.ToString(dtRow[sAccount]), officeName = Convert.ToString(dtRow["OFFICE"]), type = "New" } };
+                                        objofficeCollection.AddRange(temoObj);
                                     }
                                     else
                                     {
                                         skipedRecordsCount++;   // Count Skipt records only count skip records
                                         skipedAccountsNo += "<br />" + Convert.ToString(dtRow[sAccount]) + "";
+                                        var temoObj= new List<officeCollection> { new officeCollection { accountNo = Convert.ToString(dtRow[sAccount]), officeName = Convert.ToString(dtRow["OFFICE"]), type = "Skip" } };
+                                        objofficeCollection.AddRange(temoObj);
                                     }
                                     result = true;
                                 }
@@ -2445,7 +2450,7 @@ namespace GarronT.CMS.Model.DAL
                             if (projectObject.Utilitytype == "Electric")
                             {
                                 //updateUploadStatus(ProjectID, userId);
-                                updateUploadStatus(ProjectID, userId,out removeRecordsCount, out removeAccountsNo);
+                                updateUploadStatus(ProjectID, userId, out removeRecordsCount, out removeAccountsNo,objofficeCollection);
                             }
                         }
                     }
@@ -2480,12 +2485,7 @@ namespace GarronT.CMS.Model.DAL
             
         }
 
-        public class accountCollection
-        {
-            public string accountNo { set; get; }
-            public string officeName { set; get; }
-        }
-        public void updateUploadStatus(long projectID, long userId,out int removeRecordsCount,out string removeAccountsNo)
+        public void updateUploadStatus(long projectID, long userId,out int removeRecordsCount,out string removeAccountsNo, List<officeCollection> objofficeCollection)
         {
             removeRecordsCount = 0;
             removeAccountsNo = "";
@@ -2512,6 +2512,8 @@ namespace GarronT.CMS.Model.DAL
                 var officeValue = propertyInfoOffice.GetValue(item);
                 removeRecordsCount++;
                 removeAccountsNo += "<br />" + Convert.ToString(item.Account12) + " and " + officeValue;
+                var temoObj = new List<officeCollection> { new officeCollection { accountNo = Convert.ToString(item.Account12), officeName = Convert.ToString(officeValue), type = "Remove" } };
+                objofficeCollection.AddRange(temoObj);
             }
             obj.SaveChanges();
         }
