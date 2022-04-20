@@ -13,7 +13,7 @@ GarronT.CMS.UI/UploadData/
 GarronT.CMS.UI/InventoryUpload/
 GarronT.CMS.UI/MobileUploadData/
 GarronT.CMS.UI/Logs/
-.vs/GarronT.CMS/
+.vs/GarronT.CMS/**/*.*
 # Visual Studio 2015 cache/options directory
 .vs/**/*.*
 # Roslyn cache directories
