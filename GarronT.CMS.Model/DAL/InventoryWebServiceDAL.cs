@@ -1366,6 +1366,8 @@ namespace GarronT.CMS.Model.DAL
                                 obj.ProductMake = item.ProductMaster.MeterMakeId != null ? item.ProductMaster.tblMeterMake.Make : "";
                                 obj.ProductSize = item.ProductMaster.MeterSizeId != null ? item.ProductMaster.tblMeterSize.MeterSize : "";
                                 obj.ProductType = item.ProductMaster.MeterTypeId != null ? item.ProductMaster.tblMeterType.MeterType : "";
+                                obj.PartNumber = item.ProductMaster.PartNumber != null ? item.ProductMaster.PartNumber : "";
+                                obj.Base = item.ProductMaster.Base != null ? item.ProductMaster.Base : "";
                             }
                             else
                             {
@@ -1373,6 +1375,8 @@ namespace GarronT.CMS.Model.DAL
                                 obj.ProductMake = "";
                                 obj.ProductSize = "";
                                 obj.ProductType = "";
+                                obj.PartNumber = "";
+                                obj.Base = "";
                             }
                         }
                         else

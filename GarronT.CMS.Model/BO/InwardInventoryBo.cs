@@ -357,6 +357,8 @@ namespace GarronT.CMS.Model.BO
         public string ProductName { get; set; }
         public string ProductSize { get; set; }
         public string ProductType { get; set; }
+        public string PartNumber { get; set; }
+        public string Base { get; set; }
         public string ServerReponseStatus { get; set; }
         public string SerialNumber { get; set; }
         public long ServerRequestId { get; set; }
