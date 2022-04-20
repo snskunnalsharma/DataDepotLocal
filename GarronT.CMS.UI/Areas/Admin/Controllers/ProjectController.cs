@@ -686,12 +686,22 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
                         int newRecordsCount = 0;
                         int skipedRecordsCount = 0;
+                        int removeRecordsCount = 0;
                         int updatedRecordsCount = 0;
                         string skipedAccountsNo = string.Empty;
+                        string newAccountsNo = string.Empty;
+                        string removeAccountsNo = string.Empty;
+                        List<officeCollection> objofficeCollection = new List<officeCollection>();
+                        /*success = new ProjectMasterDAL().CreateOrUpdateExcelMappingData(objTblProjectExcelMapping, ProjectID,
+                            objobjExcelSheetBOList, UserId, dt, out returnMessage, out dt1, out isLatlongCalucalted,
+                            out newRecordsCount, out skipedRecordsCount, out skipedAccountsNo, out updatedRecordsCount);*/
 
                         success = new ProjectMasterDAL().CreateOrUpdateExcelMappingData(objTblProjectExcelMapping, ProjectID,
                             objobjExcelSheetBOList, UserId, dt, out returnMessage, out dt1, out isLatlongCalucalted,
-                            out newRecordsCount, out skipedRecordsCount, out updatedRecordsCount, out skipedAccountsNo);
+                            out newRecordsCount, out newAccountsNo,
+                            out skipedRecordsCount, out skipedAccountsNo,
+                            out removeRecordsCount, out removeAccountsNo,
+                            out updatedRecordsCount,out objofficeCollection);
 
                         CompassEntities objCompassEntities = new CompassEntities();
                         var objProjectdetail = objCompassEntities.tblProjects.Where(o => o.ProjectId == ProjectID).FirstOrDefault();
@@ -705,22 +715,76 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         mailcc.Add("yogendra.rajpoot@snssystem.com");
                         mailcc.Add("deepak.yadav@snssystem.com");
 
-                        string eMailBody = "Excel file uploaded successfully.<br /><br />" +
-                                           "Project Name: <b>" + objProjectdetail.ProjectName + "</b><br />" +
-                                           "Project Id: <b>" + ProjectID + "</b><br />" +
-                                           "Total New Records: <b>" + newRecordsCount + "</b><br />" +
-                                           "Total Skipped Records: <b>" + skipedRecordsCount + "</b><br />" +
-                                           "<br />" + skipedAccountsNo + "" +
-                                           "<br /><br />Thanks and Regards,<br />Team CMS";
+                        string eMailBody = string.Empty;
+                        if (objProjectdetail.Utilitytype == "Electric")
+                        {
+                            /*eMailBody = "Excel file uploaded successfully.<br /><br />" +
+                                               "Project Name: <b>" + objProjectdetail.ProjectName + "</b><br />" +
+                                               "Project Id: <b>" + ProjectID + "</b><br />" +
+                                               "Total New Records: <b>" + newRecordsCount + "</b><br />" +
+                                               "Total Skipped Records: <b>" + skipedRecordsCount + "</b><br />" +
+                                               "Total Removed Records: <b>" + removeRecordsCount + "</b><br />" +
+                                               "<br /><b>Accounts Number Summary</b><br /><br />" +
+                                               *//*"<b>New Account No:</b>" + newAccountsNo + "<br /><br />" +
+                                               "<b>Skipped Account No:</b>" + skipedAccountsNo + "<br /><br />" +*//*
+                                               "<b>Removed Account No and Office:</b>" + removeAccountsNo + "<br /><br />" +
+                                               "<br />Thanks and Regards,<br />Team CMS";*/
+                            eMailBody = "Excel file uploaded successfully.<br /><br />" +
+                                        "Project Name: <b>" + objProjectdetail.ProjectName + "</b><br />" +
+                                        "Project Id: <b>" + ProjectID + "</b><br />" +
+                                        "Total New Records: <b>" + newRecordsCount + "</b><br />" +
+                                        "Total Skipped Records: <b>" + skipedRecordsCount + "</b><br />" +
+                                        "Total Removed Records: <b>" + removeRecordsCount + "</b><br /><br />" +
+                                        "<br /><b>Accounts Number Summary</b><br /><br />";
 
+                            eMailBody += "<div class='container'>" +
+                                        "<table class='table table-bordered' border=" + 1 + " cellpadding=" + 0 + " cellspacing=" + 0 + " width = " + 100 + "%" + ">" +
+                                        "<tr bgcolor='#80b2df'>" +
+                                        "<td><b><center>Office Name</center></b></td> " +
+                                        "<td><b><center>New</center></b></td> " +
+                                        "<td><b><center>Skipped</center></b></td>" +
+                                        "<td><b><center>Removed</center></b></td>" +
+                                        "</tr>";
+                            var groupedOfficeNameWise = from c in objofficeCollection
+                                                         group c by new { objOfcName = c.officeName } into groupby
+                                                         select new
+                                                         {
+                                                             Value = groupby.Key,
+                                                             ColumnValues = groupby
+                                                         };
+                            foreach (var item in groupedOfficeNameWise.ToList())
+                            {
+                                string ofcName = item.Value.objOfcName.ToString();
+                                //Console.WriteLine(item.ColumnValues.Count());
+                                var newCount = item.ColumnValues.Where(o => o.type == "New").Count();
+                                var skipCount = item.ColumnValues.Where(o => o.type == "Skip").Count();
+                                var removeCount = item.ColumnValues.Where(o => o.type == "Remove").Count();
+                                eMailBody += "<tr>" +
+                                             "<td><center>" + ofcName + "</center></td>" +
+                                             "<td><center>" + newCount + "</center></td>" +
+                                             "<td><center>" + skipCount + "</center></td>" +
+                                             "<td><center>" + removeCount + "</center></td>" +
+                                             "</tr>";
+                            }
+                            
+                            eMailBody += "</table></div>";
+                            eMailBody += "<br /><br />Thanks and Regards,<br />Team CMS";
+                        }
+                        else
+                        {
+                            eMailBody = "Excel file uploaded successfully.<br /><br />" +
+                                               "Project Name: <b>" + objProjectdetail.ProjectName + "</b><br />" +
+                                               "Project Id: <b>" + ProjectID + "</b><br />" +
+                                               "Total New Records: <b>" + newRecordsCount + "</b><br />" +
+                                               "Total Skipped Records: <b>" + skipedRecordsCount + "</b><br />" +
+                                               "<br />" + skipedAccountsNo + "" +
+                                               "<br /><br />Thanks and Regards,<br />Team CMS";
+                        }
                         new GarronT.CMS.Model.clsMail().SendMail(mailto, mailcc, eMailBody, "Excel file uploaded");
-                        //new GarronT.CMS.Model.clsMail().SendMail(mailto, null, "Excel file uploaded successfully. <br /> Project Id : " + ProjectID + "<br /><br />Thanks and Regards,<br />Team CMS", "Excel file uploaded");
 
                         /// calculate the latitude
                         Task.Factory.StartNew(() =>
                         {
-                            //ProjectMasterDAL pm = new ProjectMasterDAL();
-                            //pm.updateUploadStatus(ProjectID, UserId);
                             //new CalculateLatLongController().CalculateNullLatLongbyProjectID(ProjectID); // Old method
                             /*new CalculateLatLongController().GetLatLongForProject(ProjectID);
                             new CalculateLatLongController().updateVisitIdGroupId(ProjectID);*/
@@ -732,9 +796,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         MSg = returnMessage;
                         //return Json(new { success = success, returnMessage = "Record Submitted Successfully. \n Processing in Background", filePath = fileName }, JsonRequestBehavior.AllowGet);
                         return Json(new { success = success, returnMessage = "File Uploaded Successfully Processing in Background", filePath = fileName }, JsonRequestBehavior.AllowGet);
-
                     }
-
                 }
                 else
                 {
@@ -746,7 +808,13 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 return Json(new { success = false, returnMessage = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
-
+        
+        /*public class officeCollection
+        {
+            public string accountNo { set; get; }
+            public string officeName { set; get; }
+            public string type { set; get; }
+        }*/
         /// <summary>
         /// 
         /// </summary>
@@ -1130,8 +1198,10 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
                             for (int i = 0; i < rows.Count(); i++)
                             {
+                                //var s = rows[rows.Length - 1].ToString();
                                 //string[] rowValues = rows[i].Split(','); //split each row with comma to get individual values  
                                 string[] rowValues = CSVParser.Split(rows[i]);
+                                if(!string.IsNullOrEmpty(rowValues[0]))
                                 {
                                     if (i == 0)
                                     {

@@ -834,7 +834,7 @@ namespace GarronT.CMS.Model.DAL
             }
 
         }
-        
+
         public bool reOpenRecords(long uploadId, long installerId, long formId, long reOpenId, string reOpenComment, int userId, string taskStatus, string meterId, string radioId, long oldInstallerId)
         {
             bool result = false;
@@ -951,7 +951,7 @@ namespace GarronT.CMS.Model.DAL
                         }
                         /*serialList.Add(meterId);
                         serialList.Add(radioId);*/
-                        foreach(string serialNo in serialList)
+                        foreach (string serialNo in serialList)
                         {
                             DataTable dt = new DataTable();
                             using (SqlConnection sqlcon = new SqlConnection(objCompassEntities.Database.Connection.ConnectionString))
@@ -974,22 +974,22 @@ namespace GarronT.CMS.Model.DAL
                             {
                                 var slCount = stockList.Count();
                                 var cnt = 1;
-                                foreach(var stock in stockList)
+                                foreach (var stock in stockList)
                                 {
-                                    
+
                                     var outwardList = objCompassEntities.OutwardDetails.Where(o => o.FKStockDetailsID == stock.Id).ToList();
                                     foreach (var outward in outwardList)
                                     {
                                         var inventoryOutwardList = objCompassEntities.tblProjectFieldDataInventoryOutwardDetails.Where(o => o.FKOutwardDetailsId == outward.Id).ToList();
-                                        foreach(var inventoryOurward in inventoryOutwardList)
+                                        foreach (var inventoryOurward in inventoryOutwardList)
                                         {
                                             var projectInventoryDetailList = objCompassEntities.tblProjectFieldDataInventoryDetails.Where(o => o.ID == inventoryOurward.FKtblProjectFieldDataInventoryDetailsId).ToList();
-                                            foreach(var projectInventoryDetail in projectInventoryDetailList)
+                                            foreach (var projectInventoryDetail in projectInventoryDetailList)
                                             {
                                                 projectInventoryDetail.Active = 0;
                                                 //objCompassEntities.tblProjectFieldDataInventoryDetails.Remove(projectInventoryDetail);
                                                 objCompassEntities.SaveChanges();
-                                                
+
                                             }
                                             inventoryOurward.Active = 0;
                                             objCompassEntities.SaveChanges();
@@ -1206,93 +1206,94 @@ namespace GarronT.CMS.Model.DAL
                             }
                         }
                         objCompassEntities.SaveChanges(); */
-                  }
+                    }
 
-                tblInstallerMapData objtblInstallerMapDatas = objCompassEntities.tblInstallerMapDatas.Where(o => o.FK_UploadedExcelData_Id == uploadId && o.InstallerId == reOpenId).FirstOrDefault();
+                    tblInstallerMapData objtblInstallerMapDatas = objCompassEntities.tblInstallerMapDatas.Where(o => o.FK_UploadedExcelData_Id == uploadId && o.InstallerId == reOpenId).FirstOrDefault();
 
-                 bool insert = true;
-                 if (objtblInstallerMapDatas == null)
-                 {
-                     objtblInstallerMapDatas = new tblInstallerMapData();
-                     objtblInstallerMapDatas.CreatedOn = new CommonFunctions().ServerDate();
-                     objtblInstallerMapDatas.InstallerId = installerId;
-                     objtblInstallerMapDatas.FK_UploadedExcelData_Id = uploadId;
-                 }
-                 else
-                 {
-                     insert = false;
-                     objtblInstallerMapDatas.ModifiedOn = new CommonFunctions().ServerDate();
+                    bool insert = true;
+                    if (objtblInstallerMapDatas == null)
+                    {
+                        objtblInstallerMapDatas = new tblInstallerMapData();
+                        objtblInstallerMapDatas.CreatedOn = new CommonFunctions().ServerDate();
+                        objtblInstallerMapDatas.InstallerId = installerId;
+                        objtblInstallerMapDatas.FK_UploadedExcelData_Id = uploadId;
+                    }
+                    else
+                    {
+                        insert = false;
+                        objtblInstallerMapDatas.ModifiedOn = new CommonFunctions().ServerDate();
 
-                 }
+                    }
 
 
 
-                 objtblInstallerMapDatas.Active = 1;
+                    objtblInstallerMapDatas.Active = 1;
 
-                 //if (installerMap.InstallerId == installerId)
-                 //{
-                 //    objtblInstallerMapDatas.FromDate = installerMap.FromDate;
-                 //    objtblInstallerMapDatas.ToDate = installerMap.ToDate;
-                 //}
-                 //else
-                 //{
-                 //var _getInstallerMapList = objCompassEntities.STP_GetExistedUserInstallationbyDate(objtblInstallerMapDatas.CreatedOn, objtblInstallerMapDatas.CreatedOn, installerId, projectId).ToList();
-                 var _getInstallerMapList = objCompassEntities.PROC_ReportHome_ReOpen_GetCurrentVisitByDate(objtblInstallerMapDatas.CreatedOn, objtblInstallerMapDatas.CreatedOn, reOpenId, projectId).ToList();
-                 if (_getInstallerMapList == null || _getInstallerMapList.Count == 0)
-                 {
-                     objtblInstallerMapDatas.FromDate = installerMap.FromDate;
-                     objtblInstallerMapDatas.ToDate = installerMap.ToDate;
-                 }
-                 else
-                 {
-                     bool _result = false;
-                     foreach (var item in _getInstallerMapList)
-                     {
-                         if ((item.FromDate.Value.Date <= installerMap.FromDate.Date && item.ToDate.Value.Date >= installerMap.FromDate.Date) ||
-                             (item.FromDate.Value.Date <= installerMap.ToDate.Date && item.ToDate.Value.Date >= installerMap.ToDate.Date))
-                         {
-                             objtblInstallerMapDatas.FromDate = item.FromDate.Value;
-                             objtblInstallerMapDatas.ToDate = item.ToDate.Value;
-                             _result = true;
-                             break;
-                         }
-                     }
-                     if (!_result)
-                     {
-                         objtblInstallerMapDatas.FromDate = installerMap.FromDate;
-                         objtblInstallerMapDatas.ToDate = installerMap.ToDate;
-                     }
-                     else
-                     {
-                         objtblInstallerMapDatas.FromDate = installerMap.FromDate;
-                         objtblInstallerMapDatas.ToDate = installerMap.ToDate;
-                     }
-                 }
-                 //}
+                    //if (installerMap.InstallerId == installerId)
+                    //{
+                    //    objtblInstallerMapDatas.FromDate = installerMap.FromDate;
+                    //    objtblInstallerMapDatas.ToDate = installerMap.ToDate;
+                    //}
+                    //else
+                    //{
+                    //var _getInstallerMapList = objCompassEntities.STP_GetExistedUserInstallationbyDate(objtblInstallerMapDatas.CreatedOn, objtblInstallerMapDatas.CreatedOn, installerId, projectId).ToList();
+                    var _getInstallerMapList = objCompassEntities.PROC_ReportHome_ReOpen_GetCurrentVisitByDate(objtblInstallerMapDatas.CreatedOn, objtblInstallerMapDatas.CreatedOn, reOpenId, projectId).ToList();
+                    if (_getInstallerMapList == null || _getInstallerMapList.Count == 0)
+                    {
+                        objtblInstallerMapDatas.FromDate = installerMap.FromDate;
+                        objtblInstallerMapDatas.ToDate = installerMap.ToDate;
+                    }
+                    else
+                    {
+                        bool _result = false;
+                        foreach (var item in _getInstallerMapList)
+                        {
+                            if ((item.FromDate.Value.Date <= installerMap.FromDate.Date && item.ToDate.Value.Date >= installerMap.FromDate.Date) ||
+                                (item.FromDate.Value.Date <= installerMap.ToDate.Date && item.ToDate.Value.Date >= installerMap.ToDate.Date))
+                            {
+                                objtblInstallerMapDatas.FromDate = item.FromDate.Value;
+                                objtblInstallerMapDatas.ToDate = item.ToDate.Value;
+                                _result = true;
+                                break;
+                            }
+                        }
+                        if (!_result)
+                        {
+                            objtblInstallerMapDatas.FromDate = installerMap.FromDate;
+                            objtblInstallerMapDatas.ToDate = installerMap.ToDate;
+                        }
+                        else
+                        {
+                            objtblInstallerMapDatas.FromDate = installerMap.FromDate;
+                            objtblInstallerMapDatas.ToDate = installerMap.ToDate;
+                        }
+                    }
+                    //}
 
-                 if (insert)
-                 {
-                     objCompassEntities.tblInstallerMapDatas.Add(objtblInstallerMapDatas);
-                 }
-                 //update UploadedExcelData record for sync enable for mobile device ////added on 24june 2020 by snssystem
-                 var uploadedExcelData = objCompassEntities.UploadedExcelDatas.Where(o => o.Id == uploadId).FirstOrDefault();
-                 if (uploadedExcelData != null)
-                 {
-                     uploadedExcelData.SyncEnable = 1;
-                 }
+                    if (insert)
+                    {
+                        objCompassEntities.tblInstallerMapDatas.Add(objtblInstallerMapDatas);
+                    }
+                    //update UploadedExcelData record for sync enable for mobile device ////added on 24june 2020 by snssystem
+                    var uploadedExcelData = objCompassEntities.UploadedExcelDatas.Where(o => o.Id == uploadId).FirstOrDefault();
+                    if (uploadedExcelData != null)
+                    {
+                        uploadedExcelData.SyncEnable = 1;
+                        uploadedExcelData.UploadStatus = 1;  // Set upload status 1 for not complete, 2 for complete, 0 for inActive records 
+                    }
 
-                 objCompassEntities.SaveChanges();
-                 result = true;
-                 scope.Complete();
-             }
+                    objCompassEntities.SaveChanges();
+                    result = true;
+                    scope.Complete();
+                }
 
-         }
-         catch (Exception ex)
-         {
-             throw ex;
-         }
-         return result;
-     }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return result;
+        }
 
        
         #region--Createdby AniketJ on 30-5-2016--

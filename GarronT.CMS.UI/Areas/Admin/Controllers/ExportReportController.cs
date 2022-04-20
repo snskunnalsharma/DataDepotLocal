@@ -4354,8 +4354,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         }
                         //if (dt.Columns.Contains("V_NEW_LATITUDE") && dt.Columns.Contains("V_NEW_LONGITUDE") && dt.Columns.Contains("ACCOUNT"))
                         //{
-                            string _Account = dt.Rows[k]["ACCOUNT"].ToString();
-                            var dis = tempObjList.Where(o => o.FieldValue == _Account).FirstOrDefault();
+                            //string _Account = dt.Rows[k]["ACCOUNT"].ToString();
+                            var dis = tempObjList.Where(o => o.FieldValue == dt.Rows[k]["ACCOUNT"].ToString()).FirstOrDefault();
                             var objLatLong = tempObjList.Where(o => o.TblProjectFieldData_Id == dis.TblProjectFieldData_Id && o.InitialFieldName == "LOCATION/GPS").FirstOrDefault();
                             if (!string.IsNullOrEmpty(objLatLong.FieldLatitude) && !string.IsNullOrEmpty(objLatLong.FieldLongitude))
                             {

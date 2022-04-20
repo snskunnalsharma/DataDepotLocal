@@ -299,8 +299,7 @@ namespace GarronT.CMS.Model.DAL
             foreach (var item in data)  // Get all records or null lat or lon records
             {
                 item.TotalRecords = objCompassEntities.UploadedExcelDatas.Where(o => o.FKProjectId == item.ProjectId && o.Active == 1).Count();
-                var latLongCount = objCompassEntities.UploadedExcelDatas.Where(o => o.FKProjectId == item.ProjectId && o.Active == 1 && o.AddressLatitude != null
-                    && o.AddressLongitude != null).Count();
+                var latLongCount = objCompassEntities.UploadedExcelDatas.Where(o => o.FKProjectId == item.ProjectId && o.Active == 1 && o.AddressLatitude != null && o.AddressLongitude != null).Count();
                 item.LatLongStatus = Convert.ToString(latLongCount) + " / " + Convert.ToString(item.TotalRecords);
 
                 // Getting state and City name hare
@@ -1966,16 +1965,24 @@ namespace GarronT.CMS.Model.DAL
         /// <returns></returns>
         public bool CreateOrUpdateExcelMappingData(TblProjectExcelMapping objTblProjectExcelMapping, long ProjectID,
             List<ExcelSheetBO> objExcelSheetBOList, int userId, DataTable dt, out string returnMessage, out DataTable dt1, out bool IsLatLongCalculated,
-            out int newRecordsCount, out int skipedRecordsCount, out int updatedRecordsCount, out string skipedAccountsNo)
+            out int newRecordsCount, out string newAccountsNo,
+            out int skipedRecordsCount, out string skipedAccountsNo,
+            out int removeRecordsCount, out string removeAccountsNo,
+            out int updatedRecordsCount, out List<officeCollection> objofficeCollection)
         {
             IsLatLongCalculated = false;
             bool result = false;
             returnMessage = "Unable to Save Records.";
             dt1 = null;
             newRecordsCount = 0;
+            newAccountsNo = "";
             skipedRecordsCount = 0;
+            skipedAccountsNo = "";
+            removeRecordsCount = 0;
+            removeAccountsNo = "";
+
             updatedRecordsCount = 0;
-            skipedAccountsNo = "Skipped Account No.";
+            objofficeCollection = new List<officeCollection>();
 
             CompassEntities objCompassEntities = new CompassEntities();
             try
@@ -2170,7 +2177,12 @@ namespace GarronT.CMS.Model.DAL
                             string dyOfficeColName = inDal.getDynamicColumnName("OFFICE", Convert.ToString(ProjectID));
                             string dyStreetColName = inDal.getDynamicColumnName("STREET", Convert.ToString(ProjectID));
                             string dyUnitColName = inDal.getDynamicColumnName("UNIT", Convert.ToString(ProjectID));
-                            var list = objCompassEntities1.UploadedExcelDatas.Where(o => o.FKProjectId == ProjectID && o.Active == 1).ToList();
+                            string dyCustomerColName = inDal.getDynamicColumnName("CUSTOMER", Convert.ToString(ProjectID));
+                            string dyOMLRColName = inDal.getDynamicColumnName("OLD METER LAST READING", Convert.ToString(ProjectID));
+                            string dyReadDateColName = inDal.getDynamicColumnName("read_date", Convert.ToString(ProjectID));
+                            //var list = objCompassEntities1.UploadedExcelDatas.Where(o => o.FKProjectId == ProjectID && o.Active == 1).ToList();
+                            CompassEntities _oldObj = new CompassEntities();
+                            var list = _oldObj.UploadedExcelDatas.Where(o => o.FKProjectId == ProjectID && o.Active == 1).ToList();
                             foreach (DataRow dtRow in dt.Rows)
                             {
                                 #region
@@ -2201,25 +2213,41 @@ namespace GarronT.CMS.Model.DAL
                                             var checkDataSubmitted = objCompassEntities1.TblProjectFieldDatas.Where(o => o.FK_UploadedExcelData_Id == oldObject.Id && o.Active == 1 && (o.IsSkipped == false || o.IsSkipped == null)).Count();
                                             if (checkDataSubmitted > 0)
                                             {
-                                                skipedRecordsCount++;   // Count Skipt records
-                                                skipedAccountsNo += "<br />" + Convert.ToString(dtRow[sAccount]) + "";
+                                                /*skipedRecordsCount++;   // Count Skipt records  // Already count below in code else condition
+                                                skipedAccountsNo += "<br />" + Convert.ToString(dtRow[sAccount]) + "";*/
                                                 visitDone = true;
                                                 if (projectObject.Utilitytype == "Electric")
                                                 {
                                                     oldObject.UploadStatus = 2;     //Account already Completed Visit done upload status set for TNMP project
                                                     oldObject.ModifiedOn = new CommonFunctions().ServerDate();
                                                     oldObject.ModifiedBy = long.Parse(userId.ToString());
-                                                    //objCompassEntities1.SaveChanges();
                                                 }
                                             }
                                             else
                                             {
                                                 if (projectObject.Utilitytype == "Electric")
                                                 {
+                                                    #region Update old records data
                                                     oldObject.UploadStatus = 1;     //Account present in DB Added this condtion fro TNMP project
                                                     oldObject.ModifiedOn = new CommonFunctions().ServerDate();
                                                     oldObject.ModifiedBy = long.Parse(userId.ToString());
-                                                    //objCompassEntities1.SaveChanges();
+
+                                                    Type _tClass = oldObject.GetType();
+                                                    PropertyInfo[] _pClass = _tClass.GetProperties();
+                                                    PropertyInfo _currentProperty;
+                                                    
+                                                    var customerValue = Convert.ToString(dtRow["CUSTOMER"]);
+                                                    _currentProperty = _pClass.Where(o => o.Name == dyCustomerColName).FirstOrDefault();
+                                                    _currentProperty.SetValue(oldObject, customerValue, null);
+
+                                                    var OMLRValue = Convert.ToString(dtRow["OLD METER LAST READING"]);
+                                                    _currentProperty = _pClass.Where(o => o.Name == dyOMLRColName).FirstOrDefault();
+                                                    _currentProperty.SetValue(oldObject, OMLRValue, null);
+
+                                                    var readDateValue = Convert.ToString(dtRow["read_date"]);
+                                                    _currentProperty = _pClass.Where(o => o.Name == dyReadDateColName).FirstOrDefault();
+                                                    _currentProperty.SetValue(oldObject, readDateValue, null);
+                                                    #endregion
                                                 }
                                             }
                                         }
@@ -2396,13 +2424,18 @@ namespace GarronT.CMS.Model.DAL
                                         objCompassEntities1.UploadedExcelDatas.Add(objRecord);
                                         //skipedRecordsCount--;
                                         newRecordsCount++;
+                                        newAccountsNo += "<br />" + Convert.ToString(dtRow[sAccount]) + "";
                                         //}
                                         //result = true;
+                                        var temoObj = new List<officeCollection> { new officeCollection { accountNo = Convert.ToString(dtRow[sAccount]), officeName = Convert.ToString(dtRow["OFFICE"]), type = "New" } };
+                                        objofficeCollection.AddRange(temoObj);
                                     }
                                     else
                                     {
                                         skipedRecordsCount++;   // Count Skipt records only count skip records
                                         skipedAccountsNo += "<br />" + Convert.ToString(dtRow[sAccount]) + "";
+                                        var temoObj= new List<officeCollection> { new officeCollection { accountNo = Convert.ToString(dtRow[sAccount]), officeName = Convert.ToString(dtRow["OFFICE"]), type = "Skip" } };
+                                        objofficeCollection.AddRange(temoObj);
                                     }
                                     result = true;
                                 }
@@ -2412,16 +2445,12 @@ namespace GarronT.CMS.Model.DAL
                                 }
                                 #endregion
                             }
+                            _oldObj.SaveChanges();
                             objCompassEntities1.SaveChanges();
                             if (projectObject.Utilitytype == "Electric")
                             {
-                                updateUploadStatus(ProjectID, userId);
-                                //Task.Run(() => updateUploadStatus(ProjectID));
-                                /*Task.Factory.StartNew(() =>
-                                {
-                                    updateUploadStatus(ProjectID);
-                                });*/
-
+                                //updateUploadStatus(ProjectID, userId);
+                                updateUploadStatus(ProjectID, userId, out removeRecordsCount, out removeAccountsNo,objofficeCollection);
                             }
                         }
                     }
@@ -2456,8 +2485,12 @@ namespace GarronT.CMS.Model.DAL
             
         }
 
-        public void updateUploadStatus(long projectID, long userId)
+        public void updateUploadStatus(long projectID, long userId,out int removeRecordsCount,out string removeAccountsNo, List<officeCollection> objofficeCollection)
         {
+            removeRecordsCount = 0;
+            removeAccountsNo = "";
+            InstallerDAL inDal = new InstallerDAL();
+            string dyOfficeColName = inDal.getDynamicColumnName("OFFICE", Convert.ToString(projectID));
             CompassEntities obj = new CompassEntities();
             var list = obj.UploadedExcelDatas.Where(o => o.FKProjectId == projectID && o.Active == 1 && o.UploadStatus == 0).ToList();
             foreach (var item in list)
@@ -2475,6 +2508,12 @@ namespace GarronT.CMS.Model.DAL
                 item.ModifiedOn = new CommonFunctions().ServerDate();
                 item.ModifiedBy = long.Parse(userId.ToString());
                 item.Active = 0;
+                var propertyInfoOffice = item.GetType().GetProperty(dyOfficeColName);
+                var officeValue = propertyInfoOffice.GetValue(item);
+                removeRecordsCount++;
+                removeAccountsNo += "<br />" + Convert.ToString(item.Account12) + " and " + officeValue;
+                var temoObj = new List<officeCollection> { new officeCollection { accountNo = Convert.ToString(item.Account12), officeName = Convert.ToString(officeValue), type = "Remove" } };
+                objofficeCollection.AddRange(temoObj);
             }
             obj.SaveChanges();
         }
