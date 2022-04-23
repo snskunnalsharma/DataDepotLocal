@@ -1421,6 +1421,13 @@ $('#btnSave').unbind("click").click(function () {
     var ddlAddressValueList1 = $('#ulAddress li.highlighted');
     ddlAddressValueList1.each(function (index, item) { ddlAddressValueList.push($(this).val()) });
 
+    var ddlRootvalues = [];
+    var value = $('#ulroute li.highlighted')
+    value.each(function (index, item) { ddlRootvalues.push($(this).val()) });
+
+    var ddlCyclevalues = [];
+    var cyclevalue = $('#ulCycle li.highlighted')
+    cyclevalue.each(function (index, item) { ddlCyclevalues.push($(this).text()) });
 
     var ddlRouteList = $("#ddlRoot").val();
 
@@ -1440,6 +1447,8 @@ $('#btnSave').unbind("click").click(function () {
             "OldFromDate": oldfromdate,
             "OldToDate": oldtodate,
             "AddressID": ddlAddressValueList,
+            "RouteValues": ddlRootvalues,
+            "CycleValues": ddlCyclevalues
         }
         var urlSaveInstallerMap = $('#urlSaveInstallerMap').val();
 
@@ -1775,6 +1784,7 @@ $('#btnviewAllInstallers').click(function () {
 })
 $('#btnResetAllInstallers').click(function () {
     //model popup flage set to false i.e. popup will not shown
+    debugger;
     FromPopupEdit = true;
     //$("#datepicker1").val("");
     //$("#datepicker2").val("");

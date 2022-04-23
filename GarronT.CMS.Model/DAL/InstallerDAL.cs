@@ -1055,7 +1055,8 @@ namespace GarronT.CMS.Model.DAL
             DateTime dt = new CommonFunctions().ServerDate();
             try
             {
-
+                string routeValues = string.Join(",", InstallerMap.RouteValues.Select(x => $"'{x}'"));
+                string cycleValues = string.Join(",", InstallerMap.CycleValues.Select(x => $"'{x}'"));
 
                 CompassEntities dbcontext = new CompassEntities();
                 tblInstallerMapData objtblInstallerMapData = new tblInstallerMapData();
@@ -1081,6 +1082,8 @@ namespace GarronT.CMS.Model.DAL
                     cmd.Parameters.Add("@fromDate", fromDate);
                     cmd.Parameters.Add("@toDate", toDate);
                     cmd.Parameters.Add("@InstallerId", InstallerMap.InstallerID);
+                    cmd.Parameters.Add("@RouteList", routeValues);
+                    cmd.Parameters.Add("@CycleList", cycleValues);
 
                     sqlConnection1.Open();
 
@@ -1125,6 +1128,8 @@ namespace GarronT.CMS.Model.DAL
                     cmd2.Parameters.Add("@fromDate", fromDate);
                     cmd2.Parameters.Add("@toDate", toDate);
                     cmd2.Parameters.Add("@InstallerId", InstallerMap.InstallerID);
+                    cmd2.Parameters.Add("@RouteList", routeValues);
+                    cmd2.Parameters.Add("@CycleList", cycleValues);
 
                     sqlConnection2.Open();
                     cmd2.ExecuteNonQuery();
@@ -1137,7 +1142,7 @@ namespace GarronT.CMS.Model.DAL
 
                 if (InstallerMap != null && InstallerMap.AddressID != null && InstallerMap.AddressID.Count > 0)
                 {
-
+                    
 
                     DateTime fromDate = InstallerMap.OldFromDate == null ? DateTime.Parse(InstallerMap.FromDate) : DateTime.Parse(InstallerMap.OldFromDate);
                     DateTime toDate = InstallerMap.OldToDate == null ? DateTime.Parse(InstallerMap.ToDate) : DateTime.Parse(InstallerMap.OldToDate);
@@ -1157,6 +1162,8 @@ namespace GarronT.CMS.Model.DAL
                     cmd.Parameters.Add("@fromDate", fromDate);
                     cmd.Parameters.Add("@toDate", toDate);
                     cmd.Parameters.Add("@InstallerId", InstallerMap.InstallerID);
+                    cmd.Parameters.Add("@RouteList", routeValues);
+                    cmd.Parameters.Add("@CycleList", cycleValues);
 
                     sqlConnection1.Open();
 
@@ -1200,6 +1207,8 @@ namespace GarronT.CMS.Model.DAL
                     cmd2.Parameters.Add("@fromDate", fromDate);
                     cmd2.Parameters.Add("@toDate", toDate);
                     cmd2.Parameters.Add("@InstallerId", InstallerMap.InstallerID);
+                    cmd2.Parameters.Add("@RouteList", routeValues);
+                    cmd2.Parameters.Add("@CycleList", cycleValues);
 
                     sqlConnection2.Open();
                     cmd2.ExecuteNonQuery();

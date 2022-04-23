@@ -28,6 +28,8 @@ namespace GarronT.CMS.Model.BO
         public string OldToDate { get; set; }
 
         public List<LatLong> LatLongList { get; set; }
+        public List<string> RouteValues { get; set; }
+        public List<string> CycleValues { get; set; }
     }
 
     public class LatLong
