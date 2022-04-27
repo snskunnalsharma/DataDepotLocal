@@ -2177,9 +2177,9 @@ namespace GarronT.CMS.Model.DAL
                             string dyOfficeColName = inDal.getDynamicColumnName("OFFICE", Convert.ToString(ProjectID));
                             string dyStreetColName = inDal.getDynamicColumnName("STREET", Convert.ToString(ProjectID));
                             string dyUnitColName = inDal.getDynamicColumnName("UNIT", Convert.ToString(ProjectID));
-                            string dyCustomerColName = inDal.getDynamicColumnName("CUSTOMER", Convert.ToString(ProjectID));
+                            /*string dyCustomerColName = inDal.getDynamicColumnName("CUSTOMER", Convert.ToString(ProjectID));
                             string dyOMLRColName = inDal.getDynamicColumnName("OLD METER LAST READING", Convert.ToString(ProjectID));
-                            string dyReadDateColName = inDal.getDynamicColumnName("read_date", Convert.ToString(ProjectID));
+                            string dyReadDateColName = inDal.getDynamicColumnName("read_date", Convert.ToString(ProjectID));*/
                             //var list = objCompassEntities1.UploadedExcelDatas.Where(o => o.FKProjectId == ProjectID && o.Active == 1).ToList();
                             CompassEntities _oldObj = new CompassEntities();
                             var list = _oldObj.UploadedExcelDatas.Where(o => o.FKProjectId == ProjectID && o.Active == 1).ToList();
@@ -2231,12 +2231,56 @@ namespace GarronT.CMS.Model.DAL
                                                     oldObject.UploadStatus = 1;     //Account present in DB Added this condtion fro TNMP project
                                                     oldObject.ModifiedOn = new CommonFunctions().ServerDate();
                                                     oldObject.ModifiedBy = long.Parse(userId.ToString());
+                                                    oldObject.SyncEnable = 1;
 
                                                     Type _tClass = oldObject.GetType();
                                                     PropertyInfo[] _pClass = _tClass.GetProperties();
                                                     PropertyInfo _currentProperty;
-                                                    
-                                                    var customerValue = Convert.ToString(dtRow["CUSTOMER"]);
+
+                                                    oldObject.Street12 = Convert.ToString(dtRow[sStreet]);
+                                                    oldObject.Account12 = Convert.ToString(dtRow[sAccount]);
+                                                    foreach (DataColumn dtCol in dt.Columns)
+                                                    {
+                                                        var _mappedColumnName = GetExcelColumnMapList.Where(o => o.ExcelFieldName == dtCol.ColumnName).FirstOrDefault();
+                                                        if (_mappedColumnName != null)
+                                                        {
+                                                            string _sCurrentData = Convert.ToString(dtRow[dtCol]);
+                                                            _currentProperty = _pClass.Where(o => o.Name == _mappedColumnName.FKUploadedExcelDataDynamicColumn).FirstOrDefault();
+                                                            _currentProperty.SetValue(oldObject, _sCurrentData, null);
+                                                        }
+                                                    }
+                                                    bool statusCycleOfficeMerge = Boolean.Parse(ConfigurationManager.AppSettings["mergeCycleOfficeColumn"]);
+                                                    if (statusCycleOfficeMerge)     // This Changes applied for TNMP ==> Electric City Project
+                                                    {
+                                                        if (!string.IsNullOrEmpty(dyCycleColName) && !string.IsNullOrEmpty(dyOfficeColName))
+                                                        {
+                                                            var propertyInfoCycle = oldObject.GetType().GetProperty(dyCycleColName);
+                                                            var cycleValue = propertyInfoCycle.GetValue(oldObject);
+
+                                                            var propertyInfoOffice = oldObject.GetType().GetProperty(dyOfficeColName);
+                                                            var officeValue = propertyInfoOffice.GetValue(oldObject);
+
+                                                            PropertyInfo currentProperty = _pClass.Where(o => o.Name == dyCycleColName).FirstOrDefault();
+                                                            currentProperty.SetValue(oldObject, (officeValue + " " + cycleValue), null);        // Merge value Cycle and Office
+                                                        }
+                                                        if (!string.IsNullOrEmpty(dyStreetColName) && !string.IsNullOrEmpty(dyUnitColName))
+                                                        {
+                                                            var propertyInfoStreet = oldObject.GetType().GetProperty(dyStreetColName);
+                                                            var streetValue = propertyInfoStreet.GetValue(oldObject);
+
+                                                            var propertyInfoUnit = oldObject.GetType().GetProperty(dyUnitColName);
+                                                            var unitValue = propertyInfoUnit.GetValue(oldObject);
+
+                                                            if (!string.IsNullOrEmpty(unitValue.ToString()))
+                                                            {
+                                                                PropertyInfo currentProperty = _pClass.Where(o => o.Name == dyStreetColName).FirstOrDefault();
+                                                                currentProperty.SetValue(oldObject, (streetValue + " " + unitValue), null);     // Merge value Street and Unit
+                                                                oldObject.Street12 = (streetValue + " " + unitValue).ToString(); // Street/ Address value stored in two columns in table
+                                                            }
+                                                        }
+                                                    }
+
+                                                    /*var customerValue = Convert.ToString(dtRow["CUSTOMER"]);
                                                     _currentProperty = _pClass.Where(o => o.Name == dyCustomerColName).FirstOrDefault();
                                                     _currentProperty.SetValue(oldObject, customerValue, null);
 
@@ -2246,7 +2290,7 @@ namespace GarronT.CMS.Model.DAL
 
                                                     var readDateValue = Convert.ToString(dtRow["read_date"]);
                                                     _currentProperty = _pClass.Where(o => o.Name == dyReadDateColName).FirstOrDefault();
-                                                    _currentProperty.SetValue(oldObject, readDateValue, null);
+                                                    _currentProperty.SetValue(oldObject, readDateValue, null);*/
                                                     #endregion
                                                 }
                                             }

@@ -4352,23 +4352,21 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                                 }
                             }
                         }
-                        //if (dt.Columns.Contains("V_NEW_LATITUDE") && dt.Columns.Contains("V_NEW_LONGITUDE") && dt.Columns.Contains("ACCOUNT"))
-                        //{
-                            //string _Account = dt.Rows[k]["ACCOUNT"].ToString();
-                            var dis = tempObjList.Where(o => o.FieldValue == dt.Rows[k]["ACCOUNT"].ToString()).FirstOrDefault();
-                            var objLatLong = tempObjList.Where(o => o.TblProjectFieldData_Id == dis.TblProjectFieldData_Id && o.InitialFieldName == "LOCATION/GPS").FirstOrDefault();
-                            if (!string.IsNullOrEmpty(objLatLong.FieldLatitude) && !string.IsNullOrEmpty(objLatLong.FieldLongitude))
-                            {
-                                dt.Rows[k]["V_NEW_LATITUDE"] = objLatLong.FieldLatitude;
-                                dt.Rows[k]["V_NEW_LONGITUDE"] = objLatLong.FieldLongitude;
-                            }
-                            else
-                            {
-                                var objWorkCompletLatLong = tempObjList.Where(o => o.TblProjectFieldData_Id == dis.TblProjectFieldData_Id && o.InitialFieldName == "WORK COMPLETED").FirstOrDefault();
-                                dt.Rows[k]["V_NEW_LATITUDE"] = objWorkCompletLatLong.FieldLatitude;
-                                dt.Rows[k]["V_NEW_LONGITUDE"] = objWorkCompletLatLong.FieldLongitude;
-                            }
-                        //}
+
+                        var dis = tempObjList.Where(o => o.FieldValue == dt.Rows[k]["ACCOUNT"].ToString()).FirstOrDefault();
+                        var objLatLong = tempObjList.Where(o => o.TblProjectFieldData_Id == dis.TblProjectFieldData_Id && o.InitialFieldName == "LOCATION/GPS").FirstOrDefault();
+                        if (!string.IsNullOrEmpty(objLatLong.FieldLatitude) && !string.IsNullOrEmpty(objLatLong.FieldLongitude))
+                        {
+                            dt.Rows[k]["V_NEW_LATITUDE"] = objLatLong.FieldLatitude;
+                            dt.Rows[k]["V_NEW_LONGITUDE"] = objLatLong.FieldLongitude;
+                        }
+                        else
+                        {
+                            var objWorkCompletLatLong = tempObjList.Where(o => o.TblProjectFieldData_Id == dis.TblProjectFieldData_Id && o.InitialFieldName == "WORK COMPLETED").FirstOrDefault();
+                            dt.Rows[k]["V_NEW_LATITUDE"] = objWorkCompletLatLong.FieldLatitude;
+                            dt.Rows[k]["V_NEW_LONGITUDE"] = objWorkCompletLatLong.FieldLongitude;
+                        }
+                        
                         /*if (dt.Columns.Contains("V_NEW_LATITUDE") && dt.Columns.Contains("V_NEW_LONGITUDE") && dt.Columns.Contains("ACCOUNT"))
                         {
                             string objAccount = dt.Rows[k]["ACCOUNT"].ToString();
@@ -4410,166 +4408,6 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 {
                     dt.Columns.Remove("VISIT STATUS");  // Remove Column below regin "COMPLETED" find status in if contion in upper
                 }
-
-                /*if (dt.Columns.Contains("VISIT ATTENDED DATETIME"))
-                {
-                    dt.Columns["VISIT ATTENDED DATETIME"].ColumnName = "v_completion_date"; // Column Name chnage
-                    for (int k = 0; k < dt.Rows.Count; k++)
-                    {
-                        if (dt.Rows[k]["VISIT STATUS"].ToString().Equals("COMPLETED"))  // Complet date time formate chnage
-                        {
-                            DateTime obj = Convert.ToDateTime(dt.Rows[k]["v_completion_date"].ToString());
-                            string CompletDate = obj.ToString("MMddyyyy HH:mm");
-                            dt.Rows[k]["v_completion_date"] = CompletDate;
-                        }
-                        else
-                        {
-                            dt.Rows[k]["v_completion_date"] = "";
-                        }
-                    }
-                }*/
-                
-
-                /*if (dt.Columns.Contains("OFFICE"))
-                {
-                    for (int k = 0; k < dt.Rows.Count; k++)
-                    {
-                        string objOffice = dt.Rows[k]["OFFICE"].ToString();
-                        string objCycle = dt.Rows[k]["V_CYCLE"].ToString();
-                        if (!string.IsNullOrEmpty(objOffice))
-                        {
-                            objCycle = objCycle.Replace(objOffice, "");
-                            dt.Rows[k]["V_CYCLE"] = objCycle.Trim();
-                        }
-                    }
-                }*/
-                /*if (dt.Columns.Contains("V_CYCLE"))
-                {
-                    for (int k = 0; k < dt.Rows.Count; k++)
-                    {
-                        string objCycle = dt.Rows[k]["V_CYCLE"].ToString();
-                        string[] arrCycle = objCycle.Split(' ');   // Office text remove
-                        dt.Rows[k]["V_CYCLE"] = (arrCycle[1].ToString()).Trim();
-                    }
-                }*/
-                /*if (dt.Columns.Contains("UNIT"))
-                {
-                    for (int k = 0; k < dt.Rows.Count; k++)
-                    {
-                        string objUnit = dt.Rows[k]["UNIT"].ToString();
-                        string objStreet = dt.Rows[k]["STREET"].ToString();
-                        if (!string.IsNullOrEmpty(objUnit))
-                        {
-                            int i = objUnit.Length + 1; // 1 Add because remove white space(In Steet and Unit merge time)
-                            objStreet = objStreet.Remove(objStreet.Length - i);
-                            dt.Rows[k]["STREET"] = ""+objStreet+"";
-                        }
-                    }
-                }*/
-                /*if (dt.Columns.Contains("STREET"))
-                {
-                    for (int k = 0; k < dt.Rows.Count; k++)
-                    {
-                        string objStreet = dt.Rows[k]["STREET"].ToString();
-                        dt.Rows[k]["STREET"] = $@"""{objStreet}""";     // Add Double qoute with string
-                    }
-                }*/
-                /*if (dt.Columns.Contains("UNIT"))
-                {
-                    for (int k = 0; k < dt.Rows.Count; k++)
-                    {
-                        string objUNIT = dt.Rows[k]["UNIT"].ToString();
-                        dt.Rows[k]["UNIT"] = $@"""{objUNIT}""";
-                    }
-                }*/
-                /*if (dt.Columns.Contains("c_v_prem_line4"))
-                {
-                    //dt.Columns["addr-line4"].ColumnName = "c_v_prem_line4"; // Column Name chnage
-                    for (int k = 0; k < dt.Rows.Count; k++)
-                    {
-                        string objc_v_prem_line4 = dt.Rows[k]["c_v_prem_line4"].ToString();
-                        dt.Rows[k]["c_v_prem_line4"] = $@"""{objc_v_prem_line4}""";
-                    }
-                }*/
-                /*if (dt.Columns.Contains("CITY"))
-                {
-                    for (int k = 0; k < dt.Rows.Count; k++)
-                    {
-                        string objCITY = dt.Rows[k]["CITY"].ToString();
-                        dt.Rows[k]["CITY"] = $@"""{objCITY}""";
-                    }
-                }*/
-
-                /*if (dt.Columns.Contains("V_NEW_SERIAL_NUM"))
-                {
-                    for (int k = 0; k < dt.Rows.Count; k++)
-                    {
-                        string objNewMeterNum = dt.Rows[k]["V_NEW_SERIAL_NUM"].ToString();
-                        if (!string.IsNullOrEmpty(objNewMeterNum))
-                        {
-                            string result = objNewMeterNum.Substring(0, 3);
-                            if (result.ToUpper().Equals("1NF"))
-                            {
-                                string finalSeNo = objNewMeterNum.Replace(result, "");  // Remove frist 3 cher
-                                //string finalSeNo2nd = objNewMeterNum.Remove(0, 3);
-                                dt.Rows[k]["V_NEW_SERIAL_NUM"] = finalSeNo;
-                            }
-                        }
-                    }
-                }*/
-                /*dt.Columns.Add("V_NEW_LATITUDE");
-                dt.AcceptChanges();
-                dt.Columns.Add("V_NEW_LONGITUDE");
-                dt.AcceptChanges();
-                if (dt.Columns.Contains("V_NEW_LATITUDE") && dt.Columns.Contains("V_NEW_LONGITUDE") && dt.Columns.Contains("ACCOUNT"))
-                {
-                    CompassEntities objComEn = new CompassEntities();
-                    for (int k = 0; k < dt.Rows.Count; k++)
-                    {
-                        string objAccount = dt.Rows[k]["ACCOUNT"].ToString();
-                        if (!string.IsNullOrEmpty(objAccount))
-                        {
-                            var obj = objComEn.tblProjectFieldDataMasters.Where(o => o.FieldValue == objAccount && o.Active == 1).FirstOrDefault();
-                            var objLatLong = objComEn.tblProjectFieldDataMasters.Where(o => o.TblProjectFieldData_Id == obj.TblProjectFieldData_Id && o.Active == 1 && o.InitialFieldName == "LOCATION/GPS").FirstOrDefault();
-                            if (!string.IsNullOrEmpty(objLatLong.FieldLatitude) && !string.IsNullOrEmpty(objLatLong.FieldLongitude))
-                            {
-                                dt.Rows[k]["V_NEW_LATITUDE"] = objLatLong.FieldLatitude;
-                                dt.Rows[k]["V_NEW_LONGITUDE"] = objLatLong.FieldLongitude;
-                            }
-                            else
-                            {
-                                var objWorkCompletLatLong = objComEn.tblProjectFieldDataMasters.Where(o => o.TblProjectFieldData_Id == obj.TblProjectFieldData_Id && o.Active == 1 && o.InitialFieldName == "WORK COMPLETED").FirstOrDefault();
-                                dt.Rows[k]["V_NEW_LATITUDE"] = objWorkCompletLatLong.FieldLatitude;
-                                dt.Rows[k]["V_NEW_LONGITUDE"] = objWorkCompletLatLong.FieldLongitude;
-                            }
-                        }
-                    }
-                }*/
-                /*if (dt.Columns.Contains("LOCATION/GPS"))
-                {
-                    for (int k = 0; k < dt.Rows.Count; k++)
-                    {
-                        string objLocGPS = dt.Rows[k]["LOCATION/GPS"].ToString();
-                        dt.Rows[k]["LOCATION/GPS"] = $@"""{objLocGPS}""";
-                    }
-                }*/
-
-                /*if (dt.Columns.Contains("V_RTU_DATA"))
-                {
-                    for (int k = 0; k < dt.Rows.Count; k++)
-                    {
-                        string objRtuData = dt.Rows[k]["V_RTU_DATA"].ToString();    // Remove new line in text
-                        dt.Rows[k]["V_RTU_DATA"] = objRtuData.Replace("\r\n", " ").Replace("\r", " ").Replace("\n", " ");
-                    }
-                }*/
-                /*if (dt.Columns.Contains("V_COMMENTS"))
-                {
-                    for (int k = 0; k < dt.Rows.Count; k++)
-                    {
-                        string objComment = dt.Rows[k]["V_COMMENTS"].ToString();    // Remove new line in text
-                        dt.Rows[k]["V_COMMENTS"] = objComment.Replace("\r\n", " ").Replace("\r", " ").Replace("\n", " ");
-                    }
-                }*/
 
                 dt.Columns["V_NEW_LATITUDE"].SetOrdinal(27);
                 dt.AcceptChanges();

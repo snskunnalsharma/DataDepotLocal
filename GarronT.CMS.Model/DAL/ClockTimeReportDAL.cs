@@ -62,7 +62,7 @@ namespace GarronT.CMS.Model.DAL
                 foreach (var item in weeksrangedate)
                 {
 
-                    if (projectStartDate.Year == item.Item2.Year)
+                    if (projectStartDate.Year == item.Item2.Year && projectStartDate.Year != serverDateTime.Year)
                     {
                         if (projectStartDate.Date <= item.Item2.Date)
                         {
@@ -93,24 +93,24 @@ namespace GarronT.CMS.Model.DAL
                         {
                             //if (serverDateTime.Date >= item.Item2.Date)
                             //{
-                                objWeeksModel.Add(new WeeksModel
-                                {
-                                    WeekRangeDate = Convert.ToString(item).Substring(1, Convert.ToString(item).Length - 2),
-                                    DisplayWeekRangeDate = "Week No. : " + item.Item3 + " Week Date Range : " + item.Item1.ToString("dd-MMM-yyyy") + " To " + item.Item2.ToString("dd-MMM-yyyy"),
-                                    SerialNo = i++
-                                });
-                             /*}
-                           else
+                            objWeeksModel.Add(new WeeksModel
                             {
-                                objWeeksModel.Add(new WeeksModel
-                                {
-                                    //WeekRangeDate = Convert.ToString(item).Substring(1, Convert.ToString(item).Length - 2),
-                                    WeekRangeDate = Convert.ToString(item.Item1) + ", " + serverDateTime.Date + ", " + item.Item3,
-                                    DisplayWeekRangeDate = "Week No. : " + item.Item3 + " Week Date Range : " + item.Item1.ToString("dd-MMM-yyyy") + " To " + serverDateTime.Date.ToString("dd-MMM-yyyy"),
-                                    SerialNo = i++
-                                });
-                                break;
-                            }*/
+                                WeekRangeDate = Convert.ToString(item).Substring(1, Convert.ToString(item).Length - 2),
+                                DisplayWeekRangeDate = "Week No. : " + item.Item3 + " Week Date Range : " + item.Item1.ToString("dd-MMM-yyyy") + " To " + item.Item2.ToString("dd-MMM-yyyy"),
+                                SerialNo = i++
+                            });
+                            /*}
+                          else
+                           {
+                               objWeeksModel.Add(new WeeksModel
+                               {
+                                   //WeekRangeDate = Convert.ToString(item).Substring(1, Convert.ToString(item).Length - 2),
+                                   WeekRangeDate = Convert.ToString(item.Item1) + ", " + serverDateTime.Date + ", " + item.Item3,
+                                   DisplayWeekRangeDate = "Week No. : " + item.Item3 + " Week Date Range : " + item.Item1.ToString("dd-MMM-yyyy") + " To " + serverDateTime.Date.ToString("dd-MMM-yyyy"),
+                                   SerialNo = i++
+                               });
+                               break;
+                           }*/
                         }
                         else
                         {
@@ -494,11 +494,19 @@ namespace GarronT.CMS.Model.DAL
                     decimal AvgPerHours = 0m;
                     AvgPerHours = Math.Round(totalPay / totalWorkingHoursInWeek, 2);
                     var pd = CompassEntities.tblProjects.Where(o => o.ProjectId == _ProjectID).FirstOrDefault(); // pd =projectdetails
-                    var cityName = CompassEntities.TblCityMasters.Where(o => o.CityId == pd.CityId).FirstOrDefault();
-                    var stateName = CompassEntities.tblStateMasters.Where(o => o.StateId == pd.StateId).FirstOrDefault();
                     var installer = CompassEntities.tblUsers.Where(o => o.UserID == installerid).FirstOrDefault();
 
-                    string projectName = cityName.CityName + " " + stateName.StateName;
+                    string projectName = string.Empty;
+                    if (pd.CityId > 0 && pd.StateId > 0)
+                    {
+                        var cityName = CompassEntities.TblCityMasters.Where(o => o.CityId == pd.CityId).FirstOrDefault();
+                        var stateName = CompassEntities.tblStateMasters.Where(o => o.StateId == pd.StateId).FirstOrDefault();
+                        projectName = cityName.CityName + " " + stateName.StateName;
+                    }
+                    else
+                    {
+                        projectName = pd.ProjectName;
+                    }
                     string contractorName= installer.FirstName + " " + installer.LastName;
                     string contractorLLCName = string.Empty;
                     string contractorPhone =Convert.ToString(installer.MobileNo);
