@@ -265,6 +265,28 @@ namespace GarronT.CMS.Model.BO
             list = CompassEntities.tblUsers.AsNoTracking().Where(o => o.Active == 1).ToList();
             return list;
         }
+
+        public List<tblUser> GetUserRecordsOfProject(long userId)
+        {
+            CompassEntities CompassEntities = new CompassEntities();
+            //List<Tuple<long>> projectList = new List<Tuple<long>>();
+            //List<long> projectList = new List<long>();
+            var projectList = (List<long>) CompassEntities.TblProjectInstallers.Where(o => o.Active == 1 && o.tblUsers_UserID == userId).Select(o => o.ProjectID).ToList();
+            /*var userList = (from b in CompassEntities.TblProjectInstallers
+                                               where b.Active == 1 && projectList.Contains(b.ProjectID)
+                                               select new
+                                               {
+                                                   UserId = b.tblUsers_UserID
+                                                   
+                                               }).ToList().Distinct();*/
+            var userList = CompassEntities.TblProjectInstallers.Where(o => o.Active == 1 && projectList.Contains(o.ProjectID)).Select(m => m.tblUsers_UserID).ToList().Distinct();
+            
+            var list = new List<tblUser>();
+            //CompassEntities CompassEntities = new CompassEntities();
+            list = CompassEntities.tblUsers.AsNoTracking().Where(o => o.Active == 1 && userList.Contains(o.UserID)).ToList();
+            return list;
+        }
+
         public List<tblUser> GetDeActiveRecords()
         {
             var list = new List<tblUser>();

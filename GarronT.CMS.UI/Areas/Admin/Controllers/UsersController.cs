@@ -109,7 +109,9 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         {
             try
             {
-                var list1 = new UserDAL().GetUserRecords();
+                long currentUserId = (long)new UserDetails().GetUserId(User.Identity.GetUserId());
+                //var list1 = new UserDAL().GetUserRecords(currentUserId);
+                var list1 = new UserDAL().GetUserRecordsOfProject(currentUserId);
 
                 var manager = new ApplicationDbContext.UserManager();
                 manager.UserValidator = new UserValidator<ApplicationUser>(manager) { AllowOnlyAlphanumericUserNames = false };
