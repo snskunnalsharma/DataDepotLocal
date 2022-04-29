@@ -172,13 +172,26 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         public JsonResult GetProjectDetails()
         {
             ProjectModel obj1 = new ProjectModel();
+            CompassEntities et = new CompassEntities();
+            long currentUserId = (long)new UserDetails().GetUserId(User.Identity.GetUserId());
+            var userDetail = et.tblUsers.Where(o => o.UserID == currentUserId).FirstOrDefault();
+            var UserRoleList = et.ASPNET_GetUserRoles(userDetail.UserID).Select(o => o.Name).ToList();
             if (TempData["ProjectId"] != null)
             {
                 long ProjectId = long.Parse(TempData["ProjectId"].ToString());
                 TempData.Keep("ProjectId");
                 using (ProjectMasterDAL obj = new ProjectMasterDAL())
                 {
-                    obj1 = obj.GetProjectDetail(ProjectId);
+                    List<tblUser> list1 = new List<tblUser>();
+                    if (UserRoleList.Contains("Admin"))
+                    {
+                        obj1 = obj.GetProjectDetail(ProjectId);
+                    }
+                    else
+                    {
+                        obj1 = obj.GetProjectDetail(ProjectId, currentUserId);
+                    }
+                    
                     if (obj1 == null)
                     {
                         obj1 = new ProjectModel();
@@ -192,7 +205,14 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 TempData.Keep("CloneId");
                 using (ProjectMasterDAL obj = new ProjectMasterDAL())
                 {
-                    obj1 = obj.GetProjectDetail(ProjectId);
+                    if (UserRoleList.Contains("Admin"))
+                    {
+                        obj1 = obj.GetProjectDetail(ProjectId);
+                    }
+                    else
+                    {
+                        obj1 = obj.GetProjectDetail(ProjectId, currentUserId);
+                    }
                     if (obj1 == null)
                     {
                         obj1 = new ProjectModel();

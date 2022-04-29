@@ -109,14 +109,25 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         {
             try
             {
+                CompassEntities et = new CompassEntities();
                 long currentUserId = (long)new UserDetails().GetUserId(User.Identity.GetUserId());
-                //var list1 = new UserDAL().GetUserRecords(currentUserId);
-                var list1 = new UserDAL().GetUserRecordsOfProject(currentUserId);
+                var userDetail = et.tblUsers.Where(o => o.UserID == currentUserId).FirstOrDefault();
+                var UserRoleList = et.ASPNET_GetUserRoles(userDetail.UserID).Select(o => o.Name).ToList();
+                List<tblUser> list1 = new List<tblUser>();
+                if (UserRoleList.Contains("Admin"))
+                {
+                    list1 = new UserDAL().GetUserRecords();
+                }
+                else
+                {
+                    list1 = new UserDAL().GetUserRecordsOfProject(currentUserId);
+                }
+         
 
                 var manager = new ApplicationDbContext.UserManager();
                 manager.UserValidator = new UserValidator<ApplicationUser>(manager) { AllowOnlyAlphanumericUserNames = false };
 
-                CompassEntities et = new CompassEntities();
+                
 
                 foreach (var item in list1)
                 {

@@ -1891,6 +1891,118 @@ namespace GarronT.CMS.Model.DAL
             return objSubMenuesBo;
         }
 
+        public ProjectModel GetProjectDetail(long projectId, long userId)
+        {
+            CompassEntities CompassEntities = new CompassEntities();
+            var objSubMenuesBo = CompassEntities.tblProjects.AsNoTracking().AsEnumerable().Where(o => o.ProjectId == projectId && o.Active == 1).
+                                  Select(o => new ProjectModel
+                                  {
+                                      ProjectId = o.ProjectId,
+                                      ProjectName = o.ProjectName,
+                                      ProjectDescription = o.ProjectDecsription,
+                                      ClientId = long.Parse(o.ClientId.ToString()),
+                                      /*StateId = long.Parse(o.StateId.ToString()),
+                                      CityId = long.Parse(o.CityId.ToString()),*/
+                                      StateId = o.StateId.ToString() == null ? 0 : (long.Parse(o.StateId.ToString())),
+                                      CityId = o.CityId.ToString() == null ? 0 : (long.Parse(o.CityId.ToString())),
+                                      ContactId = o.ContactId,
+                                      Utilitytype = o.Utilitytype,
+                                      stringFromDate = DateTime.Parse(o.FromDate.ToString()).ToString("MMM-dd-yyyy"),
+                                      stringToDate = DateTime.Parse(o.ToDate.ToString()).ToString("MMM-dd-yyyy"),
+                                      ConnectionType = o.DataSyncConnection == null ? 0 : int.Parse(o.DataSyncConnection.ToString()),
+                                      dataSynch = o.AutoDataSyncInterval == null ? 0 : int.Parse(o.AutoDataSyncInterval.ToString()),
+                                      SyncType = o.PartialSynch == null ? 2 : (int.Parse(o.PartialSynch.ToString()) == 1 ? 1 : 2),
+                                      ProjectAppointmentUrl = Convert.ToString(o.AppointmentUrl),
+                                      ManageInventory = o.ManageInventory,
+                                      valueMapBy = Convert.ToInt32(o.mapBy)
+                                  }).FirstOrDefault();
+
+
+            objSubMenuesBo.objStateList = CompassEntities.tblStateMasters.AsNoTracking().Select(o => new StateModel
+            {
+                StateID = o.StateId,
+                StateName = o.StateName
+            }).OrderBy(t => t.StateName).ToList();
+
+
+            objSubMenuesBo.objCityList = CompassEntities.TblCityMasters.AsNoTracking().Where(o => o.StateId == objSubMenuesBo.StateId && o.Active == 1).Select(x => new CityModel { CityID = x.CityId, CityName = x.CityName }).ToList();
+
+            objSubMenuesBo.objClientModelList = CompassEntities.tblClients.AsNoTracking().Where(o => o.Active == 1).
+                                                Select(o => new ClientModel
+                                                {
+                                                    ClientId = o.ClientId,
+                                                    ClientName = o.ClientName
+                                                }).OrderBy(t => t.ClientName).ToList();
+
+            objSubMenuesBo.objContactModelDDLList = CompassEntities.tblClientContactDetails.AsNoTracking().
+                                                    Where(o => o.Active == 1 && o.tblClient_ClientId == objSubMenuesBo.ClientId)
+                                                    .Select(o => new ContactModelDDL
+                                                    {
+                                                        ContactId = o.ID,
+                                                        ContactName = o.FirstName + " " + o.LastName
+                                                    }).OrderBy(t => t.ContactName).ToList();
+
+
+            objSubMenuesBo.objMobileWarehouseBOList = CompassEntities.WarehouseMasters.AsNoTracking().Where(o => o.Active == 1).
+                                                Select(o => new MobileWarehouseBO
+                                                {
+                                                    Id = o.Id,
+                                                    WarehouseName = o.WarehouseName
+                                                }).OrderBy(t => t.WarehouseName).ToList();
+
+            objSubMenuesBo.objWarehouseArray = CompassEntities.ProjectWarehouseRelations.AsNoTracking().
+                                           Where(o => o.Active == 1 && o.FKProjectId == projectId).Select(o => o.FKWarehouseId).ToArray();
+
+
+
+            objSubMenuesBo.objMeterMakeModelList = (from b in CompassEntities.tblMeterMakes.AsNoTracking()
+                                                    where b.Active == 1
+                                                    select new MeterMakeModel { ID = b.ID, Make = b.Make }).OrderBy(t => t.Make).ToList(); ;
+            objSubMenuesBo.objMeterSizeList = (from b in CompassEntities.tblMeterSizes.AsNoTracking()
+                                               where b.Active == 1
+                                               select new MeterSizeModel { ID = b.ID, MeterSize = b.MeterSize }).OrderBy(t => t.MeterSize).ToList(); ;
+            objSubMenuesBo.objMeterTypeList = (from b in CompassEntities.tblMeterTypes.AsNoTracking()
+                                               where b.Active == 1
+                                               select new MeterTypeModel { ID = b.ID, MeterType = b.MeterType }).OrderBy(t => t.MeterType).ToList();
+            objSubMenuesBo.objServiceList = (from b in CompassEntities.tblServices.AsNoTracking()
+                                             where b.Active == 1
+                                             select new ServicesModel { ID = b.ID, Service = b.Service }).OrderBy(t => t.Service).ToList();
+
+            //Add logic for TNMP Manager access lavel allow only see their project users
+            var projectList = (List<long>)CompassEntities.TblProjectInstallers.Where(o => o.Active == 1 && o.tblUsers_UserID == userId).Select(o => o.ProjectID).ToList();
+            var userList = CompassEntities.TblProjectInstallers.Where(o => o.Active == 1 && projectList.Contains(o.ProjectID)).Select(m => m.tblUsers_UserID).ToList().Distinct();
+
+            objSubMenuesBo.objUsersSmallModelList = (from o in CompassEntities.tblUsers.AsNoTracking()
+                                                     where o.Active == 1 && userList.Contains(o.UserID)
+                                                     select new UsersSmallModel { UserId = o.UserID, UserName = o.FirstName }).ToList();
+
+
+
+            objSubMenuesBo.objTypeArray = (from b in CompassEntities.TblProjectMasterFieldRelations.AsNoTracking()
+                                           where b.Active == 1 && b.ProjectID == projectId && b.MasterTableName == "tblMeterType"
+                                           select b.MasterFieldID).ToArray();
+            objSubMenuesBo.objSizeArray = (from b in CompassEntities.TblProjectMasterFieldRelations.AsNoTracking()
+                                           where b.Active == 1 && b.ProjectID == projectId && b.MasterTableName == "tblMeterSize"
+                                           select b.MasterFieldID).ToArray();
+
+            objSubMenuesBo.objMakeArray = (from b in CompassEntities.TblProjectMasterFieldRelations.AsNoTracking()
+                                           where b.Active == 1 && b.ProjectID == projectId && b.MasterTableName == "tblMeterMake"
+                                           select b.MasterFieldID).ToArray();
+            objSubMenuesBo.objServiceArray = (from b in CompassEntities.TblProjectMasterFieldRelations.AsNoTracking()
+                                              where b.Active == 1 && b.ProjectID == projectId && b.MasterTableName == "tblService"
+                                              && b.IsAdditionalService == false
+                                              select b.MasterFieldID).ToArray();
+
+
+            objSubMenuesBo.objUsersArray = (from b in CompassEntities.TblProjectInstallers.AsNoTracking()
+                                            where b.Active == 1 && b.ProjectID == projectId
+                                            select b.tblUsers_UserID).ToArray();
+
+
+
+            return objSubMenuesBo;
+        }
+
 
         public bool DeactivateCustomFieldRecord(long customId, int userId, out string returnMessage)
         {
