@@ -1973,7 +1973,7 @@ namespace GarronT.CMS.Model.DAL
             var userList = CompassEntities.TblProjectInstallers.Where(o => o.Active == 1 && projectList.Contains(o.ProjectID)).Select(m => m.tblUsers_UserID).ToList().Distinct();
 
             objSubMenuesBo.objUsersSmallModelList = (from o in CompassEntities.tblUsers.AsNoTracking()
-                                                     where o.Active == 1 && userList.Contains(o.UserID)
+                                                     where o.Active == 1 && (userList.Contains(o.UserID) || o.CreatedBy == userId)
                                                      select new UsersSmallModel { UserId = o.UserID, UserName = o.FirstName }).ToList();
 
 

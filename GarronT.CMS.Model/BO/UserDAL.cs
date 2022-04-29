@@ -283,7 +283,7 @@ namespace GarronT.CMS.Model.BO
             
             var list = new List<tblUser>();
             //CompassEntities CompassEntities = new CompassEntities();
-            list = CompassEntities.tblUsers.AsNoTracking().Where(o => o.Active == 1 && userList.Contains(o.UserID)).ToList();
+            list = CompassEntities.tblUsers.AsNoTracking().Where(o => o.Active == 1 && (userList.Contains(o.UserID) || o.CreatedBy == userId)).ToList();
             return list;
         }
 
