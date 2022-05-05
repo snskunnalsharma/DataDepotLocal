@@ -722,6 +722,7 @@ namespace GarronT.CMS.Model.DAL
                     var UPCCode = Convert.ToString(row["UPC Code"]).Trim();
                     var SerialNumber = Convert.ToString(row["Serial Number"]).Trim();
                     var Quantity = Convert.ToString(row["Quantity"]).Trim();
+                    var Location = Convert.ToString(row["Location"]).Trim();
 
                     bool validQuantity = Quantity.All(char.IsDigit);
 
@@ -736,6 +737,7 @@ namespace GarronT.CMS.Model.DAL
                     uploadInventoryexist.UPCCode = UPCCode;
                     uploadInventoryexist.Size = Size;
                     uploadInventoryexist.SerialNumber = SerialNumber;
+                    uploadInventoryexist.Location = Location;
 
                     //uploadInventoryexist.CategoryName = productModel.CategoryName;
                     //uploadInventoryexist.ProductId = productModel.Id;
@@ -1447,8 +1449,7 @@ namespace GarronT.CMS.Model.DAL
             ObjDataTable.Columns.Add("TotalQty", typeof(int));
             ObjDataTable.Columns.Add("GenerateBarcode", typeof(int));
             ObjDataTable.Columns.Add("BarCodeFilePath", typeof(string));
-
-
+            ObjDataTable.Columns.Add("Location", typeof(string));
 
             if (uploadInventryVM.UploadType == 1)
             {
@@ -1472,6 +1473,7 @@ namespace GarronT.CMS.Model.DAL
                     DR["TotalQty"] = 1;
                     DR["GenerateBarcode"] = DBNull.Value;
                     DR["BarCodeFilePath"] = DBNull.Value;
+                    DR["Location"] = item.Location;
 
                     ObjDataTable.Rows.Add(DR);
                 }
@@ -1498,6 +1500,7 @@ namespace GarronT.CMS.Model.DAL
                     DR["TotalQty"] = item.Quantity;
                     DR["GenerateBarcode"] = DBNull.Value;
                     DR["BarCodeFilePath"] = DBNull.Value;
+                    DR["Location"] = item.Location;
 
                     ObjDataTable.Rows.Add(DR);
                 }
@@ -1524,6 +1527,7 @@ namespace GarronT.CMS.Model.DAL
                     DR["TotalQty"] = item.Quantity;
                     DR["GenerateBarcode"] = item.GenerateBarcode == true ? 1 : 0;
                     DR["BarCodeFilePath"] = item.GenerateBarcode == true ? item.WebUrlOfBarcodeFile : "";
+                    //DR["Location"] = item.Location;
 
                     ObjDataTable.Rows.Add(DR);
                 }
@@ -1549,6 +1553,7 @@ namespace GarronT.CMS.Model.DAL
                     DR["TotalQty"] = item.Quantity;
                     DR["GenerateBarcode"] = DBNull.Value;
                     DR["BarCodeFilePath"] = DBNull.Value;
+                    //DR["Location"] = item.Location;
 
                     ObjDataTable.Rows.Add(DR);
                 }
@@ -1574,6 +1579,7 @@ namespace GarronT.CMS.Model.DAL
                     DR["TotalQty"] = item.Quantity;
                     DR["GenerateBarcode"] = 0;
                     DR["BarCodeFilePath"] = "";
+                    //DR["Location"] = item.Location;
 
                     ObjDataTable.Rows.Add(DR);
                 }

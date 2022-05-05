@@ -29,5 +29,6 @@ namespace GarronT.CMS.Model
         public bool SerialNumberRequired { get; set; }
         public Nullable<int> TotalQty { get; set; }
         public Nullable<int> BalanceQty { get; set; }
+        public string Location { get; set; }
     }
 }

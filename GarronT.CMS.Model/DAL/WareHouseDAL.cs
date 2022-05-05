@@ -424,6 +424,7 @@ namespace GarronT.CMS.Model.DAL
                                  BalanceQty = o.BalanceQty,
                                  SerialNumberRequired = o.SerialNumberRequired,
                                  TotalQty = o.TotalQty,
+                                 Location=o.Location
                              }
                             ).ToList();
 
@@ -488,6 +489,7 @@ namespace GarronT.CMS.Model.DAL
                                  BalanceQty = o.BalanceQty,
                                  SerialNumberRequired = o.SerialNumberRequired,
                                  TotalQty = o.TotalQty,
+                                 Location=o.Location
                              }
                             ).ToList();
 

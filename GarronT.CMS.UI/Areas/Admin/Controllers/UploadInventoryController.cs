@@ -587,6 +587,12 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 return false;
             }
 
+            checkColumn = columnNamList.Where(o => o == "Location").Count();
+            if (checkColumn == 0)
+            {
+                return false;
+            }
+
             return true;
         }
 

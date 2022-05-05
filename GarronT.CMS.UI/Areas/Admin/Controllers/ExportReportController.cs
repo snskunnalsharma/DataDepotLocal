@@ -27,6 +27,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
     {
         //
         // GET: /Admin/ExportReport/
+        public static List<ExportReport_CompletedRecords> tempObjList = new List<ExportReport_CompletedRecords>();
         public ActionResult Index()
         {
             long currentLoggedInUserID = GetLoggedInUserID();
@@ -586,7 +587,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
                 if (formTypeId == 2)
                 {
-                    DataTable dt = AllRecordDataTable(formTypeId, projectId, visitStatus, _fromDate, _toDate, latlongRequired, mediaRequired, out columnNameList1);
+                    //DataTable dt = AllRecordDataTable(formTypeId, projectId, visitStatus, _fromDate, _toDate, latlongRequired, mediaRequired, out columnNameList1);
+                    DataTable dt = AllRecordDataTable(formTypeId, projectId, visitStatus, _fromDate, _toDate, latlongRequired, mediaRequired, out columnNameList1, currentUserId);
                     if (dt != null && dt.Rows.Count > 0)
                     {
                         TempData["ExportDataList"] = dt;
@@ -599,7 +601,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 }
                 else if (formTypeId == 1)
                 {
-                    DataTable dt = AllAuditRecordDataTable(formTypeId, projectId, visitStatus, _fromDate, _toDate, latlongRequired, mediaRequired, out columnNameList1);
+                    //DataTable dt = AllAuditRecordDataTable(formTypeId, projectId, visitStatus, _fromDate, _toDate, latlongRequired, mediaRequired, out columnNameList1);
+                    DataTable dt = AllAuditRecordDataTable(formTypeId, projectId, visitStatus, _fromDate, _toDate, latlongRequired, mediaRequired, out columnNameList1, currentUserId);
                     if (dt != null && dt.Rows.Count > 0)
                     {
                         TempData["ExportDataList"] = dt;
@@ -992,7 +995,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
 
         public DataTable CompleteRecordDataTable(long formTypeId, long projectId, DateTime fromDate, DateTime toDate, int latlongRequired, int mediaRequired,
-           out List<string> columnNameList1)
+           out List<string> columnNameList1,long currentUserId)
         {
             string _webUrl = System.Configuration.ConfigurationManager.AppSettings["WebURL"].ToString();
             List<ExportReport_CompletedRecords> objList = new List<ExportReport_CompletedRecords>();
@@ -1019,10 +1022,12 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             {
 
                 objList = exportReportDAL.GetCompletedRecords(formTypeId, projectId, fromDate, toDate);
-                TempData["tempObjList"] = objList;  //<== Store data for TNMP CSV Export regarding
+                tempObjList = new List<ExportReport_CompletedRecords>(); // Define this list as Static 
+                tempObjList = objList;
+                //TempData["tempObjList"] = objList;  //<== Store data for TNMP CSV Export regarding
                 // Remove line
                 //DataTable ExcelUploadedData = exportReportDAL.GetExcelDataForCompleteRecords(formTypeId, projectId, fromDate, toDate);
-                long currentUserId = new UserDetails().GetUserId(User.Identity.GetUserId());
+                //long currentUserId = new UserDetails().GetUserId(User.Identity.GetUserId());
                 ExportColumnNameList = exportReportDAL.GetExportColumnNameList(formTypeId, projectId, int.Parse(currentUserId.ToString()));
                 ProjectAllFields = exportReportDAL.GetAllFieldsOfProject(projectId);
 
@@ -3505,7 +3510,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
 
         public DataTable AllRecordDataTable(long formTypeId, long projectId, string[] visitStatus, DateTime fromDate, DateTime toDate,
-            int latlongRequired, int mediaRequired, out List<string> columnNameList1)
+            int latlongRequired, int mediaRequired, out List<string> columnNameList1,long currentUserId)
         {
             TempData["tempProjectId"] = projectId;
             DataTable dt = new DataTable();
@@ -3513,7 +3518,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             DataTable ExportReportLableList = new DataTable();
             using (ExportReportDAL exportReportDAL = new ExportReportDAL())
             {
-                long currentUserId = new UserDetails().GetUserId(User.Identity.GetUserId());
+                //long currentUserId = new UserDetails().GetUserId(User.Identity.GetUserId());
                 ExportReportLableList = exportReportDAL.GetExportColumnReportLableList(formTypeId, projectId, int.Parse(currentUserId.ToString()));
             }
 
@@ -3521,11 +3526,11 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             {
                 #region Complete
 
-                dt = CompleteRecordDataTable(formTypeId, projectId, fromDate, toDate, latlongRequired, mediaRequired, out columnNameList1);
+                dt = CompleteRecordDataTable(formTypeId, projectId, fromDate, toDate, latlongRequired, mediaRequired, out columnNameList1, currentUserId);
 
                 #endregion
             }
-            SetCompleteRecordColumnsFormType(formTypeId, projectId, ref dt, ref columnNameList1);
+            SetCompleteRecordColumnsFormType(formTypeId, projectId, ref dt, ref columnNameList1, currentUserId);
 
 
             List<string> skipColumns = new List<string>();
@@ -3716,7 +3721,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
 
         public DataTable AllAuditRecordDataTable(long formTypeId, long projectId, string[] visitStatus, DateTime fromDate, DateTime toDate,
-            int latlongRequired, int mediaRequired, out List<string> columnNameList1)
+            int latlongRequired, int mediaRequired, out List<string> columnNameList1, long currentUserId)
         {
             DataTable dt = new DataTable();
             columnNameList1 = new List<string>();
@@ -3729,7 +3734,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 #endregion
             }
 
-            SetCompleteRecordColumnsFormType(formTypeId, projectId, ref dt, ref columnNameList1);
+            SetCompleteRecordColumnsFormType(formTypeId, projectId, ref dt, ref columnNameList1, currentUserId);
 
 
             List<string> skipColumns = new List<string>();
@@ -3984,7 +3989,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
         }
 
-        public void SetCompleteRecordColumnsFormType(long formTypeId, long projectId, ref DataTable dt, ref List<string> columnNameList1)
+        public void SetCompleteRecordColumnsFormType(long formTypeId, long projectId, ref DataTable dt, ref List<string> columnNameList1, long currentUserId)
         {
             if (!dt.Columns.Contains("ATTENDANT NAME"))
             {
@@ -4057,7 +4062,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 ProjectAllFields = exportReportDAL.GetAllFieldsOfProject(projectId).
                     Where(o => o.isMappedToExcel == 1 && o.FKUploadedExcelDataDynamicColumn != null).ToList();
 
-                long currentUserId = new UserDetails().GetUserId(User.Identity.GetUserId());
+                //long currentUserId = new UserDetails().GetUserId(User.Identity.GetUserId());
                 var ExportColumnNameList = exportReportDAL.GetExportColumnNameList(formTypeId, projectId, int.Parse(currentUserId.ToString()));
 
                 foreach (var item in ProjectAllFields)
@@ -4238,8 +4243,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             //CompassEntities objComEn = new CompassEntities();
             try
             {
-                List<ExportReport_CompletedRecords> tempObjList = new List<ExportReport_CompletedRecords>();
-                tempObjList = TempData["tempObjList"] as List<ExportReport_CompletedRecords>;
+                //List<ExportReport_CompletedRecords> tempObjList = new List<ExportReport_CompletedRecords>();
+                //tempObjList = TempData["tempObjList"] as List<ExportReport_CompletedRecords>; // Define this list as Static 
 
                 if (dt.Columns.Contains("ATTENDANT NAME"))
                 {

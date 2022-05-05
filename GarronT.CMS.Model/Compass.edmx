@@ -523,6 +523,7 @@
                     <Property Name="CreatedOn" Type="datetime" Nullable="false" />
                     <Property Name="ModifiedBy" Type="bigint" />
                     <Property Name="ModifiedOn" Type="datetime" />
+                    <Property Name="Location" Type="varchar" MaxLength="50" />
                 </EntityType>
                 <EntityType Name="InwardDetails_RejectedData">
                     <Key>
@@ -860,6 +861,7 @@
                     <Property Name="CreatedOn" Type="datetime" Nullable="false" />
                     <Property Name="ModifiedBy" Type="bigint" />
                     <Property Name="ModifiedOn" Type="datetime" />
+                    <Property Name="Location" Type="varchar" MaxLength="50" />
                 </EntityType>
                 <EntityType Name="Tbl_InstallationStatusMaster">
                     <Key>
@@ -7759,6 +7761,7 @@
                     <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="3" />
                     <Property Name="ModifiedBy" Type="Int64" />
                     <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
+                    <Property Name="Location" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
                     <NavigationProperty Name="InventoryStatusMaster" Relationship="CompassModel.FK_InwardDetails_InventoryStatusMaster" FromRole="InwardDetail" ToRole="InventoryStatusMaster" />
                     <Property Name="FKUtilityTypeId" Type="Int64" />
                     <NavigationProperty Name="UtilityMaster" Relationship="CompassModel.FK_InwardDetails_UtilityMaster" FromRole="InwardDetail" ToRole="UtilityMaster" />
@@ -9062,6 +9065,7 @@
                     <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="3" />
                     <Property Name="ModifiedBy" Type="Int64" />
                     <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
+                    <Property Name="Location" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
                     <NavigationProperty Name="InwardDetail" Relationship="CompassModel.FK_StockDetails_InwardDetails" FromRole="StockDetail" ToRole="InwardDetail" />
                     <NavigationProperty Name="OutwardDetails" Relationship="CompassModel.FK_OutwardDetails_StockDetails" FromRole="StockDetail" ToRole="OutwardDetail" />
                     <NavigationProperty Name="ProductMaster" Relationship="CompassModel.FK_StockDetails_ProductMaster" FromRole="StockDetail" ToRole="ProductMaster" />
@@ -9379,6 +9383,7 @@
                     <Property Type="String" Name="serialnumber" Nullable="true" MaxLength="50" />
                     <Property Type="Int32" Name="TotalQty" Nullable="false" />
                     <Property Type="Int32" Name="BalanceQty" Nullable="false" />
+                    <Property Type="String" Name="Location" Nullable="true" MaxLength="50" />
                 </ComplexType>
                 <ComplexType Name="PROC_Report_WarehouseStockReportSummary_Result">
                     <Property Type="Int64" Name="WarehouseId" Nullable="false" />
@@ -9397,6 +9402,7 @@
                     <Property Type="Boolean" Name="SerialNumberRequired" Nullable="false" />
                     <Property Type="Int32" Name="TotalQty" Nullable="true" />
                     <Property Type="Int32" Name="BalanceQty" Nullable="true" />
+                    <Property Type="String" Name="Location" Nullable="true" MaxLength="50" />
                 </ComplexType>
                 <ComplexType Name="PROC_Report_ProductMovementReport_Result">
                     <Property Type="String" Name="SerialNumber" Nullable="true" MaxLength="50" />
@@ -12759,6 +12765,7 @@
                     <EntitySetMapping Name="InwardDetails">
                         <EntityTypeMapping TypeName="CompassModel.InwardDetail">
                             <MappingFragment StoreEntitySet="InwardDetails">
+                                <ScalarProperty Name="Location" ColumnName="Location" />
                                 <ScalarProperty Name="FKUtilityTypeId" ColumnName="FKUtilityTypeId" />
                                 <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
                                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
@@ -13600,6 +13607,7 @@
                     <EntitySetMapping Name="StockDetails">
                         <EntityTypeMapping TypeName="CompassModel.StockDetail">
                             <MappingFragment StoreEntitySet="StockDetails">
+                                <ScalarProperty Name="Location" ColumnName="Location" />
                                 <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
                                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
                                 <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
@@ -13794,6 +13802,7 @@
                                 <ScalarProperty Name="serialnumber" ColumnName="serialnumber" />
                                 <ScalarProperty Name="TotalQty" ColumnName="TotalQty" />
                                 <ScalarProperty Name="BalanceQty" ColumnName="BalanceQty" />
+                                <ScalarProperty Name="Location" ColumnName="Location" />
                             </ComplexTypeMapping>
                         </ResultMapping>
                     </FunctionImportMapping>
@@ -13816,6 +13825,7 @@
                                 <ScalarProperty Name="SerialNumberRequired" ColumnName="SerialNumberRequired" />
                                 <ScalarProperty Name="TotalQty" ColumnName="TotalQty" />
                                 <ScalarProperty Name="BalanceQty" ColumnName="BalanceQty" />
+                                <ScalarProperty Name="Location" ColumnName="Location" />
                             </ComplexTypeMapping>
                         </ResultMapping>
                     </FunctionImportMapping>

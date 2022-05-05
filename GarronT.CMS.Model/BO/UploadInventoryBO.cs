@@ -48,8 +48,9 @@ namespace GarronT.CMS.Model.BO
 
         public long UtilityId { get; set; }
         public long WarehouseId { get; set; }
+        public string Location { get; set; }
 
-    public bool SerialNumberAllowded { get; set; }
+        public bool SerialNumberAllowded { get; set; }
 
         public int InventryStatus { get; set; }
         public bool IsSerialNumber { get; set; }

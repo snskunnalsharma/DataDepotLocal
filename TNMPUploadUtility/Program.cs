@@ -7,6 +7,11 @@ using System.IO;
 using Renci.SshNet;
 using Renci.SshNet.Common;
 using Renci.SshNet.Sftp;
+using GarronT.CMS.Model.DAL;
+using GarronT.CMS.Model.BO;
+using System.Data;
+using GarronT.CMS.UI.WebAPI;
+using GarronT.CMS.Model;
 
 namespace TNMPUploadUtility
 {
@@ -14,9 +19,82 @@ namespace TNMPUploadUtility
     {
         static void Main(string[] args)
         {
-            ErrorLogFile.writeStatus("Thread Started at -" + DateTime.Now.ToShortTimeString());
+            long ProjectID = 10085; // Static project id
+            /*ErrorLogFile.writeStatus("\n\nThread Started at Uploading file - " + DateTime.Now.ToShortTimeString());
+            Console.WriteLine("Thread Started at - " + DateTime.Now.ToShortTimeString());
+            #region Upload file class
+            UploadFile up = new UploadFile();
+            string pathLocalFile = up.getandSaveFile();
 
-            ErrorLogFile.writeStatus("Thread Ended at -" + DateTime.Now.ToShortTimeString());
+            // Validate excel execk columns and row data
+            var result = up.ValidateExcel(pathLocalFile);
+            List<string> ExcelField = result.Item1;
+            DataTable dtExcelData = result.Item2;
+
+            // Get Excel Mapping Field ids
+            ErrorLogFile.writeStatus("Get Excel Mapping Field ids - " + DateTime.Now.ToShortTimeString());
+            Console.WriteLine("Get Excel Mapping Field ids - " + DateTime.Now.ToShortTimeString());
+            List<string> FieldID = up.excelmMappingFieldIds(ProjectID,result.Item1);
+            
+            // Save Excel datas
+            ErrorLogFile.writeStatus("Saving Excel Data in Databse - " + DateTime.Now.ToShortTimeString());
+            Console.WriteLine("Saving Excel Data in Databse - " + DateTime.Now.ToShortTimeString());
+            bool sratus = up.SaveTab6Data(ProjectID, ExcelField, FieldID, dtExcelData);
+            if (sratus)
+            {
+               *//* CompassEntities sd = new CompassEntities();
+                sd.UploadedExcelDatas.Where(o=>o.m)*//*
+                ErrorLogFile.writeStatus("Data Successfully Saved in Database - " + DateTime.Now.ToShortTimeString());
+                Console.WriteLine("Data Successfully Saved in Database - " + DateTime.Now.ToShortTimeString());
+            }
+            #endregion
+            ErrorLogFile.writeStatus("Thread Ended at Upload file - " + DateTime.Now.ToShortTimeString());
+            Console.WriteLine("Thread Ended at - " + DateTime.Now.ToShortTimeString());*/
+
+
+            #region Download Export Report
+            ErrorLogFile.writeStatus("\n\nThread Started at Download Export Report - " + DateTime.Now.ToShortTimeString());
+            Console.WriteLine("Thread Started at Download Export Report - " + DateTime.Now.ToShortTimeString());
+
+            DownloadExportReport objDER = new DownloadExportReport();
+
+            // All Parameter Set defualt
+            DateTime date = new CommonFunctions().ServerDate().AddDays(-1); // Get date before one day
+            string fromDate = date.ToString("MMM-dd-yyyy");   //"Apr-25-2022";
+            string toDate = date.ToString("MMM-dd-yyyy");    //"Apr-25-2022";
+            /*fromDate = "Apr-25-2022";
+            toDate = "Apr-25-2022";*/
+            long formTypeId = 2;   // Form type 2 set because project data, 1 for Audit data
+            long projectId = ProjectID; // Project id ==> 10085
+            string[] visitStatus = new string[] { "Completed" };  // Onlt export report ==> Completed
+            int latlongRequired = 1;  // latlongRequired set=1 because 1 for not requied, Pass 2 requied
+            int mediaRequired = 1;    // mediaRequired set=1 because 1 for not requied, Pass 2 requied
+
+            // Get data in dt from Databse
+            DataTable dt = objDER.createExcelNew(fromDate, toDate, formTypeId, projectId, visitStatus, latlongRequired, mediaRequired);
+            if (dt.Rows.Count > 0)
+            {
+                string filePath = objDER.DownloadCSVExport(dt);  // Generate CSV file
+                if (!string.IsNullOrEmpty(filePath))
+                {
+                    bool status = objDER.UploadFileSFTPServer(filePath); // Upload file in SFTP server.
+                    if (status)
+                    {
+                        ErrorLogFile.writeStatus("Export File uploaded successfully in SFTP server -" + DateTime.Now.ToShortTimeString());
+                        Console.WriteLine("Export File uploaded successfully in SFTP server");
+                    }
+                    else
+                    {
+                        ErrorLogFile.writeStatus("Export File don't uploaded -" + DateTime.Now.ToShortTimeString());
+                        Console.WriteLine("Export File don't uploaded");
+                    }
+                }
+            }
+
+            //bool status = objDER.UploadFileSFTPServer("D:/DataDepot/GarronT.CMS.UI/ClockTimeReport/meter_exchange_CMS_20220504.csv"); // Upload file in SFTP server.
+            ErrorLogFile.writeStatus("Thread Ended at Download Export Report - " + DateTime.Now.ToShortTimeString());
+            Console.WriteLine("Thread Ended at Download Export Report - " + DateTime.Now.ToShortTimeString()); 
+            #endregion
         }
     }
 }

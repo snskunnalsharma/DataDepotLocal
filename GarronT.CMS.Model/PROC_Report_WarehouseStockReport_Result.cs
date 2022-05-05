@@ -31,5 +31,6 @@ namespace GarronT.CMS.Model
         public string serialnumber { get; set; }
         public int TotalQty { get; set; }
         public int BalanceQty { get; set; }
+        public string Location { get; set; }
     }
 }

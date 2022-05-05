@@ -42,6 +42,7 @@ namespace GarronT.CMS.Model
         public System.DateTime CreatedOn { get; set; }
         public Nullable<long> ModifiedBy { get; set; }
         public Nullable<System.DateTime> ModifiedOn { get; set; }
+        public string Location { get; set; }
         public Nullable<long> FKUtilityTypeId { get; set; }
     
         public virtual InventoryStatusMaster InventoryStatusMaster { get; set; }

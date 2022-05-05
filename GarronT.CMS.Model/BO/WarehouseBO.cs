@@ -75,6 +75,7 @@ namespace GarronT.CMS.Model.BO
         public Nullable<int> TotalQty { get; set; }
 
         public bool SerialNumberRequired { get; set; }
+        public string Location { get; set; }
     }
     public class WarehouseStockReportExport
     {
