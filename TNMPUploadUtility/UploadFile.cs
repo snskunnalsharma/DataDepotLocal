@@ -39,8 +39,8 @@ namespace TNMPUploadUtility
                     try
                     {
                         // Path to file on SFTP server
-                        string remoteDirectory = "/home/tnmp/prod/";
-
+                        //string remoteDirectory = "/home/tnmp/prod/";
+                        string remoteDirectory = ConfigurationManager.AppSettings["remoteDir"].ToString();
                         sftp.Connect();
                         ErrorLogFile.writeStatus("Connected SFTP server - " + DateTime.Now.ToShortTimeString());
                         Console.WriteLine("Connected SFTP server");
@@ -67,7 +67,9 @@ namespace TNMPUploadUtility
                             if (!string.IsNullOrEmpty(serverFileName))
                             {
                                 // Path to file on SFTP server
-                                string pathRemoteFile = "/home/tnmp/prod/" + serverFileName + "";
+                                //string pathRemoteFile = "/home/tnmp/prod/" + serverFileName + "";
+                                string path = ConfigurationManager.AppSettings["pathRemoteFile"].ToString();
+                                string pathRemoteFile = path + serverFileName + "";
                                 serverFileName = serverFileName.Split('.')[0].ToString();
 
                                 // Path where the file should be saved once downloaded (locally)
@@ -83,7 +85,9 @@ namespace TNMPUploadUtility
                                 {
                                     sftp.DownloadFile(pathRemoteFile, fileStream);
 
-                                    sftp.RenameFile(pathRemoteFile, "/home/tnmp/prod/old-files/" + serverFileName + ".csv");
+                                    string movingFilePath = ConfigurationManager.AppSettings["movingfilepathRemoteFile"].ToString();
+                                    sftp.RenameFile(pathRemoteFile, movingFilePath + serverFileName + ".csv");
+                                    //sftp.RenameFile(pathRemoteFile, "/home/tnmp/prod/old-files/" + serverFileName + ".csv");
                                     ErrorLogFile.writeStatus("Moved file another directory -" + DateTime.Now.ToShortTimeString());
                                     Console.WriteLine("Moved file another directory");
                                     fileStream.Close();

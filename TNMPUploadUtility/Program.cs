@@ -20,7 +20,7 @@ namespace TNMPUploadUtility
         static void Main(string[] args)
         {
             long ProjectID = 10085; // Static project id
-            ErrorLogFile.writeStatus("\n\nThread Started at Uploading file - " + DateTime.Now.ToShortTimeString());
+            /*ErrorLogFile.writeStatus("\n\nThread Started at Uploading file - " + DateTime.Now.ToShortTimeString());
             Console.WriteLine("Thread Started at - " + DateTime.Now.ToShortTimeString());
             #region Upload file class
             UploadFile up = new UploadFile();
@@ -41,23 +41,24 @@ namespace TNMPUploadUtility
             Console.WriteLine("Saving Excel Data in Databse - " + DateTime.Now.ToShortTimeString());
             bool sratus = up.SaveTab6Data(ProjectID, ExcelField, FieldID, dtExcelData);
             if (sratus)
-            {                
+            {
                 ErrorLogFile.writeStatus("Data Successfully Saved in Database - " + DateTime.Now.ToShortTimeString());
                 Console.WriteLine("Data Successfully Saved in Database - " + DateTime.Now.ToShortTimeString());
+                //File.Delete(@"" + pathLocalFile + "");
             }
             #endregion
             ErrorLogFile.writeStatus("Thread Ended at Upload file - " + DateTime.Now.ToShortTimeString());
-            Console.WriteLine("Thread Ended at - " + DateTime.Now.ToShortTimeString());
-
+            Console.WriteLine("Thread Ended at - " + DateTime.Now.ToShortTimeString());*/
+            //Ends uploading file code
 
             #region Download Export Report
             ErrorLogFile.writeStatus("\n\nThread Started at Download Export Report - " + DateTime.Now.ToShortTimeString());
             Console.WriteLine("Thread Started at Download Export Report - " + DateTime.Now.ToShortTimeString());
 
             DownloadExportReport objDER = new DownloadExportReport();
-
             // All Parameter Set defualt
-            DateTime date = new CommonFunctions().ServerDate().AddDays(-1); // Get date before one day
+            //DateTime date = new CommonFunctions().ServerDate().AddDays(-1); // Get date before one day
+            DateTime date = new CommonFunctions().ServerDate(); // Get current date
             string fromDate = date.ToString("MMM-dd-yyyy");   //"Apr-25-2022";
             string toDate = date.ToString("MMM-dd-yyyy");    //"Apr-25-2022";
             /*fromDate = "Apr-25-2022";

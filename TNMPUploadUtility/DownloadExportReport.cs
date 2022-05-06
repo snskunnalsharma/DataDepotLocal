@@ -166,7 +166,8 @@ namespace TNMPUploadUtility
                     try
                     {
                         // Path to file on SFTP server
-                        string remoteDirectory = "/home/tnmp/prod/";
+                        //string remoteDirectory = "/home/tnmp/pre_prod/";
+                        string remoteDirectory = ConfigurationManager.AppSettings["sftOutputFilePath"].ToString();
                         sftp.Connect();
                         sftp.ChangeDirectory(remoteDirectory);
                         using (FileStream fs = new FileStream(filePath, FileMode.Open))
