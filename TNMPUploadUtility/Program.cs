@@ -20,7 +20,7 @@ namespace TNMPUploadUtility
         static void Main(string[] args)
         {
             long ProjectID = 10085; // Static project id
-            /*ErrorLogFile.writeStatus("\n\nThread Started at Uploading file - " + DateTime.Now.ToShortTimeString());
+            ErrorLogFile.writeStatus("\n\nThread Started at Uploading file - " + DateTime.Now.ToShortTimeString());
             Console.WriteLine("Thread Started at - " + DateTime.Now.ToShortTimeString());
             #region Upload file class
             UploadFile up = new UploadFile();
@@ -34,22 +34,20 @@ namespace TNMPUploadUtility
             // Get Excel Mapping Field ids
             ErrorLogFile.writeStatus("Get Excel Mapping Field ids - " + DateTime.Now.ToShortTimeString());
             Console.WriteLine("Get Excel Mapping Field ids - " + DateTime.Now.ToShortTimeString());
-            List<string> FieldID = up.excelmMappingFieldIds(ProjectID,result.Item1);
-            
+            List<string> FieldID = up.excelmMappingFieldIds(ProjectID, result.Item1);
+
             // Save Excel datas
             ErrorLogFile.writeStatus("Saving Excel Data in Databse - " + DateTime.Now.ToShortTimeString());
             Console.WriteLine("Saving Excel Data in Databse - " + DateTime.Now.ToShortTimeString());
             bool sratus = up.SaveTab6Data(ProjectID, ExcelField, FieldID, dtExcelData);
             if (sratus)
-            {
-               *//* CompassEntities sd = new CompassEntities();
-                sd.UploadedExcelDatas.Where(o=>o.m)*//*
+            {                
                 ErrorLogFile.writeStatus("Data Successfully Saved in Database - " + DateTime.Now.ToShortTimeString());
                 Console.WriteLine("Data Successfully Saved in Database - " + DateTime.Now.ToShortTimeString());
             }
             #endregion
             ErrorLogFile.writeStatus("Thread Ended at Upload file - " + DateTime.Now.ToShortTimeString());
-            Console.WriteLine("Thread Ended at - " + DateTime.Now.ToShortTimeString());*/
+            Console.WriteLine("Thread Ended at - " + DateTime.Now.ToShortTimeString());
 
 
             #region Download Export Report
