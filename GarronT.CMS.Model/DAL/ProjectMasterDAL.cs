@@ -2539,39 +2539,40 @@ namespace GarronT.CMS.Model.DAL
                                         //objCompassEntities1.UploadedExcelDatas.Add(objRecord);
                                         //objCompassEntities1.SaveChanges();
 
-                                        bool statusCycleOfficeMerge = Boolean.Parse(ConfigurationManager.AppSettings["mergeCycleOfficeColumn"]);
-                                        if (statusCycleOfficeMerge)     // This Changes applied for TNMP ==> Electric City Project
-                                        {
-                                            //mergeColumnData(ProjectID, objRecord.Id);
-                                            if (!string.IsNullOrEmpty(dyCycleColName) && !string.IsNullOrEmpty(dyOfficeColName))
-                                            {
-                                                var propertyInfoCycle = objRecord.GetType().GetProperty(dyCycleColName);
-                                                var cycleValue = propertyInfoCycle.GetValue(objRecord);
-
-                                                var propertyInfoOffice = objRecord.GetType().GetProperty(dyOfficeColName);
-                                                var officeValue = propertyInfoOffice.GetValue(objRecord);
-
-                                                PropertyInfo currentProperty = pClass.Where(o => o.Name == dyCycleColName).FirstOrDefault();
-                                                currentProperty.SetValue(objRecord, (officeValue + " " + cycleValue), null);        // Merge value Cycle and Office
-                                            }
-                                            if (!string.IsNullOrEmpty(dyStreetColName) && !string.IsNullOrEmpty(dyUnitColName))
-                                            {
-                                                var propertyInfoStreet = objRecord.GetType().GetProperty(dyStreetColName);
-                                                var streetValue = propertyInfoStreet.GetValue(objRecord);
-
-                                                var propertyInfoUnit = objRecord.GetType().GetProperty(dyUnitColName);
-                                                var unitValue = propertyInfoUnit.GetValue(objRecord);
-
-                                                if (!string.IsNullOrEmpty(unitValue.ToString()))
-                                                {
-                                                    PropertyInfo currentProperty = pClass.Where(o => o.Name == dyStreetColName).FirstOrDefault();
-                                                    currentProperty.SetValue(objRecord, (streetValue + " " + unitValue), null);     // Merge value Street and Unit
-                                                    objRecord.Street12 = (streetValue + " " + unitValue).ToString(); // Street/ Address value stored in two columns in table
-                                                }
-                                            }
-                                        }
+                                        
                                         if (projectObject.Utilitytype == "Electric")
                                         {
+                                            bool statusCycleOfficeMerge = Boolean.Parse(ConfigurationManager.AppSettings["mergeCycleOfficeColumn"]);
+                                            if (statusCycleOfficeMerge)     // This Changes applied for TNMP ==> Electric City Project
+                                            {
+                                                //mergeColumnData(ProjectID, objRecord.Id);
+                                                if (!string.IsNullOrEmpty(dyCycleColName) && !string.IsNullOrEmpty(dyOfficeColName))
+                                                {
+                                                    var propertyInfoCycle = objRecord.GetType().GetProperty(dyCycleColName);
+                                                    var cycleValue = propertyInfoCycle.GetValue(objRecord);
+
+                                                    var propertyInfoOffice = objRecord.GetType().GetProperty(dyOfficeColName);
+                                                    var officeValue = propertyInfoOffice.GetValue(objRecord);
+
+                                                    PropertyInfo currentProperty = pClass.Where(o => o.Name == dyCycleColName).FirstOrDefault();
+                                                    currentProperty.SetValue(objRecord, (officeValue + " " + cycleValue), null);        // Merge value Cycle and Office
+                                                }
+                                                if (!string.IsNullOrEmpty(dyStreetColName) && !string.IsNullOrEmpty(dyUnitColName))
+                                                {
+                                                    var propertyInfoStreet = objRecord.GetType().GetProperty(dyStreetColName);
+                                                    var streetValue = propertyInfoStreet.GetValue(objRecord);
+
+                                                    var propertyInfoUnit = objRecord.GetType().GetProperty(dyUnitColName);
+                                                    var unitValue = propertyInfoUnit.GetValue(objRecord);
+
+                                                    if (!string.IsNullOrEmpty(unitValue.ToString()))
+                                                    {
+                                                        PropertyInfo currentProperty = pClass.Where(o => o.Name == dyStreetColName).FirstOrDefault();
+                                                        currentProperty.SetValue(objRecord, (streetValue + " " + unitValue), null);     // Merge value Street and Unit
+                                                        objRecord.Street12 = (streetValue + " " + unitValue).ToString(); // Street/ Address value stored in two columns in table
+                                                    }
+                                                }
+                                            }
                                             objRecord.UploadStatus = 1; // Added this condtion fro TNMP project
                                         }
                                         objCompassEntities1.Configuration.AutoDetectChangesEnabled = false;
@@ -2583,15 +2584,22 @@ namespace GarronT.CMS.Model.DAL
                                         newAccountsNo += "<br />" + Convert.ToString(dtRow[sAccount]) + "";
                                         //}
                                         //result = true;
-                                        var temoObj = new List<officeCollection> { new officeCollection { accountNo = Convert.ToString(dtRow[sAccount]), officeName = Convert.ToString(dtRow["OFFICE"]), type = "New" } };
-                                        objofficeCollection.AddRange(temoObj);
+                                        if (projectObject.Utilitytype == "Electric")
+                                        {
+                                            var temoObj = new List<officeCollection> { new officeCollection { accountNo = Convert.ToString(dtRow[sAccount]), officeName = Convert.ToString(dtRow["OFFICE"]), type = "New" } };
+                                            objofficeCollection.AddRange(temoObj);
+                                        }
+                                            
                                     }
                                     else
                                     {
                                         skipedRecordsCount++;   // Count Skipt records only count skip records
                                         skipedAccountsNo += "<br />" + Convert.ToString(dtRow[sAccount]) + "";
-                                        var temoObj= new List<officeCollection> { new officeCollection { accountNo = Convert.ToString(dtRow[sAccount]), officeName = Convert.ToString(dtRow["OFFICE"]), type = "Skip" } };
-                                        objofficeCollection.AddRange(temoObj);
+                                        if (projectObject.Utilitytype == "Electric")
+                                        {
+                                            var temoObj = new List<officeCollection> { new officeCollection { accountNo = Convert.ToString(dtRow[sAccount]), officeName = Convert.ToString(dtRow["OFFICE"]), type = "Skip" } };
+                                            objofficeCollection.AddRange(temoObj);
+                                        }
                                     }
                                     result = true;
                                 }

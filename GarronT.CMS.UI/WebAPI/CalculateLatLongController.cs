@@ -813,7 +813,7 @@ namespace GarronT.CMS.UI.WebAPI
                                     if (!string.IsNullOrEmpty(dyCityColName))
                                     {
                                         var City = PropertyInfos.Where(o => o.Name == dyCityColName).Select(o => o.GetValue(item, null)).FirstOrDefault();
-                                        if (!string.IsNullOrEmpty(City.ToString()))
+                                        if (City != null && !string.IsNullOrEmpty(City.ToString()))
                                         {
                                             objCityName = City.ToString();
                                         }
@@ -821,7 +821,7 @@ namespace GarronT.CMS.UI.WebAPI
                                     if (!string.IsNullOrEmpty(dyStateColName))
                                     {
                                         var State = PropertyInfos.Where(o => o.Name == dyStateColName).Select(o => o.GetValue(item, null)).FirstOrDefault();
-                                        if (!string.IsNullOrEmpty(State.ToString()))
+                                        if (State != null && !string.IsNullOrEmpty(State.ToString()))
                                         {
                                             objStateName = State.ToString();
                                         }
@@ -1430,7 +1430,7 @@ namespace GarronT.CMS.UI.WebAPI
                             if (!string.IsNullOrEmpty(dyCityColName))
                             {
                                 var City = PropertyInfos.Where(o => o.Name == dyCityColName).Select(o => o.GetValue(item, null)).FirstOrDefault();
-                                if (!string.IsNullOrEmpty(City.ToString()))
+                                if (City != null && !string.IsNullOrEmpty(City.ToString()))
                                 {
                                     objCityName = City.ToString();
                                 }
@@ -1438,7 +1438,7 @@ namespace GarronT.CMS.UI.WebAPI
                             if (!string.IsNullOrEmpty(dyStateColName))
                             {
                                 var State = PropertyInfos.Where(o => o.Name == dyStateColName).Select(o => o.GetValue(item, null)).FirstOrDefault();
-                                if (!string.IsNullOrEmpty(State.ToString()))
+                                if (State != null && !string.IsNullOrEmpty(State.ToString()))
                                 {
                                     objStateName = State.ToString();
                                 }
