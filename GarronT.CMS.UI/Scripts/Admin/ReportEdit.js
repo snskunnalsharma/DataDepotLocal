@@ -1213,12 +1213,20 @@ $("#btnUploadVideo").click(function () {
 
 $(document).on('keypress', '.Numeric-Only', function (e) {
     debugger;
-    var regex = new RegExp("^[0-9\b]+$");
-
+    
+    var regex = new RegExp(/^\d*\.?\d*$/);//new RegExp("^[0-9\.b]+$");
+    var fieldVal = $(this).val();
     if (event.charCode == 0)
     { return true; }
     else {
         var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+        console.log('key = ' + key);
+        if (key == '.') {
+            if (fieldVal.indexOf('.') !== -1) {
+                event.preventDefault();
+                return false;
+            }
+        }
         if (!regex.test(key)) {
             event.preventDefault();
             return false;
