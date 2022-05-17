@@ -10,7 +10,8 @@ namespace TNMPUploadUtility
 {
     class ErrorLogFile
     {
-        static string appDirectory = Environment.CurrentDirectory + "\\Log";
+        //static string appDirectory = Environment.CurrentDirectory + "\\Log";
+        static string appDirectory = System.AppDomain.CurrentDomain.BaseDirectory + "Log";
 
         public static void writeStatus(string _status)
         {

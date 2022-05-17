@@ -84,6 +84,8 @@ namespace TNMPUploadUtility
                                 using (Stream fileStream = File.OpenWrite(pathLocalFile))
                                 {
                                     sftp.DownloadFile(pathRemoteFile, fileStream);
+                                    ErrorLogFile.writeStatus("File Successfully Save in Server Folder - " + DateTime.Now.ToShortTimeString());
+                                    Console.WriteLine("File Successfully Save in Server Folder");
 
                                     string movingFilePath = ConfigurationManager.AppSettings["movingfilepathRemoteFile"].ToString();
                                     sftp.RenameFile(pathRemoteFile, movingFilePath + serverFileName + ".csv");
@@ -95,9 +97,7 @@ namespace TNMPUploadUtility
                             }
                         }
                         sftp.Disconnect();
-                        ErrorLogFile.writeStatus("File Successfully Save in ServerFolder - " + DateTime.Now.ToShortTimeString());
                         ErrorLogFile.writeStatus("Disconnect SFTP server -" + DateTime.Now.ToShortTimeString());
-                        Console.WriteLine("File Successfully Save in ServerFolder");
                         Console.WriteLine("Disconnect SFTP server");
                     }
                     catch (Exception e)
