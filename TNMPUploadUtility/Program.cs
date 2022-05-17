@@ -55,7 +55,6 @@ namespace TNMPUploadUtility
             ErrorLogFile.writeStatus("\n\nThread Started at Download Export Report - " + DateTime.Now.ToShortTimeString());
             Console.WriteLine("Thread Started at Download Export Report - " + DateTime.Now.ToShortTimeString());
 
-            DownloadExportReport objDER = new DownloadExportReport();
             // All Parameter Set defualt
             //DateTime date = new CommonFunctions().ServerDate().AddDays(-1); // Get date before one day
             DateTime date = new CommonFunctions().ServerDate(); // Get current date
@@ -70,27 +69,39 @@ namespace TNMPUploadUtility
             int mediaRequired = 1;    // mediaRequired set=1 because 1 for not requied, Pass 2 requied
 
             // Get data in dt from Databse
-            DataTable dt = objDER.createExcelNew(fromDate, toDate, formTypeId, projectId, visitStatus, latlongRequired, mediaRequired);
-            if (dt.Rows.Count > 0)
+            if (date.DayOfWeek.ToString() != "Saturday" && date.DayOfWeek.ToString() != "Sunday") // Don't run utility sat & sun
             {
-                string filePath = objDER.DownloadCSVExport(dt);  // Generate CSV file
-                if (!string.IsNullOrEmpty(filePath))
+                if (date.DayOfWeek.ToString() == "Monday")
                 {
-                    bool status = objDER.UploadFileSFTPServer(filePath); // Upload file in SFTP server.
-                    if (status)
+                    date = date.AddDays(-2);
+                    fromDate = date.ToString("MMM-dd-yyyy");   // Monday export report ==> export to 3 days Sat,Sun and Mon
+                    toDate = date.ToString("MMM-dd-yyyy");
+                }
+                DownloadExportReport objDER = new DownloadExportReport();
+                DataTable dt = objDER.createExcelNew(fromDate, toDate, formTypeId, projectId, visitStatus, latlongRequired, mediaRequired);
+                if (dt.Rows.Count > 0)
+                {
+                    string filePath = objDER.DownloadCSVExport(dt);  // Generate CSV file
+                    if (!string.IsNullOrEmpty(filePath))
                     {
-                        ErrorLogFile.writeStatus("Export File uploaded successfully in SFTP server -" + DateTime.Now.ToShortTimeString());
-                        Console.WriteLine("Export File uploaded successfully in SFTP server");
-                    }
-                    else
-                    {
-                        ErrorLogFile.writeStatus("Export File don't uploaded -" + DateTime.Now.ToShortTimeString());
-                        Console.WriteLine("Export File don't uploaded");
+                        bool status = objDER.UploadFileSFTPServer(filePath); // Upload file in SFTP server.
+                        if (status)
+                        {
+                            ErrorLogFile.writeStatus("Export File uploaded successfully in SFTP server -" + DateTime.Now.ToShortTimeString());
+                            Console.WriteLine("Export File uploaded successfully in SFTP server");
+                        }
+                        else
+                        {
+                            ErrorLogFile.writeStatus("Export File don't uploaded -" + DateTime.Now.ToShortTimeString());
+                            Console.WriteLine("Export File don't uploaded");
+                        }
                     }
                 }
             }
-
-            //bool status = objDER.UploadFileSFTPServer("D:/DataDepot/GarronT.CMS.UI/ClockTimeReport/meter_exchange_CMS_20220504.csv"); // Upload file in SFTP server.
+            else 
+            {
+                ErrorLogFile.writeStatus("Utility does not run on this day ==> "+ date.DayOfWeek.ToString() + " -" + DateTime.Now.ToShortTimeString());
+            }
             ErrorLogFile.writeStatus("Thread Ended at Download Export Report - " + DateTime.Now.ToShortTimeString());
             Console.WriteLine("Thread Ended at Download Export Report - " + DateTime.Now.ToShortTimeString()); 
             #endregion
