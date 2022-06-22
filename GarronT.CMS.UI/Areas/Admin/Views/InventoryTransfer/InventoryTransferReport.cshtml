@@ -1,0 +1,1691 @@
+﻿@{
+    ViewBag.Title = "Inventory Transfer";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@Html.Hidden("urlGetProject", Url.Action("GetProject", "InventoryTransfer"))
+@Html.Hidden("urlGetStockReport", Url.Action("GetStockReport", "InventoryTransfer"))
+@Html.Hidden("urlFromLocationList", Url.Action("getLocationList", "InventoryTransfer"))
+@Html.Hidden("urlToLocationList", Url.Action("getToLocationList", "InventoryTransfer"))
+@Html.Hidden("urlGetInventoryData", Url.Action("getInventoryData", "InventoryTransfer"))
+@Html.Hidden("urlTransferInventory", Url.Action("saveTransferInventory", "InventoryTransfer"))
+@Html.Hidden("urlGetWarehouseAndProduct", Url.Action("GetWarehouseAndProduct", "WarehouseStockReport"))
+
+<style>
+    .recinv-drp3 {
+        margin-bottom: 4px;
+    }
+
+    .recinv-drp4 {
+        margin-top: 8px;
+        margin-bottom: 8px;
+    }
+
+    .recinv-drp5 {
+        margin-top: 8px;
+        margin-bottom: 8px;
+    }
+
+    @@media only screen and (max-width:320px) {
+        .rep-box {
+            margin-left: 8%;
+        }
+
+        .for_btn {
+            margin-bottom: 3%;
+            /*margin-left: 7%;*/
+        }
+    }
+
+    @@media only screen and (min-width:321px) and (max-width: 359px) {
+        .rep-box {
+            margin-left: 8%;
+        }
+
+        .for_btn {
+            margin-bottom: 3%;
+            /*margin-left: 7%;*/
+        }
+    }
+
+    @@media only screen and (max-width: 430px) and (min-width: 360px) {
+        .rep-box {
+            margin-left: 8%;
+        }
+
+        .for_btn {
+            margin-bottom: 3%;
+        }
+    }
+
+    @@media only screen and (max-width:799px) and (min-width: 430px) {
+        .sm-bot2 {
+            margin-bottom: 2%;
+        }
+    }
+</style>
+<style>
+    /*************************************Bootstrap Css***********************************/
+    @@media (min-width:1200px) {
+        .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9 {
+            float: left;
+        }
+
+
+        .col-lg-12 {
+            width: 100%;
+        }
+
+        .col-lg-11 {
+            width: 91.66666667%;
+        }
+
+        .col-lg-10 {
+            width: 83.33333333%;
+        }
+
+        .col-lg-9 {
+            width: 75%;
+        }
+
+        .col-lg-8 {
+            width: 66.66666667%;
+        }
+
+        .col-lg-7 {
+            width: 58.33333333%;
+        }
+
+        .col-lg-6 {
+            width: 50% !important;
+        }
+
+        .col-lg-5 {
+            width: 41.66666667%;
+        }
+
+        .col-lg-4 {
+            width: 33.33333333%;
+        }
+
+        .col-lg-3 {
+            width: 25%;
+        }
+
+        .col-lg-2 {
+            width: 16.66666667%;
+        }
+
+        .col-lg-1 {
+            width: 8.33333333%;
+        }
+
+        .multiselect {
+            padding: 3px;
+        }
+
+        .lg-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .lg-nopaddingright {
+            padding-right: 0px;
+        }
+    }
+
+    @@media (min-width:992px) and (max-width:1199px) {
+        .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9 {
+            float: left;
+        }
+
+        .col-md-12 {
+            width: 100%;
+        }
+
+        .col-md-11 {
+            width: 91.66666667%;
+        }
+
+        .col-md-10 {
+            width: 83.33333333%;
+        }
+
+        .col-md-9 {
+            width: 75%;
+        }
+
+        .col-md-8 {
+            width: 66.66666667%;
+        }
+
+        .col-md-7 {
+            width: 58.33333333%;
+        }
+
+        .col-md-6 {
+            width: 50%;
+        }
+
+        .col-md-5 {
+            width: 41.66666667%;
+        }
+
+        .col-md-4 {
+            width: 33.33333333%;
+        }
+
+        .col-md-3 {
+            width: 25%;
+        }
+
+        .col-md-2 {
+            width: 16.66666667%;
+        }
+
+        .col-md-1 {
+            width: 8.33333333%;
+        }
+
+        .col-md-pull-12 {
+            right: 100%;
+        }
+
+        .col-md-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-md-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-md-pull-9 {
+            right: 75%;
+        }
+
+        .col-md-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-md-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-md-pull-6 {
+            right: 50%;
+        }
+
+        .col-md-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-md-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-md-pull-3 {
+            right: 25%;
+        }
+
+        .col-md-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-md-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-md-pull-0 {
+            right: auto;
+        }
+
+        .col-md-push-12 {
+            left: 100%;
+        }
+
+        .col-md-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-md-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-md-push-9 {
+            left: 75%;
+        }
+
+        .col-md-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-md-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-md-push-6 {
+            left: 50%;
+        }
+
+        .col-md-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-md-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-md-push-3 {
+            left: 25%;
+        }
+
+        .col-md-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-md-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-md-push-0 {
+            left: auto;
+        }
+
+        .col-md-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-md-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-md-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-md-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-md-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-md-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-md-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-md-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-md-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-md-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-md-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-md-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-md-offset-0 {
+            margin-left: 0;
+        }
+
+        .md-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .md-nopaddingright {
+            padding-right: 0px;
+        }
+
+        .md-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .md-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .md-clear {
+            clear: both;
+        }
+    }
+
+    @@media (min-width:768px) and (max-width:991px) {
+        .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9 {
+            float: left;
+        }
+
+        .col-sm-12 {
+            width: 100%;
+        }
+
+        .col-sm-11 {
+            width: 91.66666667%;
+        }
+
+        .col-sm-10 {
+            width: 83.33333333%;
+        }
+
+        .col-sm-9 {
+            width: 75%;
+        }
+
+        .col-sm-8 {
+            width: 66.66666667%;
+        }
+
+        .col-sm-7 {
+            width: 58.33333333%;
+        }
+
+        .col-sm-6 {
+            width: 50%;
+        }
+
+        .col-sm-5 {
+            width: 41.66666667%;
+        }
+
+        .col-sm-4 {
+            width: 33.33333333%;
+        }
+
+        .col-sm-3 {
+            width: 25%;
+        }
+
+        .col-sm-2 {
+            width: 16.66666667%;
+        }
+
+        .col-sm-1 {
+            width: 8.33333333%;
+        }
+
+        .col-sm-pull-12 {
+            right: 100%;
+        }
+
+        .col-sm-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-sm-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-sm-pull-9 {
+            right: 75%;
+        }
+
+        .col-sm-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-sm-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-sm-pull-6 {
+            right: 50%;
+        }
+
+        .col-sm-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-sm-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-sm-pull-3 {
+            right: 25%;
+        }
+
+        .col-sm-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-sm-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-sm-pull-0 {
+            right: auto;
+        }
+
+        .col-sm-push-12 {
+            left: 100%;
+        }
+
+        .col-sm-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-sm-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-sm-push-9 {
+            left: 75%;
+        }
+
+        .col-sm-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-sm-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-sm-push-6 {
+            left: 50%;
+        }
+
+        .col-sm-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-sm-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-sm-push-3 {
+            left: 25%;
+        }
+
+        .col-sm-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-sm-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-sm-push-0 {
+            left: auto;
+        }
+
+        .col-sm-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-sm-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-sm-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-sm-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-sm-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-sm-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-sm-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-sm-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-sm-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-sm-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-sm-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-sm-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-sm-offset-0 {
+            margin-left: 0;
+        }
+
+        .sm-clear {
+            clear: both;
+        }
+
+        .sm-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .sm-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .sm-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .sm-nopaddingright {
+            padding-right: 0px;
+        }
+    }
+
+    @@media (min-width:481px) and (max-width:767px) {
+        .xs-clear {
+            clear: both;
+        }
+
+        .col-xs-1, .col-xs-10, .col-xs-11, .col-xs-12, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9 {
+            float: left;
+        }
+
+        .col-xs-12 {
+            width: 100%;
+        }
+
+        .col-xs-11 {
+            width: 91.66666667%;
+        }
+
+        .col-xs-10 {
+            width: 83.33333333%;
+        }
+
+        .col-xs-9 {
+            width: 75%;
+        }
+
+        .col-xs-8 {
+            width: 66.66666667%;
+        }
+
+        .col-xs-7 {
+            width: 58.33333333%;
+        }
+
+        .col-xs-6 {
+            width: 50%;
+        }
+
+        .col-xs-5 {
+            width: 41.66666667%;
+        }
+
+        .col-xs-4 {
+            width: 33.33333333%;
+        }
+
+        .col-xs-3 {
+            width: 25%;
+        }
+
+        .col-xs-2 {
+            width: 16.66666667%;
+        }
+
+        .col-xs-1 {
+            width: 8.33333333%;
+        }
+
+        .col-xs-pull-12 {
+            right: 100%;
+        }
+
+        .col-xs-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-xs-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-xs-pull-9 {
+            right: 75%;
+        }
+
+        .col-xs-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-xs-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-xs-pull-6 {
+            right: 50%;
+        }
+
+        .col-xs-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-xs-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-xs-pull-3 {
+            right: 25%;
+        }
+
+        .col-xs-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-xs-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-xs-pull-0 {
+            right: auto;
+        }
+
+        .col-xs-push-12 {
+            left: 100%;
+        }
+
+        .col-xs-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-xs-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-xs-push-9 {
+            left: 75%;
+        }
+
+        .col-xs-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-xs-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-xs-push-6 {
+            left: 50%;
+        }
+
+        .col-xs-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-xs-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-xs-push-3 {
+            left: 25%;
+        }
+
+        .col-xs-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-xs-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-xs-push-0 {
+            left: auto;
+        }
+
+        .col-xs-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-xs-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-xs-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-xs-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-xs-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-xs-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-xs-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-xs-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-xs-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-xs-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-xs-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-xs-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-xs-offset-0 {
+            margin-left: 0;
+        }
+
+        .cre_uti_label {
+            margin-left: 0%;
+            text-align: right !important;
+        }
+
+        .create_label {
+            margin-right: 0px;
+        }
+
+        .xs-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .xs-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .xs-block {
+            display: block;
+        }
+
+        .xs-nopadding {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+
+        .xs-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .xs-nopaddingright {
+            padding-right: 0px;
+        }
+
+        .rep_panel {
+            margin-top: 2%;
+        }
+    }
+
+    @@media (max-width:480px) {
+        .xxs-clear {
+            clear: both;
+        }
+
+        .col-xxs-1, .col-xxs-10, .col-xxs-11, .col-xxs-12, .col-xxs-2, .col-xxs-3, .col-xxs-4, .col-xxs-5, .col-xxs-6, .col-xxs-7, .col-xxs-8, .col-xxs-9 {
+            float: left;
+        }
+
+        .col-xxs-12 {
+            width: 100%;
+        }
+
+        .col-xxs-11 {
+            width: 91.66666667%;
+        }
+
+        .col-xxs-10 {
+            width: 83.33333333%;
+        }
+
+        .col-xxs-9 {
+            width: 75%;
+        }
+
+        .col-xxs-8 {
+            width: 66.66666667%;
+        }
+
+        .col-xxs-7 {
+            width: 58.33333333%;
+        }
+
+        .col-xxs-6 {
+            width: 50%;
+        }
+
+        .col-xxs-5 {
+            width: 41.66666667%;
+        }
+
+        .col-xxs-4 {
+            width: 33.33333333%;
+        }
+
+        .col-xxs-3 {
+            width: 25%;
+        }
+
+        .col-xxs-2 {
+            width: 16.66666667%;
+        }
+
+        .col-xxs-1 {
+            width: 8.33333333%;
+        }
+
+        .col-xxs-pull-12 {
+            right: 100%;
+        }
+
+        .col-xxs-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-xxs-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-xxs-pull-9 {
+            right: 75%;
+        }
+
+        .col-xxs-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-xxs-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-xxs-pull-6 {
+            right: 50%;
+        }
+
+        .col-xxs-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-xxs-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-xxs-pull-3 {
+            right: 25%;
+        }
+
+        .col-xxs-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-xxs-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-xxs-pull-0 {
+            right: auto;
+        }
+
+        .col-xxs-push-12 {
+            left: 100%;
+        }
+
+        .col-xxs-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-xxs-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-xxs-push-9 {
+            left: 75%;
+        }
+
+        .col-xxs-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-xxs-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-xxs-push-6 {
+            left: 50%;
+        }
+
+        .col-xxs-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-xxs-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-xxs-push-3 {
+            left: 25%;
+        }
+
+        .col-xxs-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-xxs-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-xxs-push-0 {
+            left: auto;
+        }
+
+        .col-xxs-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-xxs-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-xxs-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-xxs-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-xxs-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-xxs-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-xxs-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-xxs-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-xxs-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-xxs-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-xxs-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-xxs-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-xxs-offset-0 {
+            margin-left: 0;
+        }
+
+        .create_label {
+            margin-left: 0%;
+            margin-right: 0px;
+        }
+
+        .xxs-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .xxs-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .xxs-mbot3 {
+            margin-bottom: 3%;
+        }
+
+        .xxs-block {
+            display: block;
+        }
+
+        .xxs-nopadding {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+
+        .xxs-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .xxs-nopaddingright {
+            padding-right: 0px;
+        }
+    }
+</style>
+
+<div id="loading">
+    <div id="loadingcontent">
+        <p id="loadingspinner">
+            Searching things...
+        </p>
+    </div>
+</div>
+
+
+
+<section id="main-content">
+    <section class="wrapper">
+
+        <!--progress bar start-->
+        <section class="panel rep_panel">
+
+            <header class="panel-heading rep_header" style="background: #80B2DF; color: #fff;">
+                Inventory Transfer Report
+                <span class="tools pull-right">
+                    <a id="haha" class="fa fa-chevron-down clickdive" href="javascript:;" style="color: #fff; padding-right:10px;"></a>
+                </span>
+            </header>
+            <br />
+            <div class="panel-body">
+
+                <div class="row mbot05 sm-mbot1 xs-mbot1 xxs-mbot2">
+
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 col-xxs-12 mbot05 md-mbot1  sm-mbot1 lg-nopaddingright md-nopaddingright sm-nopaddingright xs-mbot1 xxs-mbot2">
+                        @Html.DropDownList("UtilityId", (IEnumerable<SelectListItem>)ViewBag.UtilityListItem, new { @class = "form-control chosen-select" })
+                    </div>
+
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 col-xxs-12 mbot05 md-mbot1 sm-mbot1 lg-nopaddingright md-nopaddingright sm-nopaddingright xs-mbot1 xxs-mbot2">
+                        @Html.DropDownList("ProjectId", (List<SelectListItem>)ViewBag.ProjectList, new { @class = "form-control chosen-select" })
+                    </div>
+
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 col-xxs-12 mbot05  sm-mbot1 lg-nopaddingright md-nopaddingright xs-mbot1 xs-clear xxs-mbot2">
+                        @Html.DropDownList("WarehouseId", (IEnumerable<SelectListItem>)ViewBag.WarehouseList, new { @class = "form-control chosen-select", @title = "Select Warehouse" })
+                    </div>
+
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 col-xxs-12 mbot05 sm-nopaddingright xs-mbot1 xxs-mbot2">
+                        @Html.DropDownList("ProductId", (IEnumerable<SelectListItem>)ViewBag.ProductList, new { @class = "form-control chosen-select", @title = "Select Product" })
+                    </div>
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col-lg-12 col-sm-12 col-xs-12 col-xxs-12 text-center">
+                        <button id="btnTransferInventory" class="btn btn-success" type="button">Transfer Inventory</button>
+                        <button id="btnSave" class="btn btn-success" type="button">Save</button>
+                        <button id="btnReset" class="btn btn-danger" type="button">Reset</button>
+                    </div>
+                </div>
+                <br />
+                <div class="row mbot05 sm-mbot1 xs-mbot1 xxs-mbot2">
+
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 col-xxs-12 lg-nopaddingright md-nopaddingright md-clear sm-nopaddingright xs-clear">
+                        <label for="name" class="col-lg-2 col-sm-2 control-label"><strong>From Select Location</strong></label>
+                        <select data-placeholder="From Select Location" name="ddlLocationFrom" id="ddlLocationFrom" class="form-control chosen-select"></select>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 col-xxs-12 lg-nopaddingright md-nopaddingright md-clear sm-nopaddingright xs-clear">
+                        <label for="name" class="col-lg-2 col-sm-2 control-label"><strong>Available Quantity</strong></label>
+                        <input type="text" id="availableQty" class="form-control chosen-select" readonly />
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 col-xxs-12 lg-nopaddingright md-nopaddingright md-clear sm-nopaddingright xs-clear">
+                        <label for="name" class="col-lg-2 col-sm-2 control-label"><strong>To Select Location</strong></label>
+                        <select data-placeholder="To Select Location" name="ddlLocationTo" id="ddlLocationTo" class="form-control chosen-select "></select>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 col-xxs-12 lg-nopaddingright md-nopaddingright md-clear sm-nopaddingright xs-clear">
+                        <label for="name" class="col-lg-2 col-sm-2 control-label"><strong>Enter Quantity</strong></label>
+                        <input type="number" id="enterQty" placeholder="0" class="form-control chosen-select" />
+                    </div>
+                </div>
+
+
+                <div class="table-responsive  rep_dyn_table" id="inventryReceiveDiv112">
+                    <table id="dynamic-table" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                        <thead>
+                            <tr>
+                                <th width="15%"><input type="checkbox" name="select_all" value="tblHeaderValue" id="select-all" style="display:none">Select</th>
+                                <th width="85%">Inventory Number</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+
+    </section>
+</section>
+
+<link href="~/jquery-confirm-master/css/jquery-confirm.css" rel="stylesheet" />
+<script src="~/jquery-confirm-master/js/jquery-confirm.js"></script>
+
+<script>
+    $(document).ready(function () {
+
+        $("#InventoryReports").addClass('active');
+        $("#subReports").addClass('block');
+
+        $('.sub').find("*").removeClass('active');
+        $('#liInventoryTransfer').addClass("active");
+
+
+        $("#UtilityId").chosen({ placeholder_text_single: "Select Utility", no_results_text: "Oops, nothing found!" });
+        $('#UtilityId').trigger('chosen:updated');
+
+        $("#ProjectId").chosen({ placeholder_text_single: "Select Project", no_results_text: "Oops, nothing found!" });
+        $('#ProjectId').trigger('chosen:updated');
+
+
+        $("#WarehouseId").chosen({ placeholder_text_single: "Select Warehouse", no_results_text: "Oops, nothing found!" });
+        $('#WarehouseId').trigger('chosen:updated');
+
+
+
+        $("#ProductId").chosen({ placeholder_text_single: "Select Product", no_results_text: "Oops, nothing found!" });
+        $('#ProductId').val("0").attr("selected", "selected").trigger('chosen:updated');
+
+        $("#ReportType").chosen();
+        $('#ReportType').val("0").attr("selected", "selected").trigger('chosen:updated');
+
+        $('#dynamic-table').DataTable({ "language": { "emptyTable": "No Data To Show" } });
+
+        $('#dynamic-table').DataTable({
+            "bDestroy": true,
+            "bserverSide": true,
+            "bDeferRender": true,
+            "bPaginate": false, //hide pagination
+        });
+
+        $("#ddlLocationFrom").chosen({ placeholder_text_single: "From Select Location", no_results_text: "Oops, nothing found!" });
+        $('#ddlLocationFrom').val("0").attr("selected", "selected").trigger('chosen:updated');
+
+        $("#ddlLocationTo").chosen({ placeholder_text_single: "To Select Location", no_results_text: "Oops, nothing found!" });
+        $('#ddlLocationTo').val("0").attr("selected", "selected").trigger('chosen:updated');
+
+        $("#divDetail").hide();
+        $("#divSummary").show();
+    });
+
+    //numeric only validation code
+    @*$('body').on('keypress', '.numeric-only', function (e) {
+        var regex = new RegExp("^[0-9\b]+$");
+
+        if (event.charCode == 0) {
+            return true;
+        }
+        else {
+            var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+            if (!regex.test(key)) {
+                event.preventDefault();
+                return false;
+            }
+        }
+    });*@
+
+
+    $('#UtilityId').change(function () {
+
+        $('#ProjectId').empty().trigger('chosen:updated');
+        $('#WarehouseId').empty().trigger('chosen:updated');
+        $('#ProductId').empty().trigger('chosen:updated');
+        $("#WarehouseId").trigger("chosen:updated");
+        $("#ProductId").trigger("chosen:updated");
+        $("#ddlLocationFrom").empty();
+        $("#ddlLocationFrom").trigger("chosen:updated");
+        $("#ddlLocationTo").empty();
+        $("#ddlLocationTo").trigger("chosen:updated");
+        document.getElementById("availableQty").value = "";
+        document.getElementById("enterQty").value = "";
+        $('#dynamic-table').dataTable().fnClearTable();//clear the DataTable
+
+        var value = $("#UtilityId option:selected")
+
+        waitingDialog.show('Please Wait Loading Contacts...');
+        var urlGetProjectList = $('#urlGetProject').val();
+        $.ajax({
+            type: 'GET',
+            data: { "UtilityId": value.val() },
+            url: urlGetProjectList,
+            success: function (data) {
+
+                if (data != null) {
+                    $.each(data, function (index, item) {
+                        if (index == 0) { $('#ProjectId').append($('<option></option>').val('0').html("")); }
+                        $('#ProjectId').append($('<option></option>').val(item.ProjectId).html(item.ProjectName));
+                    });
+                }
+                $('#ProjectId').trigger('chosen:updated');
+
+
+                waitingDialog.hide();
+            },
+            error: function () {
+                var $toast = toastr["error"]("something seems wrong", "Error Notification");
+                waitingDialog.hide();
+            }
+        });
+
+    });
+
+    $('#ProjectId').change(function () {
+        $('#WarehouseId').empty().trigger('chosen:updated');
+        $('#ProductId').empty().trigger('chosen:updated');
+        $('#LocationType').empty().trigger('chosen:updated');
+        var value = $("#ProjectId option:selected")
+
+        waitingDialog.show('Please Wait Loading Contacts...');
+        var urlGetWarehouseAndProduct = $('#urlGetWarehouseAndProduct').val();
+        $.ajax({
+            type: 'GET',
+            data: { "ProjectId": value.val() },
+            url: urlGetWarehouseAndProduct,
+            success: function (data) {
+                if (data.WarehouseList != null) {
+                    $.each(data.WarehouseList, function (index, item) {
+                        if (index == 0) { $('#WarehouseId').append($('<option></option>').val('0').html("")); }
+                        $('#WarehouseId').append($('<option></option>').val(item.WarehouseId).html(item.WarehouseName));
+                    });
+                }
+                $('#WarehouseId').trigger('chosen:updated');
+
+                if (data.ProductList != null) {
+                    $.each(data.ProductList, function (index, item) {
+                        if (index == 0) { $('#ProductId').append($('<option></option>').val('0').html("")); }
+                        $('#ProductId').append($('<option></option>').val(item.Id).html(item.FieldValue));
+                    });
+                }
+                $('#ProductId').trigger('chosen:updated');
+                waitingDialog.hide();
+            },
+            error: function () {
+                var $toast = toastr["error"]("something seems wrong", "Error Notification");
+                waitingDialog.hide();
+            }
+        });
+
+    });
+
+    $('#ProductId').change(function () {
+        $("#ddlLocationFrom").empty();
+        $("#ddlLocationFrom").trigger("chosen:updated");
+        $("#ddlLocationTo").empty();
+        $("#ddlLocationTo").trigger("chosen:updated");
+        document.getElementById("availableQty").value = "";
+        document.getElementById("enterQty").value = "";
+        getFromLocation();
+    });
+
+    $('#btnReset').click(function () {
+
+        ResetAllData();
+    })
+
+    function ResetAllData() {
+        $("#UtilityId").val('0').trigger("chosen:updated");
+        $("#ProjectId").empty();
+        $("#ProjectId").trigger("chosen:updated");
+
+        $("#WarehouseId").empty();
+        $("#WarehouseId").trigger("chosen:updated");
+
+        $("#ProductId").empty();
+        $("#ProductId").trigger("chosen:updated");
+
+        $("#ddlLocationFrom").empty();
+        $("#ddlLocationFrom").trigger("chosen:updated");
+
+        $("#ddlLocationTo").empty();
+        $("#ddlLocationTo").trigger("chosen:updated");
+
+        document.getElementById("availableQty").value = "";
+        document.getElementById("enterQty").value = "";
+
+        $('#dynamic-table').dataTable().fnClearTable();//clear the DataTable
+    };
+
+    function getFromLocation() {
+
+        $('#ddlLocationFrom').empty().trigger('chosen:updated');
+        var value = $("#ProjectId option:selected")
+        var ProductId = $("#ProductId").val();
+        waitingDialog.show('Please Wait Loading Contacts...');
+        var urlFromLocationList = $('#urlFromLocationList').val();
+        $.ajax({
+            type: 'GET',
+            data: { "ProjectId": value.val(), ProductId: ProductId },
+            url: urlFromLocationList,
+            success: function (data) {
+
+                $('#ddlLocationFrom').empty();
+                if (data.LocationList != null) {
+                    $.each(data.LocationList, function (index, item) {
+                        if (index == 0) { $('#ddlLocationFrom').append($('<option></option>').val('0').html("")); }
+                        $('#ddlLocationFrom').append($('<option></option>').val(item.LocationId).html(item.Location));
+                    });
+                }
+                $('#ddlLocationFrom').trigger('chosen:updated');
+                waitingDialog.hide();
+            },
+            error: function () {
+                var $toast = toastr["error"]("something seems wrong", "Error Notification");
+                waitingDialog.hide();
+            }
+        });
+
+    };
+
+    $('#btnTransferInventory').click(function () {
+        debugger;
+
+        var UtilityId = $("#UtilityId").val();
+        if (UtilityId === '0' || UtilityId === '') {
+            var $toast = toastr["error"]("Please, select utility", "Notification");
+            return;
+        }
+
+        var ProjectId = $("#ProjectId").val();
+        if (ProjectId === '0' || ProjectId === '') {
+            var $toast = toastr["error"]("Please, select project", "Notification");
+            return;
+        }
+
+        var WarehouseId = $("#WarehouseId").val();
+        if (WarehouseId === '0' || WarehouseId === '') {
+            var $toast = toastr["error"]("Please, select warehouse", "Notification");
+            return;
+        }
+
+        var ProductId = $("#ProductId").val();
+        if (ProductId === '0' || ProductId === '') {
+            var $toast = toastr["error"]("Please, select product", "Notification");
+            return;
+        }
+
+        var LocationFromValue = $("#ddlLocationFrom").val();
+        if (LocationFromValue === '0' || LocationFromValue === '') {
+            var $toast = toastr["error"]("Please, select from location", "Notification");
+            return;
+        }
+
+        var LocationToValue = $("#ddlLocationTo").val();
+        if (LocationToValue === '0' || LocationToValue === '') {
+            var $toast = toastr["error"]("Please, select to location", "Notification");
+            return;
+        }
+
+        var availableQty = document.getElementById("availableQty").value;
+        if (availableQty === '0') {
+            var $toast = toastr["error"]("No available inventory", "Notification");
+            return;
+        }
+
+        var enterQty = document.getElementById("enterQty").value;
+        if (enterQty === '') {
+            var $toast = toastr["error"]("Please enter quantity", "Notification");
+            return;
+        }
+        else if (enterQty === '0') {
+            var $toast = toastr["error"]("Please enter a valid quantity", "Notification");
+            return;
+        }
+        else if (parseInt(availableQty) < parseInt(enterQty)) {
+            var $toast = toastr["error"]("The number of entered quantity cannot be more than the available quantity.", "Notification");
+            return;
+        }
+
+
+        waitingDialog.show('Loading Please Wait...');
+        var urlGetInventoryData = $("#urlGetInventoryData").val();
+
+        $.ajax({
+            type: 'POST',
+            url: urlGetInventoryData,
+            async: true,
+            data: { projectId: ProjectId, warehouseId: WarehouseId, productId: ProductId, locationFromValue: LocationFromValue, transferQty: enterQty },
+            success: function (data) {
+                waitingDialog.hide();
+                // debugger;
+                //console.log("result == " + JSON.stringify(data));
+                if (data.success == "false") {
+                    var $toast = toastr["error"](data.ErrorMessage, "Notification");
+                }
+                else {
+                    BindData(data.WarehouseStockReportData);
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                waitingDialog.hide();
+                console.log("error " + textStatus);
+                console.log("incoming Text " + jqXHR.responseText);
+                var $toast = toastr["error"]("something seems wrong", "Notification");
+            }
+
+        })
+    });
+
+    $('#ddlLocationFrom').change(function () {
+        getInventoryQty();
+        getToLocation();
+    });
+
+    function getInventoryQty() {
+
+        debugger;
+
+        var UtilityId = $("#UtilityId").val();
+        if (UtilityId === '0' || UtilityId === '') {
+            var $toast = toastr["error"]("Please, select utility", "Notification");
+            return;
+        }
+
+        var ProjectId = $("#ProjectId").val();
+        if (ProjectId === '0' || ProjectId === '') {
+            var $toast = toastr["error"]("Please, select project", "Notification");
+            return;
+        }
+
+        var WarehouseId = $("#WarehouseId").val();
+        if (WarehouseId === '0' || WarehouseId === '') {
+            var $toast = toastr["error"]("Please, select warehouse", "Notification");
+            return;
+        }
+
+        var ProductId = $("#ProductId").val();
+        if (ProductId === '0' || ProductId === '') {
+            var $toast = toastr["error"]("Please, select product", "Notification");
+            return;
+        }
+
+        var LocationFromValue = $("#ddlLocationFrom").val();
+        if (LocationFromValue === '0' || LocationFromValue === '') {
+            var $toast = toastr["error"]("Please, select from location", "Notification");
+            return;
+        }
+
+        waitingDialog.show('Loading Please Wait...');
+        var urlGetStockReport = $("#urlGetStockReport").val();
+
+        $.ajax({
+            type: 'POST',
+            url: urlGetStockReport,
+            async: true,
+            data: { projectId: ProjectId, warehouseId: WarehouseId, productId: ProductId, LocationFromValue: LocationFromValue },
+            success: function (data) {
+                waitingDialog.hide();
+                // debugger;
+                if (data.success == "false") {
+                    var $toast = toastr["error"](data.ErrorMessage, "Notification");
+                }
+                else {
+                    document.getElementById("availableQty").value = data.ablInventory;
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                waitingDialog.hide();
+                console.log("error " + textStatus);
+                console.log("incoming Text " + jqXHR.responseText);
+                var $toast = toastr["error"]("something seems wrong", "Notification");
+            }
+
+        })
+    };
+
+
+    function getToLocation() {
+        debugger;
+        $('#ddlLocationTo').empty().trigger('chosen:updated');
+        var value = $("#ProjectId option:selected");
+        var ProductId = $("#ProductId").val();
+        var LocationFromValue = $("#ddlLocationFrom").val();
+        waitingDialog.show('Please Wait Loading Contacts...');
+        var urlToLocationList = $('#urlToLocationList').val();
+        $.ajax({
+            type: 'GET',
+            data: { "ProjectId": value.val(), ProductId: ProductId, LocationFromValue: LocationFromValue },
+            url: urlToLocationList,
+            success: function (data) {
+                debugger;
+                $('#ddlLocationTo').empty();
+                if (data.LocationList != null) {
+                    $.each(data.LocationList, function (index, item) {
+                        if (index == 0) { $('#ddlLocationTo').append($('<option></option>').val('0').html("")); }
+                        $('#ddlLocationTo').append($('<option></option>').val(item.LocationId).html(item.Location));
+                    });
+                }
+                $('#ddlLocationTo').trigger('chosen:updated');
+                waitingDialog.hide();
+            },
+            error: function () {
+                var $toast = toastr["error"]("something seems wrong", "Error Notification");
+                waitingDialog.hide();
+            }
+        });
+
+    };
+
+    function BindData(varData) {
+
+        oTable = $('#dynamic-table').dataTable(
+            {
+
+                "bDestroy": true,
+                "bserverSide": true,
+                "bDeferRender": true,
+                "bPaginate": false, //hide pagination
+                //"bFilter": false, //hide Search bar
+                //"bInfo": false, // hide showing entries
+
+                "oLanguage": {
+                    "sLengthMenu": '_MENU_ Records per page'
+                },
+                "aaData": varData,
+                // "aaSorting": [[3, "asc"]],
+                "aoColumns": [
+
+                    { "bSearchable": false, "mData": null },
+                    @*{ "mData": "WarehouseName" },
+                    { "mData": "Location" },
+                    { "mData": "CategoryName" },
+                    { "mData": "ProductName" },
+                    { "mData": "ProductDescription" },
+                    { "mData": "PartNumber" },
+                    { "mData": "UPCCode" },
+                    { "mData": "UtilityName" },
+                    { "mData": "Make" },
+                    { "mData": "MeterType" },
+                    { "mData": "MeterSize" },*@
+                    { "mData": "serialnumber" },
+                    @*{ "mData": "BalanceQty" },
+                    { "bSearchable": false, "mData": null },*@
+
+                ],
+                "aoColumnDefs": [
+                    {
+                        "mRender": function (data, type, full, row) {
+                            return '<input type="checkbox" id=' + full.serialnumber + ' value=' + full.serialnumber + ' name="id[]"  checked>';
+                        },
+                        "aTargets": [0]
+                    }
+                ],
+
+            }), $('.dataTables_filter input').attr('maxlength', 50);
+    }
+
+    $('#btnSave').click(function () {
+        debugger;
+        var invList = [];
+        $("#dynamic-table input:checkbox:checked").map(function () {
+
+            if ($(this).val() != "tblHeaderValue") // Removed this value because this is table header value
+            {
+                invList.push($(this).val());
+            }
+        }).get();
+
+        if (invList.length > 0) {
+            SaveTransferInventory(invList);
+        }
+    });
+
+
+    function SaveTransferInventory(invList) {
+
+        var value = $("#ProjectId option:selected");
+        var ddlLocationTo = $("#ddlLocationTo").val();
+
+        waitingDialog.show('Please Wait...');
+        var urlTransferInventory = $('#urlTransferInventory').val();
+
+        $.ajax({
+            url: urlTransferInventory,
+            data: { "ProjectId": value.val(), ToLocation: ddlLocationTo, TransferInventoryList: invList },
+            type: 'POST',
+            success: function (data) {
+                waitingDialog.hide();
+                if (data.Success) {
+                    var $toast = toastr["success"](data.Message, "Success Notification");
+                    ResetAllData();
+                }
+                else {
+                    var $toast = toastr["error"](data.Message, "Error Notification");
+                }
+            },
+            error: function () {
+                var $toast = toastr["error"]("something seems wrong", "Error Notification");
+                waitingDialog.hide();
+            }
+        });
+    }
+</script>

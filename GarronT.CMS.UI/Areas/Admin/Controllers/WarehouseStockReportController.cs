@@ -123,6 +123,12 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
             ViewBag.ReportType = reportType;
 
+
+            // Get Location list for pull on dropdown
+            ViewBag.LocationType = items;
+            //end hare
+
+
             #endregion
 
             return View();
@@ -171,9 +177,17 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             InventoryDAL objInventoryDAL = new InventoryDAL();
             List<WarehouseBO> data = objInventoryDAL.GetWareHouseList(ProjectId);
             List<CommonDropDownClass> data1 = objInventoryDAL.GetProductList(ProjectId);
-            return base.Json(new { WarehouseList = data, ProductList = data1 }, JsonRequestBehavior.AllowGet);
+            List<LocationDropdownList> data2 = objInventoryDAL.GetLocationList(ProjectId);
+            return base.Json(new { WarehouseList = data, ProductList = data1, LocationType = data2 }, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpGet]
+        public ActionResult getLocationList(long ProjectId)
+        {
+            InventoryDAL objInventoryDAL = new InventoryDAL();
+            List<LocationDropdownList> data2 = objInventoryDAL.GetLocationList(ProjectId);
+            return base.Json(new {LocationList = data2 }, JsonRequestBehavior.AllowGet);
+        }
 
 
         /// <summary>
@@ -186,7 +200,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         /// <param name="productId"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult GetStockReport(long projectId, long[] warehouseId, long productId, long ReportType)
+        public ActionResult GetStockReport(long projectId, long[] warehouseId, long productId, long ReportType,string LocationType)
         {
             StatusMessage statusMessage = new StatusMessage();
             List<WarehouseStockReport> WarehouseStockReportList = new List<WarehouseStockReport>();
@@ -197,11 +211,11 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             {
                 if (ReportType == 0)
                 {
-                    WarehouseStockReportList = objWareHouseDAL.GetWarehouseStockReport_Summary(warehouseId, projectId, productId);
+                    WarehouseStockReportList = objWareHouseDAL.GetWarehouseStockReport_Summary(warehouseId, projectId, productId, LocationType);
                 }
                 else
                 {
-                    WarehouseStockReportList = objWareHouseDAL.getwarehouselistnew(warehouseId, projectId, productId);
+                    WarehouseStockReportList = objWareHouseDAL.getwarehouselistnew(warehouseId, projectId, productId, LocationType);
                 }
                 statusMessage.Success = true;
 

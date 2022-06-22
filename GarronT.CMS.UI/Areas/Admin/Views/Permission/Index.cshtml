@@ -179,7 +179,7 @@
                                                     string[] str5 = { "Alert Master", "Audit", "Customer", "Project", "Installer Allocation", "Appointment" };
                                                     string[] str6 = { "Form Management" };
                                                     string[] str7 = { "Time Clock Report", "Duplicate Report", "Export Report", "Installer Report", "Auditor Report", "Skip History Report" };
-                                                    string[] str8 = { "Warehouse Stock Report", "Inventory Stock Report", "Product Movement Report" };
+                                                    string[] str8 = { "Warehouse Stock Report", "Inventory Stock Report", "Product Movement Report", "Inventory Transfer" };
 
 
 
@@ -210,6 +210,10 @@
                                                         else if (item.PermissionName == "Warehouse Stock Report")
                                                         {
                                                             aMenuName = "Inventory Reports";
+                                                        }
+                                                        else if (item.PermissionName == "Time Clock Report")
+                                                        {
+                                                            aMenuName = "Other Reports";
                                                         }
                                                         else
                                                         {

@@ -493,6 +493,20 @@ namespace GarronT.CMS.Model.DAL
                 SqlCommand cmd = new SqlCommand();
                 SqlDataReader reader;
 
+                string checkTime = fromDate.ToString("hh:mm:ss");
+                if (checkTime == "12:00:00")            // Request comes from web browser ==> User side Reponse
+                {
+                    fromDate = Convert.ToDateTime(fromDate.ToString("yyyy-MM-dd 00:00:00"));
+                    toDate = Convert.ToDateTime(toDate.ToString("yyyy-MM-dd 23:59:00"));        // Cover whole day for date range
+                }
+                else
+                {
+                    // This convertion not a need because same data pass in object
+                    // Because developer understatnding
+                    fromDate = Convert.ToDateTime(fromDate.ToString("yyyy-MM-dd HH:mm"));   // This request comes from Export report utility
+                    toDate = Convert.ToDateTime(toDate.ToString("yyyy-MM-dd HH:mm"));       
+                }
+
                 cmd.CommandText = "PROC_ExportReport_CompleteRecords_FormType";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Connection = sqlConnection1;

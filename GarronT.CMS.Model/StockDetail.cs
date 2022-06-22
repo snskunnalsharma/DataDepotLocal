@@ -46,6 +46,7 @@ namespace GarronT.CMS.Model
         public Nullable<long> ModifiedBy { get; set; }
         public Nullable<System.DateTime> ModifiedOn { get; set; }
         public string Location { get; set; }
+    
         public virtual InwardDetail InwardDetail { get; set; }
         public virtual ICollection<OutwardDetail> OutwardDetails { get; set; }
         public virtual ProductMaster ProductMaster { get; set; }

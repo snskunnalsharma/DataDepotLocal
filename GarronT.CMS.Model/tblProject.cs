@@ -21,6 +21,7 @@ namespace GarronT.CMS.Model
             this.StockDetails = new HashSet<StockDetail>();
             this.TblAlertMasters = new HashSet<TblAlertMaster>();
             this.tblMeterPays = new HashSet<tblMeterPay>();
+            this.TblTNMPExportReportUtilityHistories = new HashSet<TblTNMPExportReportUtilityHistory>();
         }
     
         public long ProjectId { get; set; }
@@ -48,11 +49,12 @@ namespace GarronT.CMS.Model
         public Nullable<bool> IsCloned { get; set; }
         public Nullable<long> CloneProjectId { get; set; }
         public Nullable<int> mapBy { get; set; }
-
+    
         public virtual ICollection<ProjectServiceProductRelation> ProjectServiceProductRelations { get; set; }
         public virtual ICollection<ProjectWarehouseRelation> ProjectWarehouseRelations { get; set; }
         public virtual ICollection<StockDetail> StockDetails { get; set; }
         public virtual ICollection<TblAlertMaster> TblAlertMasters { get; set; }
         public virtual ICollection<tblMeterPay> tblMeterPays { get; set; }
+        public virtual ICollection<TblTNMPExportReportUtilityHistory> TblTNMPExportReportUtilityHistories { get; set; }
     }
 }

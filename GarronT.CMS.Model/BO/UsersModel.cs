@@ -176,4 +176,10 @@ namespace GarronT.CMS.Model.BO
 
     }
 
+    public class LocationModel
+    {
+        public string LocationId { get; set; }
+        public string LocationName { get; set; }
+    }
+
 }

@@ -1165,6 +1165,9 @@
                     <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 col-xxs-12 lg-nopaddingright md-nopaddingright md-clear sm-nopaddingright xs-clear">
                         @Html.DropDownList("ReportType", (IEnumerable<SelectListItem>)ViewBag.ReportType, new { @class = "form-control chosen-select", @title = "Select Report Type" })
                     </div>
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 col-xxs-12 lg-nopaddingright md-nopaddingright md-clear sm-nopaddingright xs-clear">
+                        @Html.DropDownList("LocationType", (IEnumerable<SelectListItem>)ViewBag.LocationType, new { @class = "form-control chosen-select", @title = "Select Location" })
+                    </div>
                 </div>
 
                 <div class="row">
@@ -1333,7 +1336,11 @@
         $('#dynamic-table').DataTable({ "language": { "emptyTable": "No Data To Show" } });
         $('#dynamic-table-summary').DataTable({ "language": { "emptyTable": "No Data To Show" } });
 
+        $("#LocationType").chosen({ placeholder_text_single: "Select Location", no_results_text: "Oops, nothing found!" });
+        $('#LocationType').val("0").attr("selected", "selected").trigger('chosen:updated');
 
+        $("#ddlLocationFrom").chosen({ placeholder_text_single: "Select Location", no_results_text: "Oops, nothing found!" });
+        $('#ddlLocationFrom').val("0").attr("selected", "selected").trigger('chosen:updated');
 
         $("#divDetail").hide();
         $("#divSummary").show();
@@ -1481,7 +1488,7 @@
         $('#ulWarehouseId').empty();
         $("#WarehouseIdHeader").removeClass("ddlHeader").text("Select Warehouse")
         $('#ProductId').empty().trigger('chosen:updated');
-
+        $('#LocationType').empty().trigger('chosen:updated');
 
         var value = $("#UtilityId option:selected")
 
@@ -1518,7 +1525,7 @@
 
         //$('#WarehouseId').empty().trigger('chosen:updated');
         $('#ProductId').empty().trigger('chosen:updated');
-
+        $('#LocationType').empty().trigger('chosen:updated');
         var value = $("#ProjectId option:selected")
 
         waitingDialog.show('Please Wait Loading Contacts...');
@@ -1550,6 +1557,14 @@
                     });
                 }
                 $('#ProductId').trigger('chosen:updated');
+
+                if (data.LocationType != null) {
+                    $.each(data.LocationType, function (index, item) {
+                        if (index == 0) { $('#LocationType').append($('<option></option>').val('0').html("")); }
+                        $('#LocationType').append($('<option></option>').val(item.LocationId).html(item.Location));
+                    });
+                }
+                $('#LocationType').trigger('chosen:updated');
                 waitingDialog.hide();
             },
             error: function () {
@@ -1572,6 +1587,7 @@
 
     $('#btnSearch').click(function () {
         debugger;
+        //$("#example-select-all").attr('checked', false);
         LoadGrid()
         //BindData()
     })
@@ -1596,7 +1612,7 @@
         var ddlWarehouseList = [];
         var ulWarehouseList = $('#ulWarehouseId li.highlighted')
         ulWarehouseList.each(function (index, item) { ddlWarehouseList.push($(this).val()) });
-
+        
 
         if (ddlWarehouseList.length === 0) {
             var $toast = toastr["error"]("Please, select warehouse", "Notification");
@@ -1605,6 +1621,7 @@
         // var CategoryId = $("#CategoryId").val();
         var ProductId = $("#ProductId").val();
         var ReportType = $("#ReportType").val();
+        var LocationType = $("#LocationType").val();
 
 
         if (ReportType == "0") {
@@ -1623,7 +1640,7 @@
             type: 'POST',
             url: urlGetStockReport,
             async: true,
-            data: { projectId: ProjectId, warehouseId: ddlWarehouseList, productId: ProductId, ReportType: ReportType },
+            data: { projectId: ProjectId, warehouseId: ddlWarehouseList, productId: ProductId, ReportType: ReportType, LocationType: LocationType },
             success: function (data) {
                 waitingDialog.hide();
                 // debugger;
@@ -1657,48 +1674,46 @@
     function BindData(varData) {
 
         oTable = $('#dynamic-table').dataTable(
-     {
+            {
 
-         "bDestroy": true,
-         "bserverSide": true,
-         "bDeferRender": true,
-         "oLanguage": {
-             "sLengthMenu": '_MENU_ Records per page'
-         },
-         "aaData": varData,
-         // "aaSorting": [[3, "asc"]],
-         "aoColumns": [
+                "bDestroy": true,
+                "bserverSide": true,
+                "bDeferRender": true,
+                "oLanguage": {
+                    "sLengthMenu": '_MENU_ Records per page'
+                },
+                "aaData": varData,
+                // "aaSorting": [[3, "asc"]],
+                "aoColumns": [
 
-                       //{ "mData": "UploadNumber" },
-                       { "mData": "WarehouseName" },
-                       { "mData": "Location" },
-                       { "mData": "CategoryName" },
-                       { "mData": "ProductName" },
-                       { "mData": "ProductDescription" },
-                       { "mData": "PartNumber" },
-                       { "mData": "UPCCode" },
-                       { "mData": "UtilityName" },
-                       { "mData": "Make" },
-                       { "mData": "MeterType" },
-                       { "mData": "MeterSize" },
-                       { "mData": "serialnumber" },
-                       { "mData": "BalanceQty" },
-                       { "bSearchable": false, "mData": null },
+                    //{ "mData": "UploadNumber" },
+                    { "mData": "WarehouseName" },
+                    { "mData": "Location" },
+                    { "mData": "CategoryName" },
+                    { "mData": "ProductName" },
+                    { "mData": "ProductDescription" },
+                    { "mData": "PartNumber" },
+                    { "mData": "UPCCode" },
+                    { "mData": "UtilityName" },
+                    { "mData": "Make" },
+                    { "mData": "MeterType" },
+                    { "mData": "MeterSize" },
+                    { "mData": "serialnumber" },
+                    { "mData": "BalanceQty" },
+                    { "bSearchable": false, "mData": null },
 
-         ],
-         "aoColumnDefs": [
-                                                {
-                                                    "mRender": function (data, type, full, row) {
-                                                        return '<a  id=' + full.StockDetailId + ' onclick="EditRecord(' + full.StockDetailId + ');" class="btn btn-primary btn-xs" role="button" alt="Edit" title="Edit"><i class="fa fa-pencil"></i></a>' +
-                                                            '<a  id=' + full.StockDetailId + ' onclick="DeleteRecord(' + full.StockDetailId + ');" class="btn btn-danger btn-xs" role="button" alt="Delete" title="Delete"><i class="fa fa-trash"></i></a>';
-                                                    },
-                                                    "aTargets": [12]
-                                                }
-         ],
+                ],
+                "aoColumnDefs": [
+                    {
+                        "mRender": function (data, type, full, row) {
+                            return '<a  id=' + full.StockDetailId + ' onclick="EditRecord(' + full.StockDetailId + ');" class="btn btn-primary btn-xs" role="button" alt="Edit" title="Edit"><i class="fa fa-pencil"></i></a>' +
+                                '<a  id=' + full.StockDetailId + ' onclick="DeleteRecord(' + full.StockDetailId + ');" class="btn btn-danger btn-xs" role="button" alt="Delete" title="Delete"><i class="fa fa-trash"></i></a>';
+                        },
+                        "aTargets": [13]
+                    }
+                ],
 
-     }), $('.dataTables_filter input').attr('maxlength', 50);
-
-
+            }), $('.dataTables_filter input').attr('maxlength', 50);
     }
 
     function BindDataSummery(varData) {

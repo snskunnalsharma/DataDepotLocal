@@ -659,9 +659,6 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     && (FieldID != null || FieldID.Length != 0)
                     && ExcelField.Length == FieldID.Length)
                 {
-
-
-
                     dt = (DataTable)TempData["ExcelData"];
                     if (dt == null)
                     {
@@ -734,6 +731,28 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         mailcc.Add("garron@garront.com");
                         mailcc.Add("yogendra.rajpoot@snssystem.com");
                         mailcc.Add("deepak.yadav@snssystem.com");
+                        /*if (ProjectID == 10085)     // for project TNMP Texas V10
+                        {
+                            mailcc.Add("awright@cmsmeter.com");
+                            mailcc.Add("bob@cmsmeter.com");
+                            mailcc.Add("sporter@cmsmeter.com");
+                            mailcc.Add("jmurillo@cmsmeter.com");
+                            mailcc.Add("jking@cmsmeter.com");
+                            mailcc.Add("jfoster@cmsmeter.com");
+                            mailcc.Add("cworkman@cmsmeter.com");
+                            mailcc.Add("christopher.gerety@tnmp.com");
+                            mailcc.Add("garron@cmsmeter.com");
+                        }
+                        if (ProjectID == 10087)     // for project Texas New Mexico Power HQ
+                        {
+                            mailcc.Add("celeste.stephenson@tnmp.com");
+                            mailcc.Add("andrea.couch@tnmp.com");
+                            mailcc.Add("christopher.gerety@tnmp.com");
+                            mailcc.Add("darice.taipalus@pnmresources.com");
+                            mailcc.Add("michael.stanley@pnmresources.com");
+                            mailcc.Add("cisproduction@pnmresources.com");
+                            mailcc.Add("garron@cmsmeter.com");
+                        }*/
 
                         string eMailBody = string.Empty;
                         if (objProjectdetail.Utilitytype == "Electric")
@@ -772,23 +791,44 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                                                              Value = groupby.Key,
                                                              ColumnValues = groupby
                                                          };
+
+                            DataTable temp_dt = new DataTable(); // This table created because skppied count sorted decending order
+                            temp_dt.Columns.Add("OfficeName", typeof(string));
+                            temp_dt.Columns.Add("New", typeof(int));
+                            temp_dt.Columns.Add("Skipped", typeof(int));
+                            temp_dt.Columns.Add("Removed", typeof(int));
                             foreach (var item in groupedOfficeNameWise.ToList())
                             {
                                 string ofcName = item.Value.objOfcName.ToString();
-                                //Console.WriteLine(item.ColumnValues.Count());
                                 var newCount = item.ColumnValues.Where(o => o.type == "New").Count();
                                 var skipCount = item.ColumnValues.Where(o => o.type == "Skip").Count();
                                 var removeCount = item.ColumnValues.Where(o => o.type == "Remove").Count();
-                                eMailBody += "<tr>" +
+
+                                temp_dt.Rows.Add(ofcName, newCount, skipCount, removeCount);
+                                /*eMailBody += "<tr>" +
                                              "<td><center>" + ofcName + "</center></td>" +
                                              "<td><center>" + newCount + "</center></td>" +
                                              "<td><center>" + skipCount + "</center></td>" +
                                              "<td><center>" + removeCount + "</center></td>" +
+                                             "</tr>";*/
+                            }
+                            //Sorting the Table
+                            DataView dv = temp_dt.DefaultView;
+                            dv.Sort = "Skipped desc";
+                            DataTable sorteddt = dv.ToTable();
+                            foreach (DataRow item in sorteddt.Rows)
+                            {
+                                eMailBody += "<tr>" +
+                                             "<td><center>" + item["OfficeName"].ToString() + "</center></td>" +
+                                             "<td><center>" + item["New"].ToString() + "</center></td>" +
+                                             "<td><center>" + item["Skipped"].ToString() + "</center></td>" +
+                                             "<td><center>" + item["Removed"].ToString() + "</center></td>" +
                                              "</tr>";
                             }
-                            
+
                             eMailBody += "</table></div>";
-                            eMailBody += "<br /><br />Thanks and Regards,<br />Team CMS";
+                            eMailBody += "<br /><br />Thanks and Regards,<br />Team Data Depot";
+                            //eMailBody += "<br /><br />Thanks and Regards,<br />Team CMS";
                         }
                         else
                         {
@@ -798,9 +838,11 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                                                "Total New Records: <b>" + newRecordsCount + "</b><br />" +
                                                "Total Skipped Records: <b>" + skipedRecordsCount + "</b><br />" +
                                                "<br />" + skipedAccountsNo + "" +
-                                               "<br /><br />Thanks and Regards,<br />Team CMS";
+                                               "<br /><br />Thanks and Regards,<br />Team Data Depot";
+                                               //"<br /><br />Thanks and Regards,<br />Team CMS";
                         }
-                        new GarronT.CMS.Model.clsMail().SendMail(mailto, mailcc, eMailBody, "Excel file uploaded");
+                        string eMailSubject = "Project Name " + objProjectdetail.ProjectName + " Excel file uploaded";
+                        new GarronT.CMS.Model.clsMail().SendMail(mailto, mailcc, eMailBody, eMailSubject);
 
                         /// calculate the latitude
                         Task.Factory.StartNew(() =>

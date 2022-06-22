@@ -32,7 +32,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             return base.PartialView("Partial_ProjectStatus");
         }
 
-        public ActionResult GetAddressMap(long projectID, long InstallerID, long formTypeId)
+        public ActionResult GetAddressMap(long projectID, long InstallerID, long formTypeId,string locationId)
         {
             List<addressVisitInfo> list = new List<addressVisitInfo>();
 
@@ -41,7 +41,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             {
                 if (formTypeId == 2)
                 {
-                    list = new ProjectStatusDAL().GetProjectStaus(projectID, InstallerID, formTypeId);
+                    list = new ProjectStatusDAL().GetProjectStaus(projectID, InstallerID, formTypeId, locationId);
                 }
                 else if (formTypeId == 1)
                 {
@@ -132,6 +132,15 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         }
 
 
+        public JsonResult GetLocationList(long projectId)
+        {
+            using (ProjectStatusDAL projectStatusDAL = new ProjectStatusDAL())
+            {
+                var objLocationList = projectStatusDAL.LocationList(projectId);
+                return base.Json(objLocationList, JsonRequestBehavior.AllowGet);
+            }
+        }
         #endregion
+
     }
 }

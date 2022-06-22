@@ -335,7 +335,7 @@ namespace GarronT.CMS.Model.DAL
         /// <param name="categoryId"></param>
         /// <param name="productId"></param>
         /// <returns></returns>        
-        public List<WarehouseStockReport> getwarehouselistnew(long[] warehouseId, long projectId, long productId)
+        public List<WarehouseStockReport> getwarehouselistnew(long[] warehouseId, long projectId, long productId,string LocationType)
         {
             List<WarehouseStockReport> productmasterbo = new List<WarehouseStockReport>();
 
@@ -402,6 +402,11 @@ namespace GarronT.CMS.Model.DAL
                     {
                         query = query.Where(f => f.ProductId == productId).Select(f => f).ToList();
                     }
+                    if (LocationType != "0")
+                    {
+                        query = query.Where(f => f.Location == LocationType).Select(f => f).ToList();
+                        var ssquery = query.Where(f => f.Location == LocationType).ToList();
+                    }
 
                     var data = query.Select(o =>
                              new WarehouseStockReport
@@ -446,7 +451,7 @@ namespace GarronT.CMS.Model.DAL
         }
 
 
-        public List<WarehouseStockReport> GetWarehouseStockReport_Summary(long[] warehouseId, long projectId, long productId)
+        public List<WarehouseStockReport> GetWarehouseStockReport_Summary(long[] warehouseId, long projectId, long productId,string LocationType)
         {
             List<WarehouseStockReport> productmasterbo = new List<WarehouseStockReport>();
 
@@ -467,6 +472,10 @@ namespace GarronT.CMS.Model.DAL
                     if (productId != 0)
                     {
                         query = query.Where(f => f.ProductId == productId);
+                    }
+                    if (LocationType != "0")
+                    {
+                        query = query.Where(f => f.Location == LocationType);
                     }
 
                     var data = query.Select(o =>
@@ -508,6 +517,31 @@ namespace GarronT.CMS.Model.DAL
 
 
             return productmasterbo;
+        }
+
+        public long GetWarehouseStockInventoryReport(long warehouseId, long projectId, long productId,string LocationFromValue)
+        {
+            long ablInventory = 0;
+            try
+            {
+                CompassEntities objcompassentities = new CompassEntities();
+                //var query = objcompassentities.PROC_Report_WarehouseStockReportSummary(projectId, warehouseId).AsEnumerable();
+                var query = objcompassentities.PROC_Report_WarehouseStockReport(projectId, warehouseId).AsEnumerable();
+                if (productId != 0)
+                {
+                    query = query.Where(f => f.ProductId == productId);
+                }
+                if (LocationFromValue != "0")
+                {
+                    query = query.Where(f => f.Location == LocationFromValue);
+                }
+                ablInventory = query.Count();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return ablInventory;
         }
 
         public List<WarehouseStockReport> getwarehouselistServerSide(string sortColumn, string sortColumnDir, string searchvalue, int skip, int pagesize, out int totalRecords, long warehouseId, long projectId, long productId)
@@ -716,6 +750,47 @@ namespace GarronT.CMS.Model.DAL
             return UsersModels;
         }
 
+        /// <summary>
+        /// Transfer Inventory
+        /// </summary>
+        /// <param name="ProjectId"></param>
+        /// <param name="ToLocation"></param>
+        /// <param name="TransferInventoryList"></param>
+        public StatusMessage TransferInventory(long ProjectId, string ToLocation, string[] TransferInventoryList, long userId)
+        {
+            StatusMessage statusMessage = new StatusMessage();
+            CompassEntities dbcontext = new CompassEntities();
+            try
+            {
+                foreach (var inventoryNo in TransferInventoryList)
+                {
+                    var objInwordDetailData = dbcontext.InwardDetails.Where(o => o.SerialNumber == inventoryNo && o.Active == 1).ToList();
+                    foreach (var item in objInwordDetailData)
+                    {
+                        item.Location = ToLocation;
+                        item.ModifiedBy = userId;
+                        item.ModifiedOn = new CommonFunctions().ServerDate();
+                    }
+                    var objStockDetailData = dbcontext.StockDetails.Where(o => o.SerialNumber == inventoryNo && o.FKProjectId == ProjectId && o.Active == 1).ToList();
+                    foreach (var item in objStockDetailData)
+                    {
+                        item.Location = ToLocation;
+                        item.ModifiedBy = userId;
+                        item.ModifiedOn = new CommonFunctions().ServerDate();
+                    }
+                    dbcontext.SaveChanges();
+                }
+                statusMessage.Success = true;
+                statusMessage.Message = "Record Updated Successfully";
+            }
+            catch (Exception ex)
+            {
+                statusMessage.Success = false;
+                statusMessage.Message = "Unable to update record";
+                throw ex;
+            }
+            return statusMessage;
+        }
         /// <summary>
         /// Aniket
         /// 9-Aug-2017

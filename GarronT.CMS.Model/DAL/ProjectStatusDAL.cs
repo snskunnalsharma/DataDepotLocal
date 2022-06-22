@@ -38,7 +38,7 @@ namespace GarronT.CMS.Model.DAL
         /// <param name="projectID"></param>
         /// <param name="InstallerID"></param>
         /// <returns></returns>
-        public List<addressVisitInfo> GetProjectStaus(long projectID, long InstallerID, long formTypeId)
+        public List<addressVisitInfo> GetProjectStaus(long projectID, long InstallerID, long formTypeId, string locationId)
         {
 
 
@@ -92,7 +92,7 @@ namespace GarronT.CMS.Model.DAL
                 //}
                 #endregion
                 objCompassEntities.Database.CommandTimeout = 0;
-                var resultData = objCompassEntities.PROC_ProjectStatus_InstallerData(projectID, InstallerID, formTypeId).Where(o => !string.IsNullOrEmpty(o.Latitude) && !string.IsNullOrEmpty(o.Longitude)).ToList();
+                var resultData = objCompassEntities.PROC_ProjectStatus_InstallerData(projectID, InstallerID, formTypeId,locationId).Where(o => !string.IsNullOrEmpty(o.Latitude) && !string.IsNullOrEmpty(o.Longitude)).ToList();
 
 
                 foreach (var item in resultData)
@@ -212,6 +212,7 @@ namespace GarronT.CMS.Model.DAL
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.Add("@ProjectId", projectID);
                         cmd.Parameters.Add("@FormTypeId", formTypeId);
+                        cmd.Parameters.Add("@Location", locationId);
                         cmd.CommandTimeout = 0;
                         using (SqlDataAdapter da = new SqlDataAdapter(cmd))
                         {
@@ -484,6 +485,33 @@ namespace GarronT.CMS.Model.DAL
                     FormType = o.FormType
                 }).OrderBy(o => o.FormType).ToList();
 
+            return data;
+        }
+
+        /// <summary>
+        /// get locatin list
+        /// </summary>
+        /// <returns></returns>
+        public List<LocationModel> LocationList(long projectId)
+        {
+            CompassEntities CompassEntities = new CompassEntities();
+            InstallerDAL inDal = new InstallerDAL();
+            string dyOfficeColName = inDal.getDynamicColumnName("OFFICE", Convert.ToString(projectId));
+            List<LocationModel> data = new List<LocationModel>();
+            if (!string.IsNullOrEmpty(dyOfficeColName))
+            {
+                /*var list = CompassEntities.UploadedExcelDatas.AsNoTracking().Where(o => o.FKProjectId == projectId && o.Active == 1).AsEnumerable()
+                .Select(o => (string)o.GetType().GetProperty(dyOfficeColName).GetValue(o)).Distinct().ToList();*/
+
+                var list = CompassEntities.UploadedExcelDatas.AsNoTracking().Where(o => o.FKProjectId == projectId && o.Active == 1).AsEnumerable()
+                           .OrderBy(r => r.GetType().GetProperty(dyOfficeColName).GetValue(r, null))
+                           .Select(o => (string)o.GetType().GetProperty(dyOfficeColName).GetValue(o)).Distinct().ToList();
+
+                foreach (var item in list)
+                {
+                    data.Add(new LocationModel { LocationId = item.ToString(), LocationName = item.ToString() });
+                }
+            }
             return data;
         }
 

@@ -145,7 +145,8 @@ namespace GarronT.CMS.Model
         public virtual DbSet<TimeClockMaster> TimeClockMasters { get; set; }
         public virtual DbSet<UserTimeClockDetail> UserTimeClockDetails { get; set; }
         public virtual DbSet<tblMeterPay> tblMeterPays { get; set; }
-    
+        public virtual DbSet<TblTNMPExportReportUtilityHistory> TblTNMPExportReportUtilityHistories { get; set; }
+
         public virtual int SP_DeleteFormSectionRelations(Nullable<long> formId)
         {
             var formIdParameter = formId.HasValue ?
@@ -1109,7 +1110,7 @@ namespace GarronT.CMS.Model
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<PROC_ProjectStatus_AllData_Result>("PROC_ProjectStatus_AllData", projectIdParameter, formTypeIdParameter);
         }
     
-        public virtual ObjectResult<PROC_ProjectStatus_InstallerData_Result> PROC_ProjectStatus_InstallerData(Nullable<long> projectId, Nullable<long> installerID, Nullable<long> formTypeID)
+        public virtual ObjectResult<PROC_ProjectStatus_InstallerData_Result> PROC_ProjectStatus_InstallerData(Nullable<long> projectId, Nullable<long> installerID, Nullable<long> formTypeID, string locationId)
         {
             var projectIdParameter = projectId.HasValue ?
                 new ObjectParameter("ProjectId", projectId) :
@@ -1122,8 +1123,12 @@ namespace GarronT.CMS.Model
             var formTypeIDParameter = formTypeID.HasValue ?
                 new ObjectParameter("FormTypeID", formTypeID) :
                 new ObjectParameter("FormTypeID", typeof(long));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<PROC_ProjectStatus_InstallerData_Result>("PROC_ProjectStatus_InstallerData", projectIdParameter, installerIDParameter, formTypeIDParameter);
+
+            var locationIdParameter = locationId != null ?
+                new ObjectParameter("Location", locationId) :
+                new ObjectParameter("Location", typeof(string));
+
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<PROC_ProjectStatus_InstallerData_Result>("PROC_ProjectStatus_InstallerData", projectIdParameter, installerIDParameter, formTypeIDParameter, locationIdParameter);
         }
     
         public virtual ObjectResult<Nullable<long>> PROC_WebService_CheckRecordStatus_SkipOrRtu(Nullable<long> uploadId, Nullable<long> formId)

@@ -123,7 +123,12 @@ namespace GarronT.CMS.Model.BO
 
     }
 
-
+    public class LocationDropdownList
+    {
+        public string LocationId { get; set; }
+        public string Location { get; set; }
+        public long ProductId { get; set; }
+    }
 
 
 

@@ -18,7 +18,7 @@ namespace TNMPUploadUtility
 {
     class UploadFile
     {
-        public string getandSaveFile()
+        public string getandSaveFile(long ProjectID)
         {
             try
             {
@@ -47,9 +47,21 @@ namespace TNMPUploadUtility
                         var files = sftp.ListDirectory(remoteDirectory);
                         if (files != null)
                         {
+                            DateTime date = new CommonFunctions().ServerDate(); // Get current date
+                            date = date.AddDays(-1);        //Add -1 days because upload file coming in SFTP server yesterday
+                            string tempFileName = string.Empty;
+                            if (ProjectID == 10085)     // For This Project ==> TNMP Texas V10
+                            {
+                                tempFileName = "TNMP_CMS_RouteFile_" + date.ToString("yyyyMMdd") + ".csv";
+                            }
+                            else if (ProjectID==10087)  // For TNMP HQ Project ==> Texas New Mexico Power HQ
+                            {
+                                tempFileName = "TNMP_TNMP_RouteFile_" + date.ToString("yyyyMMdd") + ".csv";
+                            }
                             var obj = files.Select(o => o.Name).ToList();
                             string serverFileName = string.Empty;
-                            foreach (var item in obj)
+                            serverFileName = files.Where(o => o.Name == tempFileName).Select(o => o.Name).FirstOrDefault();
+                            /*foreach (var item in obj)
                             {
                                 bool fileExist = item.StartsWith("TNMP_CMS_RouteFile");
                                 if (fileExist)
@@ -57,12 +69,7 @@ namespace TNMPUploadUtility
                                     serverFileName = item.ToString();
                                     break;
                                 }
-                                /*if (item.Length == 31)
-                                {
-                                    //TNMP_CMS_RouteFile_20220502.csv
-                                    string cc = item.ToString();
-                                }*/
-                            }
+                            }*/
 
                             if (!string.IsNullOrEmpty(serverFileName))
                             {
@@ -428,6 +435,29 @@ namespace TNMPUploadUtility
                         mailcc.Add("garron@garront.com");
                         mailcc.Add("yogendra.rajpoot@snssystem.com");
                         mailcc.Add("deepak.yadav@snssystem.com");
+                        mailcc.Add("snssystem.kunnal@gmail.com");
+                        if (ProjectID == 10085)     // for project TNMP Texas V10
+                        {
+                            mailcc.Add("awright@cmsmeter.com");
+                            mailcc.Add("bob@cmsmeter.com");
+                            mailcc.Add("sporter@cmsmeter.com");
+                            mailcc.Add("jmurillo@cmsmeter.com");
+                            mailcc.Add("jking@cmsmeter.com");
+                            mailcc.Add("jfoster@cmsmeter.com");
+                            mailcc.Add("cworkman@cmsmeter.com");
+                            mailcc.Add("christopher.gerety@tnmp.com");
+                            mailcc.Add("garron@cmsmeter.com");
+                        }
+                        if (ProjectID == 10087)     // for project Texas New Mexico Power HQ
+                        {
+                            mailcc.Add("celeste.stephenson@tnmp.com");
+                            mailcc.Add("andrea.couch@tnmp.com");
+                            mailcc.Add("christopher.gerety@tnmp.com");
+                            mailcc.Add("darice.taipalus@pnmresources.com");
+                            mailcc.Add("michael.stanley@pnmresources.com");
+                            mailcc.Add("cisproduction@pnmresources.com");
+                            mailcc.Add("garron@cmsmeter.com");
+                        }
 
                         string eMailBody = string.Empty;
                         if (objProjectdetail.Utilitytype == "Electric")
@@ -455,22 +485,44 @@ namespace TNMPUploadUtility
                                                             Value = groupby.Key,
                                                             ColumnValues = groupby
                                                         };
+
+                            DataTable temp_dt = new DataTable(); // This table created because skppied count sorted decending order
+                            temp_dt.Columns.Add("OfficeName", typeof(string));
+                            temp_dt.Columns.Add("New", typeof(int));
+                            temp_dt.Columns.Add("Skipped", typeof(int));
+                            temp_dt.Columns.Add("Removed", typeof(int));
                             foreach (var item in groupedOfficeNameWise.ToList())
                             {
                                 string ofcName = item.Value.objOfcName.ToString();
                                 var newCount = item.ColumnValues.Where(o => o.type == "New").Count();
                                 var skipCount = item.ColumnValues.Where(o => o.type == "Skip").Count();
                                 var removeCount = item.ColumnValues.Where(o => o.type == "Remove").Count();
-                                eMailBody += "<tr>" +
+
+                                temp_dt.Rows.Add(ofcName, newCount, skipCount, removeCount);
+                                /*eMailBody += "<tr>" +
                                              "<td><center>" + ofcName + "</center></td>" +
                                              "<td><center>" + newCount + "</center></td>" +
                                              "<td><center>" + skipCount + "</center></td>" +
                                              "<td><center>" + removeCount + "</center></td>" +
+                                             "</tr>";*/
+                            }
+                            //Sorting the Table
+                            DataView dv = temp_dt.DefaultView;
+                            dv.Sort = "Skipped desc";
+                            DataTable sorteddt = dv.ToTable();
+                            foreach (DataRow item in sorteddt.Rows)
+                            {
+                                eMailBody += "<tr>" +
+                                             "<td><center>" + item["OfficeName"].ToString() + "</center></td>" +
+                                             "<td><center>" + item["New"].ToString() + "</center></td>" +
+                                             "<td><center>" + item["Skipped"].ToString() + "</center></td>" +
+                                             "<td><center>" + item["Removed"].ToString() + "</center></td>" +
                                              "</tr>";
                             }
 
                             eMailBody += "</table></div>";
-                            eMailBody += "<br /><br />Thanks and Regards,<br />Team CMS";
+                            eMailBody += "<br /><br />Thanks and Regards,<br />Team Data Depot";
+                            //eMailBody += "<br /><br />Thanks and Regards,<br />Team CMS";
                         }
                         else
                         {
@@ -480,9 +532,11 @@ namespace TNMPUploadUtility
                                                "Total New Records: <b>" + newRecordsCount + "</b><br />" +
                                                "Total Skipped Records: <b>" + skipedRecordsCount + "</b><br />" +
                                                "<br />" + skipedAccountsNo + "" +
-                                               "<br /><br />Thanks and Regards,<br />Team CMS";
+                                               "<br /><br />Thanks and Regards,<br />Team Data Depot";
+                                               //"<br /><br />Thanks and Regards,<br />Team CMS";
                         }
-                        new GarronT.CMS.Model.clsMail().SendMail(mailto, mailcc, eMailBody, "Excel file uploaded");
+                        string eMailSubject = "Project Name " + objProjectdetail.ProjectName + " Excel file uploaded";
+                        new GarronT.CMS.Model.clsMail().SendMail(mailto, mailcc, eMailBody, eMailSubject);
 
                         CalculateLatLongController ca = new CalculateLatLongController();
                         ca.GetLatLongForProject(ProjectID);

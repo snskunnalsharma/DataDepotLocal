@@ -456,7 +456,7 @@
             }
 
             if (PermissionList.Contains("WarehouseStockReport") || PermissionList.Contains("InventryStockReport")
-                || PermissionList.Contains("ProcuctMovementReport"))
+                || PermissionList.Contains("ProcuctMovementReport") || PermissionList.Contains("InventoryTransfer"))
             {
                 <li class="dcjq-parent-li">
                     <a id="InventoryReports" target="_self" class="nav-bg nav-main  dcjq-parent" href="javascript:void(0);">
@@ -496,6 +496,18 @@
                                     </span>
 
                                     <span>Movement Report</span>
+                                </a>
+                            </li>
+                        }
+                        @if (PermissionList.Contains("InventoryTransfer"))
+                        {
+                            <li id="liInventoryMovementReport">
+                                <a target="_self" class="AdminMenu" href="@Url.Action("InventoryTransferReport", "InventoryTransfer", new { area = "Admin" })">
+                                    <span class="icon">
+                                        <i class="fa fa-check-square-o"></i>
+                                    </span>
+
+                                    <span>Inventory Transfer</span>
                                 </a>
                             </li>
                         }

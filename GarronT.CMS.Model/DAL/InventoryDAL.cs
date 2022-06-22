@@ -232,6 +232,20 @@ namespace GarronT.CMS.Model.DAL
             return data;
         }
 
+        public List<LocationDropdownList> GetLocationList(long ProjectId)
+        {
+            CompassEntities CompassEntities = new CompassEntities();
+
+            List<LocationDropdownList> data = CompassEntities.StockDetails.Where(p => p.FKProjectId == ProjectId && p.Active == 1 && p.Location != "" && p.Location != null).OrderBy(o => o.Location).Select(o =>
+                                                  new LocationDropdownList
+                                                  {
+                                                      LocationId = o.Location,
+                                                      Location = o.Location,
+                                                      ProductId = o.FKProductId
+                                                  }).Distinct().ToList();
+            return data;
+        }
+
         public List<InventoryUtilityTypeBO> GetUtilityTypeList()
         {
             CompassEntities CompassEntities = new CompassEntities();

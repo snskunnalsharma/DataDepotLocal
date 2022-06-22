@@ -19,71 +19,98 @@ namespace TNMPUploadUtility
     {
         static void Main(string[] args)
         {
-            long ProjectID = 10085; // Static project id
-            #region Upload file class
-            /*ErrorLogFile.writeStatus("\n\nThread Started at Uploading file - " + DateTime.Now.ToShortTimeString());
-            Console.WriteLine("Thread Started at - " + DateTime.Now.ToShortTimeString());
-            UploadFile up = new UploadFile();
-            string pathLocalFile = up.getandSaveFile();
-            if (!string.IsNullOrEmpty(pathLocalFile))
+            //Note==> Emails comment for a testsing time  ==> UploadFile.cs
+            long ProjectID = 0;
+            if (args.Length > 0)
             {
-                // Validate excel execk columns and row data
-                var result = up.ValidateExcel(pathLocalFile);
-                List<string> ExcelField = result.Item1;
-                DataTable dtExcelData = result.Item2;
-
-                // Get Excel Mapping Field ids
-                ErrorLogFile.writeStatus("Get Excel Mapping Field ids - " + DateTime.Now.ToShortTimeString());
-                Console.WriteLine("Get Excel Mapping Field ids - " + DateTime.Now.ToShortTimeString());
-                List<string> FieldID = up.excelmMappingFieldIds(ProjectID, result.Item1);
-
-                // Save Excel datas
-                ErrorLogFile.writeStatus("Saving Excel Data in Databse - " + DateTime.Now.ToShortTimeString());
-                Console.WriteLine("Saving Excel Data in Databse - " + DateTime.Now.ToShortTimeString());
-                bool sratus = up.SaveTab6Data(ProjectID, ExcelField, FieldID, dtExcelData);
-                if (sratus)
+                ProjectID = Convert.ToInt64(args[0]);  // Get project id in Task Schedular Argumnet
+            }
+            //long ProjectID = 10085; // Static project id
+            #region Upload file class
+            ErrorLogFile.writeStatus("\n\nThread Started at Uploading file - " + DateTime.Now.ToShortTimeString());
+            Console.WriteLine("Thread Started at - " + DateTime.Now.ToShortTimeString());
+            ErrorLogFile.writeStatus("Get Project Id ==> Project Id:-" + ProjectID + " -" + DateTime.Now.ToShortTimeString());
+            Console.WriteLine("Get Project Id ==> Project Id:-" + ProjectID + "");
+            try
+            {
+                UploadFile up = new UploadFile();
+                string pathLocalFile = up.getandSaveFile(ProjectID);
+                if (!string.IsNullOrEmpty(pathLocalFile))
                 {
-                    ErrorLogFile.writeStatus("Data Successfully Saved in Database - " + DateTime.Now.ToShortTimeString());
-                    Console.WriteLine("Data Successfully Saved in Database - " + DateTime.Now.ToShortTimeString());
-                    File.Delete(@"" + pathLocalFile + "");
+                    // Validate excel execk columns and row data
+                    var result = up.ValidateExcel(pathLocalFile);
+                    List<string> ExcelField = result.Item1;
+                    DataTable dtExcelData = result.Item2;
+
+                    // Get Excel Mapping Field ids
+                    ErrorLogFile.writeStatus("Get Excel Mapping Field ids - " + DateTime.Now.ToShortTimeString());
+                    Console.WriteLine("Get Excel Mapping Field ids - " + DateTime.Now.ToShortTimeString());
+                    List<string> FieldID = up.excelmMappingFieldIds(ProjectID, result.Item1);
+
+                    // Save Excel datas
+                    ErrorLogFile.writeStatus("Saving Excel Data in Database - " + DateTime.Now.ToShortTimeString());
+                    Console.WriteLine("Saving Excel Data in Database - " + DateTime.Now.ToShortTimeString());
+                    bool sratus = up.SaveTab6Data(ProjectID, ExcelField, FieldID, dtExcelData);
+                    if (sratus)
+                    {
+                        ErrorLogFile.writeStatus("Data Successfully Saved in Database - " + DateTime.Now.ToShortTimeString());
+                        Console.WriteLine("Data Successfully Saved in Database - " + DateTime.Now.ToShortTimeString());
+                        File.Delete(@"" + pathLocalFile + "");
+                    }
+                }
+                else
+                {
+                    ErrorLogFile.writeStatus("File does not exist in SFTP server. - " + DateTime.Now.ToShortTimeString());
+                    Console.WriteLine("File does not exist in SFTP server. - " + DateTime.Now.ToShortTimeString());
                 }
             }
-            else
+            catch (Exception ex)
             {
-                ErrorLogFile.writeStatus("File does not exist in SFTP server. - " + DateTime.Now.ToShortTimeString());
-                Console.WriteLine("File does not exist in SFTP server. - " + DateTime.Now.ToShortTimeString());
+                ErrorLogFile.writeStatus("Error:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
+                Console.WriteLine("Error:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
             }
             ErrorLogFile.writeStatus("Thread Ended at Upload file - " + DateTime.Now.ToShortTimeString());
-            Console.WriteLine("Thread Ended at - " + DateTime.Now.ToShortTimeString());*/
+            Console.WriteLine("Thread Ended at - " + DateTime.Now.ToShortTimeString());
             #endregion
             //Ends uploading file code
 
             #region Download Export Report
-            ErrorLogFile.writeStatus("\n\nThread Started at Download Export Report - " + DateTime.Now.ToShortTimeString());
+            /*ErrorLogFile.writeStatus("\n\nThread Started at Download Export Report - " + DateTime.Now.ToShortTimeString());
             Console.WriteLine("Thread Started at Download Export Report - " + DateTime.Now.ToShortTimeString());
-
+            ErrorLogFile.writeStatus("Get Project Id ==> Project Id:-" + ProjectID + " -" + DateTime.Now.ToShortTimeString());
+            Console.WriteLine("Get Project Id ==> Project Id:-" + ProjectID + "");
             // All Parameter Set defualt
-            DateTime date = new CommonFunctions().ServerDate(); // Get current date
-            string fromDate = date.ToString("MMM-dd-yyyy");   //"Apr-25-2022";
-            string toDate = date.ToString("MMM-dd-yyyy");    //"Apr-25-2022";
-            //fromDate = "Apr-25-2022";
-            //toDate = "Apr-25-2022";
-            long formTypeId = 2;   // Form type 2 set because project data, 1 for Audit data
-            long projectId = ProjectID; // Project id ==> 10085
-            string[] visitStatus = new string[] { "Completed" };  // Onlt export report ==> Completed
-            int latlongRequired = 1;  // latlongRequired set=1 because 1 for not requied, Pass 2 requied
-            int mediaRequired = 1;    // mediaRequired set=1 because 1 for not requied, Pass 2 requied
-
-            if (date.DayOfWeek.ToString() != "Saturday" && date.DayOfWeek.ToString() != "Sunday") // Don't run utility sat & sun
+            try
             {
-                if (date.DayOfWeek.ToString() == "Monday")
+                DateTime date = new CommonFunctions().ServerDate(); // Get current date
+                string fromDate = string.Empty;
+                string toDate = string.Empty;
+                //string fromDate = date.ToString("MMM-dd-yyyy");   //"Apr-25-2022";
+                //string toDate = date.ToString("MMM-dd-yyyy");    //"Apr-25-2022";
+                //fromDate = "Apr-26-2022";
+                //toDate = "Apr-26-2022";
+                long formTypeId = 2;   // Form type 2 set because project data, 1 for Audit data
+                long projectId = ProjectID; // Project id ==> 10085
+                string[] visitStatus = new string[] { "Completed" };  // Only export report ==> Completed
+                int latlongRequired = 1;  // latlongRequired set=1 because 1 for not requied, Pass 2 requied
+                int mediaRequired = 1;    // mediaRequired set=1 because 1 for not requied, Pass 2 requied
+
+                CompassEntities objCE = new CompassEntities();
+                var lastDateTime = objCE.TblTNMPExportReportUtilityHistories.Where(o => o.FK_ProjectId == projectId && o.Active == 1).OrderByDescending(q => q.Id).Select(o => o.ToDateTime).FirstOrDefault();
+                if (lastDateTime.HasValue)
                 {
-                    date = date.AddDays(-2);
-                    fromDate = date.ToString("MMM-dd-yyyy");   // Back two days ==> Monday export report ==> export to 3 days Sat,Sun and Mon
-                    //toDate = date.ToString("MMM-dd-yyyy");  //
+                    //date = date.AddDays(-2);
+                    DateTime tempTime = (DateTime)lastDateTime;
+                    fromDate = (tempTime.AddMinutes(1)).ToString("yyyy-MM-dd HH:mm");
+                    //fromDate =Convert.ToDateTime(lastDateTime).ToString("MMM-dd-yyyy");
+                    toDate = date.ToString("yyyy-MM-dd HH:mm");
+                    //toDate = "2022-04-26 19:50";
+
+                    ErrorLogFile.writeStatus("Pass FromDateTime:- " + fromDate + " and ToDateTime:- " + toDate + " to Method  ==>" + DateTime.Now.ToShortTimeString());
+                    Console.WriteLine("Pass FromDate:- " + fromDate + " and ToDate:- " + toDate + " to Method");
                 }
-                DownloadExportReport objDER = new DownloadExportReport();
                 // Get data in dt from Databse
+                DownloadExportReport objDER = new DownloadExportReport();
                 DataTable dt = objDER.createExcelNew(fromDate, toDate, formTypeId, projectId, visitStatus, latlongRequired, mediaRequired);
                 if (dt.Rows.Count > 0)
                 {
@@ -94,7 +121,23 @@ namespace TNMPUploadUtility
                         if (status)
                         {
                             ErrorLogFile.writeStatus("Export File uploaded successfully in SFTP server -" + DateTime.Now.ToShortTimeString());
-                            Console.WriteLine("Export File uploaded successfully in SFTP server");
+                            Console.WriteLine("Export File uploaded successfully in SFTP server" + DateTime.Now.ToShortTimeString());
+
+                            // Save TNMP Utility Export Report history
+                            TblTNMPExportReportUtilityHistory obj = new TblTNMPExportReportUtilityHistory();
+                            obj.FK_ProjectId = projectId;
+                            obj.FromDateTime = Convert.ToDateTime(fromDate);
+                            obj.ToDateTime = Convert.ToDateTime(toDate);
+                            obj.UtilityExecutionStartDateTime = date;
+                            obj.UtilityExecutionLastDateTime = new CommonFunctions().ServerDate();
+                            obj.Active = 1;
+                            obj.CreatedBy = 14; // Set defualt user id
+                            obj.CreatedOn = new CommonFunctions().ServerDate();
+                            objCE.TblTNMPExportReportUtilityHistories.Add(obj);
+                            objCE.SaveChanges();
+                            // end here
+                            ErrorLogFile.writeStatus("Save export report history in database -" + DateTime.Now.ToShortTimeString());
+                            Console.WriteLine("Save export report history in database" + DateTime.Now.ToShortTimeString());
                         }
                         else
                         {
@@ -104,13 +147,70 @@ namespace TNMPUploadUtility
                     }
                 }
             }
-            else
+            catch (Exception ex)
             {
-                ErrorLogFile.writeStatus("Utility does not run on this day ==> " + date.DayOfWeek.ToString() + " -" + DateTime.Now.ToShortTimeString());
+                ErrorLogFile.writeStatus("Error:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
+                Console.WriteLine("Error:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
             }
             ErrorLogFile.writeStatus("Thread Ended at Download Export Report - " + DateTime.Now.ToShortTimeString());
-            Console.WriteLine("Thread Ended at Download Export Report - " + DateTime.Now.ToShortTimeString());
+            Console.WriteLine("Thread Ended at Download Export Report - " + DateTime.Now.ToShortTimeString());*/
             #endregion
         }
     }
 }
+
+
+
+// Old Code Expport Utility Code before date ==> 30 May 2022
+/*ErrorLogFile.writeStatus("\n\nThread Started at Download Export Report - " + DateTime.Now.ToShortTimeString());
+Console.WriteLine("Thread Started at Download Export Report - " + DateTime.Now.ToShortTimeString());
+
+// All Parameter Set defualt
+DateTime date = new CommonFunctions().ServerDate(); // Get current date
+string fromDate = date.ToString("MMM-dd-yyyy");   //"Apr-25-2022";
+string toDate = date.ToString("MMM-dd-yyyy");    //"Apr-25-2022";
+                                                 //fromDate = "Apr-26-2022";
+                                                 //toDate = "Apr-26-2022";
+long formTypeId = 2;   // Form type 2 set because project data, 1 for Audit data
+long projectId = ProjectID; // Project id ==> 10085
+string[] visitStatus = new string[] { "Completed" };  // Onlt export report ==> Completed
+int latlongRequired = 1;  // latlongRequired set=1 because 1 for not requied, Pass 2 requied
+int mediaRequired = 1;    // mediaRequired set=1 because 1 for not requied, Pass 2 requied
+
+if (date.DayOfWeek.ToString() != "Saturday" && date.DayOfWeek.ToString() != "Sunday") // Don't run utility sat & sun
+{
+    if (date.DayOfWeek.ToString() == "Monday")
+    {
+        date = date.AddDays(-2);
+        fromDate = date.ToString("MMM-dd-yyyy");   // Back two days ==> Monday export report ==> export to 3 days Sat,Sun and Mon
+                                                   //toDate = date.ToString("MMM-dd-yyyy");  //
+    }
+    DownloadExportReport objDER = new DownloadExportReport();
+    // Get data in dt from Databse
+    DataTable dt = objDER.createExcelNew(fromDate, toDate, formTypeId, projectId, visitStatus, latlongRequired, mediaRequired);
+    if (dt.Rows.Count > 0)
+    {
+        string filePath = objDER.DownloadCSVExport(dt);  // Generate CSV file
+        if (!string.IsNullOrEmpty(filePath))
+        {
+            bool status = objDER.UploadFileSFTPServer(filePath); // Upload file in SFTP server.
+            if (status)
+            {
+                ErrorLogFile.writeStatus("Export File uploaded successfully in SFTP server -" + DateTime.Now.ToShortTimeString());
+                Console.WriteLine("Export File uploaded successfully in SFTP server");
+            }
+            else
+            {
+                ErrorLogFile.writeStatus("Export File don't uploaded -" + DateTime.Now.ToShortTimeString());
+                Console.WriteLine("Export File don't uploaded");
+            }
+        }
+    }
+}
+else
+{
+    ErrorLogFile.writeStatus("Utility does not run on this day ==> " + date.DayOfWeek.ToString() + " -" + DateTime.Now.ToShortTimeString());
+}
+ErrorLogFile.writeStatus("Thread Ended at Download Export Report - " + DateTime.Now.ToShortTimeString());
+Console.WriteLine("Thread Ended at Download Export Report - " + DateTime.Now.ToShortTimeString());*/
+//End hare
