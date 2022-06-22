@@ -731,7 +731,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         mailcc.Add("garron@garront.com");
                         mailcc.Add("yogendra.rajpoot@snssystem.com");
                         mailcc.Add("deepak.yadav@snssystem.com");
-                        /*if (ProjectID == 10085)     // for project TNMP Texas V10
+                        if (ProjectID == 10085)     // for project TNMP Texas V10
                         {
                             mailcc.Add("awright@cmsmeter.com");
                             mailcc.Add("bob@cmsmeter.com");
@@ -752,7 +752,9 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                             mailcc.Add("michael.stanley@pnmresources.com");
                             mailcc.Add("cisproduction@pnmresources.com");
                             mailcc.Add("garron@cmsmeter.com");
-                        }*/
+                            mailcc.Add("tommy.gauna@tnmp.com");
+                            mailcc.Add("pauline.moore@tnmp.com");
+                        }
 
                         string eMailBody = string.Empty;
                         if (objProjectdetail.Utilitytype == "Electric")

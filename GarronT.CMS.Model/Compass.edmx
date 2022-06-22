@@ -1669,6 +1669,20 @@
                     <Property Name="ModifiedBy" Type="int" />
                     <Property Name="ModifiedOn" Type="datetime" />
                 </EntityType>
+                <EntityType Name="TblTNMPExportReportUtilityHistory">
+                    <Key>
+                        <PropertyRef Name="Id" />
+                    </Key>
+                    <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+                    <Property Name="FK_ProjectId" Type="bigint" Nullable="false" />
+                    <Property Name="FromDateTime" Type="datetime" />
+                    <Property Name="ToDateTime" Type="datetime" />
+                    <Property Name="UtilityExecutionStartDateTime" Type="datetime" />
+                    <Property Name="UtilityExecutionLastDateTime" Type="datetime" />
+                    <Property Name="Active" Type="int" Nullable="false" />
+                    <Property Name="CreatedBy" Type="int" />
+                    <Property Name="CreatedOn" Type="datetime" />
+                </EntityType>
                 <EntityType Name="tblStateMaster">
                     <Key>
                         <PropertyRef Name="StateId" />
@@ -2071,7 +2085,7 @@
                     <Property Name="ModifiedOn" Type="datetime" />
                 </EntityType>
                 <!--Errors Found During Generation:
-                warning 6002: The table/view 'CMSMeter.dbo.VW_AuditorList' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+    warning 6002: The table/view 'CMSMeter.dbo.VW_AuditorList' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
                 <EntityType Name="VW_AuditorList">
                     <Key>
                         <PropertyRef Name="UserID" />
@@ -2081,7 +2095,7 @@
                     <Property Name="FirstName" Type="varchar" MaxLength="50" />
                 </EntityType>
                 <!--Errors Found During Generation:
-                warning 6002: The table/view 'CMSMeter.dbo.VW_GetFormData' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+    warning 6002: The table/view 'CMSMeter.dbo.VW_GetFormData' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
                 <EntityType Name="VW_GetFormData">
                     <Key>
                         <PropertyRef Name="FormId" />
@@ -2103,7 +2117,7 @@
                     <Property Name="ClientName" Type="varchar" MaxLength="250" Nullable="false" />
                 </EntityType>
                 <!--Errors Found During Generation:
-                warning 6002: The table/view 'CMSMeter.dbo.VW_GetPictures' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+    warning 6002: The table/view 'CMSMeter.dbo.VW_GetPictures' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
                 <EntityType Name="VW_GetPictures">
                     <Key>
                         <PropertyRef Name="tblService_ServiceId" />
@@ -2115,7 +2129,7 @@
                     <Property Name="Picture" Type="varchar" MaxLength="200" Nullable="false" />
                 </EntityType>
                 <!--Errors Found During Generation:
-                warning 6002: The table/view 'CMSMeter.dbo.VW_GetProductData' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+    warning 6002: The table/view 'CMSMeter.dbo.VW_GetProductData' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
                 <EntityType Name="VW_GetProductData">
                     <Key>
                         <PropertyRef Name="Id" />
@@ -2138,7 +2152,7 @@
                     <Property Name="CategoryName" Type="varchar" MaxLength="250" />
                 </EntityType>
                 <!--Errors Found During Generation:
-                warning 6002: The table/view 'CMSMeter.dbo.VW_GetProductDataProject' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+    warning 6002: The table/view 'CMSMeter.dbo.VW_GetProductDataProject' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
                 <EntityType Name="VW_GetProductDataProject">
                     <Key>
                         <PropertyRef Name="FKProjectID" />
@@ -2163,7 +2177,7 @@
                     <Property Name="CategoryName" Type="varchar" MaxLength="250" />
                 </EntityType>
                 <!--Errors Found During Generation:
-                warning 6002: The table/view 'CMSMeter.dbo.VW_GETTab6DropdownData' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+    warning 6002: The table/view 'CMSMeter.dbo.VW_GETTab6DropdownData' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
                 <EntityType Name="VW_GETTab6DropdownData">
                     <Key>
                         <PropertyRef Name="ProjectID" />
@@ -2177,7 +2191,7 @@
                     <Property Name="FieldType" Type="int" Nullable="false" />
                 </EntityType>
                 <!--Errors Found During Generation:
-                warning 6002: The table/view 'CMSMeter.dbo.VW_InstallerList' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+    warning 6002: The table/view 'CMSMeter.dbo.VW_InstallerList' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
                 <EntityType Name="VW_InstallerList">
                     <Key>
                         <PropertyRef Name="UserID" />
@@ -2187,7 +2201,7 @@
                     <Property Name="FirstName" Type="varchar" MaxLength="50" />
                 </EntityType>
                 <!--Errors Found During Generation:
-                warning 6002: The table/view 'CMSMeter.dbo.VW_ManageStockRequest' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+    warning 6002: The table/view 'CMSMeter.dbo.VW_ManageStockRequest' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
                 <EntityType Name="VW_ManageStockRequest">
                     <Key>
                         <PropertyRef Name="RequestId" />
@@ -2218,7 +2232,7 @@
                     <Property Name="createdon" Type="datetime" Nullable="false" />
                 </EntityType>
                 <!--Errors Found During Generation:
-                warning 6002: The table/view 'CMSMeter.dbo.VW_Project' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+    warning 6002: The table/view 'CMSMeter.dbo.VW_Project' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
                 <EntityType Name="VW_Project">
                     <Key>
                         <PropertyRef Name="ProjectId" />
@@ -3092,19 +3106,19 @@
                     </ReferentialConstraint>
                 </Association>
 
-              <Association Name="FK_tblMeterPay_tblMeterType">
-                <End Role="tblMeterType" Type="Self.tblMeterType" Multiplicity="0..1" />
-                <End Role="tblMeterPay" Type="Self.tblMeterPay" Multiplicity="*" />
-                <ReferentialConstraint>
-                  <Principal Role="tblMeterType">
-                    <PropertyRef Name="ID" />
-                  </Principal>
-                  <Dependent Role="tblMeterPay">
-                    <PropertyRef Name="FK_MeterType_Id" />
-                  </Dependent>
-                </ReferentialConstraint>
-              </Association>
-              
+                <Association Name="FK_tblMeterPay_tblMeterType">
+                    <End Role="tblMeterType" Type="Self.tblMeterType" Multiplicity="0..1" />
+                    <End Role="tblMeterPay" Type="Self.tblMeterPay" Multiplicity="*" />
+                    <ReferentialConstraint>
+                        <Principal Role="tblMeterType">
+                            <PropertyRef Name="ID" />
+                        </Principal>
+                        <Dependent Role="tblMeterPay">
+                            <PropertyRef Name="FK_MeterType_Id" />
+                        </Dependent>
+                    </ReferentialConstraint>
+                </Association>
+
                 <Association Name="FK_WarehouseMaster_TblCityMaster">
                     <End Role="TblCityMaster" Type="Self.TblCityMaster" Multiplicity="1" />
                     <End Role="WarehouseMaster" Type="Self.WarehouseMaster" Multiplicity="*" />
@@ -3358,6 +3372,7 @@
                     <Parameter Name="ProjectId" Type="bigint" Mode="In" />
                     <Parameter Name="InstallerID" Type="bigint" Mode="In" />
                     <Parameter Name="FormTypeID" Type="bigint" Mode="In" />
+                    <Parameter Name="Location" Type="varchar" Mode="In" />
                 </Function>
                 <Function Name="PROC_Report_InventryStockReport" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
                 <Function Name="PROC_Report_InventryStockReport_Summary" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
@@ -3751,6 +3766,7 @@
                     <EntitySet Name="tblStandardFieldMaster" EntityType="Self.tblStandardFieldMaster" Schema="dbo" store:Type="Tables" />
                     <EntitySet Name="TblStateCityLogo" EntityType="Self.TblStateCityLogo" Schema="dbo" store:Type="Tables" />
                     <EntitySet Name="tblStateMaster" EntityType="Self.tblStateMaster" Schema="dbo" store:Type="Tables" />
+                    <EntitySet Name="TblTNMPExportReportUtilityHistory" EntityType="Self.TblTNMPExportReportUtilityHistory" Schema="dbo" store:Type="Tables" />
                     <EntitySet Name="tblUploadedData" EntityType="Self.tblUploadedData" Schema="dbo" store:Type="Tables" />
                     <EntitySet Name="tblUserFormTypeRelation" EntityType="Self.tblUserFormTypeRelation" Schema="dbo" store:Type="Tables" />
                     <EntitySet Name="tblUsers" EntityType="Self.tblUsers" Schema="dbo" store:Type="Tables" />
@@ -4538,6 +4554,7 @@
                         <Parameter Name="ProjectId" Mode="In" Type="Int64" />
                         <Parameter Name="InstallerID" Mode="In" Type="Int64" />
                         <Parameter Name="FormTypeID" Mode="In" Type="Int64" />
+                        <Parameter Name="Location" Mode="In" Type="String" />
                     </FunctionImport>
                     <FunctionImport Name="PROC_WebService_CheckRecordStatus_SkipOrRtu" ReturnType="Collection(Int64)">
                         <Parameter Name="UploadId" Mode="In" Type="Int64" />
@@ -5102,11 +5119,15 @@
                         <End Role="tblMeterSize" EntitySet="tblMeterSizes" />
                         <End Role="tblMeterPay" EntitySet="tblMeterPays" />
                     </AssociationSet>
-                  <AssociationSet Name="FK_tblMeterPay_tblMeterType" Association="CompassModel.FK_tblMeterPay_tblMeterType">
-                    <End Role="tblMeterType" EntitySet="tblMeterTypes" />
-                    <End Role="tblMeterPay" EntitySet="tblMeterPays" />
-                  </AssociationSet>
-
+                    <AssociationSet Name="FK_tblMeterPay_tblMeterType" Association="CompassModel.FK_tblMeterPay_tblMeterType">
+                        <End Role="tblMeterType" EntitySet="tblMeterTypes" />
+                        <End Role="tblMeterPay" EntitySet="tblMeterPays" />
+                    </AssociationSet>
+                  <EntitySet Name="TblTNMPExportReportUtilityHistories" EntityType="CompassModel.TblTNMPExportReportUtilityHistory" />
+                    <AssociationSet Name="FK_TblTNMPExportReportUtilityHistory_tblProject" Association="CompassModel.FK_TblTNMPExportReportUtilityHistory_tblProject">
+                        <End Role="tblProject" EntitySet="tblProjects" />
+                        <End Role="TblTNMPExportReportUtilityHistory" EntitySet="TblTNMPExportReportUtilityHistories" />
+                    </AssociationSet>
                 </EntityContainer>
                 <EntityType Name="C__MigrationHistory">
                     <Key>
@@ -5215,7 +5236,7 @@
                     <Property Name="ModifiedBy" Type="Int32" />
                     <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
                     <NavigationProperty Name="ProductMasters" Relationship="CompassModel.FK_ProductMaster_tblMeterType" FromRole="tblMeterType" ToRole="ProductMaster" />
-                  <NavigationProperty Name="tblMeterPays" Relationship="CompassModel.FK_tblMeterPay_tblMeterType" FromRole="tblMeterType" ToRole="tblMeterPay" />
+                    <NavigationProperty Name="tblMeterPays" Relationship="CompassModel.FK_tblMeterPay_tblMeterType" FromRole="tblMeterType" ToRole="tblMeterPay" />
                 </EntityType>
                 <EntityType Name="tblPicture">
                     <Key>
@@ -6311,6 +6332,7 @@
                     <Property Type="String" Name="SkipComment" Nullable="true" MaxLength="500" />
                     <Property Type="String" Name="ShortComment" Nullable="true" MaxLength="25" />
                     <Property Type="String" Name="ProjectStatus" Nullable="true" MaxLength="50" />
+                    <Property Type="Int64" Name="DateTimeOrdering" Nullable="true" />
                 </ComplexType>
                 <ComplexType Name="STP_ExportReportData_Pending_Result">
                     <Property Type="Int64" Name="ID" Nullable="false" />
@@ -7593,6 +7615,33 @@
                     <Property Name="ModifiedBy" Type="Int32" />
                     <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
                 </EntityType>
+                <EntityType Name="TblTNMPExportReportUtilityHistory">
+                    <Key>
+                        <PropertyRef Name="Id" />
+                    </Key>
+                    <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+                    <Property Name="FK_ProjectId" Type="Int64" Nullable="false" />
+                    <Property Name="FromDateTime" Type="DateTime" Precision="3" />
+                    <Property Name="ToDateTime" Type="DateTime" Precision="3" />
+                    <Property Name="UtilityExecutionStartDateTime" Type="DateTime" Precision="3" />
+                    <Property Name="UtilityExecutionLastDateTime" Type="DateTime" Precision="3" />
+                    <Property Name="Active" Type="Int32" Nullable="false" />
+                    <Property Name="CreatedBy" Type="Int32" />
+                    <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+                    <NavigationProperty Name="tblProject" Relationship="CompassModel.FK_TblTNMPExportReportUtilityHistory_tblProject" FromRole="TblTNMPExportReportUtilityHistory" ToRole="tblProject" />
+                </EntityType>
+                <Association Name="FK_TblTNMPExportReportUtilityHistory_tblProject">
+                    <End Role="tblProject" Type="Self.tblProject" Multiplicity="1" />
+                    <End Role="TblTNMPExportReportUtilityHistory" Type="Self.TblTNMPExportReportUtilityHistory" Multiplicity="*" />
+                    <ReferentialConstraint>
+                        <Principal Role="tblProject">
+                            <PropertyRef Name="ProjectId" />
+                        </Principal>
+                        <Dependent Role="TblTNMPExportReportUtilityHistory">
+                            <PropertyRef Name="FK_ProjectId" />
+                        </Dependent>
+                    </ReferentialConstraint>
+                </Association>
                 <EntityType Name="UserIcard">
                     <Key>
                         <PropertyRef Name="ID" />
@@ -9685,6 +9734,7 @@
                     <NavigationProperty Name="StockDetails" Relationship="CompassModel.FK_StockDetails_tblProject" FromRole="tblProject" ToRole="StockDetail" />
                     <NavigationProperty Name="TblAlertMasters" Relationship="CompassModel.FK_TblAlertMaster_TblProject" FromRole="tblProject" ToRole="TblAlertMaster" />
                     <NavigationProperty Name="tblMeterPays" Relationship="CompassModel.FK_tblMeterPay_tblProject" FromRole="tblProject" ToRole="tblMeterPay" />
+                    <NavigationProperty Name="TblTNMPExportReportUtilityHistories" Relationship="CompassModel.FK_TblTNMPExportReportUtilityHistory_tblProject" FromRole="tblProject" ToRole="TblTNMPExportReportUtilityHistory" />
                 </EntityType>
                 <Association Name="FK_ProjectServiceProductRelation_tblProject">
                     <End Type="CompassModel.tblProject" Role="tblProject" Multiplicity="1" />
@@ -9838,28 +9888,28 @@
                         </Dependent>
                     </ReferentialConstraint>
                 </Association>
-              <EntityType Name="tblMeterPay">
-                <Key>
-                  <PropertyRef Name="ID" />
-                </Key>
-                <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-                <Property Name="FK_Project_Id" Type="Int64" />
-                <Property Name="FK_MeterSize_Id" Type="Int64" />
-                <Property Name="FK_MeterType_Id" Type="Int64" />
-                <Property Name="MeterSize" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
-                <Property Name="MeterType" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
-                <Property Name="MeterDisplayName" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
-                <Property Name="Description" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
-                <Property Name="Pay" Type="Decimal" Precision="10" Scale="2" />
-                <Property Name="Active" Type="Int32" />
-                <Property Name="CreatedBy" Type="Int32" />
-                <Property Name="CreatedOn" Type="DateTime" Precision="3" />
-                <Property Name="ModifiedBy" Type="Int32" />
-                <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
-                <NavigationProperty Name="tblProject" Relationship="CompassModel.FK_tblMeterPay_tblProject" FromRole="tblMeterPay" ToRole="tblProject" />
-                <NavigationProperty Name="tblMeterSize" Relationship="CompassModel.FK_tblMeterPay_tblMeterSize" FromRole="tblMeterPay" ToRole="tblMeterSize" />
-                <NavigationProperty Name="tblMeterType" Relationship="CompassModel.FK_tblMeterPay_tblMeterType" FromRole="tblMeterPay" ToRole="tblMeterType" />
-              </EntityType>
+                <EntityType Name="tblMeterPay">
+                    <Key>
+                        <PropertyRef Name="ID" />
+                    </Key>
+                    <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+                    <Property Name="FK_Project_Id" Type="Int64" />
+                    <Property Name="FK_MeterSize_Id" Type="Int64" />
+                    <Property Name="FK_MeterType_Id" Type="Int64" />
+                    <Property Name="MeterSize" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+                    <Property Name="MeterType" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+                    <Property Name="MeterDisplayName" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+                    <Property Name="Description" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+                    <Property Name="Pay" Type="Decimal" Precision="10" Scale="2" />
+                    <Property Name="Active" Type="Int32" />
+                    <Property Name="CreatedBy" Type="Int32" />
+                    <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+                    <Property Name="ModifiedBy" Type="Int32" />
+                    <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
+                    <NavigationProperty Name="tblProject" Relationship="CompassModel.FK_tblMeterPay_tblProject" FromRole="tblMeterPay" ToRole="tblProject" />
+                    <NavigationProperty Name="tblMeterSize" Relationship="CompassModel.FK_tblMeterPay_tblMeterSize" FromRole="tblMeterPay" ToRole="tblMeterSize" />
+                    <NavigationProperty Name="tblMeterType" Relationship="CompassModel.FK_tblMeterPay_tblMeterType" FromRole="tblMeterPay" ToRole="tblMeterType" />
+                </EntityType>
                 <Association Name="FK_tblMeterPay_tblProject">
                     <End Type="CompassModel.tblProject" Role="tblProject" Multiplicity="0..1" />
                     <End Type="CompassModel.tblMeterPay" Role="tblMeterPay" Multiplicity="*" />
@@ -9884,18 +9934,18 @@
                         </Dependent>
                     </ReferentialConstraint>
                 </Association>
-              <Association Name="FK_tblMeterPay_tblMeterType">
-                <End Type="CompassModel.tblMeterType" Role="tblMeterType" Multiplicity="0..1" />
-                <End Type="CompassModel.tblMeterPay" Role="tblMeterPay" Multiplicity="*" />
-                <ReferentialConstraint>
-                  <Principal Role="tblMeterType">
-                    <PropertyRef Name="ID" />
-                  </Principal>
-                  <Dependent Role="tblMeterPay">
-                    <PropertyRef Name="FK_MeterType_Id" />
-                  </Dependent>
-                </ReferentialConstraint>
-              </Association>
+                <Association Name="FK_tblMeterPay_tblMeterType">
+                    <End Type="CompassModel.tblMeterType" Role="tblMeterType" Multiplicity="0..1" />
+                    <End Type="CompassModel.tblMeterPay" Role="tblMeterPay" Multiplicity="*" />
+                    <ReferentialConstraint>
+                        <Principal Role="tblMeterType">
+                            <PropertyRef Name="ID" />
+                        </Principal>
+                        <Dependent Role="tblMeterPay">
+                            <PropertyRef Name="FK_MeterType_Id" />
+                        </Dependent>
+                    </ReferentialConstraint>
+                </Association>
             </Schema>
         </edmx:ConceptualModels>
         <!-- C-S mapping content -->
@@ -11182,6 +11232,7 @@
                                 <ScalarProperty Name="SkipComment" ColumnName="SkipComment" />
                                 <ScalarProperty Name="ShortComment" ColumnName="ShortComment" />
                                 <ScalarProperty Name="ProjectStatus" ColumnName="ProjectStatus" />
+                                <ScalarProperty Name="DateTimeOrdering" ColumnName="DateTimeOrdering" />
                             </ComplexTypeMapping>
                         </ResultMapping>
                     </FunctionImportMapping>
@@ -14132,26 +14183,41 @@
                             </MappingFragment>
                         </EntityTypeMapping>
                     </EntitySetMapping>
-                  <EntitySetMapping Name="tblMeterPays">
-                    <EntityTypeMapping TypeName="CompassModel.tblMeterPay">
-                      <MappingFragment StoreEntitySet="tblMeterPay">
-                        <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
-                        <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
-                        <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
-                        <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                        <ScalarProperty Name="Active" ColumnName="Active" />
-                        <ScalarProperty Name="Pay" ColumnName="Pay" />
-                        <ScalarProperty Name="Description" ColumnName="Description" />
-                        <ScalarProperty Name="MeterDisplayName" ColumnName="MeterDisplayName" />
-                        <ScalarProperty Name="MeterType" ColumnName="MeterType" />
-                        <ScalarProperty Name="MeterSize" ColumnName="MeterSize" />
-                        <ScalarProperty Name="FK_MeterType_Id" ColumnName="FK_MeterType_Id" />
-                        <ScalarProperty Name="FK_MeterSize_Id" ColumnName="FK_MeterSize_Id" />
-                        <ScalarProperty Name="FK_Project_Id" ColumnName="FK_Project_Id" />
-                        <ScalarProperty Name="ID" ColumnName="ID" />
-                      </MappingFragment>
-                    </EntityTypeMapping>
-                  </EntitySetMapping>
+                    <EntitySetMapping Name="tblMeterPays">
+                        <EntityTypeMapping TypeName="CompassModel.tblMeterPay">
+                            <MappingFragment StoreEntitySet="tblMeterPay">
+                                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+                                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                                <ScalarProperty Name="Active" ColumnName="Active" />
+                                <ScalarProperty Name="Pay" ColumnName="Pay" />
+                                <ScalarProperty Name="Description" ColumnName="Description" />
+                                <ScalarProperty Name="MeterDisplayName" ColumnName="MeterDisplayName" />
+                                <ScalarProperty Name="MeterType" ColumnName="MeterType" />
+                                <ScalarProperty Name="MeterSize" ColumnName="MeterSize" />
+                                <ScalarProperty Name="FK_MeterType_Id" ColumnName="FK_MeterType_Id" />
+                                <ScalarProperty Name="FK_MeterSize_Id" ColumnName="FK_MeterSize_Id" />
+                                <ScalarProperty Name="FK_Project_Id" ColumnName="FK_Project_Id" />
+                                <ScalarProperty Name="ID" ColumnName="ID" />
+                            </MappingFragment>
+                        </EntityTypeMapping>
+                    </EntitySetMapping>
+                    <EntitySetMapping Name="TblTNMPExportReportUtilityHistories">
+                        <EntityTypeMapping TypeName="CompassModel.TblTNMPExportReportUtilityHistory">
+                            <MappingFragment StoreEntitySet="TblTNMPExportReportUtilityHistory">
+                                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                                <ScalarProperty Name="Active" ColumnName="Active" />
+                                <ScalarProperty Name="UtilityExecutionLastDateTime" ColumnName="UtilityExecutionLastDateTime" />
+                                <ScalarProperty Name="UtilityExecutionStartDateTime" ColumnName="UtilityExecutionStartDateTime" />
+                                <ScalarProperty Name="ToDateTime" ColumnName="ToDateTime" />
+                                <ScalarProperty Name="FromDateTime" ColumnName="FromDateTime" />
+                                <ScalarProperty Name="FK_ProjectId" ColumnName="FK_ProjectId" />
+                                <ScalarProperty Name="Id" ColumnName="Id" />
+                            </MappingFragment>
+                        </EntityTypeMapping>
+                    </EntitySetMapping>
                 </EntityContainerMapping>
             </Mapping>
         </edmx:Mappings>

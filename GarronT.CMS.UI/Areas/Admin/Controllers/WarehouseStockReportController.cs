@@ -177,16 +177,20 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             InventoryDAL objInventoryDAL = new InventoryDAL();
             List<WarehouseBO> data = objInventoryDAL.GetWareHouseList(ProjectId);
             List<CommonDropDownClass> data1 = objInventoryDAL.GetProductList(ProjectId);
-            List<LocationDropdownList> data2 = objInventoryDAL.GetLocationList(ProjectId);
+            List<LocationDropdownList> data2 = GetLocationList(ProjectId);
             return base.Json(new { WarehouseList = data, ProductList = data1, LocationType = data2 }, JsonRequestBehavior.AllowGet);
         }
 
-        [HttpGet]
-        public ActionResult getLocationList(long ProjectId)
+        public List<LocationDropdownList> GetLocationList(long ProjectId)
         {
-            InventoryDAL objInventoryDAL = new InventoryDAL();
-            List<LocationDropdownList> data2 = objInventoryDAL.GetLocationList(ProjectId);
-            return base.Json(new {LocationList = data2 }, JsonRequestBehavior.AllowGet);
+            CompassEntities CompassEntities = new CompassEntities();
+            List<LocationDropdownList> data = CompassEntities.StockDetails.Where(p => p.FKProjectId == ProjectId && p.Active == 1 && p.Location != "" && p.Location != null).OrderBy(o => o.Location).Select(o =>
+                                                         new LocationDropdownList
+                                                         {
+                                                             LocationId = o.Location,
+                                                             Location = o.Location
+                                                         }).Distinct().ToList();
+            return data;
         }
 
 

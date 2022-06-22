@@ -9,7 +9,7 @@ $(document).ready(function () {
     $("#ddlProjectStatus").chosen({ no_results_text: "Oops, nothing found!" });
     $("#ddlProject").chosen({ no_results_text: "Oops, nothing found!" });
     $("#ddlInstaller").chosen({ no_results_text: "Oops, nothing found!" });
-
+    $("#ddlLocation").chosen({ no_results_text: "Oops, nothing found!" });
     //AddedBy Aniket on 15-Oct-2016
     $("#ddlUtilityType").chosen({ no_results_text: "Oops, nothing found!" });
     $("#ddlformtype").chosen({ no_results_text: "Oops, nothing found!" });
@@ -40,6 +40,38 @@ function BindFormType() {
                             $('#ddlformtype').append($('<option></option>').val('0'));
                         }
                         $('#ddlformtype').append($('<option></option>').val(item.ID).html(item.FormType));
+                    });
+                    $('.chosen-select').trigger('chosen:updated');
+                }
+
+            },
+            error: function () {
+                var $toast = toastr["error"]("something seems wrong", "Error Notification");
+            }
+        });
+    }
+}
+
+function LocationList() {
+    debugger;
+    var Project = $("#ddlProject option:selected")
+
+    if (Project.length > 0) {
+        var Getlocation = $('#urlGetLocationList').val();
+        $.ajax({
+            type: 'GET',
+            url: Getlocation,
+            data: { projectId: Project.val()},
+            success: function (data) {
+                $('#ddlLocation').empty();
+                var count = data.length;
+                if (count > 0) {
+                    debugger;
+                    $.each(data, function (index, item) {
+                        if (index == 0) {
+                            $('#ddlLocation').append($('<option></option>').val('0'));
+                        }
+                        $('#ddlLocation').append($('<option></option>').val(item.LocationId).html(item.LocationName));
                     });
                     $('.chosen-select').trigger('chosen:updated');
                 }
@@ -126,7 +158,8 @@ function resetData() {
     $('#ddlInstaller').empty();
     $('#ddlInstaller').trigger("chosen:updated");
 
-
+    $('#ddlLocation').empty();
+    $('#ddlLocation').trigger("chosen:updated");
 }
 
 function resizeContent() {
@@ -148,6 +181,7 @@ $('#ddlProject').change(function () {
 
     if (Project.length > 0) {
         BindFormType();
+        LocationList();
     }
 
 
@@ -253,15 +287,19 @@ $('#btnShowMap').click(function () {
     else {
 
         var InstallerID = $("#ddlInstaller option:selected").val();
-
+        var LocationId = $("#ddlLocation option:selected").val();
+        if (LocationId === undefined) {
+            LocationId = "0";
+        }
+        debugger;
         if (InstallerID === undefined) {
             var $toast = toastr["error"]("Sorry you can not proceed as Audit process not configured for selected project.", "");
         }
         else if (InstallerID === '0') {
-            GetAddress(ProjectID, 0, FormTypeID)
+            GetAddress(ProjectID, 0, FormTypeID, LocationId)
         }
         else {
-            GetAddress(ProjectID, InstallerID, FormTypeID)
+            GetAddress(ProjectID, InstallerID, FormTypeID, LocationId)
         }
     }
 
@@ -305,9 +343,10 @@ function initialize() {
 
 $('#map_canvas').addClass("canvas-map");
 
-function GetAddress(projectID, InstallerID, FormTypeID) {
+function GetAddress(projectID, InstallerID, FormTypeID, LocationId) {
     debugger;
-
+    var dd = LocationId;
+    debugger;
     // var projectID = 1;
     var urlGetAddressMap = $('#urlGetAddressMap').val();
 
@@ -315,7 +354,7 @@ function GetAddress(projectID, InstallerID, FormTypeID) {
         type: 'GET',
         url: urlGetAddressMap,
         async: true,
-        data: { projectID: projectID, InstallerID: InstallerID, formTypeId: FormTypeID },
+        data: { projectID: projectID, InstallerID: InstallerID, formTypeId: FormTypeID, locationId: LocationId},
         // contentType: "application/json; charset=utf-8",
         // dataType: "json",
         beforeSend: function () {

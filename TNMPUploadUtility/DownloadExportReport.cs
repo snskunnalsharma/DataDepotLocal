@@ -83,14 +83,27 @@ namespace TNMPUploadUtility
         #endregion
 
         #region Generate csv
-        public string DownloadCSVExport(DataTable dt)
+        public string DownloadCSVExport(DataTable dt,long projectId)
         {
             ErrorLogFile.writeStatus("Start ==> Generate CSV file - " + DateTime.Now.ToShortTimeString());
             Console.WriteLine("Start ==> Generate CSV file - " + DateTime.Now.ToShortTimeString());
             try
             {
                 ExportReportController objERC = new ExportReportController();
-                string fileName = "meter_exchange_CMS_" + DateTime.Now.ToString("yyyyMMdd") + ".csv";
+                string fileName = string.Empty;
+                if (projectId == 10085)
+                {
+                    fileName = "meter_exchange_CMS_" + DateTime.Now.ToString("yyyyMMdd") + ".csv";
+                }
+                else if (projectId == 10087)
+                {
+                    fileName = "meter_exchange_TNMP_" + DateTime.Now.ToString("yyyyMMdd") + ".csv";
+                }
+                else
+                {
+                    fileName = "meter_exchange_CMS_" + DateTime.Now.ToString("yyyyMMdd") + ".csv";
+                }
+
                 StringBuilder sb = new StringBuilder();
                 dt = objERC.datatableColumnChnages(dt);     // Remove column not requied for TNMP project ==> Electric project
                 int totalCount = dt.Columns.Count;

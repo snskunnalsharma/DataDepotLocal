@@ -4141,7 +4141,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             var objUtilitytype = objCE.tblProjects.Where(o => o.ProjectId == projectId).Select(o => o.Utilitytype).FirstOrDefault();
             if (objUtilitytype == "Electric")
             {
-                DownloadCSVExport(data);
+                DownloadCSVExport(data, projectId);
                 return null;
             }
             
@@ -4176,13 +4176,24 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             // return View("Index");
         }
 
-        public void DownloadCSVExport(DataTable dt)
+        public void DownloadCSVExport(DataTable dt,long projectId)
         {
             try
             {
                 Response.Clear();
                 Response.Buffer = true;
-                Response.AddHeader("content-disposition", "attachment;filename=meter_exchange_CMS_" + DateTime.Now.ToString("yyyyMMdd") + ".csv");
+                if (projectId == 10085)
+                {
+                    Response.AddHeader("content-disposition", "attachment;filename=meter_exchange_CMS_" + DateTime.Now.ToString("yyyyMMdd") + ".csv");
+                }
+                else if (projectId == 10087)
+                {
+                    Response.AddHeader("content-disposition", "attachment;filename=meter_exchange_TNMP_" + DateTime.Now.ToString("yyyyMMdd") + ".csv");
+                }
+                else
+                {
+                    Response.AddHeader("content-disposition", "attachment;filename=meter_exchange_CMS_" + DateTime.Now.ToString("yyyyMMdd") + ".csv");
+                }
                 Response.Charset = "";
                 Response.ContentType = "application/text";
                 StringBuilder sb = new StringBuilder();

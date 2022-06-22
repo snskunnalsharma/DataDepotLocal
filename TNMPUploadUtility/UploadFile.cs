@@ -457,6 +457,8 @@ namespace TNMPUploadUtility
                             mailcc.Add("michael.stanley@pnmresources.com");
                             mailcc.Add("cisproduction@pnmresources.com");
                             mailcc.Add("garron@cmsmeter.com");
+                            mailcc.Add("tommy.gauna@tnmp.com");
+                            mailcc.Add("pauline.moore@tnmp.com");
                         }
 
                         string eMailBody = string.Empty;
