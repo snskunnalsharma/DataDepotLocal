@@ -25,7 +25,7 @@ namespace TNMPUploadUtility
             {
                 ProjectID = Convert.ToInt64(args[0]);  // Get project id in Task Schedular Argumnet
             }
-            //long ProjectID = 10085; // Static project id
+            //long ProjectID = 10087; // Static project id
             #region Upload file class
             /*ErrorLogFile.writeStatus("\n\nThread Started at Uploading file - " + DateTime.Now.ToShortTimeString());
             Console.WriteLine("Thread Started at - " + DateTime.Now.ToShortTimeString());
@@ -85,6 +85,7 @@ namespace TNMPUploadUtility
                 DateTime date = new CommonFunctions().ServerDate(); // Get current date
                 string fromDate = string.Empty;
                 string toDate = string.Empty;
+                DateTime objUtilityExecutionStartDateTime = date;
                 //string fromDate = date.ToString("MMM-dd-yyyy");   //"Apr-25-2022";
                 //string toDate = date.ToString("MMM-dd-yyyy");    //"Apr-25-2022";
                 //fromDate = "Apr-26-2022";
@@ -99,12 +100,24 @@ namespace TNMPUploadUtility
                 var lastDateTime = objCE.TblTNMPExportReportUtilityHistories.Where(o => o.FK_ProjectId == projectId && o.Active == 1).OrderByDescending(q => q.Id).Select(o => o.ToDateTime).FirstOrDefault();
                 if (lastDateTime.HasValue)
                 {
-                    //date = date.AddDays(-2);
-                    DateTime tempTime = (DateTime)lastDateTime;
-                    fromDate = (tempTime.AddMinutes(1)).ToString("yyyy-MM-dd HH:mm");
-                    //fromDate =Convert.ToDateTime(lastDateTime).ToString("MMM-dd-yyyy");
-                    toDate = date.ToString("yyyy-MM-dd HH:mm");
-                    //toDate = "2022-04-26 19:50";
+                    if (projectId == 10085) // TNMP CMS
+                    {
+                        //date = date.AddDays(-2);
+                        DateTime tempTime = (DateTime)lastDateTime;
+                        fromDate = (tempTime.AddMinutes(1)).ToString("yyyy-MM-dd HH:mm");
+                        //fromDate =Convert.ToDateTime(lastDateTime).ToString("MMM-dd-yyyy");
+                        toDate = date.ToString("yyyy-MM-dd HH:mm");
+                        //toDate = "2022-04-26 19:50";
+                    }
+                    if (projectId == 10087) // TNMP HQ
+                    {
+                        date = date.AddDays(-1);
+                        DateTime tempTime = (DateTime)lastDateTime;
+                        fromDate = (tempTime.AddMinutes(1)).ToString("yyyy-MM-dd HH:mm");
+                        //fromDate = (tempTime).ToString("yyyy-MM-dd 00:00");   // becasue priviou day whole day cover 00:00 to 23:59
+                        toDate = date.ToString("yyyy-MM-dd 23:59");
+                        //toDate = date.ToString("yyyy-MM-dd HH:mm");
+                    }
 
                     ErrorLogFile.writeStatus("Pass FromDateTime:- " + fromDate + " and ToDateTime:- " + toDate + " to Method  ==>" + DateTime.Now.ToShortTimeString());
                     Console.WriteLine("Pass FromDate:- " + fromDate + " and ToDate:- " + toDate + " to Method");
@@ -128,7 +141,7 @@ namespace TNMPUploadUtility
                             obj.FK_ProjectId = projectId;
                             obj.FromDateTime = Convert.ToDateTime(fromDate);
                             obj.ToDateTime = Convert.ToDateTime(toDate);
-                            obj.UtilityExecutionStartDateTime = date;
+                            obj.UtilityExecutionStartDateTime = objUtilityExecutionStartDateTime;
                             obj.UtilityExecutionLastDateTime = new CommonFunctions().ServerDate();
                             obj.Active = 1;
                             obj.CreatedBy = 14; // Set defualt user id
