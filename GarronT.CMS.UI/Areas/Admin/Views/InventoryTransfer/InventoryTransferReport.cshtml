@@ -1664,13 +1664,14 @@
 
         var value = $("#ProjectId option:selected");
         var ddlLocationTo = $("#ddlLocationTo").val();
-
+        var WarehouseId = $("#WarehouseId").val();
+        var ProductId = $("#ProductId").val();
         waitingDialog.show('Please Wait...');
         var urlTransferInventory = $('#urlTransferInventory').val();
 
         $.ajax({
             url: urlTransferInventory,
-            data: { "ProjectId": value.val(), ToLocation: ddlLocationTo, TransferInventoryList: invList },
+            data: { "ProjectId": value.val(), warehouseId: WarehouseId, productId: ProductId, ToLocation: ddlLocationTo, TransferInventoryList: invList },
             type: 'POST',
             success: function (data) {
                 waitingDialog.hide();

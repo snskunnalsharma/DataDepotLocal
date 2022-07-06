@@ -180,10 +180,11 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         /// Transfer Inventroy
         /// </summary>
         /// <param name="ProjectId"></param>
+        /// <param name="warehouseId"></param>
         /// <param name="ToLocation"></param>
         /// <param name="TransferInventoryList"></param>
         /// <returns></returns>
-        public ActionResult saveTransferInventory(long ProjectId, string ToLocation, string[] TransferInventoryList)
+        public ActionResult saveTransferInventory(long ProjectId,long warehouseId,long productId, string ToLocation, string[] TransferInventoryList)
         {
             StatusMessage statusMessage = new StatusMessage();
             try
@@ -192,7 +193,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 if (objPermissionCheck)
                 {
                     long userId = new UserDetails().GetUserId(User.Identity.GetUserId());
-                    statusMessage = new WareHouseDAL().TransferInventory(ProjectId, ToLocation, TransferInventoryList, userId);
+                    statusMessage = new WareHouseDAL().TransferInventoryNew(ProjectId, warehouseId, productId, ToLocation, TransferInventoryList, userId);
                 }
                 else
                 {

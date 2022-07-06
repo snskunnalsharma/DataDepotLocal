@@ -232,7 +232,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             var jsonResult = Json(new { statusMessage, WarehouseStockReportList }, JsonRequestBehavior.AllowGet);
             jsonResult.MaxJsonLength = int.MaxValue;
             return jsonResult;
-            return Json(new { statusMessage, WarehouseStockReportList }, JsonRequestBehavior.AllowGet);
+            //return Json(new { statusMessage, WarehouseStockReportList }, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult GetProductbyCategoryId(long categoryId)

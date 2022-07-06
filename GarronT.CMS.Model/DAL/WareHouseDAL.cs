@@ -402,10 +402,16 @@ namespace GarronT.CMS.Model.DAL
                     {
                         query = query.Where(f => f.ProductId == productId).Select(f => f).ToList();
                     }
-                    if (LocationType != "0")
+                    if (LocationType != "0" && !string.IsNullOrEmpty(LocationType))
                     {
-                        query = query.Where(f => f.Location == LocationType).Select(f => f).ToList();
-                        var ssquery = query.Where(f => f.Location == LocationType).ToList();
+                        if (LocationType == "null" || LocationType == null)
+                        {
+                            query = query.Where(f => f.Location == null).Select(f => f).ToList();
+                        }
+                        else
+                        {
+                            query = query.Where(f => f.Location == LocationType).Select(f => f).ToList();
+                        }  
                     }
 
                     var data = query.Select(o =>
@@ -429,7 +435,7 @@ namespace GarronT.CMS.Model.DAL
                                  BalanceQty = o.BalanceQty,
                                  SerialNumberRequired = o.SerialNumberRequired,
                                  TotalQty = o.TotalQty,
-                                 Location=o.Location
+                                 Location = o.Location
                              }
                             ).ToList();
 
@@ -754,6 +760,7 @@ namespace GarronT.CMS.Model.DAL
         /// Transfer Inventory
         /// </summary>
         /// <param name="ProjectId"></param>
+        /// <param name="warehouseId"></param>
         /// <param name="ToLocation"></param>
         /// <param name="TransferInventoryList"></param>
         public StatusMessage TransferInventory(long ProjectId, string ToLocation, string[] TransferInventoryList, long userId)
@@ -790,6 +797,61 @@ namespace GarronT.CMS.Model.DAL
                 throw ex;
             }
             return statusMessage;
+        }
+
+        public StatusMessage TransferInventoryNew(long ProjectId, long warehouseId, long productId, string ToLocation, string[] TransferInventoryList, long userId)
+        {
+            StatusMessage statusMessage = new StatusMessage();
+            CompassEntities dbcontext = new CompassEntities();
+            try
+            {
+                foreach (var inventoryNo in TransferInventoryList)
+                {
+                    /*var data = (from ind in dbcontext.InwardDetails.AsEnumerable()
+                                join inh in dbcontext.InwardHeaders on ind.FKInwardHeaderId equals inh.Id
+                                where inh.FKProjectId == ProjectId && inh.FKWarehouseId == warehouseId && ind.Active == 1 && inh.Active == 1 && ind.SerialNumber == inventoryNo
+                                select new IndIdList
+                                {
+                                    IndId = ind.Id
+                                }).ToList();*/
+                    /*var data = (from ind in dbcontext.InwardDetails.AsEnumerable()
+                                join inh in dbcontext.InwardHeaders on ind.FKInwardHeaderId equals inh.Id
+                                where inh.FKProjectId == ProjectId && inh.FKWarehouseId == warehouseId && ind.Active == 1
+                                && inh.Active == 1 && ind.FKProductId == productId && ind.SerialNumber == inventoryNo
+                                select new { IndId = ind.Id }).FirstOrDefault();*/
+                    /*foreach (var item in data)
+                    {*/
+                        //var objInwordDetailData = dbcontext.InwardDetails.Where(o => o.Id == item.IndId).FirstOrDefault();
+                        /*var objInwordDetailData = dbcontext.InwardDetails.Where(o => o.Id == data.IndId).FirstOrDefault();
+                        objInwordDetailData.Location = ToLocation;
+                        objInwordDetailData.ModifiedBy = userId;
+                        objInwordDetailData.ModifiedOn = new CommonFunctions().ServerDate();*/
+                    //}
+                    var objStockDetailData = dbcontext.StockDetails.Where(o => o.FKProjectId == ProjectId && o.FKWarehouseId == warehouseId 
+                                             && o.FKProductId == productId && o.Active == 1 && o.SerialNumber == inventoryNo).ToList();
+                    foreach (var item in objStockDetailData)
+                    {
+                        item.Location = ToLocation;
+                        item.ModifiedBy = userId;
+                        item.ModifiedOn = new CommonFunctions().ServerDate();
+                    }
+                    //dbcontext.SaveChanges();
+                }
+                dbcontext.SaveChanges();
+                statusMessage.Success = true;
+                statusMessage.Message = "Record Updated Successfully";
+            }
+            catch (Exception ex)
+            {
+                statusMessage.Success = false;
+                statusMessage.Message = "Unable to update record";
+                throw ex;
+            }
+            return statusMessage;
+        }
+        public class IndIdList
+        {
+            public long IndId { get; set; }
         }
         /// <summary>
         /// Aniket

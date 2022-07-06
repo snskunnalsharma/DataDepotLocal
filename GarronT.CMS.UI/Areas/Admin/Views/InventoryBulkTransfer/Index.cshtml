@@ -1,0 +1,2084 @@
+﻿@{
+    ViewBag.Title = "Inventory Bulk Transfer";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+@Html.Hidden("urlGetStockReport", Url.Action("GetStockReport", "WarehouseStockReport"))
+@Html.Hidden("urlDownloadExcelExport", Url.Action("DownloadExcelExport", "InventoryBulkTransfer"))
+
+@Html.Hidden("urlGetProject", Url.Action("GetProject", "InventoryBulkTransfer"))
+@Html.Hidden("urlGetWarehouseAndProduct", Url.Action("GetWarehouseAndProduct", "InventoryBulkTransfer"))
+
+
+@Html.Hidden("urlToLocationList", Url.Action("getToLocationList", "InventoryBulkTransfer"))
+@Html.Hidden("urlGetTransferInventoryDetail", Url.Action("GetTransferInventoryDetail", "InventoryBulkTransfer"))
+@Html.Hidden("urlTransferInventory", Url.Action("saveTransferInventory", "InventoryBulkTransfer"))
+
+<style>
+    .recinv-drp3 {
+        margin-bottom: 4px;
+    }
+
+    .recinv-drp4 {
+        margin-top: 8px;
+        margin-bottom: 8px;
+    }
+
+    .recinv-drp5 {
+        margin-top: 8px;
+        margin-bottom: 8px;
+    }
+
+    @@media only screen and (max-width:320px) {
+        .rep-box {
+            margin-left: 8%;
+        }
+
+        .for_btn {
+            margin-bottom: 3%;
+            /*margin-left: 7%;*/
+        }
+    }
+
+    @@media only screen and (min-width:321px) and (max-width: 359px) {
+        .rep-box {
+            margin-left: 8%;
+        }
+
+        .for_btn {
+            margin-bottom: 3%;
+            /*margin-left: 7%;*/
+        }
+    }
+
+    @@media only screen and (max-width: 430px) and (min-width: 360px) {
+        .rep-box {
+            margin-left: 8%;
+        }
+
+        .for_btn {
+            margin-bottom: 3%;
+        }
+    }
+
+    @@media only screen and (max-width:799px) and (min-width: 430px) {
+        .sm-bot2 {
+            margin-bottom: 2%;
+        }
+    }
+</style>
+<style>
+    /*************************************Bootstrap Css***********************************/
+    @@media (min-width:1200px) {
+        .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9 {
+            float: left;
+        }
+
+
+        .col-lg-12 {
+            width: 100%;
+        }
+
+        .col-lg-11 {
+            width: 91.66666667%;
+        }
+
+        .col-lg-10 {
+            width: 83.33333333%;
+        }
+
+        .col-lg-9 {
+            width: 75%;
+        }
+
+        .col-lg-8 {
+            width: 66.66666667%;
+        }
+
+        .col-lg-7 {
+            width: 58.33333333%;
+        }
+
+        .col-lg-6 {
+            width: 50% !important;
+        }
+
+        .col-lg-5 {
+            width: 41.66666667%;
+        }
+
+        .col-lg-4 {
+            width: 33.33333333%;
+        }
+
+        .col-lg-3 {
+            width: 25%;
+        }
+
+        .col-lg-2 {
+            width: 16.66666667%;
+        }
+
+        .col-lg-1 {
+            width: 8.33333333%;
+        }
+
+        .multiselect {
+            padding: 3px;
+        }
+
+        .lg-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .lg-nopaddingright {
+            padding-right: 0px;
+        }
+    }
+
+    @@media (min-width:992px) and (max-width:1199px) {
+        .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9 {
+            float: left;
+        }
+
+        .col-md-12 {
+            width: 100%;
+        }
+
+        .col-md-11 {
+            width: 91.66666667%;
+        }
+
+        .col-md-10 {
+            width: 83.33333333%;
+        }
+
+        .col-md-9 {
+            width: 75%;
+        }
+
+        .col-md-8 {
+            width: 66.66666667%;
+        }
+
+        .col-md-7 {
+            width: 58.33333333%;
+        }
+
+        .col-md-6 {
+            width: 50%;
+        }
+
+        .col-md-5 {
+            width: 41.66666667%;
+        }
+
+        .col-md-4 {
+            width: 33.33333333%;
+        }
+
+        .col-md-3 {
+            width: 25%;
+        }
+
+        .col-md-2 {
+            width: 16.66666667%;
+        }
+
+        .col-md-1 {
+            width: 8.33333333%;
+        }
+
+        .col-md-pull-12 {
+            right: 100%;
+        }
+
+        .col-md-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-md-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-md-pull-9 {
+            right: 75%;
+        }
+
+        .col-md-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-md-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-md-pull-6 {
+            right: 50%;
+        }
+
+        .col-md-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-md-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-md-pull-3 {
+            right: 25%;
+        }
+
+        .col-md-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-md-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-md-pull-0 {
+            right: auto;
+        }
+
+        .col-md-push-12 {
+            left: 100%;
+        }
+
+        .col-md-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-md-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-md-push-9 {
+            left: 75%;
+        }
+
+        .col-md-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-md-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-md-push-6 {
+            left: 50%;
+        }
+
+        .col-md-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-md-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-md-push-3 {
+            left: 25%;
+        }
+
+        .col-md-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-md-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-md-push-0 {
+            left: auto;
+        }
+
+        .col-md-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-md-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-md-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-md-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-md-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-md-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-md-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-md-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-md-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-md-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-md-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-md-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-md-offset-0 {
+            margin-left: 0;
+        }
+
+        .md-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .md-nopaddingright {
+            padding-right: 0px;
+        }
+
+        .md-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .md-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .md-clear {
+            clear: both;
+        }
+    }
+
+    @@media (min-width:768px) and (max-width:991px) {
+        /*.show_deactive {
+        padding-left: 40px;
+    }*/
+        .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9 {
+            float: left;
+        }
+
+        .col-sm-12 {
+            width: 100%;
+        }
+
+        .col-sm-11 {
+            width: 91.66666667%;
+        }
+
+        .col-sm-10 {
+            width: 83.33333333%;
+        }
+
+        .col-sm-9 {
+            width: 75%;
+        }
+
+        .col-sm-8 {
+            width: 66.66666667%;
+        }
+
+        .col-sm-7 {
+            width: 58.33333333%;
+        }
+
+        .col-sm-6 {
+            width: 50%;
+        }
+
+        .col-sm-5 {
+            width: 41.66666667%;
+        }
+
+        .col-sm-4 {
+            width: 33.33333333%;
+        }
+
+        .col-sm-3 {
+            width: 25%;
+        }
+
+        .col-sm-2 {
+            width: 16.66666667%;
+        }
+
+        .col-sm-1 {
+            width: 8.33333333%;
+        }
+
+        .col-sm-pull-12 {
+            right: 100%;
+        }
+
+        .col-sm-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-sm-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-sm-pull-9 {
+            right: 75%;
+        }
+
+        .col-sm-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-sm-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-sm-pull-6 {
+            right: 50%;
+        }
+
+        .col-sm-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-sm-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-sm-pull-3 {
+            right: 25%;
+        }
+
+        .col-sm-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-sm-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-sm-pull-0 {
+            right: auto;
+        }
+
+        .col-sm-push-12 {
+            left: 100%;
+        }
+
+        .col-sm-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-sm-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-sm-push-9 {
+            left: 75%;
+        }
+
+        .col-sm-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-sm-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-sm-push-6 {
+            left: 50%;
+        }
+
+        .col-sm-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-sm-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-sm-push-3 {
+            left: 25%;
+        }
+
+        .col-sm-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-sm-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-sm-push-0 {
+            left: auto;
+        }
+
+        .col-sm-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-sm-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-sm-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-sm-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-sm-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-sm-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-sm-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-sm-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-sm-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-sm-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-sm-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-sm-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-sm-offset-0 {
+            margin-left: 0;
+        }
+
+        .sm-clear {
+            clear: both;
+        }
+
+        .sm-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .sm-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .sm-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .sm-nopaddingright {
+            padding-right: 0px;
+        }
+    }
+
+    @@media (min-width:481px) and (max-width:767px) {
+        .xs-clear {
+            clear: both;
+        }
+
+        .col-xs-1, .col-xs-10, .col-xs-11, .col-xs-12, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9 {
+            float: left;
+        }
+
+        .col-xs-12 {
+            width: 100%;
+        }
+
+        .col-xs-11 {
+            width: 91.66666667%;
+        }
+
+        .col-xs-10 {
+            width: 83.33333333%;
+        }
+
+        .col-xs-9 {
+            width: 75%;
+        }
+
+        .col-xs-8 {
+            width: 66.66666667%;
+        }
+
+        .col-xs-7 {
+            width: 58.33333333%;
+        }
+
+        .col-xs-6 {
+            width: 50%;
+        }
+
+        .col-xs-5 {
+            width: 41.66666667%;
+        }
+
+        .col-xs-4 {
+            width: 33.33333333%;
+        }
+
+        .col-xs-3 {
+            width: 25%;
+        }
+
+        .col-xs-2 {
+            width: 16.66666667%;
+        }
+
+        .col-xs-1 {
+            width: 8.33333333%;
+        }
+
+        .col-xs-pull-12 {
+            right: 100%;
+        }
+
+        .col-xs-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-xs-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-xs-pull-9 {
+            right: 75%;
+        }
+
+        .col-xs-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-xs-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-xs-pull-6 {
+            right: 50%;
+        }
+
+        .col-xs-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-xs-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-xs-pull-3 {
+            right: 25%;
+        }
+
+        .col-xs-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-xs-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-xs-pull-0 {
+            right: auto;
+        }
+
+        .col-xs-push-12 {
+            left: 100%;
+        }
+
+        .col-xs-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-xs-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-xs-push-9 {
+            left: 75%;
+        }
+
+        .col-xs-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-xs-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-xs-push-6 {
+            left: 50%;
+        }
+
+        .col-xs-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-xs-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-xs-push-3 {
+            left: 25%;
+        }
+
+        .col-xs-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-xs-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-xs-push-0 {
+            left: auto;
+        }
+
+        .col-xs-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-xs-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-xs-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-xs-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-xs-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-xs-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-xs-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-xs-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-xs-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-xs-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-xs-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-xs-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-xs-offset-0 {
+            margin-left: 0;
+        }
+
+        .cre_uti_label {
+            margin-left: 0%;
+            text-align: right !important;
+        }
+
+        .create_label {
+            margin-right: 0px;
+        }
+
+        .xs-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .xs-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .xs-block {
+            display: block;
+        }
+
+        .xs-nopadding {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+
+        .xs-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .xs-nopaddingright {
+            padding-right: 0px;
+        }
+
+        .rep_panel {
+            margin-top: 2%;
+        }
+    }
+
+    @@media (max-width:480px) {
+        .xxs-clear {
+            clear: both;
+        }
+
+        .col-xxs-1, .col-xxs-10, .col-xxs-11, .col-xxs-12, .col-xxs-2, .col-xxs-3, .col-xxs-4, .col-xxs-5, .col-xxs-6, .col-xxs-7, .col-xxs-8, .col-xxs-9 {
+            float: left;
+        }
+
+        .col-xxs-12 {
+            width: 100%;
+        }
+
+        .col-xxs-11 {
+            width: 91.66666667%;
+        }
+
+        .col-xxs-10 {
+            width: 83.33333333%;
+        }
+
+        .col-xxs-9 {
+            width: 75%;
+        }
+
+        .col-xxs-8 {
+            width: 66.66666667%;
+        }
+
+        .col-xxs-7 {
+            width: 58.33333333%;
+        }
+
+        .col-xxs-6 {
+            width: 50%;
+        }
+
+        .col-xxs-5 {
+            width: 41.66666667%;
+        }
+
+        .col-xxs-4 {
+            width: 33.33333333%;
+        }
+
+        .col-xxs-3 {
+            width: 25%;
+        }
+
+        .col-xxs-2 {
+            width: 16.66666667%;
+        }
+
+        .col-xxs-1 {
+            width: 8.33333333%;
+        }
+
+        .col-xxs-pull-12 {
+            right: 100%;
+        }
+
+        .col-xxs-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-xxs-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-xxs-pull-9 {
+            right: 75%;
+        }
+
+        .col-xxs-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-xxs-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-xxs-pull-6 {
+            right: 50%;
+        }
+
+        .col-xxs-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-xxs-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-xxs-pull-3 {
+            right: 25%;
+        }
+
+        .col-xxs-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-xxs-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-xxs-pull-0 {
+            right: auto;
+        }
+
+        .col-xxs-push-12 {
+            left: 100%;
+        }
+
+        .col-xxs-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-xxs-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-xxs-push-9 {
+            left: 75%;
+        }
+
+        .col-xxs-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-xxs-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-xxs-push-6 {
+            left: 50%;
+        }
+
+        .col-xxs-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-xxs-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-xxs-push-3 {
+            left: 25%;
+        }
+
+        .col-xxs-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-xxs-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-xxs-push-0 {
+            left: auto;
+        }
+
+        .col-xxs-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-xxs-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-xxs-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-xxs-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-xxs-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-xxs-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-xxs-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-xxs-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-xxs-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-xxs-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-xxs-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-xxs-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-xxs-offset-0 {
+            margin-left: 0;
+        }
+
+        .create_label {
+            margin-left: 0%;
+            margin-right: 0px;
+        }
+
+        .xxs-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .xxs-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .xxs-mbot3 {
+            margin-bottom: 3%;
+        }
+
+        .xxs-block {
+            display: block;
+        }
+
+        .xxs-nopadding {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+
+        .xxs-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .xxs-nopaddingright {
+            padding-right: 0px;
+        }
+    }
+</style>
+
+<div id="loading">
+    <div id="loadingcontent">
+        <p id="loadingspinner">
+            Searching things...
+        </p>
+    </div>
+</div>
+
+
+
+<section id="main-content">
+    <section class="wrapper">
+
+        <!--progress bar start-->
+        <section class="panel rep_panel">
+
+            <header class="panel-heading rep_header" style="background: #80B2DF; color: #fff;">
+                Inventory Transfer
+                <span class="tools pull-right">
+                    <a id="haha" class="fa fa-chevron-down clickdive" href="javascript:;" style="color: #fff; padding-right:10px;"></a>
+                </span>
+            </header>
+
+            <div class="panel-body">
+
+                <div class="row mbot05 sm-mbot1 xs-mbot1 xxs-mbot2">
+
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 col-xxs-12 mbot05 md-mbot1  sm-mbot1 lg-nopaddingright md-nopaddingright sm-nopaddingright xs-mbot1 xxs-mbot2">
+                        @Html.DropDownList("UtilityId", (IEnumerable<SelectListItem>)ViewBag.UtilityListItem, new { @class = "form-control chosen-select" })
+                    </div>
+
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 col-xxs-12 mbot05 md-mbot1 sm-mbot1 lg-nopaddingright md-nopaddingright sm-nopaddingright xs-mbot1 xxs-mbot2">
+                        @Html.DropDownList("ProjectId", (List<SelectListItem>)ViewBag.ProjectList, new { @class = "form-control chosen-select" })
+                    </div>
+
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 col-xxs-12 mbot05  sm-mbot1 lg-nopaddingright md-nopaddingright xs-mbot1 xs-clear xxs-mbot2">
+                        @*@Html.DropDownList("WarehouseId", (IEnumerable<SelectListItem>)ViewBag.WarehouseList, new { @class = "form-control chosen-select", @title = "Select Warehouse" })*@
+                        <div class="sel_route_btn " id="divWarehouseId">
+
+                            <div class="chosen-container chosen-container-single " style="width: 100%;" title="" id="ddlWarehouseId_chosen">
+                                <a class="chosen-single chosen-default" id="ancWarehouseId_chosen" tabindex="-1"><span class="" id="WarehouseIdHeader">Select Warehouse</span><div><b></b></div></a>
+                                <div class="chosen-drop">
+                                    <div class="chosen-search"><input type="text" name="ddRou" id="txtfilterRoute" class="txtfilterall" onkeyup="filterRoute(this)" autocomplete="off"></div>
+                                    <div class="routeFilter row">
+                                        <div class="col-lg-12">
+                                            <div class="">
+                                                <label style="margin-left: 7px;"><input type="checkbox" style="zoom:1.2;" class="chbSelectAll" id="ddlWarehouseId_SelectAll" autocomplete="off" value=" " name="chbRou"><span style="padding-top: -31px;">Select All</span></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <ul id="ulWarehouseId" class="chosen-results " style="max-height: 118px;"></ul>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 col-xxs-12 mbot05 sm-nopaddingright xs-mbot1 xxs-mbot2">
+                        @Html.DropDownList("ProductId", (IEnumerable<SelectListItem>)ViewBag.ProductList, new { @class = "form-control chosen-select", @title = "Select Product" })
+                    </div>
+
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 col-xxs-12 lg-nopaddingright md-nopaddingright md-clear sm-nopaddingright xs-clear">
+                        @Html.DropDownList("ReportType", (IEnumerable<SelectListItem>)ViewBag.ReportType, new { @class = "form-control chosen-select", @title = "Select Report Type" })
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 col-xxs-12 lg-nopaddingright md-nopaddingright md-clear sm-nopaddingright xs-clear">
+                        @Html.DropDownList("LocationType", (IEnumerable<SelectListItem>)ViewBag.LocationType, new { @class = "form-control chosen-select", @title = "Select Location" })
+                    </div>
+                </div>
+
+                <div class="row">
+
+                    <div class="col-lg-12 col-sm-12 col-xs-12 col-xxs-12 text-center">
+                        <button id="btnSearch" class="btn btn-success" type="button">Search</button>
+                        <button id="btnReset" class="btn btn-danger" type="button">Reset</button>
+                        <button id="btnExport" class="btn btn-success" type="button" style="display:none">Export</button>
+                    </div>
+                </div>
+
+
+                <div id="divDetail" style="display:none" class="">
+                    <div class="table-responsive  rep_dyn_table" id="inventryReceiveDiv">
+                        <table id="dynamic-table" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                            <thead>
+                                <tr>
+                                    <th width="5%">Warehouse</th>
+                                    <th width="5%">Location</th>
+                                    <th width="10%">Category</th>
+                                    <th width="10%">Product</th>
+                                    <th width="15%">Description</th>
+                                    <th width="10%">Part No.</th>
+                                    <th width="10%">UPC Code</th>
+                                    <th width="10%">Utility Type</th>
+                                    <th width="10%">Make</th>
+                                    <th width="10%">Type</th>
+                                    <th width="5%">Size</th>
+                                    <th width="5%">Serial Number</th>
+                                    <th width="5%">Quantity</th>
+                                    <th width="5%">Action</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="divSummary" class="">
+                    <div class="table-responsive rep_dyn_table" id="inventryReceiveDiv">
+                        <table id="dynamic-table-summary" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                            <thead>
+                                <tr>
+                                    <th width="5%">Transfer</th>
+                                    <th width="5%">Location</th>
+                                    <th width="10%">Category</th>
+                                    <th width="10%">Product</th>
+                                    <th width="15%">Description</th>
+                                    <th width="10%">Part No.</th>
+                                    <th width="10%">UPC Code</th>
+                                    <th width="10%">Utility Type</th>
+                                    <th width="10%">Make</th>
+                                    <th width="10%">Type</th>
+                                    <th width="5%">Size</th>
+                                    <th width="5%">Quantity</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </section>
+</section>
+
+<!-- MOdel for Select Location For Transfer -->
+<div class="modal fade modal-dialog-center" id="transferInventoryForlocationModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md rep-mod" style="width:300px !important">
+        <div class="modal-content-wrap">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    @*<h4 class="modal-title"><strong>Location From</strong></h4>*@
+                    <div id="mdTitle" style="font-size:large"></div>
+                </div>
+                <div class="modal-body">
+                    <div class="panel-body">
+                        <div class="form-group rep-grp col-sm-6" style="margin-bottom:0px !important">
+                            <label for="name" class="col-lg-2 col-sm-2 control-label"><strong>To Location</strong></label>
+                            <select data-placeholder="Select Location" name="ddlLocationTo" id="ddlLocationTo" class="form-control chosen-select "></select>
+                        </div>
+                        <div class="form-group rep-grp col-sm-6" style="margin-bottom:0px !important">
+                            <label for="name" class="col-lg-2 col-sm-2 control-label"><strong>Enter Quantity</strong></label>
+                            <input type="number" id="enterQty" placeholder="0" class="form-control chosen-select" />
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12 btn-reopn" style="text-align:center;">
+                                <input type="hidden" id="hndWarehouseId" name="WarehouseId" />
+                                <input type="hidden" id="hndProductId" name="ProductId" />
+                                <input type="hidden" id="hndLocationFromValue" name="LocationFromValue" />
+                                <input type="hidden" id="availableQty" class="form-control chosen-select" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12 btn-reopn" style="text-align:center;">
+                                <button id="btnTransferInventory" class="btn btn-success" type="button">Transfer Inventory</button>
+                                <button class="btn btn-danger" id="btnTransferCancel" type="button">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- MOdel -->
+<!-- Model for Transfer inventory Detail -->
+@*<div class="modal fade modal-dialog-center" id="transferInventoryDetailModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">*@
+<div class="modal fade" id="transferInventoryDetailModal" role="dialog" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md rep-mod vertical-scroll" style="width: 75%; height: 550px; overflow: scroll; overflow: auto; ">
+        <div class="modal-content-wrap">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><strong>Transfer Inventory Detail</strong></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="panel-body">
+                        <div class="table-responsive  rep_dyn_table" id="inventryReceiveDiv112">
+                            <div class="iconic-input">
+                                <div class="col-lg-12 col-md-6 col-xs-12  nopadding_header">
+                                    <p style="float: right;">
+                                        <i class="fa fa-search"></i>
+                                        <input type="text" id="filter" placeholder="search" class="form-control" aria-controls="dynamic-table-summary" maxlength="50">
+                                    </p>
+                                </div>
+                            </div>
+                            <table id="dynamic-table-detail-data" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                                <thead>
+                                    <tr>
+                                        <th width="10%"><input type="checkbox" name="select_all" value="tblHeaderValue" id="select-all" style="display:none">Select</th>
+                                        <th width="10%">Location</th>
+                                        <th width="18%">Description</th>
+                                        <th width="10%">Part No.</th>
+                                        <th width="10%">UPC Code</th>
+                                        <th width="10%">Make</th>
+                                        <th width="10%">Type</th>
+                                        <th width="10%">Size</th>
+                                        <th width="12%">Serial Number</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="viewTable">
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12 btn-reopn" style="text-align:center;">
+                                <button id="btnCompleteTransfer" class="btn btn-success" type="button">Complete Transfer</button>
+                                <button class="btn btn-danger" id="btnCompleteCancel" type="button">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- MOdel -->
+
+<link href="~/jquery-confirm-master/css/jquery-confirm.css" rel="stylesheet" />
+<script src="~/jquery-confirm-master/js/jquery-confirm.js"></script>
+
+<script>
+    $(document).ready(function () {
+
+        $("#InventoryReports").addClass('active');
+        $("#subReports").addClass('block');
+
+        $('.sub').find("*").removeClass('active');
+        $('#liInventoryBulkTransfer').addClass("active");
+
+
+        $("#UtilityId").chosen({ placeholder_text_single: "Select Utility", no_results_text: "Oops, nothing found!" });
+        $('#UtilityId').trigger('chosen:updated');
+
+        $("#ProjectId").chosen({ placeholder_text_single: "Select Project", no_results_text: "Oops, nothing found!" });
+        $('#ProjectId').trigger('chosen:updated');
+
+        //$("#WarehouseId").chosen({ placeholder_text_single: "Select Warehouse", no_results_text: "Oops, nothing found!" });
+        //$('#WarehouseId').trigger('chosen:updated');
+
+
+
+        $("#ProductId").chosen({ placeholder_text_single: "Select Product", no_results_text: "Oops, nothing found!" });
+        $('#ProductId').val("0").attr("selected", "selected").trigger('chosen:updated');
+
+        $("#ReportType").chosen();
+        $('#ReportType').val("0").attr("selected", "selected").trigger('chosen:updated');
+
+        $('#dynamic-table').DataTable({ "language": { "emptyTable": "No Data To Show" } });
+        $('#dynamic-table-summary').DataTable({ "language": { "emptyTable": "No Data To Show" } });
+
+        $("#LocationType").chosen({ placeholder_text_single: "Select Location", no_results_text: "Oops, nothing found!" });
+        $('#LocationType').val("0").attr("selected", "selected").trigger('chosen:updated');
+
+        //$("#ddlLocationFrom").chosen({ placeholder_text_single: "Select Location", no_results_text: "Oops, nothing found!" });
+        //$('#ddlLocationFrom').val("0").attr("selected", "selected").trigger('chosen:updated');
+
+        $("#ddlLocationTo").chosen({ placeholder_text_single: "Select Location", no_results_text: "Oops, nothing found!" });
+        $('#ddlLocationTo').val("0").attr("selected", "selected").trigger('chosen:updated');
+
+        $("#divDetail").hide();
+        $("#divSummary").show();
+
+
+
+        //#region warehouse dropdown
+
+        $("#ulWarehouseId").selectable({
+
+            start: function (event, ui) { var target = event.target || event.srcElement; },
+            selected: function (event, ui) {
+                if ($(ui.selected).hasClass('highlighted')) { $(ui.selected).removeClass('ui-selected click-selected highlighted'); }
+                else { $(ui.selected).addClass('click-selected highlighted'); }
+            },
+            unselected: function (event, ui) { $(ui.unselected).removeClass('click-selected'); },
+            stop: function (event, ui) { }
+        });
+
+        //#endregion
+
+    })
+
+    //numeric only validation code
+    $('body').on('keypress', '.numeric-only', function (e) {
+        var regex = new RegExp("^[0-9\b]+$");
+
+        if (event.charCode == 0) {
+            return true;
+        }
+        else {
+            var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+            if (!regex.test(key)) {
+                event.preventDefault();
+                return false;
+            }
+        }
+    });
+
+    //#region open/close warehouse dropdown
+    $("#ancWarehouseId_chosen").click(function () {
+
+        if ($("#ddlWarehouseId_chosen").hasClass('chosen-container-active')) {
+
+            var selectedlivalue = $('#ulWarehouseId li.highlighted').map(function (i, el) { return $(el).val(); });
+            var selectedlilength = selectedlivalue.length;
+
+            if (selectedlilength == 0) {
+                $("#VisitStatusHeader").removeClass("ddlHeader").text("Select Visit Status")
+            } else {
+                $("#VisitStatusHeader").addClass("ddlHeader").text(selectedlilength + " Visit Status selected")
+            }
+
+            //#region SelectAll checked/unchecked
+            if ($('#ulWarehouseId .liWarehouseId:visible').length > 0 && $('#ulWarehouseId .highlighted:visible').length == $('#ulWarehouseId .liWarehouseId:visible').length) {
+                $('#ddlWarehouseId_SelectAll').prop('checked', true);
+            } else {
+                $('#ddlWarehouseId_SelectAll').prop('checked', false);
+            }
+            //#endregion
+
+
+            $("#ddlWarehouseId_chosen").toggleClass("chosen-with-drop chosen-container-active")
+        }
+        else {
+            $("#ddlWarehouseId_chosen").toggleClass("chosen-with-drop chosen-container-active")
+        }
+    });
+
+
+    function filterCycle(element) {
+
+        var value = $(element).val().toLowerCase();
+
+        $("#ulWarehouseId > li").each(function () {
+            if ($(this).text().toLowerCase().search(value) > -1) { $(this).show(); }
+            else { $(this).hide(); }
+        });
+
+        //#region SelectAll checked/unchecked
+        if ($('#ulWarehouseId .liVisitStatus:visible').length > 0 && $('#ulWarehouseId .highlighted:visible').length == $('#ulWarehouseId .liWarehouseId:visible').length) {
+            $('#ddlWarehouseId_SelectAll').prop('checked', true);
+        } else {
+            $('#ddlWarehouseId_SelectAll').prop('checked', false);
+        }
+        //#endregion
+    }
+
+    $('#ddlWarehouseId_SelectAll').on('click', function () {
+        debugger;
+        if ($('#ulWarehouseId .liWarehouseId').length > 0) {
+
+            if (this.checked) {
+                $("li.liWarehouseId:visible").addClass('ui-selected click-selected highlighted');
+
+                var selectedlitext = $('#ulWarehouseId .highlighted').map(function (i, el) { return $(el)[0].text; });
+                var selectedlilength = selectedlitext.length;
+                if (selectedlilength == 0) { $("#WarehouseIdHeader").removeClass("ddlHeader").text("Select Warehouse") }
+                else { $("#WarehouseIdHeader").addClass("ddlHeader").text(selectedlilength + " Warehouse Selected") }
+            }
+            else {
+                $("li.liWarehouseId:visible").not('.disabledli').removeClass('ui-selected click-selected highlighted');
+
+                var selectedlitext = $('#ulWarehouseId .highlighted').map(function (i, el) { return $(el)[0].text; });
+                var selectedlilength = selectedlitext.length;
+                if (selectedlilength == 0) { $("#WarehouseIdHeader").removeClass("ddlHeader").text("Select Warehouse") }
+                else { $("#WarehouseIdHeader").addClass("ddlHeader").text(selectedlilength + " Warehouse Selected") }
+            }
+
+
+        }
+    });
+
+    $('body').on('click', function (e) {
+        if (!$('#divWarehouseId').is(e.target)
+            && $('#divWarehouseId').has(e.target).length === 0
+        ) {
+
+            var selectedlivalue = $('#ulWarehouseId li.highlighted').map(function (i, el) { return $(el).val(); });
+            var selectedlilength = selectedlivalue.length;
+
+            if (selectedlilength == 0) {
+                $("#WarehouseIdHeader").removeClass("ddlHeader").text("Select Warehouse")
+            } else {
+                $("#WarehouseIdHeader").addClass("ddlHeader").text(selectedlilength + " Warehouse Selected")
+            }
+
+            //#region SelectAll checked/unchecked
+            if ($('#ulWarehouseId .liWarehouseId:visible').length > 0 && $('#ulWarehouseId .highlighted:visible').length == $('#ulWarehouseId .liWarehouseId:visible').length) {
+                $('#ddlWarehouseId_SelectAll').prop('checked', true);
+            } else {
+                $('#ddlWarehouseId_SelectAll').prop('checked', false);
+            }
+            //#endregion
+            $('#ddlWarehouseId_chosen').removeClass('chosen-with-drop chosen-container-active');
+        }
+    });
+
+
+
+    $('#UtilityId').change(function () {
+
+        $('#ProjectId').empty().trigger('chosen:updated');
+        //$('#WarehouseId').empty().trigger('chosen:updated');
+        $('#ulWarehouseId').empty();
+        $("#WarehouseIdHeader").removeClass("ddlHeader").text("Select Warehouse")
+        $('#ProductId').empty().trigger('chosen:updated');
+        $('#LocationType').empty().trigger('chosen:updated');
+
+        var value = $("#UtilityId option:selected")
+
+        waitingDialog.show('Please Wait Loading Contacts...');
+        var urlGetProjectList = $('#urlGetProject').val();
+        $.ajax({
+            type: 'GET',
+            data: { "UtilityId": value.val() },
+            url: urlGetProjectList,
+            success: function (data) {
+
+                if (data != null) {
+                    $.each(data, function (index, item) {
+                        if (index == 0) { $('#ProjectId').append($('<option></option>').val('0').html("")); }
+                        $('#ProjectId').append($('<option></option>').val(item.ProjectId).html(item.ProjectName));
+                    });
+                }
+                $('#ProjectId').trigger('chosen:updated');
+
+
+                waitingDialog.hide();
+            },
+            error: function () {
+                var $toast = toastr["error"]("something seems wrong", "Error Notification");
+                waitingDialog.hide();
+            }
+        });
+
+    });
+
+
+    $('#ProjectId').change(function () {
+
+
+        //$('#WarehouseId').empty().trigger('chosen:updated');
+        $('#ProductId').empty().trigger('chosen:updated');
+        $('#LocationType').empty().trigger('chosen:updated');
+        var value = $("#ProjectId option:selected")
+
+        waitingDialog.show('Please Wait Loading Contacts...');
+        var urlGetWarehouseAndProduct = $('#urlGetWarehouseAndProduct').val();
+        $.ajax({
+            type: 'GET',
+            data: { "ProjectId": value.val() },
+            url: urlGetWarehouseAndProduct,
+            success: function (data) {
+
+
+                $('#ulWarehouseId').empty();
+                $("#WarehouseIdHeader").removeClass("ddlHeader").text("Select Warehouse")
+
+                if (data.WarehouseList != null) {
+
+                    $.each(data.WarehouseList, function (index, item) {
+                        //if (index == 0) { $('#WarehouseId').append($('<option></option>').val('0').html("")); }
+                        //$('#WarehouseId').append($('<option></option>').val(item.WarehouseId).html(item.WarehouseName));
+                        $('#ulWarehouseId').append($('<li></li>').val(item.WarehouseId).addClass("liWarehouseId active-result").html(item.WarehouseName));
+                    });
+                }
+                //$('#WarehouseId').trigger('chosen:updated');
+
+                if (data.ProductList != null) {
+                    $.each(data.ProductList, function (index, item) {
+                        if (index == 0) { $('#ProductId').append($('<option></option>').val('0').html("")); }
+                        $('#ProductId').append($('<option></option>').val(item.Id).html(item.FieldValue));
+                    });
+                }
+                $('#ProductId').trigger('chosen:updated');
+
+                if (data.LocationType != null) {
+                    $.each(data.LocationType, function (index, item) {
+                        if (index == 0) { $('#LocationType').append($('<option></option>').val('0').html("")); }
+                        $('#LocationType').append($('<option></option>').val(item.LocationId).html(item.Location));
+                    });
+                }
+                $('#LocationType').trigger('chosen:updated');
+                waitingDialog.hide();
+            },
+            error: function () {
+                var $toast = toastr["error"]("something seems wrong", "Error Notification");
+                waitingDialog.hide();
+            }
+        });
+
+    });
+
+
+    //$("#WarehouseId").change(function () {
+    //    // $('#CategoryId').val("0").attr("selected", "selected").trigger('chosen:updated');
+
+    //    $('#ProductId').val("0").attr("selected", "selected").trigger('chosen:updated');
+
+
+    //})
+
+
+    $('#btnSearch').click(function () {
+        debugger;
+        LoadGrid();
+    })
+
+    var stockDetailModel;
+    function LoadGrid() {
+
+        debugger;
+
+        var UtilityId = $("#UtilityId").val();
+        if (UtilityId === '0' || UtilityId === '') {
+            var $toast = toastr["error"]("Please, select utility", "Notification");
+            return;
+        }
+
+        var ProjectId = $("#ProjectId").val();
+        if (ProjectId === '0' || ProjectId === '') {
+            var $toast = toastr["error"]("Please, select project", "Notification");
+            return;
+        }
+
+        var ddlWarehouseList = [];
+        var ulWarehouseList = $('#ulWarehouseId li.highlighted')
+        ulWarehouseList.each(function (index, item) { ddlWarehouseList.push($(this).val()) });
+
+
+        if (ddlWarehouseList.length === 0) {
+            var $toast = toastr["error"]("Please, select warehouse", "Notification");
+            return;
+        }
+        // var CategoryId = $("#CategoryId").val();
+        var ProductId = $("#ProductId").val();
+        var ReportType = $("#ReportType").val();
+        var LocationType = $("#LocationType").val();
+
+
+        if (ReportType == "0") {
+            $("#divDetail").hide();
+            $("#divSummary").show();
+        }
+        else {
+            $("#divDetail").show();
+            $("#divSummary").hide();
+        }
+
+        waitingDialog.show('Loading Please Wait...');
+        var urlGetStockReport = $("#urlGetStockReport").val();
+
+        $.ajax({
+            type: 'POST',
+            url: urlGetStockReport,
+            async: true,
+            data: { projectId: ProjectId, warehouseId: ddlWarehouseList, productId: ProductId, ReportType: ReportType, LocationType: LocationType },
+            success: function (data) {
+                waitingDialog.hide();
+                // debugger;
+                //console.log("result == " + JSON.stringify(data));
+                if (data.success == "false") {
+                    var $toast = toastr["error"](data.ErrorMessage, "Notification");
+                }
+                else {
+                    stockDetailModel = data.WarehouseStockReportList;
+                    if (ReportType == "0") {
+                        BindDataSummery(data.WarehouseStockReportList);
+                    }
+                    else {
+                        BindData(data.WarehouseStockReportList);
+                    }
+
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                waitingDialog.hide();
+                console.log("error " + textStatus);
+                console.log("incoming Text " + jqXHR.responseText);
+                var $toast = toastr["error"]("something seems wrong", "Notification");
+            }
+
+        })
+    }
+
+
+    function BindData(varData) {
+
+        @*oTable = $('#dynamic-table').dataTable(
+            {
+
+                "bDestroy": true,
+                "bserverSide": true,
+                "bDeferRender": true,
+                "oLanguage": {
+                    "sLengthMenu": '_MENU_ Records per page'
+                },
+                "aaData": varData,
+                // "aaSorting": [[3, "asc"]],
+                "aoColumns": [
+
+                    //{ "mData": "UploadNumber" },
+                    { "mData": "WarehouseName" },
+                    { "mData": "Location" },
+                    { "mData": "CategoryName" },
+                    { "mData": "ProductName" },
+                    { "mData": "ProductDescription" },
+                    { "mData": "PartNumber" },
+                    { "mData": "UPCCode" },
+                    { "mData": "UtilityName" },
+                    { "mData": "Make" },
+                    { "mData": "MeterType" },
+                    { "mData": "MeterSize" },
+                    { "mData": "serialnumber" },
+                    { "mData": "BalanceQty" },
+                    { "bSearchable": false, "mData": null },
+
+                ],
+                "aoColumnDefs": [
+                    {
+                        "mRender": function (data, type, full, row) {
+                            return '<a  id=' + full.StockDetailId + ' onclick="EditRecord(' + full.StockDetailId + ');" class="btn btn-primary btn-xs" role="button" alt="Edit" title="Edit"><i class="fa fa-pencil"></i></a>' +
+                                '<a  id=' + full.StockDetailId + ' onclick="DeleteRecord(' + full.StockDetailId + ');" class="btn btn-danger btn-xs" role="button" alt="Delete" title="Delete"><i class="fa fa-trash"></i></a>';
+                        },
+                        "aTargets": [13]
+                    }
+                ],
+
+            }), $('.dataTables_filter input').attr('maxlength', 50);*@
+    }
+
+    function BindDataSummery(varData) {
+
+        oTable = $('#dynamic-table-summary').dataTable(
+            {
+
+                "bDestroy": true,
+                "bserverSide": true,
+                "bDeferRender": true,
+                "oLanguage": {
+                    "sLengthMenu": '_MENU_ Records per page'
+                },
+                "aaData": varData,
+                // "aaSorting": [[3, "asc"]],
+                "aoColumns": [
+
+                    //{ "mData": "WarehouseName" },
+                    { "bSearchable": false, "mData": null },
+                    { "mData": "Location" },
+                    { "mData": "CategoryName" },
+                    { "mData": "ProductName" },
+                    { "mData": "ProductDescription" },
+                    { "mData": "PartNumber" },
+                    { "mData": "UPCCode" },
+                    { "mData": "UtilityName" },
+                    { "mData": "Make" },
+                    { "mData": "MeterType" },
+                    { "mData": "MeterSize" },
+                    { "mData": "BalanceQty" },
+
+                ],
+                "aoColumnDefs": [
+                    {
+                        "mRender": function (data, type, full, row) {
+                            return '<a  id=' + full.WarehouseId + ' onclick="TrInv(' + full.WarehouseId + ',' + full.ProductId + ',\'' + full.Location + '\',\'' + full.BalanceQty + '\');" class="btn btn-primary btn-xs" role="button" alt="Inventory Transfer" title="Inventory Transfer"><i class="fa fa-exchange"></i></a>';
+                        },
+                        "aTargets": [0]
+                    }
+                ],
+
+            }), $('.dataTables_filter input').attr('maxlength', 50);
+
+
+    }
+
+    function TrInv(WarehouseId, ProductId, Location, BalanceQty) {
+        debugger;
+        var ProjectId = $("#ProjectId").val();
+        $("#hndWarehouseId").val(WarehouseId);
+        $("#hndProductId").val(ProductId);
+        $("#hndLocationFromValue").val(Location);
+        document.getElementById("availableQty").value = BalanceQty;
+        document.getElementById("enterQty").value = BalanceQty;
+        if (Location === "null" || Location === null || Location === "" || Location === undefined) {
+            var mdTil = '<h4 class="modal-title"><strong>Transfer From Pending</strong></h4>';
+        }
+        else {
+            var mdTil = '<h4 class="modal-title"><strong>Transfer From ' + Location + '</strong></h4>';
+        }
+        //var mdTil = '<h4 class="modal-title"><strong>' + Location ? 'Transfer From ' + Location : 'Transfer From Pending' + '</strong></h4>';
+        document.getElementById("mdTitle").innerHTML = mdTil
+        console.log(ProjectId, WarehouseId, ProductId, Location);
+
+        $('#ddlLocationTo').empty();
+        getToLocation(ProjectId, ProductId, Location);
+
+        $("#transferInventoryForlocationModal").modal({
+            show: true,
+            backdrop: 'static',
+            keyboard: false
+        });
+    }
+
+    function getToLocation(ProjectId, ProductId, Location) {
+        debugger;
+        $('#ddlLocationTo').empty().trigger('chosen:updated');
+        waitingDialog.show('Please Wait Loading Contacts...');
+        var urlToLocationList = $('#urlToLocationList').val();
+        $.ajax({
+            type: 'GET',
+            data: { "ProjectId": ProjectId, ProductId: ProductId, LocationFromValue: Location },
+            url: urlToLocationList,
+            success: function (data) {
+                debugger;
+                $('#ddlLocationTo').empty();
+                if (data.LocationList != null) {
+                    $.each(data.LocationList, function (index, item) {
+                        if (index == 0) { $('#ddlLocationTo').append($('<option></option>').val('0').html("")); }
+                        $('#ddlLocationTo').append($('<option></option>').val(item.LocationId).html(item.Location));
+                    });
+                }
+                $('#ddlLocationTo').trigger('chosen:updated');
+                waitingDialog.hide();
+            },
+            error: function () {
+                var $toast = toastr["error"]("something seems wrong", "Error Notification");
+                waitingDialog.hide();
+            }
+        });
+
+    };
+
+    $('#btnTransferInventory').click(function () {
+        debugger;
+
+        var LocationToValue = $("#ddlLocationTo").val();
+        if (LocationToValue === '0' || LocationToValue === '') {
+            var $toast = toastr["error"]("Please, select to location", "Notification");
+            return;
+        }
+        var availableQty = document.getElementById("availableQty").value;
+        if (availableQty === '0') {
+            var $toast = toastr["error"]("No available inventory", "Notification");
+            return;
+        }
+        var enterQty = document.getElementById("enterQty").value;
+        if (enterQty === '') {
+            var $toast = toastr["error"]("Please enter quantity", "Notification");
+            return;
+        }
+        else if (enterQty === '0') {
+            var $toast = toastr["error"]("Please enter a valid quantity", "Notification");
+            return;
+        }
+        else if (parseInt(availableQty) < parseInt(enterQty)) {
+            var $toast = toastr["error"]("The number of entered quantity cannot be more than the available quantity.", "Notification");
+            return;
+        }
+
+        var ProjectId = $("#ProjectId").val();
+        var ddlWarehouseId = $("#hndWarehouseId").val();
+        var ProductId = $("#hndProductId").val();
+        var LocationFromValue = $("#hndLocationFromValue").val();
+        var transferQty = $("#enterQty").val();
+        
+        waitingDialog.show('Loading Please Wait...');
+        var urlGetTransferInventoryDetail = $("#urlGetTransferInventoryDetail").val();
+
+        $.ajax({
+            type: 'POST',
+            url: urlGetTransferInventoryDetail,
+            async: true,
+            data: { projectId: ProjectId, warehouseId: ddlWarehouseId, productId: ProductId, locationFromValue: LocationFromValue, transferQty: transferQty },
+            success: function (data) {
+                waitingDialog.hide();
+                // debugger;
+                //console.log("result == " + JSON.stringify(data));
+                if (data.success == "false") {
+                    var $toast = toastr["error"](data.ErrorMessage, "Notification");
+                }
+                else {
+                    debugger;
+                    $("#transferInventoryForlocationModal").modal('hide');
+
+                    $("#transferInventoryDetailModal").modal({
+                        show: true,
+                        backdrop: 'static',
+                        keyboard: true
+                    });
+                    debugger;
+                    InventoryTransferDetailData(data.WarehouseStockReportData);
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                waitingDialog.hide();
+                console.log("error " + textStatus);
+                console.log("incoming Text " + jqXHR.responseText);
+                var $toast = toastr["error"]("something seems wrong", "Notification");
+            }
+
+        })
+    });
+
+    function InventoryTransferDetailData(varData) {
+        debugger;
+        console.log(varData);
+
+        debugger;
+        $('#viewTable').empty();
+        $.each(varData, function (index, value) {
+            debugger;
+            var btnCheck = '<input type="checkbox" id=' + value.serialnumber + ' value=' + value.serialnumber + ' name="id[]"  checked>';
+            var objLocation = "";
+            if (value.Location === "null" || value.Location === null) {
+                var objLocation = "";
+            }
+            else {
+                var objLocation = value.Location;
+            }
+            
+            $('#viewTable').append(
+                '<tr>' +
+                '<td>' + btnCheck + '</td>' +
+                '<td>' + objLocation + '</td>' +
+                '<td>' + value.ProductDescription + '</td>' +
+                '<td>' + value.PartNumber + '</td>' +
+                '<td>' + value.UPCCode + '</td>' +
+                '<td>' + value.Make + '</td>' +
+                '<td>' + value.MeterType + '</td>' +
+                '<td>' + value.MeterSize + '</td>' +
+                '<td>' + value.serialnumber + '</td>' +
+                '</tr>'
+            );
+            debugger;
+        });
+    }
+    $("#filter").on("keyup", function () {
+        var value = $(this).val().toLowerCase();
+        $("#dynamic-table-detail-data > tbody > tr").filter(function () {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+
+    $('#btnCompleteTransfer').click(function () {
+        debugger;
+        var invList = [];
+        $("#dynamic-table-detail-data input:checkbox:checked").map(function () {
+
+            if ($(this).val() != "tblHeaderValue") // Removed this value because this is table header value
+            {
+                invList.push($(this).val());
+            }
+        }).get();
+        if (invList.length > 0) {
+            SaveTransferInventory(invList);
+        }
+    });
+
+    function SaveTransferInventory(invList) {
+
+        var value = $("#ProjectId option:selected");
+        var ddlLocationTo = $("#ddlLocationTo").val();
+        var WarehouseId = $("#hndWarehouseId").val();
+        var ProductId = $("#hndProductId").val();
+        waitingDialog.show('Please Wait...');
+        var urlTransferInventory = $('#urlTransferInventory').val();
+
+        $.ajax({
+            url: urlTransferInventory,
+            data: { "ProjectId": value.val(), warehouseId: WarehouseId, productId: ProductId, ToLocation: ddlLocationTo, TransferInventoryList: invList },
+            type: 'POST',
+            success: function (data) {
+                waitingDialog.hide();
+                if (data.Success) {
+                    $("#transferInventoryDetailModal").modal('hide');
+                    LoadGrid();
+                    var $toast = toastr["success"](data.Message, "Success Notification");
+                }
+                else {
+                    var $toast = toastr["error"](data.Message, "Error Notification");
+                }
+            },
+            error: function () {
+                var $toast = toastr["error"]("something seems wrong", "Error Notification");
+                waitingDialog.hide();
+            }
+        });
+    }
+
+    $('#btnTransferCancel').click(function () {
+
+        $("#transferInventoryForlocationModal").modal('hide');
+    });
+    $('#btnCompleteCancel').click(function () {
+
+        $("#transferInventoryDetailModal").modal('hide');
+    });
+
+
+    $('#btnExport').click(function () {
+
+        var UtilityId = $("#UtilityId").val();
+        if (UtilityId === '0' || UtilityId === '') {
+            var $toast = toastr["error"]("Please, select utility", "Notification");
+            return;
+        }
+
+        var ProjectId = $("#ProjectId").val();
+        if (ProjectId === '0' || ProjectId === '') {
+            var $toast = toastr["error"]("Please, select project", "Notification");
+            return;
+        }
+
+        var ddlWarehouseList = '';
+        var ulWarehouseList = $('#ulWarehouseId li.highlighted')
+        ulWarehouseList.each(function (index, item) {
+            if (ddlWarehouseList === '') {
+                ddlWarehouseList = $(this).val()
+            }
+            else {
+                ddlWarehouseList = ddlWarehouseList + ',' + $(this).val()
+            }
+        });
+
+        if (ddlWarehouseList === '') {
+            var $toast = toastr["error"]("Please, select warehouse", "Notification");
+            return;
+        }
+
+        //var warehouseId = $("#WarehouseId").val();
+        //if (warehouseId === '0' || warehouseId === '') {
+        //    var $toast = toastr["error"]("Please, select warehouse", "Notification");
+        //    return;
+        //}
+
+        //var CategoryId = $("#CategoryId").val();
+        var ProductId = $("#ProductId").val();
+        var ReportType = $("#ReportType").val();
+        LoadGrid()
+        var DownloadExcelExport = $('#urlDownloadExcelExport').val();
+        location.href = DownloadExcelExport + "?projectId=" + ProjectId + "&warehouseId=" + ddlWarehouseList + "&productId=" + ProductId + "&ReportType=" + ReportType;
+
+    })
+
+    $('#btnReset').click(function () {
+        // var urlResetReport = $('#urlResetReport').val();
+        // location.href = urlResetReport;
+
+        $("#UtilityId").val('0').trigger("chosen:updated");
+        $("#ProjectId").empty();
+        $("#ProjectId").trigger("chosen:updated");
+
+        $("#WarehouseId").empty();
+        $("#WarehouseId").trigger("chosen:updated");
+
+        $("#ProductId").empty();
+        $("#ProductId").trigger("chosen:updated");
+
+        $("#LocationType").empty();
+        $("#LocationType").trigger("chosen:updated");
+
+        $('#dynamic-table').dataTable().fnClearTable();//clear the DataTable
+
+        $('#ReportType').val('0').trigger("chosen:updated");
+        $("#divDetail").hide();
+        $("#divSummary").show();
+
+        $('#dynamic-table-summary').dataTable().fnClearTable();
+
+    });
+
+</script>
