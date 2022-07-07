@@ -1212,12 +1212,12 @@
                                     <th width="5%">Location</th>
                                     <th width="10%">Category</th>
                                     <th width="10%">Product</th>
-                                    <th width="15%">Description</th>
+                                    <th width="25%">Description</th>
                                     <th width="10%">Part No.</th>
                                     <th width="10%">UPC Code</th>
                                     <th width="10%">Utility Type</th>
-                                    <th width="10%">Make</th>
-                                    <th width="10%">Type</th>
+                                    <th width="5%">Make</th>
+                                    <th width="5%">Type</th>
                                     <th width="5%">Size</th>
                                     <th width="5%">Quantity</th>
                                 </tr>
@@ -1299,8 +1299,9 @@
                                 <thead>
                                     <tr>
                                         <th width="5%"><input type="checkbox" name="select_all" value="tblHeaderValue" id="select-all" style="display:none">Select</th>
-                                        <th width="5%">Location</th>
-                                        <th width="30%">Description</th>
+                                        <th width="5%">From</th>
+                                        <th width="5%">To</th>
+                                        <th width="25%">Description</th>
                                         <th width="10%">Part No.</th>
                                         <th width="20%">UPC Code</th>
                                         <th width="5%">Make</th>
@@ -1905,7 +1906,7 @@
                         keyboard: true
                     });
                     debugger;
-                    InventoryTransferDetailData(data.WarehouseStockReportData);
+                    InventoryTransferDetailData(data.WarehouseStockReportData, LocationToValue);
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
@@ -1918,7 +1919,7 @@
         })
     });
 
-    function InventoryTransferDetailData(varData) {
+    function InventoryTransferDetailData(varData, LocationToValue) {
         debugger;
         console.log(varData);
 
@@ -1939,6 +1940,7 @@
                 '<tr>' +
                 '<td>' + btnCheck + '</td>' +
                 '<td>' + objLocation + '</td>' +
+                '<td>' + LocationToValue + '</td>' +
                 '<td>' + value.ProductDescription + '</td>' +
                 '<td>' + value.PartNumber + '</td>' +
                 '<td>' + value.UPCCode + '</td>' +
