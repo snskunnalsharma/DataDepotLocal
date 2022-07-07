@@ -137,26 +137,15 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             string dyOfficeColName = inDal.getDynamicColumnName("OFFICE", Convert.ToString(ProjectId));
             if (!string.IsNullOrEmpty(dyOfficeColName))
             {
-                var tempdata = (from u in CompassEntities.UploadedExcelDatas.AsEnumerable()
-                        where u.FKProjectId == 10085 && u.Active == 1
-                        && (string)u.GetType().GetProperty(dyOfficeColName).GetValue(u, null) != ""
-                        && (string)u.GetType().GetProperty(dyOfficeColName).GetValue(u, null) != null
-                        select new LocationDropdownList
-                        {
-                            LocationId = (string)u.GetType().GetProperty(dyOfficeColName).GetValue(u, null),
-                            Location = (string)u.GetType().GetProperty(dyOfficeColName).GetValue(u, null)
-                        }).ToList();
-                 var objData = tempdata.GroupBy(o => o.Location).OrderBy(o => o.Key).ToList();
-                foreach (var i in objData)
+                var dd = CompassEntities.UploadedExcelDatas.Where(o => o.FKProjectId == ProjectId && o.Active == 1).ToList();
+                var dd2 = dd.Where(x => x.GetType().GetProperty(dyOfficeColName).GetValue(x) != null)
+                    .Select(x => x.GetType().GetProperty(dyOfficeColName).GetValue(x)).Distinct().ToList();
+                foreach (var item in dd2)
                 {
-                    data.Add(new LocationDropdownList
-                    {
-                        Location= i.Key.ToString(),
-                        LocationId= i.Key.ToString()
-                    });
+                    data.Add(new LocationDropdownList { Location = item.ToString(), LocationId = item.ToString() });
                 }
             }
-                return data;
+            return data;
         }
 
         /// <summary>
