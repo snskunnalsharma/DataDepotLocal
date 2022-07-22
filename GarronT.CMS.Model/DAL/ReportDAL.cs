@@ -969,7 +969,7 @@ namespace GarronT.CMS.Model.DAL
                             }
                             dt.Dispose();
                             objCompassEntities.SaveChanges();
-                            var stockList = objCompassEntities.StockDetails.Where(o => o.SerialNumber == serialNo && o.Active == 1).OrderBy(o => o.Id).ToList();
+                            var stockList = objCompassEntities.StockDetails.Where(o => o.SerialNumber == serialNo && o.Active == 1 && o.FKProjectId == projectId).OrderBy(o => o.Id).ToList();
                             if (stockList != null)
                             {
                                 var slCount = stockList.Count();
@@ -1025,8 +1025,11 @@ namespace GarronT.CMS.Model.DAL
                             ObjDataTable.Columns.Add("SerialNumber", typeof(string));
                             ObjDataTable.Columns.Add("TotalQty", typeof(int));
 
+                           var objProductId= stockList.Select(o => o.FKProductId).FirstOrDefault();
+
                             DataRow DR = ObjDataTable.NewRow();
-                            DR["ProductId"] = DBNull.Value;
+                            //DR["ProductId"] = DBNull.Value;
+                            DR["ProductId"] = objProductId;
                             DR["IsSerialNumber"] = true;
                             DR["SerialNumber"] = serialNo;
                             DR["TotalQty"] = 1;
