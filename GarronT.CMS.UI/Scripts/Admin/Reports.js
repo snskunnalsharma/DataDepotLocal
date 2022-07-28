@@ -1120,7 +1120,7 @@ function _searchClick() {
 
                                     }
                                 },
-                                "aTargets": [14]
+                                "aTargets": [15]
                             },
                             {
                                 "mRender": function (data, type, full, row) {
