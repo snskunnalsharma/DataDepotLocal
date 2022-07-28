@@ -1033,6 +1033,7 @@ function _searchClick() {
                             { "mData": "OldMeterNo" },
                             { "mData": "OldMeterSize" },
                             { "mData": "OLDMETERFINALREADING" },
+                            { "mData": "OldMeterRadioNumber" },
                             { "mData": "NewMeterNo" },
                             { "mData": "NewMeterSize" },
                             { "mData": "NEWRADIONUMBER" },

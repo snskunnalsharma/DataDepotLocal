@@ -22,6 +22,7 @@ namespace GarronT.CMS.Model
         public string Street { get; set; }
         public string OldMeterNo { get; set; }
         public string OldMeterSize { get; set; }
+        public string OldMeterRadioNumber { get; set; }
         public string NewMeterNo { get; set; }
         public string NewMeterResgisterNo { get; set; }
         public string NewMeterSize { get; set; }

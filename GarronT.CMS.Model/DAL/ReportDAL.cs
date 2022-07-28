@@ -190,6 +190,7 @@ namespace GarronT.CMS.Model.DAL
                         OldMeterNo = Convert.ToString(reader["OldMeterNo"]),
                         OldMeterSize = Convert.ToString(reader["OldMeterSize"]),
                         OLDMETERFINALREADING = Convert.ToString(reader["OLDMETERFINALREADING"]),
+                        OldMeterRadioNumber = Convert.ToString(reader["OldMeterRadioNo"]),
                         ProjectId = long.Parse(reader["ProjectId"].ToString()),
                         ProjectStatus = Convert.ToString(reader["ProjectStatus"]),
                         Route = Convert.ToString(reader["Route"]),
