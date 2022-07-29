@@ -1859,7 +1859,8 @@ namespace GarronT.CMS.Model.DAL
                 }
                 else
                 {
-                    procName = "PROC_WebService_Installer_OfflineData";
+                    //procName = "PROC_WebService_Installer_OfflineData";
+                    procName = "PROC_WebService_Installer_OfflineDataExcludeSkip";
                 }
 
                 using (SqlConnection sqlcon = new SqlConnection(objCompassEntities.Database.Connection.ConnectionString))
