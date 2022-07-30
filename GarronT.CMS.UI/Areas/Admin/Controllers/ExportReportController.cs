@@ -3512,6 +3512,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         public DataTable AllRecordDataTable(long formTypeId, long projectId, string[] visitStatus, DateTime fromDate, DateTime toDate,
             int latlongRequired, int mediaRequired, out List<string> columnNameList1,long currentUserId)
         {
+            TempData["tempVisitStatusSkip"] = "";
             TempData["tempProjectId"] = projectId;
             DataTable dt = new DataTable();
             columnNameList1 = new List<string>();
@@ -3538,8 +3539,9 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             bool isSkiporRtu = true;
             if (visitStatus.Contains("Skip"))
             {
-                #region skip
 
+                #region skip
+                TempData["tempVisitStatusSkip"] = "Skip";
                 DataTable dt1 = GetSkipRtuDataTable(formTypeId, projectId, isSkiporRtu, fromDate, toDate, latlongRequired, out skipColumns);
                 if (dt1 != null && dt1.Rows.Count > 0)
                 {
@@ -4135,7 +4137,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
             ProjectMasterDAL projectMasterDAL = new ProjectMasterDAL();
             DataTable data = TempData["ExportDataList"] as DataTable;
-
+            
             CompassEntities objCE = new CompassEntities();
             long projectId =long.Parse(TempData["tempProjectId"].ToString());
             var objUtilitytype = objCE.tblProjects.Where(o => o.ProjectId == projectId).Select(o => o.Utilitytype).FirstOrDefault();
@@ -4281,14 +4283,26 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 {
                     dt.Columns.Remove("VISIT END DATE");
                 }
-                if (dt.Columns.Contains("REASON"))
+                string isitStatusSkip = Convert.ToString(TempData["tempVisitStatusSkip"]).ToString();
+                if (isitStatusSkip != "Skip")
+                {
+                    if (dt.Columns.Contains("REASON"))
+                    {
+                        dt.Columns.Remove("REASON");
+                    }
+                    if (dt.Columns.Contains("COMMENT"))
+                    {
+                        dt.Columns.Remove("COMMENT");
+                    }
+                }
+                /*if (dt.Columns.Contains("REASON"))
                 {
                     dt.Columns.Remove("REASON");
                 }
                 if (dt.Columns.Contains("COMMENT"))
                 {
                     dt.Columns.Remove("COMMENT");
-                }
+                }*/
                 dt.Columns.Add("V_NEW_LATITUDE");
                 dt.AcceptChanges();
                 dt.Columns.Add("V_NEW_LONGITUDE");
