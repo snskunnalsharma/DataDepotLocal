@@ -4285,7 +4285,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     dt.Columns.Remove("VISIT END DATE");
                 }
                 //string isitStatusSkip = Convert.ToString(TempData["tempVisitStatusSkip"]).ToString();
-                if (tempVisitStatusSkip != "Skip") //This is static object
+                if (tempVisitStatusSkip != "Skip") //This is static object  => This columns need to skip report for TNMP projects
                 {
                     if (dt.Columns.Contains("REASON"))
                     {
