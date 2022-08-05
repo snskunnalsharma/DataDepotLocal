@@ -73,7 +73,7 @@ namespace GarronT.CMS.Model.DAL
         public List<string> GetDynamicFreshCycleByProjectID(long projectID)
         {
             CompassEntities dbcontext = new CompassEntities();
-
+            
             var Param = new SqlParameter { ParameterName = "@ProjectId", Value = projectID };
 
             //var GetCycle1 = dbcontext.Database.SqlQuery<DataTable>("exec  PROC_DynamicPendingCycle @ProjectId", Param);

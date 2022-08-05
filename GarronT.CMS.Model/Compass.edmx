@@ -1683,6 +1683,22 @@
                     <Property Name="CreatedBy" Type="int" />
                     <Property Name="CreatedOn" Type="datetime" />
                 </EntityType>
+                <EntityType Name="TblUnAllocatedSkipHistory">
+                    <Key>
+                        <PropertyRef Name="Id" />
+                    </Key>
+                    <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+                    <Property Name="FK_UploadedExcelData_Id" Type="bigint" />
+                    <Property Name="TblProjectFieldData_Id" Type="bigint" />
+                    <Property Name="InstallerId" Type="bigint" />
+                    <Property Name="InstallerName" Type="nvarchar" MaxLength="50" />
+                    <Property Name="visitdatetime" Type="datetime" />
+                    <Property Name="Active" Type="int" Nullable="false" />
+                    <Property Name="CreatedBy" Type="int" />
+                    <Property Name="CreatedOn" Type="datetime" />
+                    <Property Name="ModifiedBy" Type="int" />
+                    <Property Name="ModifiedOn" Type="datetime" />
+                </EntityType>
                 <EntityType Name="tblStateMaster">
                     <Key>
                         <PropertyRef Name="StateId" />
@@ -2085,7 +2101,7 @@
                     <Property Name="ModifiedOn" Type="datetime" />
                 </EntityType>
                 <!--Errors Found During Generation:
-    warning 6002: The table/view 'CMSMeter.dbo.VW_AuditorList' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+                warning 6002: The table/view 'CMSMeter.dbo.VW_AuditorList' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
                 <EntityType Name="VW_AuditorList">
                     <Key>
                         <PropertyRef Name="UserID" />
@@ -2095,7 +2111,7 @@
                     <Property Name="FirstName" Type="varchar" MaxLength="50" />
                 </EntityType>
                 <!--Errors Found During Generation:
-    warning 6002: The table/view 'CMSMeter.dbo.VW_GetFormData' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+                warning 6002: The table/view 'CMSMeter.dbo.VW_GetFormData' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
                 <EntityType Name="VW_GetFormData">
                     <Key>
                         <PropertyRef Name="FormId" />
@@ -2117,7 +2133,7 @@
                     <Property Name="ClientName" Type="varchar" MaxLength="250" Nullable="false" />
                 </EntityType>
                 <!--Errors Found During Generation:
-    warning 6002: The table/view 'CMSMeter.dbo.VW_GetPictures' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+                warning 6002: The table/view 'CMSMeter.dbo.VW_GetPictures' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
                 <EntityType Name="VW_GetPictures">
                     <Key>
                         <PropertyRef Name="tblService_ServiceId" />
@@ -2129,7 +2145,7 @@
                     <Property Name="Picture" Type="varchar" MaxLength="200" Nullable="false" />
                 </EntityType>
                 <!--Errors Found During Generation:
-    warning 6002: The table/view 'CMSMeter.dbo.VW_GetProductData' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+                warning 6002: The table/view 'CMSMeter.dbo.VW_GetProductData' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
                 <EntityType Name="VW_GetProductData">
                     <Key>
                         <PropertyRef Name="Id" />
@@ -2152,7 +2168,7 @@
                     <Property Name="CategoryName" Type="varchar" MaxLength="250" />
                 </EntityType>
                 <!--Errors Found During Generation:
-    warning 6002: The table/view 'CMSMeter.dbo.VW_GetProductDataProject' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+                warning 6002: The table/view 'CMSMeter.dbo.VW_GetProductDataProject' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
                 <EntityType Name="VW_GetProductDataProject">
                     <Key>
                         <PropertyRef Name="FKProjectID" />
@@ -2177,7 +2193,7 @@
                     <Property Name="CategoryName" Type="varchar" MaxLength="250" />
                 </EntityType>
                 <!--Errors Found During Generation:
-    warning 6002: The table/view 'CMSMeter.dbo.VW_GETTab6DropdownData' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+                warning 6002: The table/view 'CMSMeter.dbo.VW_GETTab6DropdownData' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
                 <EntityType Name="VW_GETTab6DropdownData">
                     <Key>
                         <PropertyRef Name="ProjectID" />
@@ -2191,7 +2207,7 @@
                     <Property Name="FieldType" Type="int" Nullable="false" />
                 </EntityType>
                 <!--Errors Found During Generation:
-    warning 6002: The table/view 'CMSMeter.dbo.VW_InstallerList' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+                warning 6002: The table/view 'CMSMeter.dbo.VW_InstallerList' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
                 <EntityType Name="VW_InstallerList">
                     <Key>
                         <PropertyRef Name="UserID" />
@@ -2201,7 +2217,7 @@
                     <Property Name="FirstName" Type="varchar" MaxLength="50" />
                 </EntityType>
                 <!--Errors Found During Generation:
-    warning 6002: The table/view 'CMSMeter.dbo.VW_ManageStockRequest' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+                warning 6002: The table/view 'CMSMeter.dbo.VW_ManageStockRequest' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
                 <EntityType Name="VW_ManageStockRequest">
                     <Key>
                         <PropertyRef Name="RequestId" />
@@ -2232,7 +2248,7 @@
                     <Property Name="createdon" Type="datetime" Nullable="false" />
                 </EntityType>
                 <!--Errors Found During Generation:
-    warning 6002: The table/view 'CMSMeter.dbo.VW_Project' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+                warning 6002: The table/view 'CMSMeter.dbo.VW_Project' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
                 <EntityType Name="VW_Project">
                     <Key>
                         <PropertyRef Name="ProjectId" />
@@ -3767,6 +3783,7 @@
                     <EntitySet Name="TblStateCityLogo" EntityType="Self.TblStateCityLogo" Schema="dbo" store:Type="Tables" />
                     <EntitySet Name="tblStateMaster" EntityType="Self.tblStateMaster" Schema="dbo" store:Type="Tables" />
                     <EntitySet Name="TblTNMPExportReportUtilityHistory" EntityType="Self.TblTNMPExportReportUtilityHistory" Schema="dbo" store:Type="Tables" />
+                    <EntitySet Name="TblUnAllocatedSkipHistory" EntityType="Self.TblUnAllocatedSkipHistory" Schema="dbo" store:Type="Tables" />
                     <EntitySet Name="tblUploadedData" EntityType="Self.tblUploadedData" Schema="dbo" store:Type="Tables" />
                     <EntitySet Name="tblUserFormTypeRelation" EntityType="Self.tblUserFormTypeRelation" Schema="dbo" store:Type="Tables" />
                     <EntitySet Name="tblUsers" EntityType="Self.tblUsers" Schema="dbo" store:Type="Tables" />
@@ -5123,10 +5140,23 @@
                         <End Role="tblMeterType" EntitySet="tblMeterTypes" />
                         <End Role="tblMeterPay" EntitySet="tblMeterPays" />
                     </AssociationSet>
-                  <EntitySet Name="TblTNMPExportReportUtilityHistories" EntityType="CompassModel.TblTNMPExportReportUtilityHistory" />
+                    <EntitySet Name="TblTNMPExportReportUtilityHistories" EntityType="CompassModel.TblTNMPExportReportUtilityHistory" />
                     <AssociationSet Name="FK_TblTNMPExportReportUtilityHistory_tblProject" Association="CompassModel.FK_TblTNMPExportReportUtilityHistory_tblProject">
                         <End Role="tblProject" EntitySet="tblProjects" />
                         <End Role="TblTNMPExportReportUtilityHistory" EntitySet="TblTNMPExportReportUtilityHistories" />
+                    </AssociationSet>
+                    <EntitySet Name="TblUnAllocatedSkipHistories" EntityType="CompassModel.TblUnAllocatedSkipHistory" />
+                    <AssociationSet Name="FK_TblUnAllocatedSkipHistory_TblProjectFieldData" Association="CompassModel.FK_TblUnAllocatedSkipHistory_TblProjectFieldData">
+                        <End Role="TblProjectFieldData" EntitySet="TblProjectFieldDatas" />
+                        <End Role="TblUnAllocatedSkipHistory" EntitySet="TblUnAllocatedSkipHistories" />
+                    </AssociationSet>
+                    <AssociationSet Name="FK_TblUnAllocatedSkipHistory_tblUsers" Association="CompassModel.FK_TblUnAllocatedSkipHistory_tblUsers">
+                        <End Role="tblUser" EntitySet="tblUsers" />
+                        <End Role="TblUnAllocatedSkipHistory" EntitySet="TblUnAllocatedSkipHistories" />
+                    </AssociationSet>
+                    <AssociationSet Name="FK_TblUnAllocatedSkipHistory_UploadedExcelData" Association="CompassModel.FK_TblUnAllocatedSkipHistory_UploadedExcelData">
+                        <End Role="UploadedExcelData" EntitySet="UploadedExcelDatas" />
+                        <End Role="TblUnAllocatedSkipHistory" EntitySet="TblUnAllocatedSkipHistories" />
                     </AssociationSet>
                 </EntityContainer>
                 <EntityType Name="C__MigrationHistory">
@@ -6965,6 +6995,7 @@
                     <Property Name="RefCol70" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
                     <Property Name="UploadStatus" Type="Int32" />
                     <NavigationProperty Name="UserTimeClockDetails" Relationship="CompassModel.FK_UserTimeClockDetail_UploadedExcelData" FromRole="UploadedExcelData" ToRole="UserTimeClockDetail" />
+                    <NavigationProperty Name="TblUnAllocatedSkipHistories" Relationship="CompassModel.FK_TblUnAllocatedSkipHistory_UploadedExcelData" FromRole="UploadedExcelData" ToRole="TblUnAllocatedSkipHistory" />
                 </EntityType>
                 <ComplexType Name="PROC_ReportPDF_GetReportHeaderFields_Result">
                     <Property Type="String" Name="formname" Nullable="false" MaxLength="250" />
@@ -8425,6 +8456,7 @@
                     <NavigationProperty Name="InventoryMobileUserStockRequests" Relationship="CompassModel.FK_InventoryMobileUserStockRequest_tblUsers" FromRole="tblUser" ToRole="InventoryMobileUserStockRequest" />
                     <NavigationProperty Name="InventoryMobileUserStockRequests1" Relationship="CompassModel.FK_InventoryMobileUserStockRequest_tblUsers1" FromRole="tblUser" ToRole="InventoryMobileUserStockRequest" />
                     <NavigationProperty Name="AspNetUserRolePermissions" Relationship="CompassModel.FK_AspNetUserRolePermissions_tblUsers" FromRole="tblUser" ToRole="AspNetUserRolePermission" />
+                    <NavigationProperty Name="TblUnAllocatedSkipHistories" Relationship="CompassModel.FK_TblUnAllocatedSkipHistory_tblUsers" FromRole="tblUser" ToRole="TblUnAllocatedSkipHistory" />
                 </EntityType>
                 <Association Name="FK_InvenTrasRequestConfig_tblUsers">
                     <End Type="CompassModel.tblUser" Role="tblUser" Multiplicity="1" />
@@ -9050,6 +9082,7 @@
                     <Property Name="InstallerMapId" Type="Int64" />
                     <Property Name="IsReAssign" Type="Boolean" />
                     <Property Name="IsMediaPending" Type="Int32" />
+                    <NavigationProperty Name="TblUnAllocatedSkipHistories" Relationship="CompassModel.FK_TblUnAllocatedSkipHistory_TblProjectFieldData" FromRole="TblProjectFieldData" ToRole="TblUnAllocatedSkipHistory" />
                 </EntityType>
                 <EntityType Name="ProjectWarehouseRelation">
                     <Key>
@@ -9943,6 +9976,61 @@
                         </Principal>
                         <Dependent Role="tblMeterPay">
                             <PropertyRef Name="FK_MeterType_Id" />
+                        </Dependent>
+                    </ReferentialConstraint>
+                </Association>
+                <EntityType Name="TblUnAllocatedSkipHistory">
+                    <Key>
+                        <PropertyRef Name="Id" />
+                    </Key>
+                    <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+                    <Property Name="FK_UploadedExcelData_Id" Type="Int64" />
+                    <Property Name="TblProjectFieldData_Id" Type="Int64" />
+                    <Property Name="InstallerId" Type="Int64" />
+                    <Property Name="InstallerName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+                    <Property Name="visitdatetime" Type="DateTime" Precision="3" />
+                    <Property Name="Active" Type="Int32" Nullable="false" />
+                    <Property Name="CreatedBy" Type="Int32" />
+                    <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+                    <Property Name="ModifiedBy" Type="Int32" />
+                    <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
+                    <NavigationProperty Name="TblProjectFieldData" Relationship="CompassModel.FK_TblUnAllocatedSkipHistory_TblProjectFieldData" FromRole="TblUnAllocatedSkipHistory" ToRole="TblProjectFieldData" />
+                    <NavigationProperty Name="tblUser" Relationship="CompassModel.FK_TblUnAllocatedSkipHistory_tblUsers" FromRole="TblUnAllocatedSkipHistory" ToRole="tblUser" />
+                    <NavigationProperty Name="UploadedExcelData" Relationship="CompassModel.FK_TblUnAllocatedSkipHistory_UploadedExcelData" FromRole="TblUnAllocatedSkipHistory" ToRole="UploadedExcelData" />
+                </EntityType>
+                <Association Name="FK_TblUnAllocatedSkipHistory_TblProjectFieldData">
+                    <End Type="CompassModel.TblProjectFieldData" Role="TblProjectFieldData" Multiplicity="0..1" />
+                    <End Type="CompassModel.TblUnAllocatedSkipHistory" Role="TblUnAllocatedSkipHistory" Multiplicity="*" />
+                    <ReferentialConstraint>
+                        <Principal Role="TblProjectFieldData">
+                            <PropertyRef Name="ID" />
+                        </Principal>
+                        <Dependent Role="TblUnAllocatedSkipHistory">
+                            <PropertyRef Name="TblProjectFieldData_Id" />
+                        </Dependent>
+                    </ReferentialConstraint>
+                </Association>
+                <Association Name="FK_TblUnAllocatedSkipHistory_tblUsers">
+                    <End Type="CompassModel.tblUser" Role="tblUser" Multiplicity="0..1" />
+                    <End Type="CompassModel.TblUnAllocatedSkipHistory" Role="TblUnAllocatedSkipHistory" Multiplicity="*" />
+                    <ReferentialConstraint>
+                        <Principal Role="tblUser">
+                            <PropertyRef Name="UserID" />
+                        </Principal>
+                        <Dependent Role="TblUnAllocatedSkipHistory">
+                            <PropertyRef Name="InstallerId" />
+                        </Dependent>
+                    </ReferentialConstraint>
+                </Association>
+                <Association Name="FK_TblUnAllocatedSkipHistory_UploadedExcelData">
+                    <End Type="CompassModel.UploadedExcelData" Role="UploadedExcelData" Multiplicity="0..1" />
+                    <End Type="CompassModel.TblUnAllocatedSkipHistory" Role="TblUnAllocatedSkipHistory" Multiplicity="*" />
+                    <ReferentialConstraint>
+                        <Principal Role="UploadedExcelData">
+                            <PropertyRef Name="Id" />
+                        </Principal>
+                        <Dependent Role="TblUnAllocatedSkipHistory">
+                            <PropertyRef Name="FK_UploadedExcelData_Id" />
                         </Dependent>
                     </ReferentialConstraint>
                 </Association>
@@ -14214,6 +14302,23 @@
                                 <ScalarProperty Name="ToDateTime" ColumnName="ToDateTime" />
                                 <ScalarProperty Name="FromDateTime" ColumnName="FromDateTime" />
                                 <ScalarProperty Name="FK_ProjectId" ColumnName="FK_ProjectId" />
+                                <ScalarProperty Name="Id" ColumnName="Id" />
+                            </MappingFragment>
+                        </EntityTypeMapping>
+                    </EntitySetMapping>
+                    <EntitySetMapping Name="TblUnAllocatedSkipHistories">
+                        <EntityTypeMapping TypeName="CompassModel.TblUnAllocatedSkipHistory">
+                            <MappingFragment StoreEntitySet="TblUnAllocatedSkipHistory">
+                                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+                                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                                <ScalarProperty Name="Active" ColumnName="Active" />
+                                <ScalarProperty Name="visitdatetime" ColumnName="visitdatetime" />
+                                <ScalarProperty Name="InstallerName" ColumnName="InstallerName" />
+                                <ScalarProperty Name="InstallerId" ColumnName="InstallerId" />
+                                <ScalarProperty Name="TblProjectFieldData_Id" ColumnName="TblProjectFieldData_Id" />
+                                <ScalarProperty Name="FK_UploadedExcelData_Id" ColumnName="FK_UploadedExcelData_Id" />
                                 <ScalarProperty Name="Id" ColumnName="Id" />
                             </MappingFragment>
                         </EntityTypeMapping>

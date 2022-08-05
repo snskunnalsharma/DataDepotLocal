@@ -14,6 +14,11 @@ namespace GarronT.CMS.Model
     
     public partial class TblProjectFieldData
     {
+        public TblProjectFieldData()
+        {
+            this.TblUnAllocatedSkipHistories = new HashSet<TblUnAllocatedSkipHistory>();
+        }
+    
         public long ID { get; set; }
         public long FormId { get; set; }
         public long tblUploadedData_Id { get; set; }
@@ -35,5 +40,7 @@ namespace GarronT.CMS.Model
         public Nullable<long> InstallerMapId { get; set; }
         public Nullable<bool> IsReAssign { get; set; }
         public Nullable<int> IsMediaPending { get; set; }
+    
+        public virtual ICollection<TblUnAllocatedSkipHistory> TblUnAllocatedSkipHistories { get; set; }
     }
 }
