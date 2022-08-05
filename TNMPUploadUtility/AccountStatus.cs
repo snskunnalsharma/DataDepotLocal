@@ -65,6 +65,19 @@ namespace TNMPUploadUtility
 
                             dbcontext.TblProjectFieldDataHistories.Add(objTblProjectFieldDataHistory);
                             dbcontext.SaveChanges();
+
+                            TblUnAllocatedSkipHistory objTblUnAllocatedSkipHistory = new TblUnAllocatedSkipHistory();
+                            objTblUnAllocatedSkipHistory.FK_UploadedExcelData_Id= itemRow.FK_UploadedExcelData_Id;
+                            objTblUnAllocatedSkipHistory.TblProjectFieldData_Id = itemRow.ID;
+                            objTblUnAllocatedSkipHistory.InstallerId = itemRow.InstallerId;
+                            objTblUnAllocatedSkipHistory.InstallerName = dbcontext.tblUsers.Where(o => o.UserID == itemRow.InstallerId).Select(o => o.FirstName).FirstOrDefault();
+                            objTblUnAllocatedSkipHistory.visitdatetime=itemRow.visitdatetime;
+                            objTblUnAllocatedSkipHistory.Active = 1;
+                            objTblUnAllocatedSkipHistory.CreatedBy = 1;
+                            objTblUnAllocatedSkipHistory.CreatedOn= new CommonFunctions().ServerDate();
+                            dbcontext.TblUnAllocatedSkipHistories.Add(objTblUnAllocatedSkipHistory);
+                            dbcontext.SaveChanges();
+
                             flag = false;
                         }
                         #endregion
