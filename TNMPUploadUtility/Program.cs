@@ -19,13 +19,15 @@ namespace TNMPUploadUtility
     {
         static void Main(string[] args)
         {
+            /*Console.WriteLine("Test Succeed or not - " + DateTime.Now.ToShortTimeString());
+            Console.ReadLine();*/
             //Note==> Emails comment for a testsing time  ==> UploadFile.cs
-            long ProjectID = 0;
+            /*long ProjectID = 0;
             if (args.Length > 0)
             {
                 ProjectID = Convert.ToInt64(args[0]);  // Get project id in Task Schedular Argumnet
-            }
-            //long ProjectID = 10087; // Static project id
+            }*/
+            long ProjectID = 10085; // Static project id
             #region Upload file class
             /*ErrorLogFile.writeStatus("\n\nThread Started at Uploading file - " + DateTime.Now.ToShortTimeString());
             Console.WriteLine("Thread Started at - " + DateTime.Now.ToShortTimeString());
@@ -75,7 +77,7 @@ namespace TNMPUploadUtility
             //Ends uploading file code
 
             #region Download Export Report
-            ErrorLogFile.writeStatus("\n\nThread Started at Download Export Report - " + DateTime.Now.ToShortTimeString());
+            /*ErrorLogFile.writeStatus("\n\nThread Started at Download Export Report - " + DateTime.Now.ToShortTimeString());
             Console.WriteLine("Thread Started at Download Export Report - " + DateTime.Now.ToShortTimeString());
             ErrorLogFile.writeStatus("Get Project Id ==> Project Id:-" + ProjectID + " -" + DateTime.Now.ToShortTimeString());
             Console.WriteLine("Get Project Id ==> Project Id:-" + ProjectID + "");
@@ -166,8 +168,40 @@ namespace TNMPUploadUtility
                 Console.WriteLine("Error:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
             }
             ErrorLogFile.writeStatus("Thread Ended at Download Export Report - " + DateTime.Now.ToShortTimeString());
-            Console.WriteLine("Thread Ended at Download Export Report - " + DateTime.Now.ToShortTimeString());
+            Console.WriteLine("Thread Ended at Download Export Report - " + DateTime.Now.ToShortTimeString());*/
             #endregion
+            // Ends ecport report code
+
+            //Start code => SkipAccountMovedToUnAllocate
+            #region SkipAccountMovedToUnAllocate
+            ErrorLogFile.writeStatus("\n\nThread Started at Skip Account Moved To UnAllocate - " + DateTime.Now.ToShortTimeString());
+            Console.WriteLine("Thread Started at Skip Account Moved To UnAllocate - " + DateTime.Now.ToShortTimeString());
+            ErrorLogFile.writeStatus("Get Project Id ==> Project Id:-" + ProjectID + " -" + DateTime.Now.ToShortTimeString());
+            Console.WriteLine("Get Project Id ==> Project Id:-" + ProjectID + "");
+            try 
+            {
+                AccountStatus objAS = new AccountStatus();
+                bool status = objAS.SkipAccountMovedToUnAllocate(ProjectID);
+                if (status)
+                {
+                    ErrorLogFile.writeStatus("Successfully saved all the skipped accounts as unallocated - " + DateTime.Now.ToShortTimeString());
+                    Console.WriteLine("Successfully saved all the skipped accounts as unallocated " + DateTime.Now.ToShortTimeString());
+                }
+                else
+                {
+                    ErrorLogFile.writeStatus("Do not save all the skipped accounts as unallocated - " + DateTime.Now.ToShortTimeString());
+                    Console.WriteLine("Do not save all the skipped accounts as unallocated " + DateTime.Now.ToShortTimeString());
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorLogFile.writeStatus("Error for SkipAccountMovedToUnAllocate:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
+                Console.WriteLine("Error for SkipAccountMovedToUnAllocate:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
+            }
+            ErrorLogFile.writeStatus("Thread Ended at Skip Account Moved To UnAllocate - " + DateTime.Now.ToShortTimeString());
+            Console.WriteLine("Thread Ended at Skip Account Moved To UnAllocate - " + DateTime.Now.ToShortTimeString());
+            #endregion
+            //ends hare
         }
     }
 }

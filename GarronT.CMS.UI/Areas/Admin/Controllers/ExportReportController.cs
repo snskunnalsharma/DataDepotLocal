@@ -28,6 +28,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         //
         // GET: /Admin/ExportReport/
         public static List<ExportReport_CompletedRecords> tempObjList = new List<ExportReport_CompletedRecords>();
+        public static string tempVisitStatusSkip = string.Empty;
         public ActionResult Index()
         {
             long currentLoggedInUserID = GetLoggedInUserID();
@@ -3512,7 +3513,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         public DataTable AllRecordDataTable(long formTypeId, long projectId, string[] visitStatus, DateTime fromDate, DateTime toDate,
             int latlongRequired, int mediaRequired, out List<string> columnNameList1,long currentUserId)
         {
-            TempData["tempVisitStatusSkip"] = "";
+            tempVisitStatusSkip = "";
             TempData["tempProjectId"] = projectId;
             DataTable dt = new DataTable();
             columnNameList1 = new List<string>();
@@ -3541,7 +3542,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             {
 
                 #region skip
-                TempData["tempVisitStatusSkip"] = "Skip";
+                tempVisitStatusSkip = "Skip";
                 DataTable dt1 = GetSkipRtuDataTable(formTypeId, projectId, isSkiporRtu, fromDate, toDate, latlongRequired, out skipColumns);
                 if (dt1 != null && dt1.Rows.Count > 0)
                 {
@@ -4283,8 +4284,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 {
                     dt.Columns.Remove("VISIT END DATE");
                 }
-                string isitStatusSkip = Convert.ToString(TempData["tempVisitStatusSkip"]).ToString();
-                if (isitStatusSkip != "Skip")
+                //string isitStatusSkip = Convert.ToString(TempData["tempVisitStatusSkip"]).ToString();
+                if (tempVisitStatusSkip != "Skip") //This is static object  => This columns need to skip report for TNMP projects
                 {
                     if (dt.Columns.Contains("REASON"))
                     {
