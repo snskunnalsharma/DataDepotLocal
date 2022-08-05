@@ -1979,6 +1979,7 @@ namespace GarronT.CMS.Model.DAL
                             {
                                 ProjectId = o.Field<long>("ProjectId"),
                                 ProjectName = o.Field<string>("ProjectName"),
+                                UtilityType = o.Field<string>("UtilityType"),
                                 AutoDataSyncInterval = o.Field<int?>("AutoDataSyncInterval"),
                                 DataSyncConnection = o.Field<int?>("DataSyncConnection")
                             }).Distinct().ToList();
@@ -2008,6 +2009,7 @@ namespace GarronT.CMS.Model.DAL
                             objNewMobileOffline.processId = 1;
                             objNewMobileOffline.projectId = item.ProjectId;
                             objNewMobileOffline.projectName = item.ProjectName;
+                            objNewMobileOffline.utilityType = item.UtilityType;
                             objNewMobileOffline.dataSyncConnection = !string.IsNullOrEmpty(Convert.ToString(item.DataSyncConnection)) ? int.Parse(item.DataSyncConnection.ToString()) : 3;
                             objNewMobileOffline.autoDataSyncInterval = !string.IsNullOrEmpty(Convert.ToString(item.AutoDataSyncInterval)) ? int.Parse(item.AutoDataSyncInterval.ToString()) : 5;
                             objNewMobileOffline.synchBasicInfoOnly = !string.IsNullOrEmpty(Convert.ToString(projectData.PartialSynch)) ?

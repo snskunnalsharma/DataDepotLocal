@@ -576,6 +576,7 @@ namespace GarronT.CMS.Model.BO
         public long processId { get; set; }
         public long projectId { get; set; }
         public string projectName { get; set; }
+        public string utilityType { get; set; }
         public string lastCompleteLat { get; set; }
         public string lastCompleteLong { get; set; }
         public List<RTUReason> rtuReasonList { get; set; }
