@@ -22,6 +22,5 @@ namespace GarronT.CMS.Model
         public int MeterMakeId { get; set; }
         public int MeterSizeId { get; set; }
         public int MeterTypeId { get; set; }
-
     }
 }

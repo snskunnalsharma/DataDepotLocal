@@ -146,6 +146,7 @@ namespace GarronT.CMS.Model
         public virtual DbSet<UserTimeClockDetail> UserTimeClockDetails { get; set; }
         public virtual DbSet<tblMeterPay> tblMeterPays { get; set; }
         public virtual DbSet<TblTNMPExportReportUtilityHistory> TblTNMPExportReportUtilityHistories { get; set; }
+        public virtual DbSet<TblUnAllocatedSkipHistory> TblUnAllocatedSkipHistories { get; set; }
 
         public virtual int SP_DeleteFormSectionRelations(Nullable<long> formId)
         {

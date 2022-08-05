@@ -17,6 +17,7 @@ namespace GarronT.CMS.Model
         public UploadedExcelData()
         {
             this.UserTimeClockDetails = new HashSet<UserTimeClockDetail>();
+            this.TblUnAllocatedSkipHistories = new HashSet<TblUnAllocatedSkipHistory>();
         }
     
         public long Id { get; set; }
@@ -109,5 +110,6 @@ namespace GarronT.CMS.Model
         public Nullable<int> UploadStatus { get; set; }
     
         public virtual ICollection<UserTimeClockDetail> UserTimeClockDetails { get; set; }
+        public virtual ICollection<TblUnAllocatedSkipHistory> TblUnAllocatedSkipHistories { get; set; }
     }
 }

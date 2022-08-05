@@ -19,6 +19,9 @@ namespace GarronT.CMS.Model.DAL
         private static readonly ILog log = LogManager.GetLogger(typeof(InstallerDAL));
         #endregion
 
+        // Add static list
+        //public static List<Proc_GetInstallerFormStatusData_Result> objTempSkipList = new List<Proc_GetInstallerFormStatusData_Result>();
+
         bool disposed;
         protected virtual void Dispose(bool disposing)
         {
@@ -70,7 +73,7 @@ namespace GarronT.CMS.Model.DAL
         public List<string> GetDynamicFreshCycleByProjectID(long projectID)
         {
             CompassEntities dbcontext = new CompassEntities();
-
+            
             var Param = new SqlParameter { ParameterName = "@ProjectId", Value = projectID };
 
             //var GetCycle1 = dbcontext.Database.SqlQuery<DataTable>("exec  PROC_DynamicPendingCycle @ProjectId", Param);
@@ -645,6 +648,8 @@ namespace GarronT.CMS.Model.DAL
             DateTime _toDate = Convert.ToDateTime(toDate);
             string routeVal = "";
             string cycleVal = "";
+            /*routeVal = string.Join(",", Root.Select(x => $"'{x}'"));
+            cycleVal = string.Join(",", Cycle.Select(x => $"'{x}'"));*/
             foreach (var item in Cycle)
             {
                 if (cycleVal.Length == 0)
@@ -690,45 +695,49 @@ namespace GarronT.CMS.Model.DAL
                     SqlCommand cmd = new SqlCommand();
                     SqlDataReader reader;
 
-                    //cmd.CommandText = "PROC_InstallerAllocation_GetInstallerData";
-                    cmd.CommandText = procName;
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Connection = sqlConnection1;
-                    cmd.Parameters.Add("@formId", formId);
-                    cmd.Parameters.Add("@InstallerId", installerId);
-                    cmd.Parameters.Add("@FromDate", _frmDate);
-                    cmd.Parameters.Add("@ToDate", _toDate);
-                    cmd.Parameters.Add("@Cycle", cycleVal);
-                    cmd.Parameters.Add("@Route", routeVal);
-                    cmd.CommandTimeout = 600;
-                    //cmd.CommandTimeout = 120;
-                    sqlConnection1.Open();
-
-                    reader = cmd.ExecuteReader();
-                    while (reader.Read())
+                    try
                     {
-                        objList.Add(new Proc_GetInstallerFormStatusData_Result
+                        //cmd.CommandText = "PROC_InstallerAllocation_GetInstallerData";
+                        cmd.CommandText = procName;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Connection = sqlConnection1;
+                        cmd.Parameters.Add("@formId", formId);
+                        cmd.Parameters.Add("@InstallerId", installerId);
+                        cmd.Parameters.Add("@FromDate", _frmDate);
+                        cmd.Parameters.Add("@ToDate", _toDate);
+                        cmd.Parameters.Add("@Cycle", cycleVal);
+                        cmd.Parameters.Add("@Route", routeVal);
+                        cmd.CommandTimeout = 600;
+                        //cmd.CommandTimeout = 120;
+                        sqlConnection1.Open();
+
+                        reader = cmd.ExecuteReader();
+                        while (reader.Read())
                         {
-                            ID = long.Parse(reader["ID"].ToString()),
-                            Street = reader["Street"].ToString(),
-                            Latitude = reader["Latitude"].ToString(),
-                            Longitude = reader["Longitude"].ToString(),
-                            Cycle = reader["Cycle"].ToString(),
-                            Route = reader["Route"].ToString(),
-                            VisitStatus = reader["VisitStatus"].ToString(),
+                            objList.Add(new Proc_GetInstallerFormStatusData_Result
+                            {
+                                ID = long.Parse(reader["ID"].ToString()),
+                                Street = reader["Street"].ToString(),
+                                Latitude = reader["Latitude"].ToString(),
+                                Longitude = reader["Longitude"].ToString(),
+                                Cycle = reader["Cycle"].ToString(),
+                                Route = reader["Route"].ToString(),
+                                VisitStatus = reader["VisitStatus"].ToString(),
 
-                            Appointmentflag = reader["Appointmentflag"].ToString()
-                        });
+                                Appointmentflag = reader["Appointmentflag"].ToString()
+                            });
 
+                        }
+
+
+                        sqlConnection1.Close();
+                        reader.Close();
+                        reader.Dispose();
+                        cmd.Dispose();
+                        sqlConnection1.Dispose();
                     }
-
-                    sqlConnection1.Close();
-                    reader.Close();
-                    reader.Dispose();
-                    cmd.Dispose();
-                    sqlConnection1.Dispose();
-
-
+                    catch (Exception ex)
+                    { string df = ex.Message.ToString(); }
 
                     // var quickResult = dbcontext.Proc_GetInstallerFormStatusData(formId, installerId, _frmDate, _toDate).ToList();
 
@@ -738,6 +747,8 @@ namespace GarronT.CMS.Model.DAL
                     var skipAddress = objList.Where(o => o.VisitStatus.ToLower() == "skip")
                         .Select(o => o).Distinct().ToList();
 
+                    /*objTempSkipList = new List<Proc_GetInstallerFormStatusData_Result>();
+                    objTempSkipList = skipAddress;*/  // This code do not use
 
                     var allExistingAddress = new List<AddressMaster>();
 
@@ -1285,12 +1296,16 @@ namespace GarronT.CMS.Model.DAL
                         Flag = true;
                         DeallocatedItem = objCurrentVisitList.Select(o => o.FK_UploadedExcelData_Id.ToString()).ToList();
                     }
-
-
-
-
-
                 }
+                // This code comment because this code already wirte on the DD TNMP Utlity
+                /*if (InstallerMap.InstallerID != null && InstallerMap.InstallerID > 0)
+                {
+                    //Skip account move to unallocate
+                    var objTempList = objTempSkipList.Select(o => o.ID.ToString()).ToList();
+                    var SkipDeleteList = objTempList.Except(InstallerMap.AddressID).ToList();
+                    if (SkipDeleteList != null)
+                    { SkipAccountMovedToUnAllocate(SkipDeleteList, InstallerMap.InstallerID); }
+                }*/
                 Message = "Installer mapped to address successfully";
                 result = true;
             }
@@ -1302,6 +1317,66 @@ namespace GarronT.CMS.Model.DAL
             return result;
         }
 
+        public void SkipAccountMovedToUnAllocate(List<string> objSkipDeleteList,long InstallerId)
+        {
+            try
+            {
+                CompassEntities compassEntities = new CompassEntities();
+                foreach (var item in objSkipDeleteList)
+                {
+                    bool flag = true;
+                    var ID = Convert.ToInt64(item);
+                    var objTPFD = compassEntities.TblProjectFieldDatas.Where(o => o.FK_UploadedExcelData_Id == ID && o.Active == 1 && o.InstallerId == InstallerId && o.IsSkipped == true).OrderByDescending(o => o.ID).ToList();
+                    foreach (var itemRow in objTPFD)
+                    {
+                        itemRow.Active = 0;
+                        itemRow.ModifiedOn = new CommonFunctions().ServerDate();
+                        compassEntities.SaveChanges();
+
+                        #region history inserted
+                        if (flag)       // Last record insert in History  Table
+                        {
+                            TblProjectFieldDataHistory objTblProjectFieldDataHistory = new TblProjectFieldDataHistory();
+                            objTblProjectFieldDataHistory.Active = 1;
+                            objTblProjectFieldDataHistory.CreatedBy = 1;
+                            objTblProjectFieldDataHistory.CreatedOn = new CommonFunctions().ServerDate();
+                            objTblProjectFieldDataHistory.FormId = itemRow.FormId;
+                            objTblProjectFieldDataHistory.InstallerId = itemRow.InstallerId;
+                            objTblProjectFieldDataHistory.InstallerMapId = itemRow.InstallerId;
+                            objTblProjectFieldDataHistory.IsReAssign = itemRow.IsReAssign;
+                            objTblProjectFieldDataHistory.IsSkipped = itemRow.IsSkipped;
+                            objTblProjectFieldDataHistory.JsonDataVal = itemRow.JsonDataVal;
+                            objTblProjectFieldDataHistory.SkipComment = itemRow.SkipComment;
+                            objTblProjectFieldDataHistory.SkipId = itemRow.SkipId;
+                            objTblProjectFieldDataHistory.SkippedDatetime = itemRow.SkippedDatetime;
+                            objTblProjectFieldDataHistory.SkippedReason = itemRow.SkippedReason;
+                            // objTblProjectFieldDataHistory.tblUploadedData_Id = objTblProjectFieldData.tblUploadedData_Id;
+                            objTblProjectFieldDataHistory.FK_UploadedExcelData_Id = itemRow.FK_UploadedExcelData_Id;
+                            objTblProjectFieldDataHistory.visitdatetime = itemRow.visitdatetime;
+
+                            compassEntities.TblProjectFieldDataHistories.Add(objTblProjectFieldDataHistory);
+                            compassEntities.SaveChanges();
+                            flag = false;
+                        }
+                        #endregion
+                    }
+                    var objIMD = compassEntities.tblInstallerMapDatas.Where(o => o.FK_UploadedExcelData_Id == ID && o.Active == 1 && o.InstallerId == InstallerId).ToList();
+                    foreach (var objItemRow in objIMD)
+                    {
+                        objItemRow.Active = 0;
+                        objItemRow.BatchNumber = null;
+                        objItemRow.MobileResponse = null;
+                        objItemRow.ModifiedOn = new CommonFunctions().ServerDate();
+                        compassEntities.SaveChanges();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+            }
+
+        }
 
         //public List<projectStatus> ProjectStatus(List<long> Address, long ProjectID,
         //    long InstallerID, string InstallerName, string FromDate, string ToDate, out string Message, ref bool status)
@@ -2007,8 +2082,6 @@ namespace GarronT.CMS.Model.DAL
                         sb.Append("<tbody style='font-size:13px;'>");
                         foreach (var item in DeallocatedItem)
                         {
-
-
                             var ID = Convert.ToInt64(item);
                             var Deinstallerdata = objCurrentVisitList.Where(a => a.ID == ID).FirstOrDefault();
                             if (Deinstallerdata != null)

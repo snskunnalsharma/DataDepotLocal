@@ -1891,6 +1891,7 @@ function getAddressList() {
                     if (item.StreetDisabled == true) {
 
                         $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted disabledli")
+                        //$("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted")
                     }
                     else if (item.Appointmentflag == "1") {
                         $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted Appointmentdisabledli")
@@ -3184,6 +3185,7 @@ function Edit(data) {
                                             if (item.StreetDisabled == true) {
 
                                                 $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted disabledli")
+                                                //$("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted")
                                             }
                                             else if (item.Appointmentflag == "1") {
                                                 $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted Appointmentdisabledli")
@@ -3465,6 +3467,7 @@ function EditAllocation(data, cycle, routes) {
                                         if (item.StreetDisabled == true) {
 
                                             $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted disabledli")
+                                            //$("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted")
                                         }
                                         else if (item.Appointmentflag == "1") {
                                             $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted Appointmentdisabledli")
@@ -3710,6 +3713,7 @@ function EditAllocation(data, cycle, routes) {
                                             if (item.StreetDisabled == true) {
 
                                                 $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted disabledli")
+                                                //$("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted")
                                             }
                                             else if (item.Appointmentflag == "1") {
                                                 $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted Appointmentdisabledli")
@@ -3861,6 +3865,7 @@ $('#chkIncludeSkip').change(function () {
                         if (item.StreetDisabled == true) {
 
                             $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted disabledli")
+                            //$("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted")
                         }
                         else if (item.Appointmentflag == "1") {
                             $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted Appointmentdisabledli")
@@ -4128,6 +4133,7 @@ $("#btnCycleFilter").click(function () {
                                     if (item.StreetDisabled == true) {
 
                                         $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted disabledli")
+                                        //$("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted")
                                     }
                                     else if (item.Appointmentflag == "1") {
                                         $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted Appointmentdisabledli")
@@ -4398,7 +4404,7 @@ $("#btnRouteFilter").click(function () {
     var ddlRootvalues = [];
     var value = $('#ulroute li.highlighted')
     value.each(function (index, item) { ddlRootvalues.push($(this).val()) });
-
+    console.log("root" + ddlRootvalues);
 
     var ddlCyclevalues = [];
     var cyclevalue = $('#ulCycle li.highlighted')
@@ -4441,6 +4447,7 @@ $("#btnRouteFilter").click(function () {
                     if (item.StreetDisabled == true) {
 
                         $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted disabledli")
+                        //$("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted")
                     }
                     else if (item.Appointmentflag == "1") {
                         $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted Appointmentdisabledli")

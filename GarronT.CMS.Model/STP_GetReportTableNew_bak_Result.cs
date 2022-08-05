@@ -22,7 +22,6 @@ namespace GarronT.CMS.Model
         public string Street { get; set; }
         public string OldMeterNo { get; set; }
         public string OldMeterSize { get; set; }
-        public string OldMeterRadioNumber { get; set; }
         public string NewMeterNo { get; set; }
         public string NewMeterResgisterNo { get; set; }
         public string NewMeterSize { get; set; }
@@ -43,5 +42,6 @@ namespace GarronT.CMS.Model
         public string ShortComment { get; set; }
         public string ProjectStatus { get; set; }
         public Nullable<long> DateTimeOrdering { get; set; }
+        public string OldMeterRadioNumber { get; set; }
     }
 }
