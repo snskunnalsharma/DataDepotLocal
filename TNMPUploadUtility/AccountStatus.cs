@@ -72,6 +72,8 @@ namespace TNMPUploadUtility
                             objTblUnAllocatedSkipHistory.InstallerId = itemRow.InstallerId;
                             objTblUnAllocatedSkipHistory.InstallerName = dbcontext.tblUsers.Where(o => o.UserID == itemRow.InstallerId).Select(o => o.FirstName).FirstOrDefault();
                             objTblUnAllocatedSkipHistory.visitdatetime=itemRow.visitdatetime;
+                            objTblUnAllocatedSkipHistory.SkippedReason = itemRow.SkippedReason;
+                            objTblUnAllocatedSkipHistory.SkipComment = itemRow.SkipComment;
                             objTblUnAllocatedSkipHistory.Active = 1;
                             objTblUnAllocatedSkipHistory.CreatedBy = 1;
                             objTblUnAllocatedSkipHistory.CreatedOn= new CommonFunctions().ServerDate();

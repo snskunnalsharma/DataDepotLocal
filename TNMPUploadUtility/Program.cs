@@ -186,7 +186,7 @@ namespace TNMPUploadUtility
                 {
                     ErrorLogFile.writeStatus("Successfully saved all the skipped accounts as unallocated - " + DateTime.Now.ToShortTimeString());
                     Console.WriteLine("Successfully saved all the skipped accounts as unallocated " + DateTime.Now.ToShortTimeString());
-                    //Console.ReadLine();
+                    Console.ReadLine();
                 }
                 else
                 {

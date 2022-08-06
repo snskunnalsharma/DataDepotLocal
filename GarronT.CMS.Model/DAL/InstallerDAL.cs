@@ -1356,6 +1356,21 @@ namespace GarronT.CMS.Model.DAL
 
                             compassEntities.TblProjectFieldDataHistories.Add(objTblProjectFieldDataHistory);
                             compassEntities.SaveChanges();
+
+                            TblUnAllocatedSkipHistory objTblUnAllocatedSkipHistory = new TblUnAllocatedSkipHistory();
+                            objTblUnAllocatedSkipHistory.FK_UploadedExcelData_Id = itemRow.FK_UploadedExcelData_Id;
+                            objTblUnAllocatedSkipHistory.TblProjectFieldData_Id = itemRow.ID;
+                            objTblUnAllocatedSkipHistory.InstallerId = itemRow.InstallerId;
+                            objTblUnAllocatedSkipHistory.InstallerName = compassEntities.tblUsers.Where(o => o.UserID == itemRow.InstallerId).Select(o => o.FirstName).FirstOrDefault();
+                            objTblUnAllocatedSkipHistory.visitdatetime = itemRow.visitdatetime;
+                            objTblUnAllocatedSkipHistory.SkippedReason = itemRow.SkippedReason;
+                            objTblUnAllocatedSkipHistory.SkipComment = itemRow.SkipComment;
+                            objTblUnAllocatedSkipHistory.Active = 1;
+                            objTblUnAllocatedSkipHistory.CreatedBy = 1;
+                            objTblUnAllocatedSkipHistory.CreatedOn = new CommonFunctions().ServerDate();
+                            compassEntities.TblUnAllocatedSkipHistories.Add(objTblUnAllocatedSkipHistory);
+                            compassEntities.SaveChanges();
+
                             flag = false;
                         }
                         #endregion

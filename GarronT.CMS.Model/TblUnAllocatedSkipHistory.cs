@@ -20,6 +20,8 @@ namespace GarronT.CMS.Model
         public Nullable<long> InstallerId { get; set; }
         public string InstallerName { get; set; }
         public Nullable<System.DateTime> visitdatetime { get; set; }
+        public string SkippedReason { get; set; }
+        public string SkipComment { get; set; }
         public int Active { get; set; }
         public Nullable<int> CreatedBy { get; set; }
         public Nullable<System.DateTime> CreatedOn { get; set; }

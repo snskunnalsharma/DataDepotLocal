@@ -1693,6 +1693,8 @@
                     <Property Name="InstallerId" Type="bigint" />
                     <Property Name="InstallerName" Type="nvarchar" MaxLength="50" />
                     <Property Name="visitdatetime" Type="datetime" />
+                    <Property Name="SkippedReason" Type="varchar" MaxLength="500" />
+                    <Property Name="SkipComment" Type="varchar" MaxLength="500" />
                     <Property Name="Active" Type="int" Nullable="false" />
                     <Property Name="CreatedBy" Type="int" />
                     <Property Name="CreatedOn" Type="datetime" />
@@ -9989,6 +9991,8 @@
                     <Property Name="InstallerId" Type="Int64" />
                     <Property Name="InstallerName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
                     <Property Name="visitdatetime" Type="DateTime" Precision="3" />
+                    <Property Name="SkippedReason" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+                    <Property Name="SkipComment" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
                     <Property Name="Active" Type="Int32" Nullable="false" />
                     <Property Name="CreatedBy" Type="Int32" />
                     <Property Name="CreatedOn" Type="DateTime" Precision="3" />
@@ -14314,6 +14318,8 @@
                                 <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
                                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                                 <ScalarProperty Name="Active" ColumnName="Active" />
+                                <ScalarProperty Name="SkippedReason" ColumnName="SkippedReason" />
+                                <ScalarProperty Name="SkipComment" ColumnName="SkipComment" />
                                 <ScalarProperty Name="visitdatetime" ColumnName="visitdatetime" />
                                 <ScalarProperty Name="InstallerName" ColumnName="InstallerName" />
                                 <ScalarProperty Name="InstallerId" ColumnName="InstallerId" />
