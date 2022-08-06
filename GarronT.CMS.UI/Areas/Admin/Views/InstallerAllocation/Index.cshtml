@@ -1769,7 +1769,7 @@
 
                                             </div>
                                             <div class="col-lg-2 col-sm-6 col-xs-12 box2" style="padding-left:0px; display:none;">
-                                               <!-- Will be used for state and office filter (hold)-->
+                                                <!-- Will be used for state and office filter (hold)-->
                                             </div>
                                             <div class="col-lg-3 col-sm-6 col-xs-12 box2" style="padding-left:0px;">
 
@@ -1868,9 +1868,10 @@
                                                 <button class="btn btn-danger chng-inst-btn " id="btnAssignAddress" type="button" style="color:#fff;">Change Installer</button>
 
                                                 <br /><br />
-
-                                                @*<button id="btnExport" class="btn btn-info cancel_btn " type="button">Export</button>*@
                                                 <input type="checkbox" name="includeSkip" id="chkIncludeSkip">Include Skip
+                                                <input type="checkbox" name="unallocatedSkip" id="chkUnallocatedSkip" style="margin-left:15px;">Unallocated Skip
+                                                @*<button id="btnExport" class="btn btn-info cancel_btn " type="button">Export</button>
+                                                
                                                 <button id="btnSave" class="btn btn-success save_btn " type="button" style="color:#ffffff; width:auto;">Save</button>
                                                 <button id="btnExport" class="btn btn-primary dropdown-toggle cancel_btn dropdown" type="button" data-toggle="dropdown">
                                                     Export
@@ -1890,9 +1891,23 @@
 
                                             </div>
 
-                                            <div class="col-lg-0 nopadding">
-                                            </div>
+                                           
+                                            <br />
+                                            <br/>
+                                            <div class="col-lg-12 col-sm-12 col-xs-12 nopadding box1" style="padding-top:15px; text-align:center;">
+                                                <button id="btnSave" class="btn btn-success save_btn " type="button" style="color:#ffffff; width:10%;">Save</button>
+                                                <button id="btnExport" class="btn btn-primary dropdown-toggle cancel_btn dropdown" type="button" data-toggle="dropdown" style="width:10%;">
+                                                    Export
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu1">
+                                                    <li><a id="lnkExportImage" href="#">Image</a></li>
+                                                    <li><a id="lnkExportExcel" href="#">Excel</a></li>
+                                                </ul>
 
+
+                                                <button class="btn btn-default  res_btn " id="btnReset" type="button" style="width:10%;">Reset</button>
+                                            </div>
                                         </form>
                                     </div>
                                 </div>
