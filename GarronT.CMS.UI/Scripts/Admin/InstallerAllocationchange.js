@@ -1455,13 +1455,25 @@ $('#btnSave').unbind("click").click(function () {
             "RouteValues": ddlRootvalues,
             "CycleValues": ddlCyclevalues
         }
+
+        var unAlloSkip = "0";
+        if ($("#chkUnallocatedSkip").is(":checked"))
+        {
+            console.log("checked ==> UnAllocated Skip");
+            unAlloSkip = "1";
+        }
+        else
+        {
+            unAlloSkip = "0";
+        }
+
         var urlSaveInstallerMap = $('#urlSaveInstallerMap').val();
 
         $.ajax({
             type: 'POST',
             url: urlSaveInstallerMap,
             async: true,
-            data: JSON.stringify(InstallerMap),
+            data: JSON.stringify({ InstallerMap: InstallerMap, unAllocatedSkipStatus: unAlloSkip }),
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: function (data) {

@@ -1118,7 +1118,7 @@ namespace GarronT.CMS.Model.DAL
         /// <param name="InstallerMap"></param>
         /// <param name="Message"></param>
         /// <returns></returns>
-        public bool create(InstallerMap InstallerMap, out string Message, out List<string> DeallocatedItem, out bool Flag)
+        public bool create(InstallerMap InstallerMap, out string Message, out List<string> DeallocatedItem, out bool Flag,string unAllocatedSkipStatus)
         {
             bool result = false;
             Flag = false;
@@ -1222,75 +1222,69 @@ namespace GarronT.CMS.Model.DAL
 
                     //gets the old record deactivatelsist
                     //objDeactiveList = CompassEntities.PROC_ListOfDeactivatesVisits(InstallerMap.ProjectID, fromDate, toDate, InstallerMap.InstallerID).ToList();
-
-                    SqlConnection sqlConnection1 = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
-                    SqlCommand cmd = new SqlCommand();
-                    SqlDataReader reader;
-
-                    cmd.CommandText = "PROC_InstallerAllocation_ViewCurrentVisits";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Connection = sqlConnection1;
-                    cmd.Parameters.Add("@ProjectId", InstallerMap.ProjectID);
-                    cmd.Parameters.Add("@fromDate", fromDate);
-                    cmd.Parameters.Add("@toDate", toDate);
-                    cmd.Parameters.Add("@InstallerId", InstallerMap.InstallerID);
-                    cmd.Parameters.Add("@RouteList", routeValues);
-                    cmd.Parameters.Add("@CycleList", cycleValues);
-
-                    sqlConnection1.Open();
-
-                    reader = cmd.ExecuteReader();
-                    while (reader.Read())
+                    if (unAllocatedSkipStatus != "1")
                     {
-                        objCurrentVisitList.Add(new CurrentVisitRecord
+                        SqlConnection sqlConnection1 = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
+                        SqlCommand cmd = new SqlCommand();
+                        SqlDataReader reader;
+
+                        cmd.CommandText = "PROC_InstallerAllocation_ViewCurrentVisits";
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Connection = sqlConnection1;
+                        cmd.Parameters.Add("@ProjectId", InstallerMap.ProjectID);
+                        cmd.Parameters.Add("@fromDate", fromDate);
+                        cmd.Parameters.Add("@toDate", toDate);
+                        cmd.Parameters.Add("@InstallerId", InstallerMap.InstallerID);
+                        cmd.Parameters.Add("@RouteList", routeValues);
+                        cmd.Parameters.Add("@CycleList", cycleValues);
+
+                        sqlConnection1.Open();
+
+                        reader = cmd.ExecuteReader();
+                        while (reader.Read())
                         {
-                            ID = long.Parse(reader["ID"].ToString()),
-                            Account = reader["Account"].ToString(),
-                            Customer = reader["Customer"].ToString(),
-                            FromDate = DateTime.Parse(reader["FromDate"].ToString()),
-                            InstallerId = long.Parse(reader["InstallerId"].ToString()),
-                            OldMeterNo = reader["OldMeterNo"].ToString(),
-                            OldMeterRadioNo = reader["OldMeterRadioNo"].ToString(),
-                            FK_UploadedExcelData_Id = long.Parse(reader["FK_UploadedExcelData_Id"].ToString()),
-                            ToDate = DateTime.Parse(reader["ToDate"].ToString())
-                        });
+                            objCurrentVisitList.Add(new CurrentVisitRecord
+                            {
+                                ID = long.Parse(reader["ID"].ToString()),
+                                Account = reader["Account"].ToString(),
+                                Customer = reader["Customer"].ToString(),
+                                FromDate = DateTime.Parse(reader["FromDate"].ToString()),
+                                InstallerId = long.Parse(reader["InstallerId"].ToString()),
+                                OldMeterNo = reader["OldMeterNo"].ToString(),
+                                OldMeterRadioNo = reader["OldMeterRadioNo"].ToString(),
+                                FK_UploadedExcelData_Id = long.Parse(reader["FK_UploadedExcelData_Id"].ToString()),
+                                ToDate = DateTime.Parse(reader["ToDate"].ToString())
+                            });
+                        }
 
+                        sqlConnection1.Close();
+                        reader.Close();
+                        reader.Dispose();
+                        cmd.Dispose();
+                        sqlConnection1.Dispose();
+
+
+                        ///Stored procedure used to get existing visit info for the same date & deactivates only pending records.
+                        //CompassEntities.PROC_DeactivateVisits(InstallerMap.ProjectID, fromDate, toDate, InstallerMap.InstallerID);
+
+
+                        SqlConnection sqlConnection2 = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
+                        SqlCommand cmd2 = new SqlCommand();
+                        cmd2.CommandText = "PROC_InstallerAllocation_DeactivateCurrentVisits";
+                        cmd2.CommandType = CommandType.StoredProcedure;
+                        cmd2.Connection = sqlConnection2;
+                        cmd2.Parameters.AddWithValue("@ProjectId", InstallerMap.ProjectID);
+                        cmd2.Parameters.AddWithValue("@fromDate", fromDate);
+                        cmd2.Parameters.AddWithValue("@toDate", toDate);
+                        cmd2.Parameters.AddWithValue("@InstallerId", InstallerMap.InstallerID);
+                        cmd2.Parameters.AddWithValue("@RouteList", routeValues);
+                        cmd2.Parameters.AddWithValue("@CycleList", cycleValues);
+                        sqlConnection2.Open();
+                        cmd2.ExecuteNonQuery();
+                        sqlConnection2.Close();
+                        cmd2.Dispose();
+                        sqlConnection2.Dispose();
                     }
-
-                    sqlConnection1.Close();
-                    reader.Close();
-                    reader.Dispose();
-                    cmd.Dispose();
-                    sqlConnection1.Dispose();
-
-
-                    ///Stored procedure used to get existing visit info for the same date & deactivates only pending records.
-                    //CompassEntities.PROC_DeactivateVisits(InstallerMap.ProjectID, fromDate, toDate, InstallerMap.InstallerID);
-
-
-                    SqlConnection sqlConnection2 = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
-                    SqlCommand cmd2 = new SqlCommand();
-
-
-                    cmd2.CommandText = "PROC_InstallerAllocation_DeactivateCurrentVisits";
-                    cmd2.CommandType = CommandType.StoredProcedure;
-                    cmd2.Connection = sqlConnection2;
-                    cmd2.Parameters.Add("@ProjectId", InstallerMap.ProjectID);
-                    cmd2.Parameters.Add("@fromDate", fromDate);
-                    cmd2.Parameters.Add("@toDate", toDate);
-                    cmd2.Parameters.Add("@InstallerId", InstallerMap.InstallerID);
-                    cmd2.Parameters.Add("@RouteList", routeValues);
-                    cmd2.Parameters.Add("@CycleList", cycleValues);
-
-                    sqlConnection2.Open();
-                    cmd2.ExecuteNonQuery();
-
-                    sqlConnection2.Close();
-                    cmd2.Dispose();
-                    sqlConnection2.Dispose();
-
-
-
                     ///iterate new mapped address list.
                     foreach (var item in InstallerMap.AddressID)
                     {
@@ -1350,12 +1344,14 @@ namespace GarronT.CMS.Model.DAL
 
                         // updated existing data
                         Flag = false;
+                        DeActivateSkipAccountFromHistoryTable(InstallerMap);
                     }
                     else
                     {
                         //new entry for current date range 
                         Flag = true;
                         DeallocatedItem = objCurrentVisitList.Select(o => o.FK_UploadedExcelData_Id.ToString()).ToList();
+                        DeActivateSkipAccountFromHistoryTable(InstallerMap);
                     }
                 }
                 // This code comment because this code already wirte on the DD TNMP Utlity
@@ -1378,6 +1374,25 @@ namespace GarronT.CMS.Model.DAL
             return result;
         }
 
+        public void DeActivateSkipAccountFromHistoryTable(InstallerMap InstallerMap)
+        {
+            try
+            {
+                CompassEntities compassEntities = new CompassEntities();
+                foreach (var item in InstallerMap.AddressID)
+                {
+                    var ExcelID = Convert.ToInt64(item);
+                    var objUASH = compassEntities.TblUnAllocatedSkipHistories.Where(o => o.FK_UploadedExcelData_Id == ExcelID && o.Active == 1).ToList();
+                    foreach (var obj in objUASH)
+                    {
+                        obj.Active = 0;
+                        compassEntities.SaveChanges();
+                    }
+                }
+            }
+            catch (Exception ex)
+            { }
+        }
         public void SkipAccountMovedToUnAllocate(List<string> objSkipDeleteList,long InstallerId)
         {
             try

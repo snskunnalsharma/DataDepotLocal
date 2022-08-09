@@ -409,7 +409,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             return base.Json(installerList, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult SaveInstallerMap(InstallerMap InstallerMap)
+        public ActionResult SaveInstallerMap(InstallerMap InstallerMap,string unAllocatedSkipStatus)
         {
             try
             {
@@ -432,7 +432,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     List<string> DeallocatedItem = null;
 
 
-                    bool success = installerDAL.create(InstallerMap, out returnMessage, out DeallocatedItem, out Flag);
+                    bool success = installerDAL.create(InstallerMap, out returnMessage, out DeallocatedItem, out Flag, unAllocatedSkipStatus);
                     
 
                     #region Added code by vishal To send mail to installer
