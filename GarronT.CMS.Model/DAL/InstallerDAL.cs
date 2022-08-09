@@ -1045,12 +1045,73 @@ namespace GarronT.CMS.Model.DAL
         }
 
 
+        public List<AddressMaster> GetUnAllocatedSkipAllAddress(List<string> Root, List<string> Cycle, long projectId)
+        {
 
+            CompassEntities dbcontext = new CompassEntities();
+            List<AddressMaster> objaddress = new List<AddressMaster>();
+            string routeVal = "";
+            string cycleVal = "";
+            foreach (var item in Cycle)
+            {
+                if (cycleVal.Length == 0)
+                {
+                    cycleVal = item.Trim();
+                }
+                else
+                {
+                    cycleVal += "," + item.Trim() + "";
+                }
+            }
+            foreach (var item in Root)
+            {
+                if (routeVal.Length == 0)
+                {
+                    routeVal = item.Trim();
+                }
+                else
+                {
+                    routeVal += "," + item.Trim();
+                }
+            }
 
+            if (Root != null)
+            {
+                SqlConnection sqlConnection1 = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
+                SqlCommand cmd = new SqlCommand();
+                SqlDataReader reader;
+                cmd.CommandText = "PROC_InstallerAllocation_GetAllUnallocatedSkipVisits_ByCycleRoute";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Connection = sqlConnection1;
+                cmd.Parameters.AddWithValue("@ProjectId", projectId);
+                cmd.Parameters.AddWithValue("@Cycle", cycleVal);
+                cmd.Parameters.AddWithValue("@Route", routeVal);
+                sqlConnection1.Open();
+                reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    objaddress.Add(new AddressMaster
+                    {
+                        ID = long.Parse(reader["id"].ToString()),
+                        Street = reader["Street"].ToString(),
+                        Latitude = reader["AddressLatitude"].ToString(),
+                        Longitude = reader["AddressLongitude"].ToString(),
+                        Cycle = reader["Cycle"].ToString(),
+                        Route = reader["Route"].ToString()
+                    });
 
+                }
+                sqlConnection1.Close();
+                reader.Close();
+                reader.Dispose();
+                cmd.Dispose();
+                sqlConnection1.Dispose();
+                objaddress = objaddress.OrderBy(a => a.Latitude).ThenBy(a => a.Longitude).ThenBy(a => a.Street).ToList();
+            }
 
+            return objaddress;
 
-
+        }
         /// <summary>
         /// Save mapped data in database for given installer.
         /// </summary>

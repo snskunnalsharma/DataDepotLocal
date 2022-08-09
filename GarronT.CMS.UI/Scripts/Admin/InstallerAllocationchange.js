@@ -387,7 +387,7 @@ $(document).ready(function () {
 
         }
     });
-
+    $("#pIdHideShow").css("display", "none");
     //#endregion
 
 
@@ -480,6 +480,11 @@ $('#ddlProject').unbind().change(function () {
 
         var projectid = Project.val();
 
+        // This condition Applied for TNMP Project
+        if (projectid === "10085")
+        {
+            $("#pIdHideShow").css("display", "block");
+        }
         //#region check excel mapped
         var urlCheckLatLongCalculated = $('#urlCheckLatLongCalculatedStatus').val();
         $.ajax({
@@ -3013,7 +3018,16 @@ function Edit(data) {
     } 
     console.log("incSkip == " + incSkip);
 
-
+    debugger;
+    var unAlloSkip = "0";
+    if ($("#chkUnallocatedSkip").is(":checked")) {
+        console.log("checked ==> UnAllocated Skip");
+        unAlloSkip = "1";
+    }
+    else {
+        unAlloSkip = "0";
+    }
+    console.log("UnAllocated Skip == " + unAlloSkip);
 
     var GetExistingCycleList = $('#GetExistingCycleList').val();
 
@@ -3172,7 +3186,7 @@ function Edit(data) {
                                 async: true,
                                 type: "POST",
                                 dataType: "json",
-                                data: { Root: ddlRootvalues, Cycle: ddlCyclevalues, Address: null, ProjectID: projectId, installerId: installerid, fromDate: fromDate, toDate: toDate, includeSkip: incSkip },
+                                data: { Root: ddlRootvalues, Cycle: ddlCyclevalues, Address: null, ProjectID: projectId, installerId: installerid, fromDate: fromDate, toDate: toDate, includeSkip: incSkip, unAllocatedSkip: unAlloSkip },
                                 success: function (jsonResult) {
                                     if (jsonResult.success === undefined) {
 
@@ -3335,6 +3349,17 @@ function EditAllocation(data, cycle, routes) {
     }
     console.log("incSkip == " + incSkip);
 
+    debugger;
+    var unAlloSkip = "0";
+    if ($("#chkUnallocatedSkip").is(":checked")) {
+        console.log("checked ==> UnAllocated Skip");
+        unAlloSkip = "1";
+    }
+    else {
+        unAlloSkip = "0";
+    }
+    console.log("UnAllocated Skip == " + unAlloSkip);
+
     if (cycle != null) {
         // do stuff 
         $("#ulCycle li").filter(function () { return $(this).text() === cycle.trim(); }).addClass("ui-selected click-selected highlighted");
@@ -3454,7 +3479,7 @@ function EditAllocation(data, cycle, routes) {
                             async: true,
                             type: "POST",
                             dataType: "json",
-                            data: { Root: ddlRootvalues, Cycle: ddlCyclevalues, Address: null, ProjectID: projectId, installerId: installerid, fromDate: fromDate, toDate: toDate, includeSkip: incSkip },
+                            data: { Root: ddlRootvalues, Cycle: ddlCyclevalues, Address: null, ProjectID: projectId, installerId: installerid, fromDate: fromDate, toDate: toDate, includeSkip: incSkip, unAllocatedSkip: unAlloSkip },
                             success: function (jsonResult) {
                                 if (jsonResult.success === undefined) {
 
@@ -3814,12 +3839,163 @@ $('#chkIncludeSkip').change(function () {
     var fromDate = $('#datepicker1').val();
     var toDate = $('#datepicker2').val();
     var incSkip = "0";
-    if ($("#chkIncludeSkip").is(
-        ":checked")) {
+    if ($("#chkIncludeSkip").is(":checked"))
+    {
+        $('#chkUnallocatedSkip').prop('checked', false);
+        $('#chkUnallocatedSkip').attr('disabled', true);
         console.log("checked");
         incSkip = "1";
-    } else {
+    }
+    else
+    {
+        $('#chkUnallocatedSkip').attr('disabled', false);
         incSkip = "0";
+    }
+
+    debugger;
+    var unAlloSkip = "0";
+    if ($("#chkUnallocatedSkip").is(":checked"))
+    {
+        console.log("checked => UnAllocated Skip");
+        unAlloSkip = "1";
+
+    }
+    else
+    {
+        unAlloSkip = "0";
+    }
+    // getAddressList()
+
+    var projectId = $('#ddlProject').val();
+
+    var ddlRootvalues = [];
+    var value = $('#ulroute li.highlighted')
+    value.each(function (index, item) { ddlRootvalues.push($(this).val()) });
+
+
+    var ddlCyclevalues = [];
+    var cyclevalue = $('#ulCycle li.highlighted')
+    cyclevalue.each(function (index, item) { ddlCyclevalues.push($(this).text()) });
+
+
+    var urlStateData = $('#GetAddressUrl').val();
+    var installerid = $('#ddlInstaller').val();
+    var fromDate = $('#datepicker1').val();
+    var toDate = $('#datepicker2').val();
+
+
+    $('#ulAddress').empty();
+
+    if (ddlRootvalues != null && ddlRootvalues.length > 0) {
+        waitingDialog.show('Loading Please Wait...');
+
+        $.ajax({
+            url: urlStateData,
+            async: true,
+            type: "POST",
+            dataType: "json",
+            data: { Root: ddlRootvalues, Cycle: ddlCyclevalues, Address: null, ProjectID: projectId, installerId: installerid, fromDate: fromDate, toDate: toDate, includeSkip: incSkip, unAllocatedSkip: unAlloSkip },
+            success: function (jsonResult) {
+                if (jsonResult.success === undefined) {
+
+                    // here
+                    $('#ulAddress').empty();
+                    $.each(jsonResult.AllAddress, function (index, item) { $('#ulAddress').append($('<li></li>').val(item.ID).addClass("liAddress active-result").html(item.Street)); });
+
+                    $.each(jsonResult.InstallerAddress, function (index, item) {
+
+                        if (item.StreetDisabled == true) {
+
+                            $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted disabledli")
+                            //$("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted")
+                        }
+                        else if (item.Appointmentflag == "1") {
+                            $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted Appointmentdisabledli")
+                        }
+                        else {
+
+                            $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted ")
+                        }
+                    });
+
+
+                    //selectAddress()
+
+                    var selectedlivalue = $('#ulAddress li.highlighted').map(function (i, el) { return $(el)[0].value; });
+
+                    var selectedlilength = selectedlivalue.length;
+                    if (selectedlilength == 0) {
+                        $("#addrHeader").removeClass("ddlHeader").text("Select Address")
+                        $('#btnShowMap').prop("disabled", true);
+                        $('#btnSave').prop("disabled", false);
+                        $('#btnExport').prop("disabled", true);
+                    } else {
+                        $("#addrHeader").addClass("ddlHeader").text(selectedlilength + " Address Selected")
+                        $('#btnShowMap').prop("disabled", false);
+                        $('#btnSave').prop("disabled", false);
+                        $('#btnExport').prop("disabled", true);
+                    }
+                    debugger
+                    //#region SelectAll checked/unchecked
+                    if ($('#ulAddress .liAddress:visible').length > 0 && $('#ulAddress .highlighted:visible').length == $('#ulAddress .liAddress:visible').length) {
+                        $('#Address_SelectAll').prop('checked', true);
+                    } else {
+                        $('#Address_SelectAll').prop('checked', false);
+                    }
+
+
+                    waitingDialog.hide();
+                }
+                else {
+                    waitingDialog.hide();
+                    var $toast = toastr["error"](jsonResult.message, "Notification");
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                waitingDialog.hide();
+                var $toast = toastr["error"](textStatus + "</br>" + errorThrown, "Notification");
+                console.log('jqXHR:');
+                console.log(jqXHR);
+                console.log('textStatus:');
+                console.log(textStatus);
+                console.log('errorThrown:');
+                console.log(errorThrown);
+            }
+        });
+    }
+});
+
+$('#chkUnallocatedSkip').change(function () {
+    console.log('skip changed');
+    var ProjectID = $('#ddlProject').val();
+    var InstallerID = $('#ddlInstaller').val();
+    var fromDate = $('#datepicker1').val();
+    var toDate = $('#datepicker2').val();
+    var incSkip = "0";
+    if ($("#chkIncludeSkip").is(":checked"))
+    {
+        console.log("checked");
+        incSkip = "1";
+    }
+    else
+    {
+        incSkip = "0";
+    }
+
+    debugger;
+    var unAlloSkip = "0";
+    if ($("#chkUnallocatedSkip").is(":checked"))
+    {
+        $('#chkIncludeSkip').attr('checked', false);
+        $('#chkIncludeSkip').attr('disabled', true);
+        console.log("checked ==> UnAllocated Skip");
+        unAlloSkip = "1";
+    }
+    else
+    {
+        $('#chkIncludeSkip').attr('disabled', false);
+        unAlloSkip = "0";
     }
 
     // getAddressList()
@@ -3852,7 +4028,7 @@ $('#chkIncludeSkip').change(function () {
             async: true,
             type: "POST",
             dataType: "json",
-            data: { Root: ddlRootvalues, Cycle: ddlCyclevalues, Address: null, ProjectID: projectId, installerId: installerid, fromDate: fromDate, toDate: toDate, includeSkip: incSkip },
+            data: { Root: ddlRootvalues, Cycle: ddlCyclevalues, Address: null, ProjectID: projectId, installerId: installerid, fromDate: fromDate, toDate: toDate, includeSkip: incSkip, unAllocatedSkip: unAlloSkip },
             success: function (jsonResult) {
                 if (jsonResult.success === undefined) {
 
@@ -3991,6 +4167,15 @@ $("#btnCycleFilter").click(function () {
     } else {
         incSkip = "0";
     }
+    debugger;
+    var unAlloSkip = "0";
+    if ($("#chkUnallocatedSkip").is(":checked")) {
+        console.log("checked => UnAllocated Skip");
+        unAlloSkip = "1";
+    }
+    else {
+        unAlloSkip = "0";
+    }
 
     var cyclevalue = [];
     var value = $('#ulCycle li.highlighted');
@@ -4120,7 +4305,7 @@ $("#btnCycleFilter").click(function () {
                             type: "POST",
                             dataType: "json",
                             //data: { Root: Root, ProjectID: GlobalProjectID, InstallerID: installerid, selectedDate: selectedD },
-                            data: { Root: ddlRootvalues, Cycle: cyclevalue, Address: ddlAddressValueList, ProjectID: ProjectID, installerId: InstallerID, fromDate: selectedDate, toDate: toDate, includeSkip: incSkip },
+                            data: { Root: ddlRootvalues, Cycle: cyclevalue, Address: ddlAddressValueList, ProjectID: ProjectID, installerId: InstallerID, fromDate: selectedDate, toDate: toDate, includeSkip: incSkip, unAllocatedSkip: unAlloSkip },
                             success: function (jsonResult) {
 
                                 $('#ulAddress').empty();
@@ -4422,7 +4607,17 @@ $("#btnRouteFilter").click(function () {
         incSkip = "1";
     } else {
         incSkip = "0";
-    } 
+    }
+
+    debugger;
+    var unAlloSkip = "0";
+    if ($("#chkUnallocatedSkip").is(":checked")) {
+        console.log("checked => UnAllocated Skip");
+        unAlloSkip = "1";
+    }
+    else {
+        unAlloSkip = "0";
+    }
 
     $('#ulAddress').empty();
 
@@ -4434,7 +4629,7 @@ $("#btnRouteFilter").click(function () {
             type: "POST",
             dataType: "json",
             //data: { Root: Root, ProjectID: GlobalProjectID, InstallerID: installerid, selectedDate: selectedD },
-            data: { Root: ddlRootvalues, Cycle: ddlCyclevalues, Address: null, ProjectID: projectId, installerId: installerid, fromDate: fromDate, toDate: toDate, includeSkip: incSkip},
+            data: { Root: ddlRootvalues, Cycle: ddlCyclevalues, Address: null, ProjectID: projectId, installerId: installerid, fromDate: fromDate, toDate: toDate, includeSkip: incSkip, unAllocatedSkip: unAlloSkip },
             success: function (jsonResult) {
 
                 $('#ulAddress').empty();

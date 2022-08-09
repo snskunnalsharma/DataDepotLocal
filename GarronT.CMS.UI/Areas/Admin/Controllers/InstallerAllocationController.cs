@@ -84,7 +84,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             return base.PartialView("Partial_InstallerAllocation");
         }
 
-        public JsonResult GetAddress(List<string> Root, List<string> Cycle, List<string> Address, long ProjectID, string installerId, string fromDate, string toDate, string includeSkip)
+        public JsonResult old_GetAddress(List<string> Root, List<string> Cycle, List<string> Address, long ProjectID, string installerId, string fromDate, string toDate, string includeSkip)
         {
             try
             {
@@ -170,6 +170,99 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
         }
 
+        public JsonResult GetAddress(List<string> Root, List<string> Cycle, List<string> Address, long ProjectID, string installerId, string fromDate, string toDate, string includeSkip, string unAllocatedSkip)
+        {
+            try
+            {
+                List<AddressMaster> installerAddress = new List<AddressMaster>();
+                List<AddressMaster> list = new List<AddressMaster>();
+                bool status = true;
+                if (unAllocatedSkip != null && unAllocatedSkip.Equals("1"))
+                {
+                    list = new InstallerDAL().GetUnAllocatedSkipAllAddress(Root, Cycle, ProjectID);
+                    status = false;
+                }
+                if (status)
+                {
+                    list = new InstallerDAL().GetDynamicAllAddress(Root, Cycle, ProjectID);
+                    var userId = long.Parse(installerId);
+                    if (!string.IsNullOrEmpty(installerId))
+                    {
+                        // update excludeskip status for user
+                        CompassEntities db = new CompassEntities();
+                        var UserObj = db.tblUsers.Where(n => n.UserID == userId).FirstOrDefault();
+                        if (includeSkip != null && includeSkip.Equals("1"))
+                        {
+                            UserObj.ExcludeSkip = 0;
+                        }
+                        else
+                        {
+                            UserObj.ExcludeSkip = 1;
+                        }
+                        db.SaveChanges();
+                        // get existing mapped records.
+                        installerAddress = new InstallerDAL().GetDynamicInstallerExistingAddress(ProjectID, Root, Cycle, fromDate, toDate, long.Parse(installerId), includeSkip);
+
+                        if (list != null && list.Count > 0 && Address != null && Address.Count > 0)
+                        {
+                            var tempData = list.Where(o => Address.Contains(o.ID.ToString())).Select(o => new AddressMaster
+                            {
+                                Latitude = o.Latitude,
+                                Longitude = o.Longitude,
+                                ID = o.ID,
+                                Street = o.Street,
+                                Cycle = o.Cycle,
+                                Route = o.Route
+                            }).ToList();
+
+                            foreach (var item in tempData)
+                            {
+                                var checkPresent = installerAddress.Where(o => o.ID == item.ID).Count();
+                                if (checkPresent == 0)
+                                {
+                                    installerAddress.Add(item);
+                                }
+                            }
+                        }
+
+                    }
+                }
+                if ((list == null || list.Count == 0) && (installerAddress != null || installerAddress.Count > 0))
+                {
+                    list = installerAddress;
+                }
+                else
+                {
+                    if (installerAddress != null)
+                    {
+                        list.AddRange(installerAddress);
+                        list = list.OrderBy(a => a.Latitude).ThenBy(a => a.Longitude).ThenBy(a => a.Street).ToList();
+                    }
+                }
+
+                list = list.OrderBy(a => a.Street).ToList();    // Added new line because address order by street
+                JsonResult jsonResult = base.Json(new
+                {
+                    AllAddress = list,
+                    InstallerAddress = installerAddress
+                }, JsonRequestBehavior.AllowGet);
+                jsonResult.MaxJsonLength = new int?(2147483647);
+                return jsonResult;
+            }
+            catch (Exception ex)
+            {
+
+                // throw;
+                log.Info("InstallerAllocation  GetAddress ERROR at " + DateTime.Now.ToString());
+                log.Info("ERROR  ex.Message - " + (ex.Message != null ? ex.Message : ""));
+                log.Info("ERROR  ex.StackTrace - " + (ex.StackTrace != null ? ex.StackTrace : ""));
+                log.Info("ERROR  ex.InnerException.Message - " + (ex.InnerException.Message != null ? ex.InnerException.Message : ""));
+
+
+                return base.Json(new { success = false, message = "Server error." }, JsonRequestBehavior.AllowGet);
+            }
+
+        }
         [HttpGet]
         public JsonResult getCurrentInstallerList(long projectId)
         {
