@@ -1586,6 +1586,8 @@ $("#btnReset").click(function () {
         $("#ddlCycle1_chosen").toggleClass("chosen-with-drop chosen-container-active")
     }
 
+    $("#pIdHideShow").css("display", "none");
+
 })
 //#endregion
 
