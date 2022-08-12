@@ -352,11 +352,14 @@ namespace GarronT.CMS.Model.DAL
                 obj4.percentage = (int)Math.Round((double)(100 * RtuRecords) / TotalRecords);
                 list.Add(obj4);
 
-                CompletionModel obj5 = new CompletionModel();
-                obj5.Status = "UnAllocated Skip";
-                obj5.Installations = UnAllocatedSkip;
-                obj5.percentage = (int)Math.Round((double)(100 * UnAllocatedSkip) / TotalRecords);
-                list.Add(obj5);
+                if (projectID == 10085) // This changes chnage for TNMP Project
+                {
+                    CompletionModel obj5 = new CompletionModel();
+                    obj5.Status = "UnAllocated Skip";
+                    obj5.Installations = UnAllocatedSkip;
+                    obj5.percentage = (int)Math.Round((double)(100 * UnAllocatedSkip) / TotalRecords);
+                    list.Add(obj5);
+                }
 
             }
             catch (Exception ex)

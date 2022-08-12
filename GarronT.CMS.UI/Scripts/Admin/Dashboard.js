@@ -790,8 +790,12 @@ function CompletionvsPendingChart(projectID) {
                     dataPoints.push({ Installation: parseInt(data[i].Installations), y: parseInt(data[i].percentage), legendText: data[i].Status, color: "Blue", markerBorderThickness: 2 });
                 if (data[i].Status == "Not Allocated")
                     dataPoints.push({ Installation: parseInt(data[i].Installations), y: parseInt(data[i].percentage), legendText: data[i].Status, color: "Grey", markerBorderThickness: 2 });
-                if (data[i].Status == "UnAllocated Skip")
-                    dataPoints.push({ Installation: parseInt(data[i].Installations), y: parseInt(data[i].percentage), legendText: data[i].Status, color: "Ash Gray", markerBorderThickness: 2 });
+
+                if (projectID == 10085) {
+                    if (data[i].Status == "UnAllocated Skip") {
+                        dataPoints.push({ Installation: parseInt(data[i].Installations), y: parseInt(data[i].percentage), legendText: data[i].Status, color: "Black", markerBorderThickness: 2 });
+                    }
+                }
             }
 
             var chart = new CanvasJS.Chart("chartContainer", {

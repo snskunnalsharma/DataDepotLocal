@@ -6873,6 +6873,7 @@
                     <Property Type="Int64" Name="CompletedRecords" Nullable="true" />
                     <Property Type="Int64" Name="SkippedRecords" Nullable="true" />
                     <Property Type="Int64" Name="RtuRecords" Nullable="true" />
+                    <Property Type="Int64" Name="UnAllocatedSkip" Nullable="true" />
                 </ComplexType>
                 <ComplexType Name="PROC_Dashboard_InstallationsPerInstaller_Result">
                     <Property Type="Int64" Name="InstallerId" Nullable="true" />
@@ -11898,6 +11899,7 @@
                                 <ScalarProperty Name="CompletedRecords" ColumnName="CompletedRecords" />
                                 <ScalarProperty Name="SkippedRecords" ColumnName="SkippedRecords" />
                                 <ScalarProperty Name="RtuRecords" ColumnName="RtuRecords" />
+                                <ScalarProperty Name="UnAllocatedSkip" ColumnName="UnAllocatedSkip" />
                             </ComplexTypeMapping>
                         </ResultMapping>
                     </FunctionImportMapping>
