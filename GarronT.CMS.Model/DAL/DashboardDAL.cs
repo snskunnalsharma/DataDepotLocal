@@ -309,7 +309,7 @@ namespace GarronT.CMS.Model.DAL
             try
             {
                 CompassEntities objCompassEntities = new CompassEntities();
-
+                
                 var result = objCompassEntities.PROC_Dashboard_CompVsPendingChart(projectID, 2).FirstOrDefault();
 
 
@@ -320,6 +320,7 @@ namespace GarronT.CMS.Model.DAL
                 int CompletedRecords = result.CompletedRecords != null ? Convert.ToInt32(result.CompletedRecords) : 0;
                 int TotalRecords = result.TotalRecords != null ? Convert.ToInt32(result.TotalRecords) : 0;
                 int PendingRecords = MappedRecords - (CompletedRecords + SkippedRecords + RtuRecords);
+                int UnAllocatedSkip = result.UnAllocatedSkip != null ? Convert.ToInt32(result.UnAllocatedSkip) : 0;
                 CompletionModel obj = new CompletionModel();
                 obj.Status = "Completed";
                 obj.Installations = CompletedRecords;
@@ -350,6 +351,12 @@ namespace GarronT.CMS.Model.DAL
                 obj4.Installations = RtuRecords;
                 obj4.percentage = (int)Math.Round((double)(100 * RtuRecords) / TotalRecords);
                 list.Add(obj4);
+
+                CompletionModel obj5 = new CompletionModel();
+                obj5.Status = "UnAllocated Skip";
+                obj5.Installations = UnAllocatedSkip;
+                obj5.percentage = (int)Math.Round((double)(100 * UnAllocatedSkip) / TotalRecords);
+                list.Add(obj5);
 
             }
             catch (Exception ex)

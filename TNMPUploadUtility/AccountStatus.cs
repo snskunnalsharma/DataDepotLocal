@@ -29,8 +29,8 @@ namespace TNMPUploadUtility
                                            InstallerId = pf.InstallerId
                                        }).Distinct().ToList();
 
-                ErrorLogFile.writeStatus("Geted Skipped Count " + SkippedDataList.Count() + "- " + DateTime.Now.ToShortTimeString());
-                Console.WriteLine("Geted Skipped Count " + SkippedDataList.Count() + "");
+                ErrorLogFile.writeStatus("Geted Skipped Count - " + SkippedDataList.Count() + "- " + DateTime.Now.ToShortTimeString());
+                Console.WriteLine("Geted Skipped Count - " + SkippedDataList.Count() + "");
                 int i = 0;
                 foreach (var item in SkippedDataList)
                 {
@@ -82,6 +82,10 @@ namespace TNMPUploadUtility
 
                             flag = false;
                         }
+                        ErrorLogFile.writeStatus("Skip Account Moved To UnAllocate Excel Id - " + itemRow.FK_UploadedExcelData_Id + " - " + DateTime.Now.ToShortTimeString());
+                        //Console.WriteLine("Skip Account Moved To UnAllocate Excel Id - " + itemRow.FK_UploadedExcelData_Id + "");
+                        ErrorLogFile.writeStatus("TblProjectFieldData Id - " + itemRow.ID + " - " + DateTime.Now.ToShortTimeString());
+                        //Console.WriteLine("TblProjectFieldData Id - " + itemRow.ID + "");
                         #endregion
                     }
                     var objIMD = dbcontext.tblInstallerMapDatas.Where(o => o.FK_UploadedExcelData_Id == item.AccountId && o.Active == 1 && o.InstallerId == item.InstallerId).ToList();
@@ -92,11 +96,15 @@ namespace TNMPUploadUtility
                         objItemRow.MobileResponse = null;
                         objItemRow.ModifiedOn = new CommonFunctions().ServerDate();
                         dbcontext.SaveChanges();
+                        ErrorLogFile.writeStatus("TblInstallerMapData Id - " + objItemRow.ID + " - " + DateTime.Now.ToShortTimeString());
+                        //Console.WriteLine("TblInstallerMapData Id - " + objItemRow.ID + "");
                     }
                     i++;
+                    ErrorLogFile.writeStatus("Number of account moved to UnAllocate Count:- " + i + "- " + DateTime.Now.ToShortTimeString());
+                    //Console.WriteLine("Number of account moved to UnAllocate Count:- " + i + "");
                 }
-                ErrorLogFile.writeStatus("Number of account moved to UnAllocate Count:- " + i + "- " + DateTime.Now.ToShortTimeString());
-                Console.WriteLine("Number of account moved to UnAllocate Count:- " + i + "");
+                ErrorLogFile.writeStatus("Total Number of account moved to UnAllocate Count:- " + i + "- " + DateTime.Now.ToShortTimeString());
+                Console.WriteLine("Total Number of account moved to UnAllocate Count:- " + i + "");
                 return true;
                 #endregion
             }

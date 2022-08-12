@@ -22,5 +22,6 @@ namespace GarronT.CMS.Model
         public Nullable<long> CompletedRecords { get; set; }
         public Nullable<long> SkippedRecords { get; set; }
         public Nullable<long> RtuRecords { get; set; }
+        public Nullable<long> UnAllocatedSkip { get; set; }
     }
 }
