@@ -2801,6 +2801,9 @@ namespace GarronT.CMS.Model.DAL
                                         objMapVisits.cycle = cycleRoute.cycle;
                                         objMapVisits.route = cycleRoute.route;
                                         objMapVisits.classification = cycleRoute.classification;
+                                        objMapVisits.skipInstallerName = item1["InstallerName"].ToString();
+                                        objMapVisits.skippedReason = item1["SkippedReason"].ToString();
+                                        objMapVisits.skipComments = item1["SkipComment"].ToString();
                                         objListMapVisits.Add(objMapVisits);
 
                                         #endregion
@@ -2874,7 +2877,9 @@ namespace GarronT.CMS.Model.DAL
                                         objMapVisits.cycle = cycleRoute.cycle;
                                         objMapVisits.route = cycleRoute.route;
                                         objMapVisits.classification = cycleRoute.classification;
-
+                                        objMapVisits.skipInstallerName = item1["InstallerName"].ToString();
+                                        objMapVisits.skippedReason = item1["SkippedReason"].ToString();
+                                        objMapVisits.skipComments = item1["SkipComment"].ToString();
 
                                         var _totalAccount = currentProData.AsEnumerable().Where(o => o.Field<string>("AddressLatitude") == item1["AddressLatitude"].ToString() &&
                                               o.Field<string>("AddressLongitude") == item1["AddressLongitude"].ToString()

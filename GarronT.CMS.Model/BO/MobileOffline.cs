@@ -651,6 +651,9 @@ namespace GarronT.CMS.Model.BO
         public string cycle { get; set; }
         public string route { get; set; }
         public string classification { get; set; }
+        public string skipInstallerName { get; set; }
+        public string skippedReason { get; set; }
+        public string skipComments { get; set; }
 
     }
 
