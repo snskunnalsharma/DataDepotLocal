@@ -579,7 +579,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 }
                 else if (StatusList != null)  // If visit status  selected
                 {
-                    if (StatusList.Contains("PENDING") || StatusList.Contains("NOT ALLOCATED"))
+                    //if (StatusList.Contains("PENDING") || StatusList.Contains("NOT ALLOCATED"))
+                    if (StatusList.Contains("PENDING") || StatusList.Contains("NOT ALLOCATED") || StatusList.Contains("UNALLOCATED SKIP"))
                     {
                         List<STP_GetReportTableNew_bak_Result> Result1 = new List<STP_GetReportTableNew_bak_Result>();
 
@@ -592,7 +593,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                                 var Result3 = Result1.Where(a => !string.IsNullOrEmpty(a.Dates)
                                     && Convert.ToDateTime(a.Dates).Date >= fd1.Date && Convert.ToDateTime(a.Dates).Date <= to1.Date
                                     && a.CategoryType != "PENDING").ToList();
-                                var Result2 = Result1.Where(n => n.CategoryType == "PENDING" || n.CategoryType == "NOT ALLOCATED").ToList();
+                                //var Result2 = Result1.Where(n => n.CategoryType == "PENDING" || n.CategoryType == "NOT ALLOCATED").ToList();
+                                var Result2 = Result1.Where(n => n.CategoryType == "PENDING" || n.CategoryType == "NOT ALLOCATED" || n.CategoryType == "UNALLOCATED SKIP").ToList();
                                 demo.AddRange(Result3);
                                 demo.AddRange(Result2);
                                 var routes = demo.Select(d => d.Route).Distinct();
@@ -600,8 +602,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         }
                         else
                         {
-
-                            var Result2 = Result1.Where(n => n.CategoryType == "PENDING" || n.CategoryType == "NOT ALLOCATED").ToList();
+                            //var Result2 = Result1.Where(n => n.CategoryType == "PENDING" || n.CategoryType == "NOT ALLOCATED").ToList();
+                            var Result2 = Result1.Where(n => n.CategoryType == "PENDING" || n.CategoryType == "NOT ALLOCATED" || n.CategoryType == "UNALLOCATED SKIP").ToList();
                             demo.AddRange(Result2);
                         }
 
@@ -648,6 +650,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     list.Add("RTU");
                     list.Add("PENDING");
                     list.Add("NOT ALLOCATED");
+                    list.Add("UNALLOCATED SKIP");
 
                     StatusList = list;
 
@@ -657,7 +660,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         {
                             var Result3 = Result1.Where(a => !string.IsNullOrEmpty(a.Dates)
                                 && Convert.ToDateTime(a.Dates).Date >= fd1.Date && Convert.ToDateTime(a.Dates).Date <= to1.Date && a.CategoryType != "PENDING").ToList();
-                            var Result2 = Result1.Where(n => n.CategoryType == "PENDING" || n.CategoryType == "NOT ALLOCATED").ToList();
+                            //var Result2 = Result1.Where(n => n.CategoryType == "PENDING" || n.CategoryType == "NOT ALLOCATED").ToList();
+                            var Result2 = Result1.Where(n => n.CategoryType == "PENDING" || n.CategoryType == "NOT ALLOCATED" || n.CategoryType == "UNALLOCATED SKIP").ToList();
                             demo.AddRange(Result3);
                             demo.AddRange(Result2);
                         }
@@ -665,7 +669,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     else
                     {
 
-                        var Result2 = Result1.Where(n => n.CategoryType == "PENDING" || n.CategoryType == "NOT ALLOCATED").ToList();
+                        //var Result2 = Result1.Where(n => n.CategoryType == "PENDING" || n.CategoryType == "NOT ALLOCATED").ToList();
+                        var Result2 = Result1.Where(n => n.CategoryType == "PENDING" || n.CategoryType == "NOT ALLOCATED" || n.CategoryType == "UNALLOCATED SKIP").ToList();
                         demo.AddRange(Result2);
                     }
 
