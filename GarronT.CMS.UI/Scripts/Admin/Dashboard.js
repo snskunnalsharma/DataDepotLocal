@@ -782,20 +782,20 @@ function CompletionvsPendingChart(projectID) {
             for (var i = 0; i <= data.length - 1; i++) {
                 if (data[i].Status == "Completed")
                     dataPoints.push({ Installation: parseInt(data[i].Installations), y: parseInt(data[i].percentage), legendText: data[i].Status, color: "Green", markerBorderThickness: 2 });
+                if (data[i].Status == "RTU")
+                    dataPoints.push({ Installation: parseInt(data[i].Installations), y: parseInt(data[i].percentage), legendText: data[i].Status, color: "Red", markerBorderThickness: 2 });
+                if (data[i].Status == "Skipped")
+                    dataPoints.push({ Installation: parseInt(data[i].Installations), y: parseInt(data[i].percentage), legendText: data[i].Status, color: "Yellow", markerBorderThickness: 2 });
+                if (data[i].Status == "Pending")
+                    dataPoints.push({ Installation: parseInt(data[i].Installations), y: parseInt(data[i].percentage), legendText: data[i].Status, color: "Blue", markerBorderThickness: 2 });
                 if (data[i].Status == "Not Allocated")
                     dataPoints.push({ Installation: parseInt(data[i].Installations), y: parseInt(data[i].percentage), legendText: data[i].Status, color: "Grey", markerBorderThickness: 2 });
+
                 if (projectID == 10085) {
                     if (data[i].Status == "UnAllocated Skip") {
                         dataPoints.push({ Installation: parseInt(data[i].Installations), y: parseInt(data[i].percentage), legendText: data[i].Status, color: "Black", markerBorderThickness: 2 });
                     }
                 }
-                if (data[i].Status == "Pending")
-                    dataPoints.push({ Installation: parseInt(data[i].Installations), y: parseInt(data[i].percentage), legendText: data[i].Status, color: "Blue", markerBorderThickness: 2 });
-                if (data[i].Status == "Skipped")
-                    dataPoints.push({ Installation: parseInt(data[i].Installations), y: parseInt(data[i].percentage), legendText: data[i].Status, color: "Yellow", markerBorderThickness: 2 });
-                if (data[i].Status == "RTU")
-                    dataPoints.push({ Installation: parseInt(data[i].Installations), y: parseInt(data[i].percentage), legendText: data[i].Status, color: "Red", markerBorderThickness: 2 });
-
             }
 
             var chart = new CanvasJS.Chart("chartContainer", {
