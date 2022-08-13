@@ -2803,7 +2803,9 @@ namespace GarronT.CMS.Model.DAL
                                         objMapVisits.classification = cycleRoute.classification;
                                         objMapVisits.skipInstallerName = item1["InstallerName"].ToString();
                                         objMapVisits.skippedReason = item1["SkippedReason"].ToString();
-                                        objMapVisits.skipComments = item1["SkipComment"].ToString();
+                                        string skipComments = item1["SkipComment"].ToString();
+                                        skipComments = skipComments.Replace("Optional(\"", "").Replace("\")", "").Replace("\"\"","");
+                                        objMapVisits.skipComments = skipComments;
                                         objListMapVisits.Add(objMapVisits);
 
                                         #endregion
@@ -2879,7 +2881,10 @@ namespace GarronT.CMS.Model.DAL
                                         objMapVisits.classification = cycleRoute.classification;
                                         objMapVisits.skipInstallerName = item1["InstallerName"].ToString();
                                         objMapVisits.skippedReason = item1["SkippedReason"].ToString();
-                                        objMapVisits.skipComments = item1["SkipComment"].ToString();
+                                        string skipComments = item1["SkipComment"].ToString();
+                                        skipComments = skipComments.Replace("Optional(\"", "").Replace("\")", "").Replace("\"\"", "");
+                                        objMapVisits.skipComments = skipComments;
+                                        //objMapVisits.skipComments = item1["SkipComment"].ToString();
 
                                         var _totalAccount = currentProData.AsEnumerable().Where(o => o.Field<string>("AddressLatitude") == item1["AddressLatitude"].ToString() &&
                                               o.Field<string>("AddressLongitude") == item1["AddressLongitude"].ToString()
