@@ -351,6 +351,7 @@ function GetStatusList() {
         { ID: "RTU", ProjectStatus: "RTU" },
         { ID: "PENDING", ProjectStatus: "PENDING" },
         { ID: "NOT ALLOCATED", ProjectStatus: "NOT ALLOCATED" },
+        { ID: "UNALLOCATED SKIP", ProjectStatus: "UNALLOCATED SKIP" },
     ]
 
 
