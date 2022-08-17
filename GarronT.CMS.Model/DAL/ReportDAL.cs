@@ -223,20 +223,22 @@ namespace GarronT.CMS.Model.DAL
 
         }
 
-        public DetailsAll detailsOfProjetcs(long userId, long ProjectId, long formId)
+        public DetailsAll detailsOfProjetcs(long userId, long ProjectId, long formId,long uploadId)
         {
-            CompassEntities cmp = new CompassEntities();
+            CompassEntities cmp = new CompassEntities(); //CustomerAddress
 
             var formRecord = cmp.tblFormMasters.Where(o => o.FormId == formId).FirstOrDefault();
             var projectRecord = cmp.tblProjects.Where(o => o.ProjectId == ProjectId).FirstOrDefault();
             var installerRecord = cmp.tblUsers.Where(o => o.UserID == userId).FirstOrDefault();
-
+            var customerAddress = cmp.UploadedExcelDatas.Where(o => o.Id == uploadId).FirstOrDefault();
 
             DetailsAll prodetails = new DetailsAll
             {
                 FromName = formRecord.FormName,
                 ProjectName = projectRecord.ProjectName,
-                InstallerName = (installerRecord.FirstName + " " + installerRecord.LastName)
+                InstallerName = (installerRecord.FirstName + " " + installerRecord.LastName),
+                CustomerAddress = customerAddress.Street12,
+                UtilityType=projectRecord.Utilitytype
             };
             //List<DetailsAll> prodetails = (from b in cmp.tblProjects.AsNoTracking()
             //                               join d in cmp.tblFormMasters.AsNoTracking() on b.ProjectId equals d.ProjectId
