@@ -99,7 +99,10 @@ function SectionShowData() {
 
                     $("#ProjectName").html(msg.Details1.ProjectName);
                     $("#InstallerName").html(msg.Details1.InstallerName);
-                    $("#FormName").html(msg.Details1.FromName);
+                    //$("#FormName").html(msg.Details1.FromName);
+
+                    var b = msg.htmlData1;
+                    $("#FormName_and_CustomerAdd").append(b);
 
                 }
                 else {
