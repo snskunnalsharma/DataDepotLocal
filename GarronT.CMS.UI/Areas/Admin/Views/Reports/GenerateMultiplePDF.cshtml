@@ -150,9 +150,9 @@
                                                             <td width='25%' class='FieldNametd'><span>Installer Name</span><br /><span class="fieldvalue">@System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((SingleReport.InstallerName.ToLower()))</span></td>
                                                             <td width='25%' class='FieldNametd'><span>Service Date</span><br /><span class="fieldvalue">@DateTime.Parse(SingleReport.VisitedDate.ToString()).ToString("MMM-dd-yyyy HH:mm")</span></td>
                                                             @*<td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>*@
-                                                            @if (@ViewBag.UtilityType == "Electric")  // Only for electricty projects
+                                                            @if (SingleReport.UtilityType == "Electric")  // Only for electricty projects
                                                             {
-                                                                <td width='25%' class='FieldNametd'><span>Customer Address</span><br /><span class="fieldvalue">@ViewBag.customerAddress</span></td>
+                                                                <td width='25%' class='FieldNametd'><span>Customer Address</span><br /><span class="fieldvalue">@System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((SingleReport.CustomerAddress))</span></td>
                                                             }
                                                             else
                                                             {
