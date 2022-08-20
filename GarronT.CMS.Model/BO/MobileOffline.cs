@@ -719,11 +719,9 @@ namespace GarronT.CMS.Model.BO
         public long uploadId { get; set; }
         public string visitDateTime { get; set; }
         public string visitExpiryDateTime { get; set; }
-
-
-
-
-
+        public string skipInstallerName { get; set; }
+        public string skippedReason { get; set; }
+        public string skipComments { get; set; }
     }
     #endregion
 }

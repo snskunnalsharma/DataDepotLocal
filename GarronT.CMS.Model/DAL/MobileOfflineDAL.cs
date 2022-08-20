@@ -2470,6 +2470,11 @@ namespace GarronT.CMS.Model.DAL
                                                 objAccounts.uploadId = (long)row1["Id"];
 
                                                 objAccounts.visitDateTime = visitDate;
+                                                objAccounts.skipInstallerName = row1["InstallerName"].ToString();
+                                                objAccounts.skippedReason = row1["SkippedReason"].ToString();
+                                                string skipComments = row1["SkipComment"].ToString();
+                                                skipComments = skipComments.Replace("Optional(\"", "").Replace("\")", "").Replace("\"\"", "");
+                                                objAccounts.skipComments = skipComments;
 
                                                 List<Forms3> objListForms = new List<Forms3>();
 

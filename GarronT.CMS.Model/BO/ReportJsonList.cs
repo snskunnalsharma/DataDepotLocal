@@ -238,6 +238,7 @@ namespace GarronT.CMS.Model.BO
         public string CategoryType { get; set; }
         public string MeterSize { get; set; }
         public string NewMeterName { get; set; }
+        public string OldMeterRadioNumber { get; set; } //for Electric project AMP
         public string ToDate { get; set; }
     }
 
@@ -254,6 +255,7 @@ namespace GarronT.CMS.Model.BO
     public class SummaryDetail
     {
         public string METERSIZE { get; set; }
+        public string AMP { get; set; }
         public int TOTALCOUNT { get; set; }
     }
 
