@@ -211,6 +211,8 @@ namespace GarronT.CMS.Model.BO
         public ReportSkipRTUModel skipRtuRecordModel { get; set; }
         public long ProjectId { get; set; }
         public string MeterAfterBeforeBoxDiffTime { get; set; }
+        public string CustomerAddress { get; set; }
+        public string UtilityType { get; set; }
     }
 
 

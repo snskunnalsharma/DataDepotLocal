@@ -27,6 +27,8 @@ namespace GarronT.CMS.Model.BO
         public string FromName { get; set; }
         public string InstallerName { get; set; }
         public string AuditorName { get; set; }
+        public string CustomerAddress { get; set; }
+        public string UtilityType { get; set; }
 
     }
     public class ImageandServicesName

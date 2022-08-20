@@ -917,6 +917,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 string _avClass = "";
                 int i = 1;
                 StringBuilder htmlData = new StringBuilder();
+                StringBuilder htmlData1 = new StringBuilder();
 
                 // newReportEditBO obj1 = (newReportEditBO)Session["objnewReportEditBO"];
                 newReportEditBO obj1 = new newReportEditBO { accountinifiledId = uploadId, projectId1 = projectId, userId1 = userId, reportFormId = reportFormId };
@@ -925,8 +926,19 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 List<SectionList> Ids = new List<SectionList>();
                 // long accountinifiledId = accountinifiledId;
 
-                var Details = new ReportDAL().detailsOfProjetcs(obj1.userId1, obj1.projectId1, obj1.reportFormId);
+                var Details = new ReportDAL().detailsOfProjetcs(obj1.userId1, obj1.projectId1, obj1.reportFormId, uploadId);
                 // Session["Details"] = Details;
+                
+                if (Details.UtilityType == "Electric")
+                {
+                    htmlData1.Append("<div class='col-lg-4 col-sm-4 rp-hd' style='text-align:center'><label class='repfrm-lab'><b> Customer Address</b></label><div id='FormName' class='FormName rep-proj-nm'>" + Details.CustomerAddress + "</div></div>");
+                }
+                else
+                {
+                    htmlData1.Append("<div class='col-lg-4 col-sm-4 rp-hd' style='text-align:center'><label class='repfrm-lab'><b> Form Name</b></label><div id='FormName' class='FormName rep-proj-nm'>" + Details.FromName + "</div></div>");
+                }
+                string objStr = htmlData1.ToString();
+                
 
                 //Session["accountinifiledId"] = obj1.accountinifiledId;
                 MobileDAL objMobile = new MobileDAL();
@@ -1532,7 +1544,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 htmlData.Append("</div>");
 
                 string _result = htmlData.ToString();
-                var jsonResult = Json(new { status = true, htmlData = _result, Details1 = Details }, JsonRequestBehavior.AllowGet);
+                var jsonResult = Json(new { status = true, htmlData = _result, Details1 = Details, htmlData1 = objStr }, JsonRequestBehavior.AllowGet);
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
 
@@ -2521,9 +2533,14 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 @ViewBag.ProjectDate = reportheader.ProjectDate;
                 @ViewBag.InstallerName = reportheader.InstallerName;
 
-                // Meter Box Time Calculation Code
+                // Get customer address
                 CompassEntities objCompassEntities = new CompassEntities();
+                var customerAddress = objCompassEntities.UploadedExcelDatas.Where(o => o.Id == ID && o.Active == 1).Select(o => o.Street12).FirstOrDefault();
+                @ViewBag.customerAddress= customerAddress;
+                // Meter Box Time Calculation Code
                 var proId = objCompassEntities.UploadedExcelDatas.Where(o => o.Id == ID && o.Active == 1).Select(o => o.FKProjectId).FirstOrDefault();
+                var utilityType = objCompassEntities.tblProjects.Where(o => o.ProjectId == proId && o.Active == 1).Select(o => o.Utilitytype).FirstOrDefault();
+                @ViewBag.UtilityType = utilityType;
                 TimeSpan diff = new TimeSpan();
                 string hh = "";
                 string mm = "";
@@ -2696,9 +2713,14 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 @ViewBag.ProjectDate = Convert.ToDateTime(reportheader.visiteddate).ToString("MMM-dd-yyyy hh:mm tt");
                 @ViewBag.InstallerName = reportheader.firstname;
 
-                // Meter Box Time Calculation Code
+                // Get customer address
                 CompassEntities objCompassEntities = new CompassEntities();
+                var customerAddress = objCompassEntities.UploadedExcelDatas.Where(o => o.Id == ID && o.Active == 1).Select(o => o.Street12).FirstOrDefault();
+                @ViewBag.customerAddress = customerAddress;
+                // Meter Box Time Calculation Code
                 var proId = objCompassEntities.UploadedExcelDatas.Where(o => o.Id == ID && o.Active == 1).Select(o => o.FKProjectId).FirstOrDefault();
+                var utilityType = objCompassEntities.tblProjects.Where(o => o.ProjectId == proId && o.Active == 1).Select(o => o.Utilitytype).FirstOrDefault();
+                @ViewBag.UtilityType = utilityType;
                 TimeSpan diff = new TimeSpan();
                 @ViewBag.ProjectId = proId;
                 if (proId == 10075) // Only for Garland Project
@@ -2906,8 +2928,10 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         reportPDFVM.FormID = ReportRow.FormID;
                         reportPDFVM.UploadID = ReportRow.UploadedID;
                         long projectId;
-                        reportPDFVM.MeterAfterBeforeBoxDiffTime = meterBox(ReportRow.UploadedID, list,out projectId);
+                        reportPDFVM.MeterAfterBeforeBoxDiffTime = meterBox(ReportRow.UploadedID, list,out projectId,out string customerAddress, out string utilityType);
                         reportPDFVM.ProjectId = projectId;
+                        reportPDFVM.CustomerAddress = customerAddress;
+                        reportPDFVM.UtilityType = utilityType;
                     }
                     else if (ReportRow.CategoryType == "RTU" || ReportRow.CategoryType == "SKIP")
                     {
@@ -2928,14 +2952,17 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             }
         }
 
-        public string meterBox(long ID, List<sectionfiledval> list,out long projectId)
+        public string meterBox(long ID, List<sectionfiledval> list,out long projectId,out string customerAddress, out string utilityType)
         {
             // Meter Box Time Calculation Code
             CompassEntities objCompassEntities = new CompassEntities();
-            var proId = objCompassEntities.UploadedExcelDatas.Where(o => o.Id == ID && o.Active == 1).Select(o => o.FKProjectId).FirstOrDefault();
-            projectId = proId;
+            //var proId = objCompassEntities.UploadedExcelDatas.Where(o => o.Id == ID && o.Active == 1).Select(o => o.FKProjectId).FirstOrDefault();
+            var accountDetail = objCompassEntities.UploadedExcelDatas.Where(o => o.Id == ID && o.Active == 1).FirstOrDefault();
+            projectId = accountDetail.FKProjectId;
+            customerAddress = accountDetail.Street12;
+            utilityType = objCompassEntities.tblProjects.Where(o => o.ProjectId == accountDetail.FKProjectId && o.Active == 1).Select(o => o.Utilitytype).FirstOrDefault();
             TimeSpan diff = new TimeSpan();
-            if (proId == 10075) // Only for Garland Project
+            if (accountDetail.FKProjectId == 10075) // Only for Garland Project
             {
                 string beforeTime = string.Empty;
                 string afterTime = string.Empty;
@@ -3060,8 +3087,10 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         reportPDFVM.UploadID = ReportRow.UploadedID;
                         reportPDFVM.sectionfiledval = list;
                         long projectId;
-                        reportPDFVM.MeterAfterBeforeBoxDiffTime = meterBox(ReportRow.UploadedID, list, out projectId);
+                        reportPDFVM.MeterAfterBeforeBoxDiffTime = meterBox(ReportRow.UploadedID, list, out projectId, out string customerAddress, out string utilityType);
                         reportPDFVM.ProjectId = projectId;
+                        reportPDFVM.CustomerAddress = customerAddress;
+                        reportPDFVM.UtilityType = utilityType;
                     }
                     else if (ReportRow.CategoryType == "RTU" || ReportRow.CategoryType == "SKIP")
                     {
