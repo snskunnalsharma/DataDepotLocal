@@ -119,7 +119,7 @@ namespace TNMPUploadUtility
     }
 
     class SkippedList
-    {
+    { 
         public long AccountId { get; set; }
         public long InstallerId { set; get; }
     }

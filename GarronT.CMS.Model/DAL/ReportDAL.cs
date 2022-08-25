@@ -2941,11 +2941,12 @@ namespace GarronT.CMS.Model.DAL
                         Dates = Convert.ToString(reader["Dates"]),
                         CategoryType = Convert.ToString(reader["CategoryType"]),
                         MeterSize = Convert.ToString(reader["OldMeterSize"]),
+                        OldMeterRadioNumber = Convert.ToString(reader["OldMeterRadioNumber"]),
                         NewMeterName = Convert.ToString(reader["NewMeterName"]),
                         ToDate = Convert.ToString(reader["ToDate"])
                     });
                 }
-
+                var utilityType = CompassEntities.tblProjects.Where(a => a.ProjectId == ProjectId).Select(o => o.Utilitytype).FirstOrDefault();
                 List<AccountSummaryReportJson> objAccountSummaryReportJson = new List<AccountSummaryReportJson>();
 
                 DateTime serverDate = new CommonFunctions().ServerDate();
@@ -3007,34 +3008,43 @@ namespace GarronT.CMS.Model.DAL
                     }
                 );*/
                 //add complete and pending summary detail
+                var completeDetail = new AccountSummaryReportList();
+                var pendingDetail = new AccountSummaryReportList();
+                var moreDetail = new AccountSummaryReportList();
+                if ("Electric".Equals(utilityType))
+                {
+                    completeDetail.SummaryDetail = List.Where(a => a.CategoryType == "COMPLETED").GroupBy(o => new { o.OldMeterRadioNumber}).Select(o =>
+                        new SummaryDetail { METERSIZE = o.Key.OldMeterRadioNumber, AMP = "", TOTALCOUNT = o.Count() }).ToList();
+                    pendingDetail.SummaryDetail = List.Where(a => Convert.ToDateTime(a.ToDate) >= currentDate && a.CategoryType == "PENDING").GroupBy(o => new {  o.OldMeterRadioNumber }).Select(o =>
+                        new SummaryDetail { METERSIZE = o.Key.OldMeterRadioNumber, AMP = "", TOTALCOUNT = o.Count() }).ToList();
+                    moreDetail.SummaryDetail = List.Where(a => !string.IsNullOrEmpty(a.Dates) && Convert.ToDateTime(a.Dates).Date == fd1.Date && a.CategoryType == "COMPLETED").GroupBy(o => new {  o.OldMeterRadioNumber }).Select(o =>
+                        new SummaryDetail { METERSIZE = o.Key.OldMeterRadioNumber, AMP = "", TOTALCOUNT = o.Count() }).ToList();
+                }
+                else
+                {
+                    completeDetail.SummaryDetail = List.Where(a => a.CategoryType == "COMPLETED").GroupBy(o => o.NewMeterName).Select(o =>
+                        new SummaryDetail { METERSIZE = o.Key, AMP = "", TOTALCOUNT = o.Count() }).ToList();
+                    pendingDetail.SummaryDetail = List.Where(a => Convert.ToDateTime(a.ToDate) >= currentDate && a.CategoryType == "PENDING").GroupBy(o => o.MeterSize).Select(o =>
+                        new SummaryDetail { METERSIZE = o.Key, AMP = "", TOTALCOUNT = o.Count() }).ToList();
+                    moreDetail.SummaryDetail = List.Where(a => !string.IsNullOrEmpty(a.Dates) && Convert.ToDateTime(a.Dates).Date == fd1.Date && a.CategoryType == "COMPLETED").GroupBy(o => o.NewMeterName).Select(o =>
+                        new SummaryDetail { METERSIZE = o.Key, AMP = "", TOTALCOUNT = o.Count() }).ToList();
+                }
                 objAccountSummaryReportJson.Add(new AccountSummaryReportJson
                 {
                     summaryType = "Complete Detail",
-                    records = (new AccountSummaryReportList
-                    {
-                        SummaryDetail = List.Where(a => a.CategoryType == "COMPLETED").GroupBy(o => o.NewMeterName).Select(o =>
-                        new SummaryDetail { METERSIZE = o.Key, TOTALCOUNT = o.Count() }).ToList()
-                    })
+                    records = completeDetail
                 });
                 objAccountSummaryReportJson.Add(new AccountSummaryReportJson
-                {
+                {   
                     summaryType = "Pending Detail",
-                    records = (new AccountSummaryReportList
-                    {
-                        SummaryDetail = List.Where(a => Convert.ToDateTime(a.ToDate) >= currentDate && a.CategoryType == "PENDING").GroupBy(o => o.MeterSize).Select(o =>
-                        new SummaryDetail { METERSIZE = o.Key, TOTALCOUNT = o.Count() }).ToList()
-                    })
+                    records = pendingDetail
 
                 });
                 //var categories = new string[] { "COMPLETED", "SKIP", "RTU" };
                 objAccountSummaryReportJson.Add(new AccountSummaryReportJson
                 {
                     summaryType = "More Detail",
-                    records = (new AccountSummaryReportList
-                    {
-                        SummaryDetail = List.Where(a => !string.IsNullOrEmpty(a.Dates) && Convert.ToDateTime(a.Dates).Date == fd1.Date && a.CategoryType == "COMPLETED").GroupBy(o => o.NewMeterName).Select(o =>
-                        new SummaryDetail { METERSIZE = o.Key, TOTALCOUNT = o.Count() }).ToList()
-                    })
+                    records = moreDetail
 
                 });
                 return objAccountSummaryReportJson;
