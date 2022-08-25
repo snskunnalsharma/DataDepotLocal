@@ -45,7 +45,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public ActionResult GetInstMapHistoryList(long projectID, long installerID)
+        public ActionResult GetInstMapHistoryList(long projectID, long installerID, string SkipReason,string FromDate,string ToDate)
         {
             bool success = false;
             string returnMessage = "";
@@ -56,7 +56,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 using (InstallerMapHistoryDAL objInstallerMapHistoryDAL = new InstallerMapHistoryDAL())
                 {
                     //get skip records submitted from mobile app.
-                    installerMapHistoryList = objInstallerMapHistoryDAL.GetInstallerMapHistoryList(projectID, installerID);
+                    installerMapHistoryList = objInstallerMapHistoryDAL.GetInstallerMapHistoryList(projectID, installerID, SkipReason, FromDate, ToDate);
                 }
                 success = true;
             }
