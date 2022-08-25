@@ -3013,12 +3013,12 @@ namespace GarronT.CMS.Model.DAL
                 var moreDetail = new AccountSummaryReportList();
                 if ("Electric".Equals(utilityType))
                 {
-                    completeDetail.SummaryDetail = List.Where(a => a.CategoryType == "COMPLETED").GroupBy(o => new { o.NewMeterName, o.OldMeterRadioNumber}).Select(o =>
-                        new SummaryDetail { METERSIZE = o.Key.NewMeterName, AMP = o.Key.OldMeterRadioNumber, TOTALCOUNT = o.Count() }).ToList();
-                    pendingDetail.SummaryDetail = List.Where(a => Convert.ToDateTime(a.ToDate) >= currentDate && a.CategoryType == "PENDING").GroupBy(o => new { o.MeterSize, o.OldMeterRadioNumber }).Select(o =>
-                        new SummaryDetail { METERSIZE = o.Key.MeterSize, AMP = o.Key.OldMeterRadioNumber, TOTALCOUNT = o.Count() }).ToList();
-                    moreDetail.SummaryDetail = List.Where(a => !string.IsNullOrEmpty(a.Dates) && Convert.ToDateTime(a.Dates).Date == fd1.Date && a.CategoryType == "COMPLETED").GroupBy(o => new { o.NewMeterName, o.OldMeterRadioNumber }).Select(o =>
-                        new SummaryDetail { METERSIZE = o.Key.NewMeterName, AMP = o.Key.OldMeterRadioNumber, TOTALCOUNT = o.Count() }).ToList();
+                    completeDetail.SummaryDetail = List.Where(a => a.CategoryType == "COMPLETED").GroupBy(o => new { o.OldMeterRadioNumber}).Select(o =>
+                        new SummaryDetail { METERSIZE = o.Key.OldMeterRadioNumber, AMP = "", TOTALCOUNT = o.Count() }).ToList();
+                    pendingDetail.SummaryDetail = List.Where(a => Convert.ToDateTime(a.ToDate) >= currentDate && a.CategoryType == "PENDING").GroupBy(o => new {  o.OldMeterRadioNumber }).Select(o =>
+                        new SummaryDetail { METERSIZE = o.Key.OldMeterRadioNumber, AMP = "", TOTALCOUNT = o.Count() }).ToList();
+                    moreDetail.SummaryDetail = List.Where(a => !string.IsNullOrEmpty(a.Dates) && Convert.ToDateTime(a.Dates).Date == fd1.Date && a.CategoryType == "COMPLETED").GroupBy(o => new {  o.OldMeterRadioNumber }).Select(o =>
+                        new SummaryDetail { METERSIZE = o.Key.OldMeterRadioNumber, AMP = "", TOTALCOUNT = o.Count() }).ToList();
                 }
                 else
                 {
