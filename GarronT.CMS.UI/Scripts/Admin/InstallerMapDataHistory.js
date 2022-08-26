@@ -236,6 +236,16 @@ function ShowDataInTable(varData) {
         debugger;
     });
 }
+$("#filter").on("keyup", function () {
+    var value = $(this).val().toLowerCase();
+    $("#dynamic-table-detail-data > tbody > tr").filter(function () {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+});
+$('#btnCompleteCancel').click(function () {
+    $('#viewTable').empty();
+    $("#skipAccountHistoryDetailModal").modal('hide');
+});
 
 //end hare
 //#region --Project Status Select Function--
