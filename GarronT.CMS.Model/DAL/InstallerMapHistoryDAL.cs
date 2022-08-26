@@ -162,7 +162,7 @@ namespace GarronT.CMS.Model.DAL
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Connection = sqlConnection;
             cmd.Parameters.AddWithValue("@ProjectId", ProjectId);
-            //cmd.Parameters.AddWithValue("@AccountId", AccountId);
+            cmd.Parameters.AddWithValue("@AccountId", AccountId);
             cmd.Parameters.AddWithValue("@AccountNo", AccountNo);
             sqlConnection.Open();
 
