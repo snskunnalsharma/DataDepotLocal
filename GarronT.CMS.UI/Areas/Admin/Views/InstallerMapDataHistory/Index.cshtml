@@ -9,11 +9,796 @@
 
 @Html.Hidden("urlStoreSkippedID", Url.Action("StoreSkippedID", "InstallerMapDataHistory"))
 @Html.Hidden("urlViewMultiSkippedRecords", Url.Action("ViewMultiSkippedRecords", "InstallerMapDataHistory"))
+@Html.Hidden("urlGetSkipAccountDetail", Url.Action("GetSkipAccountDetail", "InstallerMapDataHistory"))
 <style>
-    .instal-dat-hist{
-        margin-top:50px;
+    .instal-dat-hist {
+        margin-top: 50px;
+    }
+</style>
+<style>
+    .disabledli {
+        pointer-events: none;
+        opacity: 0.4;
     }
 
+    .disable_a_href {
+        pointer-events: none;
+    }
+
+    .chosen-results .ui-selected {
+        background-color: #3875d7;
+        background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, #3875d7), color-stop(90%, #2a62bc));
+        background-image: -webkit-linear-gradient(#3875d7 20%, #2a62bc 90%);
+        background-image: -moz-linear-gradient(#3875d7 20%, #2a62bc 90%);
+        background-image: -o-linear-gradient(#3875d7 20%, #2a62bc 90%);
+        background-image: linear-gradient(#3875d7 20%, #2a62bc 90%);
+        color: #fff;
+    }
+
+    .chosen-results .ui-selecting {
+        background-color: #3875d7;
+        background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, #3875d7), color-stop(90%, #2a62bc));
+        background-image: -webkit-linear-gradient(#3875d7 20%, #2a62bc 90%);
+        background-image: -moz-linear-gradient(#3875d7 20%, #2a62bc 90%);
+        background-image: -o-linear-gradient(#3875d7 20%, #2a62bc 90%);
+        background-image: linear-gradient(#3875d7 20%, #2a62bc 90%);
+        color: #fff;
+    }
+
+    .chosen-results {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+    }
+
+        .chosen-results li {
+            margin-bottom: 1px;
+            padding: 5px;
+        }
+
+    .addrFilter {
+        padding: 5px;
+        margin: 0px;
+    }
+
+    .ddlHeader {
+        color: #444;
+    }
+
+
+    ul.source, ul.target, ul.colName {
+        min-height: 500px;
+        margin: 0px 25px 10px 0px;
+        padding: 2px;
+        border-width: 1px;
+        border-style: solid;
+        -webkit-border-radius: 3px;
+        -moz-border-radius: 3px;
+        border-radius: 3px;
+        list-style-type: none;
+        list-style-position: inside;
+        /*width: 20em;*/
+    }
+
+    ul.source {
+        border-color: #f8e0b1;
+    }
+
+    ul.target, ul.colName {
+        border-color: #add38d;
+    }
+
+    .source li, .target li, .colName li {
+        margin: 2px;
+        padding: 8px 0px !important;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        border-radius: 4px;
+        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+        /*height: 2.5em;*/
+    }
+
+    .source li {
+        background-color: #fcf8e3;
+        border: 1px solid #fbeed5;
+        color: #c09853;
+    }
+
+    .target li, .colName li {
+        background-color: #ebf5e6;
+        border: 1px solid #d6e9c6;
+        color: #468847;
+    }
+
+    .sortable-dragging {
+        border-color: #ccc !important;
+        background-color: #fafafa !important;
+        color: #bbb !important;
+    }
+
+    .sortable-placeholder {
+        height: 40px;
+    }
+
+    .source .sortable-placeholder {
+        border: 2px dashed #f8e0b1 !important;
+        background-color: #fefcf5 !important;
+    }
+
+    .target .sortable-placeholder {
+        border: 2px dashed #add38d !important;
+        background-color: #f6fbf4 !important;
+    }
+
+    .toast-top-center {
+        margin-top: -50px;
+    }
+
+    .sideBySide {
+        margin-top: 14px;
+    }
+
+    .exp-src {
+        text-align: center;
+    }
+
+    .exp-rep {
+        text-align: center;
+    }
+</style>
+
+<style>
+    /********************************** IPHONE 5S PORTRAIT***************/
+    @@media (max-width:320px) {
+        .source li, .target li {
+            padding: 2px;
+            height: auto;
+        }
+
+        .rep_date {
+            margin-bottom: 5%;
+            margin-top: -3%;
+            margin-right: 8%;
+        }
+
+        .rep_date_inp {
+        }
+
+        .rep_todate {
+            margin-bottom: 5%;
+            margin-top: -3%;
+            margin-left: 12%;
+            margin-right: -10%;
+        }
+    }
+    /********************************** End IPHONE 5S PORTRAIT***************/
+
+    @@media only screen and (min-width: 321px) and (max-width: 359px) {
+        .source li, .target li {
+            padding: 2px;
+            height: auto;
+        }
+
+        .rep_date {
+            margin-bottom: 5%;
+            margin-top: -3%;
+            margin-right: 8%;
+        }
+
+        .rep_date_inp {
+        }
+
+        .rep_todate {
+            margin-bottom: 5%;
+            margin-top: -3%;
+            margin-left: 12%;
+            margin-right: -10%;
+        }
+    }
+
+    @@media only screen and (min-width: 360px) and (max-width: 410px) {
+        .source li, .target li {
+            padding: 2px;
+            height: auto;
+        }
+
+        .rep_date {
+            margin-bottom: 5%;
+            margin-top: -3%;
+            margin-right: 8%;
+        }
+
+        .rep_date_inp {
+        }
+
+        .rep_todate {
+            margin-bottom: 5%;
+            margin-top: -3%;
+            margin-left: 11%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+        }
+    }
+
+    @@media only screen and (min-width: 411px) and (max-width: 420px) {
+        .source li, .target li {
+            padding: 2px;
+            height: auto;
+        }
+
+        .rep_date {
+            margin-bottom: 5%;
+            margin-top: -3%;
+            margin-right: 8%;
+        }
+
+        .rep_date_inp {
+        }
+
+        .rep_todate {
+            margin-bottom: 5%;
+            margin-top: -3%;
+            margin-left: 11%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+        }
+    }
+
+    @@media only screen and (min-width: 421px) and (max-width: 430px) {
+        .source li, .target li {
+            padding: 2px;
+            height: auto;
+        }
+
+        .rep_date {
+            margin-bottom: 3%;
+            margin-top: -5%;
+            margin-right: 8%;
+        }
+
+        .rep_date_inp {
+        }
+
+        .rep_todate {
+            margin-bottom: 3%;
+            margin-top: -5%;
+            margin-left: 11%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+        }
+    }
+
+    @@media only screen and (min-width: 431px) and (max-width: 479px) {
+        .source li, .target li {
+            padding: 2px;
+            height: auto;
+        }
+
+        .rep_date {
+            margin-bottom: 5%;
+            margin-top: -9%;
+            margin-right: -4%;
+            margin-left: 20%;
+        }
+
+        .rep_date_inp {
+            width: 150%;
+        }
+
+        .rep_todate {
+            /*margin-bottom: 5%;
+                margin-top: -3%;*/
+            margin-left: 65%;
+            margin-right: -90%;
+        }
+
+        .rep_todate_inp {
+            width: 150%;
+        }
+    }
+
+    @@media only screen and (min-width: 480px) and (max-width: 530px) and (orientation:portrait) {
+        .source li, .target li {
+            padding: 2px;
+            height: auto;
+        }
+
+        .rep_date {
+            margin-bottom: 5%;
+            margin-top: -8%;
+            margin-right: 0%;
+            margin-left: 19%;
+        }
+
+        .rep_date_inp {
+            width: 150%;
+        }
+
+        .rep_todate {
+            margin-bottom: 7%;
+            margin-top: -16%;
+            margin-left: 129%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+            width: 150%;
+        }
+    }
+
+    @@media only screen and (min-width: 480px) and (max-width: 530px) and (orientation:landscape) {
+        .source li, .target li {
+            padding: 2px;
+            height: auto;
+        }
+
+        .rep_date {
+            margin-bottom: 5%;
+            margin-top: -8%;
+            margin-right: 0%;
+            margin-left: 19%;
+        }
+
+        .rep_date_inp {
+            width: 150%;
+        }
+
+        .rep_todate {
+            margin-bottom: 7%;
+            margin-top: -16%;
+            margin-left: 129%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+            width: 150%;
+        }
+
+        #ui-datepicker-div {
+            margin-top: 9%;
+        }
+    }
+    /*****************************Ihone 5s landscape************************************/
+    @@media only screen and (min-width:531px)and (max-width:567px) and (orientation:landscape) {
+        .source li, .target li {
+            padding: 2px;
+            height: auto;
+        }
+
+        .rep_date {
+            margin-bottom: 5%;
+            margin-top: -8%;
+            margin-right: 0%;
+            margin-left: 19%;
+        }
+
+        .rep_date_inp {
+            width: 150%;
+        }
+
+        .rep_todate {
+            margin-bottom: 7%;
+            margin-top: -16%;
+            margin-left: 129%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+            width: 150%;
+        }
+    }
+
+    @@media only screen and (min-width:531px)and (max-width:567px) and (orientation:portrait) {
+        .source li, .target li {
+            padding: 2px;
+            height: auto;
+        }
+
+        .rep_date {
+            margin-bottom: 5%;
+            margin-top: -6%;
+            margin-right: 0%;
+            margin-left: 19%;
+        }
+
+        .rep_date_inp {
+            width: 150%;
+        }
+
+        .rep_todate {
+            margin-top: -16%;
+            margin-left: 126%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+            width: 150%;
+            margin-top: 1%;
+        }
+    }
+    /*****************************End Ihone 5s landscape************************************/
+
+    @@media only screen and (min-width:568px)and (max-width:599px) {
+        .source li, .target li {
+            padding: 2px;
+            height: auto;
+        }
+
+        .rep_date {
+            margin-bottom: 5%;
+            margin-top: -8%;
+            margin-right: 0%;
+            margin-left: 23%;
+        }
+
+        .rep_date_inp {
+            width: 150%;
+        }
+
+        .rep_todate {
+            margin-bottom: 7%;
+            margin-top: -16%;
+            margin-left: 127%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+            width: 150%;
+        }
+
+        #ui-datepicker-div {
+            margin-top: 9%;
+        }
+    }
+
+    @@media only screen and (min-width:600px)and (max-width:640px) and (orientation:landscape) {
+        .source li, .target li {
+            padding: 2px;
+            height: auto;
+        }
+
+        .rep_date {
+            margin-bottom: 5%;
+            margin-top: -4%;
+            margin-right: 0%;
+            margin-left: 22%;
+        }
+
+        .rep_date_inp {
+            width: 150%;
+        }
+
+        .rep_todate {
+            margin-bottom: 5%;
+            margin-top: -13%;
+            margin-left: 125%;
+            margin-right: -12%;
+        }
+
+        .rep_todate_inp {
+            width: 150%;
+        }
+
+        #ui-datepicker-div {
+            margin-top: 9%;
+        }
+    }
+
+    @@media only screen and (min-width:600px)and (max-width:640px) and (orientation:portrait) {
+        .source li, .target li {
+            padding: 2px;
+            height: auto;
+        }
+
+        .rep_date {
+            margin-bottom: 5%;
+            margin-top: -4%;
+            margin-right: 0%;
+            margin-left: 19%;
+        }
+
+        .rep_date_inp {
+            width: 150%;
+        }
+
+        .rep_todate {
+            margin-bottom: 5%;
+            margin-top: -14%;
+            margin-left: 122%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+            width: 150%;
+        }
+    }
+
+    @@media only screen and (min-width:641px)and (max-width:719px) {
+        .source li, .target li {
+            padding: 2px;
+            height: auto;
+        }
+
+        .rep_date {
+            margin-bottom: 5%;
+            margin-top: -4%;
+            margin-right: 0%;
+            margin-left: 28%;
+        }
+
+        .rep_date_inp {
+            width: 150%;
+        }
+
+        .rep_todate {
+            margin-bottom: 5%;
+            margin-top: -13%;
+            margin-left: 132%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+            width: 150%;
+        }
+
+        #ui-datepicker-div {
+            margin-top: 9%;
+        }
+    }
+
+    @@media only screen and (min-width:720px)and (max-width:767px) {
+        .rep_date {
+            margin-bottom: 5%;
+            margin-top: -4%;
+            margin-right: 0%;
+            margin-left: 22%;
+        }
+
+        .rep_date_inp {
+            width: 150%;
+        }
+
+        .rep_todate {
+            margin-bottom: 5%;
+            margin-top: -12%;
+            margin-left: 122%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+            width: 150%;
+        }
+
+        #ui-datepicker-div {
+            margin-top: 9%;
+        }
+    }
+
+    @@media only screen and (min-width:430px)and (max-width:767px) {
+    }
+
+
+
+
+
+
+    @@media only screen and (min-width:768px)and (max-width:799px) {
+        .source li, .target li {
+            padding: 2px;
+            height: auto;
+        }
+
+        .rep_date {
+            margin-bottom: 5%;
+            margin-top: -4%;
+            margin-right: 0%;
+            margin-left: 18%;
+        }
+
+        .rep_date_inp {
+            width: 130%;
+        }
+
+        .rep_todate {
+            margin-bottom: 5%;
+            margin-top: -12%;
+            margin-left: 127%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+            width: 130%;
+        }
+    }
+
+    @@media only screen and (min-width:800px)and (max-width:840px) {
+        .rep_date {
+        }
+
+        .rep_date_inp {
+            width: 111%;
+        }
+
+        .rep_todate {
+            /*margin-bottom: 5%;
+                   margin-top: -12%;*/
+            margin-right: -10%;
+            margin-left: 4%;
+        }
+
+        .rep_todate_inp {
+            width: 111%;
+        }
+    }
+
+    @@media only screen and (min-width:841px) and (max-width:919px)and (orientation:landscape) {
+        .div-rep-date {
+            width: 40%;
+            margin-left: 8%;
+        }
+
+        .rep_date {
+            /*margin-bottom: 5%;
+                   margin-top: -4%;
+                   margin-right: 0%;
+                   margin-left: 22%;*/
+        }
+
+        .rep_date_inp {
+            width: 100%;
+        }
+
+        .rep_todate {
+            /*margin-bottom: 5%;
+                   margin-top: -12%;*/
+            /*margin-right: -10%;*/
+            margin-left: 4%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+            width: 100%;
+        }
+
+        #ui-datepicker-div {
+            /*margin-top: 9%;*/
+        }
+    }
+
+    @@media only screen and (min-width:841px) and (max-width:919px) and (orientation:portrait) {
+        .div-rep-date {
+            width: 40%;
+        }
+
+        .rep_date {
+            /*margin-bottom: 5%;
+                   margin-top: -4%;
+                   margin-right: 0%;
+                   margin-left: 22%;*/
+        }
+
+        .rep_date_inp {
+            width: 100%;
+        }
+
+        .rep_todate {
+            /*margin-bottom: 5%;
+                   margin-top: -12%;*/
+            /*margin-right: -10%;*/
+            margin-left: 4%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+            width: 100%;
+        }
+
+        #ui-datepicker-div {
+            /*margin-top: 9%;*/
+        }
+    }
+
+    @@media only screen and (min-width:920px)and (max-width:967px) {
+        .div-rep-date {
+            width: 40%;
+            margin-left: 8%;
+        }
+
+        .rep_date {
+            /*margin-bottom: 5%;
+                   margin-top: -4%;
+                   margin-right: 0%;
+                   margin-left: 22%;*/
+        }
+
+        .rep_date_inp {
+            width: 100%;
+        }
+
+        .rep_todate {
+            /*margin-bottom: 5%;
+                   margin-top: -12%;*/
+            /*margin-right: -10%;*/
+            margin-left: 4%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+            width: 100%;
+        }
+
+        #ui-datepicker-div {
+            /*margin-top: 9%;*/
+        }
+    }
+
+
+    @@media only screen and (min-width:968px)and (max-width:1023px) {
+        .div-rep-date {
+            width: 40%;
+            margin-left: 8%;
+        }
+
+        .rep_date {
+            /*margin-bottom: 5%;
+                   margin-top: -4%;
+                   margin-right: 0%;
+                   margin-left: 22%;*/
+        }
+
+        .rep_date_inp {
+            width: 100%;
+        }
+
+        .rep_todate {
+            /*margin-bottom: 5%;
+                   margin-top: -12%;*/
+            /*margin-right: -10%;*/
+            margin-left: 4%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+            width: 100%;
+        }
+    }
+
+    @@media only screen and (min-width:1024px) and (max-width:1100px) {
+        .div-rep-date {
+            width: 40%;
+            margin-left: 8%;
+        }
+
+        .rep_date {
+            /*margin-bottom: 5%;
+                   margin-top: -4%;
+                   margin-right: 0%;
+                   margin-left: 22%;*/
+        }
+
+        .rep_date_inp {
+            width: 100%;
+        }
+
+        .rep_todate {
+            /*margin-bottom: 5%;
+                   margin-top: -12%;*/
+            /*margin-right: -10%;*/
+            margin-left: 4%;
+            margin-right: -10%;
+        }
+
+        .rep_todate_inp {
+            width: 100%;
+        }
+    }
 </style>
 <!-- page start-->
 <section id="main-content">
@@ -27,7 +812,7 @@
                     </header>
                     <div class="row" style="">
                         <div class="col-lg-12">
-                            <div class="container-fluid con_fluid_new">
+                            <div class="container-fluid con_fluid_new" style="padding:0px">
                                 <div class="panel-body">
                                     <div class="row" style="margin-bottom: 5px;">
                                         <div class="form-group">
@@ -43,42 +828,57 @@
                                                 <select id="ddlProject" data-placeholder="Select Project" class="form-control chosen-select "></select>
                                             </div>
 
+                                            <div class="col-lg-3 col-sm-6 col-xs-12 div-rep-date">
+                                                <div class="form-group col-lg-6 col-sm-6 col-xs-5 rep_date">
+                                                    <input type="text" name="FromDates" id="datepicker1" readonly="readonly" class="form-control rep_date_inp">
+                                                </div>
+                                                <div class="form-group col-lg-6 col-sm-6 col-xs-5 rep_date rep_todate ">
+                                                    <input type="text" name="ToDates" id="datepicker2" readonly="readonly" class="rep_todate_inp form-control">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 reasgn_bx1">
+                                                <select id="ddlSkipReason" data-placeholder="Skip Reason" class="form-control chosen-select ">
+                                                    <option value="0"></option>
+                                                    <option value="1">Current Skip</option>
+                                                    <option value="2">Past Skip</option>
+                                                    <option value="3">UnAllocated Skip</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-bottom: 5px;">
+                                        <div class="form-group">
                                             <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 reasgn_bx3">
                                                 <select id="ddlInstaller" data-placeholder="Select Installer" class="form-control chosen-select"></select>
                                             </div>
 
-                                            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 reasgn-bx4">
+                                            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 reasgn-bx4" style="margin-top:10px;width:220px;margin-left:126px">
                                                 <button id="btnSearch" class="btn btn-warning reasgn-srch-btn" type="button" style="background-color:green;border-color:green;">Search</button>
-                                                <button id="btnReset" class="btn btn-warning reasgn-res-btn" type="button" style="background-color:grey;border-color:grey;">Reset</button>
+                                                <button id="btnReset" class="btn btn-warning reasgn-res-btn" type="button" style="background-color:red;border-color:grey;">Reset</button>
+                                                <button id="btnSearch" class="btn btn-warning reasgn-srch-btn" type="button" style="background-color:green;border-color:green;">Export</button>
                                             </div>
-                                            @*<div class="col-lg-3 col-md-3 col-sm-10 col-xs-12 bx3">
-                                                <button id="btnSearch" class="btn btn-warning exp-sv-btn " type="button" style="background-color:green;border-color:green;">Search</button>
-                                            </div>
-                                            <div class="col-lg-3 col-md-3 col-sm-10 col-xs-12 bx4">
-                                                <button id="btnReset" class="btn btn-warning exp-sv-btn " type="button" style="background-color:grey;border-color:grey;">Reset</button>
-                                            </div>*@
                                         </div>
-
                                     </div>
-                                    <div class="table-responsive col-lg-12 rep_dyn_table">
+                                    <div class="table-responsive col-lg-12 rep_dyn_table" style="padding:0px">
                                         <table id="dynamic-table" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
                                             <thead>
                                                 <tr>
-                                                    <th width="15%">Visited Date</th>
-                                                    <th width="">Project Name</th>
-                                                    <th width="">Installer Name</th>
-                                                    <th width="">Account</th>
-                                                    <th width="">Street</th>
-                                                    <th width="">Cycle</th>
-                                                    <th width="">Route</th>
-                                                    <th width="">Skipped Reason</th>
-                                                    <th width="">Skip Comment</th>
-                                                    <th width="">Action</th>
+                                                    <th width="12%">Visited Date</th>
+                                                    <th width="10%">Project Name</th>
+                                                    <th width="8%">Installer Name</th>
+                                                    <th width="10%">Account</th>
+                                                    <th width="15%">Street</th>
+                                                    <th width="7%">Cycle</th>
+                                                    <th width="5%">Route</th>
+                                                    <th width="13%">Skipped Reason</th>
+                                                    <th width="15%">Skip Comment</th>
+                                                    <th width="5%">Action</th>
                                                 </tr>
                                             </thead>
                                         </table>
                                     </div>
-                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -87,6 +887,64 @@
         </div>
     </section>
 </section>
-<!-- page end-->
 
+<!-- Model for Skip Accopunt History Detail -->
+@*<div class="modal fade modal-dialog-center" id="skipAccountHistoryDetailModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">*@
+<div class="modal fade" id="skipAccountHistoryDetailModal" role="dialog" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md rep-mod vertical-scroll" style="width: 75%; height: 550px; overflow: scroll; overflow: auto;margin-top:180px">
+        <div class="modal-content-wrap">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><strong>Skip Account History Detail</strong></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="panel-body">
+                        <div class="table-responsive  rep_dyn_table" id="inventryReceiveDiv112">
+                            <div class="iconic-input">
+                                <div class="col-lg-12 col-md-6 col-xs-12  nopadding_header">
+                                    <p style="float: right;">
+                                        <i class="fa fa-search"></i>
+                                        <input type="text" id="filter" placeholder="search" class="form-control" aria-controls="dynamic-table-summary" maxlength="50">
+                                    </p>
+                                </div>
+                            </div>
+                            <table id="dynamic-table-detail-data" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                                <thead>
+                                    <tr>
+                                        <th width="10%">Account No</th>
+                                        <th width="13%">Customer Address</th>
+                                        <th width="7%">Cycle</th>
+                                        <th width="5%">Route</th>
+                                        <th width="7%">Installer Name</th>
+                                        <th width="5%">Assigned User</th>
+                                        <th width="10%">Action Date</th>
+                                        <th width="5%">Status</th>
+                                        <th width="18%">Skipped Reason</th>
+                                        <th width="20%">Skip Comment</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="viewTable">
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12 btn-reopn" style="text-align:center;">
+                                @*<button id="btnCompleteTransfer" class="btn btn-success" type="button">Complete Transfer</button>*@
+                                <button class="btn btn-danger" id="btnCompleteCancel" type="button">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- MOdel -->
+<!-- page end-->
+<link href="~/jquery-confirm-master/css/jquery-confirm.css" rel="stylesheet" />
+<script src="~/jquery-confirm-master/js/jquery-confirm.js"></script>
+<link href="~/Scripts/js/style.css" rel="stylesheet" />
+<link href="~/Scripts/js/jquery-ui.css" rel="stylesheet" />
+<script src="~/Scripts/js/jquery-ui.js"></script>
 <script src='@Url.Content("~/Scripts/Admin/InstallerMapDataHistory.js")'></script>
