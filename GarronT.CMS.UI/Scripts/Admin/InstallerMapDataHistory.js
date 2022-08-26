@@ -133,14 +133,14 @@ function LoadActiveTable() {
                                                   { "bSearchable": false, "mData": null },
                                ],
                                "aoColumnDefs": [
-                                                                      {
-                                                                          "mRender": function (data, type, full, row) {
-                                                                              return '<a href="' + urlViewMultiSkippedRecords + "/" + full.ProjectFieldDataId + '" id=' + full.ProjectFieldDataId + ' target="_blank" title="View" >  <i class="fa fa-file-text"></i></a>';
-
-                                                                              //return '<a href="#" id=' + full.ID + '  onclick="window.open("<%= Url.Action("ViewSkippedRecords", "InstallerMapDataHistory", new { id = ' + full.ID + ' } ) %>", "_blank"); return false;"  title="View" >  <i class="fa fa-file-text"></i></a>';
-                                                                          },
-                                                                          "aTargets": [9]
-                                                                      }
+                                                    {
+                                                        "mRender": function (data, type, full, row) {
+                                                            //return '<a href="' + urlViewMultiSkippedRecords + "/" + full.ProjectFieldDataId + '" id=' + full.ProjectFieldDataId + ' target="_blank" title="View" >  <i class="fa fa-file-text"></i></a>';
+                                                            return '<a  id=' + full.WarehouseId + ' onclick="showDetail(' + _projectID + ',' + full.ID + ',\'' + full.Account + '\');" class="btn btn-primary btn-xs" role="button" alt="Skip Account History" title="Inventory Transfer"><i class="fa fa-history"></i></a>';
+                                                            //return '<a href="#" id=' + full.ID + '  onclick="window.open("<%= Url.Action("ViewSkippedRecords",  "InstallerMapDataHistory", new { id = ' + full.ID + ' } ) %>", "_blank"); return false;"  title="View" >  <i class="fa fa-file-text"></i></a>';
+                                                        },
+                                                        "aTargets": [9]
+                                                    }
                                ],
 
                            }
@@ -168,6 +168,76 @@ function LoadActiveTable() {
 }
 //#endregion
 
+// Load data in Model Skip account detail 
+function showDetail(projectID, AccountId, AccountNo) {
+    var _projectID = $('#ddlProject').val();
+    debugger;
+    waitingDialog.show('Loading Please Wait...');
+    var urlGetSkipAccountDetail = $("#urlGetSkipAccountDetail").val();
+    $.ajax({
+        type: 'POST',
+        url: urlGetSkipAccountDetail,
+        async: true,
+        data: { ProjectId: _projectID, AccountId: AccountId, AccountNo: AccountNo},
+        success: function (data) {
+            waitingDialog.hide();
+            if (data.success == "false") {
+                var $toast = toastr["error"](data.ErrorMessage, "Notification");
+            }
+            else {
+                debugger;
+                if (data.objSkipAccountDetailLIst != null) {
+                    $("#skipAccountHistoryDetailModal").modal({
+                        show: true,
+                        backdrop: 'static',
+                        keyboard: true
+                    });
+                    debugger;
+                    ShowDataInTable(data.objSkipAccountDetailLIst);
+                }
+                else {
+                    var $toast = toastr["error"]("No Account History Available", "Notification");
+                }
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            waitingDialog.hide();
+            console.log("error " + textStatus);
+            console.log("incoming Text " + jqXHR.responseText);
+            var $toast = toastr["error"]("something seems wrong", "Notification");
+        }
+
+    })
+}
+
+function ShowDataInTable(varData) {
+    debugger;
+    console.log(varData);
+
+    debugger;
+    $('#viewTable').empty();
+    $.each(varData, function (index, value) {
+        debugger;
+
+        $('#viewTable').append(
+            '<tr>' +
+            '<td>' + value.AccountNo + '</td>' +
+            '<td>' + value.CustomerAddress + '</td>' +
+            '<td>' + value.Cycle + '</td>' +
+            '<td>' + value.Route + '</td>' +
+            '<td>' + value.InstallerName + '</td>' +
+            '<td>' + value.AssignedUser + '</td>' +
+            '<td>' + value.ActionDate + '</td>' +
+            '<td>' + value.Status + '</td>' +
+            '<td>' + value.SkippedReason + '</td>' +
+            '<td>' + value.SkipComment + '</td>' +
+            '</tr>'
+        );
+        debugger;
+    });
+}
+
+//end hare
 //#region --Project Status Select Function--
 $('#ddlProjectStatus').change(function () {
 

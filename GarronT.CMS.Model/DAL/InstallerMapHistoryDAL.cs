@@ -150,6 +150,43 @@ namespace GarronT.CMS.Model.DAL
         }
 
 
+        public List<SkipAccountDetailModel> getSkipAccountHistorySummary(long ProjectId, long AccountId, string AccountNo)
+        {
+            List<SkipAccountDetailModel> objList = new List<SkipAccountDetailModel>();
+            CompassEntities compassEntities = new CompassEntities();
+            SqlConnection sqlConnection = new SqlConnection(compassEntities.Database.Connection.ConnectionString);
+            SqlCommand cmd = new SqlCommand();
+            SqlDataReader reader;
+            
+            cmd.CommandText = "PROC_GetAccountSkipHistory";
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Connection = sqlConnection;
+            cmd.Parameters.AddWithValue("@ProjectId", ProjectId);
+            //cmd.Parameters.AddWithValue("@AccountId", AccountId);
+            cmd.Parameters.AddWithValue("@AccountNo", AccountNo);
+            sqlConnection.Open();
+
+            reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                objList.Add(new SkipAccountDetailModel
+                {
+                    AccountNo = Convert.ToString(reader["Account No"]),
+                    CustomerAddress = Convert.ToString(reader["Customer Address"]),
+                    Cycle = Convert.ToString(reader["Cycle"]),
+                    Route = Convert.ToString(reader["Route"]),
+                    InstallerName = Convert.ToString(reader["Installer Name"]),
+                    AssignedUser = Convert.ToString(reader["assignedUser"]),
+                    ActionDate = Convert.ToString(reader["Action Date"]),
+                    Status= Convert.ToString(reader["Status"]),
+                    SkippedReason= Convert.ToString(reader["Skipped Reason"]),
+                    SkipComment = Convert.ToString(reader["Skip Comment"])
+                });
+            }
+            return objList;
+        }
+
+
         //Created by Sominath to get Skipped  records by FK_UploadedDataID and Project ID on Date 25/11/2016
         public List<InstallerMapHistoryVM> GetAllInstallerMapHistoryList(long projectID, long installerID)
         {

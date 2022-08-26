@@ -9,6 +9,7 @@
 
 @Html.Hidden("urlStoreSkippedID", Url.Action("StoreSkippedID", "InstallerMapDataHistory"))
 @Html.Hidden("urlViewMultiSkippedRecords", Url.Action("ViewMultiSkippedRecords", "InstallerMapDataHistory"))
+@Html.Hidden("urlGetSkipAccountDetail", Url.Action("GetSkipAccountDetail", "InstallerMapDataHistory"))
 <style>
     .instal-dat-hist {
         margin-top: 50px;
@@ -884,9 +885,63 @@
                 </section>
             </div>
         </div>
-
     </section>
 </section>
+
+<!-- Model for Skip Accopunt History Detail -->
+@*<div class="modal fade modal-dialog-center" id="skipAccountHistoryDetailModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">*@
+<div class="modal fade" id="skipAccountHistoryDetailModal" role="dialog" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md rep-mod vertical-scroll" style="width: 75%; height: 550px; overflow: scroll; overflow: auto; ">
+        <div class="modal-content-wrap">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><strong>Skip Account History Detail</strong></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="panel-body">
+                        <div class="table-responsive  rep_dyn_table" id="inventryReceiveDiv112">
+                            <div class="iconic-input">
+                                <div class="col-lg-12 col-md-6 col-xs-12  nopadding_header">
+                                    <p style="float: right;">
+                                        <i class="fa fa-search"></i>
+                                        <input type="text" id="filter" placeholder="search" class="form-control" aria-controls="dynamic-table-summary" maxlength="50">
+                                    </p>
+                                </div>
+                            </div>
+                            <table id="viewTable" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                                <thead>
+                                    <tr>
+                                        @*<th width="5%"><input type="checkbox" name="select_all" value="tblHeaderValue" id="select-all" style="display:none">Select</th>*@
+                                        <th width="10%">Account No</th>
+                                        <th width="10%">Customer Address</th>
+                                        <th width="5%">Cycle</th>
+                                        <th width="5%">Route</th>
+                                        <th width="5%">Installer Name</th>
+                                        <th width="5%">Assigned User</th>
+                                        <th width="5%">Action Date</th>
+                                        <th width="5%">Status</th>
+                                        <th width="25%">Skipped Reason</th>
+                                        <th width="25%">Skip Comment</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="viewTable">
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12 btn-reopn" style="text-align:center;">
+                                @*<button id="btnCompleteTransfer" class="btn btn-success" type="button">Complete Transfer</button>*@
+                                <button class="btn btn-danger" id="btnCompleteCancel" type="button">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- MOdel -->
 <!-- page end-->
 <link href="~/jquery-confirm-master/css/jquery-confirm.css" rel="stylesheet" />
 <script src="~/jquery-confirm-master/js/jquery-confirm.js"></script>

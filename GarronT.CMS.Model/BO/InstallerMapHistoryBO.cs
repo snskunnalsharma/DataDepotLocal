@@ -126,4 +126,19 @@ namespace GarronT.CMS.Model.BO
         public string Street { get; set; }
         public string OldMeterSize { get; set; }
     }
+
+    // Skip account Summary
+    public class SkipAccountDetailModel
+    {
+        public string AccountNo { get; set; }
+        public string CustomerAddress { get; set; }
+        public string Cycle { get; set; }
+        public string Route { get; set; }
+        public string InstallerName { get; set; }
+        public string AssignedUser { get; set; }
+        public string ActionDate { get; set; }
+        public string Status { get; set; }
+        public string SkippedReason { get; set; }
+        public string SkipComment { get; set; }
+    }
 }

@@ -69,7 +69,28 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             return Json(new { installerMapHistoryList, success, returnMessage }, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpPost]
+        public ActionResult GetSkipAccountDetail(long ProjectId, long AccountId, string AccountNo)
+        {
+            StatusMessage statusMessage = new StatusMessage();
+            List<SkipAccountDetailModel> objSkipAccountDetailLIst = new List<SkipAccountDetailModel>();
+            InstallerMapHistoryDAL objInstallerMapHistoryDAL = new InstallerMapHistoryDAL();
+            try
+            {
+                objSkipAccountDetailLIst = objInstallerMapHistoryDAL.getSkipAccountHistorySummary(ProjectId, AccountId, AccountNo);
+                statusMessage.Success = true;
 
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                statusMessage.Success = false;
+                statusMessage.Message = "Unable to get summary data";
+            }
+            var jsonResult = Json(new { statusMessage, objSkipAccountDetailLIst }, JsonRequestBehavior.AllowGet);
+            jsonResult.MaxJsonLength = int.MaxValue;
+            return jsonResult;
+        }
 
         /// <summary>
         /// Get ProjectList by status
