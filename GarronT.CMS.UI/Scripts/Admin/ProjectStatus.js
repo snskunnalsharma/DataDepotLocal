@@ -496,6 +496,22 @@ function ShowMap(objectMap) {
                 }
                    );
             }
+            else if (objectMap[i].colorFlag == 6) {
+
+
+                marker = new google.maps.Marker({
+                    position: myLatlng,
+                    map: map,
+                    animation: google.maps.Animation.DROP,
+
+                    label: {
+                        fontFamily: 'Roboto, Arial, sans-serif'
+                    },
+                    icon: 'https://maps.google.com/mapfiles/ms/icons/purple-dot.png'
+
+                }
+                );
+            }
             else {
                 // var pinImage = new google.maps.MarkerImage("https://www.googlemapsmarkers.com/v1/./e9e5dc/");
                 var icon = {
