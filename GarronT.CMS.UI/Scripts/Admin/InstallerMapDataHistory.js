@@ -243,7 +243,7 @@ $("#filter").on("keyup", function () {
     });
 });
 $('#btnCompleteCancel').click(function () {
-    $('#viewTable').empty();
+  
     $("#skipAccountHistoryDetailModal").modal('hide');
 });
 
