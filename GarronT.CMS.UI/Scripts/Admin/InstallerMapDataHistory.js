@@ -82,6 +82,7 @@ $(document).ready(function () {
 
 //#region --Load ActiveData Grid--
 function LoadActiveTable() {
+    debugger;
     //$('#dynamic-table').DataTable({ "language": { "emptyTable": "No Data To Show" } });
     var _projectID = $('#ddlProject').val();
     var _installerID = $('#ddlInstaller').val();
@@ -105,6 +106,7 @@ function LoadActiveTable() {
         },
         success: function (data) {
             if (data.success == true) {
+                debugger;
                 oTable = $('#dynamic-table').dataTable(
                            {
                                "bFilter": true,
@@ -136,7 +138,7 @@ function LoadActiveTable() {
                                                     {
                                                         "mRender": function (data, type, full, row) {
                                                             //return '<a href="' + urlViewMultiSkippedRecords + "/" + full.ProjectFieldDataId + '" id=' + full.ProjectFieldDataId + ' target="_blank" title="View" >  <i class="fa fa-file-text"></i></a>';
-                                                            return '<a  id=' + full.WarehouseId + ' onclick="showDetail(' + _projectID + ',' + full.ID + ',\'' + full.Account + '\');" class="btn btn-primary btn-xs" role="button" alt="Skip Account History" title="Inventory Transfer"><i class="fa fa-history"></i></a>';
+                                                            return '<a  id=' + full.WarehouseId + ' onclick="showDetail(' + _projectID + ',' + full.ID + ',\'' + full.Account + '\');" class="btn btn-primary btn-xs" role="button" alt="Skip Account History" title="Skip Account History"><i class="fa fa-history"></i></a>';
                                                             //return '<a href="#" id=' + full.ID + '  onclick="window.open("<%= Url.Action("ViewSkippedRecords",  "InstallerMapDataHistory", new { id = ' + full.ID + ' } ) %>", "_blank"); return false;"  title="View" >  <i class="fa fa-file-text"></i></a>';
                                                         },
                                                         "aTargets": [9]

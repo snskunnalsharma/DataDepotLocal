@@ -66,7 +66,9 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 success = false;
                 returnMessage = "Unable To Get Installer Re-Assign Data";
             }
-            return Json(new { installerMapHistoryList, success, returnMessage }, JsonRequestBehavior.AllowGet);
+            var jsonResult = Json(new { installerMapHistoryList, success, returnMessage }, JsonRequestBehavior.AllowGet);
+            jsonResult.MaxJsonLength = int.MaxValue;
+            return jsonResult;
         }
 
         [HttpPost]
