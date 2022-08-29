@@ -186,6 +186,28 @@ namespace GarronT.CMS.Model.DAL
             return objList;
         }
 
+        // Get Over all Skip Account History Report
+        public DataTable GetSkipAccountHistory(long ProjectId)
+        {
+            CompassEntities compassEntities = new CompassEntities();
+            SqlConnection sqlConnection = new SqlConnection(compassEntities.Database.Connection.ConnectionString);
+            SqlCommand cmd = new SqlCommand();
+            DataTable dt = new DataTable();
+
+            cmd.CommandText = "PROC_GetAccountSkipHistory";
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Connection = sqlConnection;
+            cmd.Parameters.AddWithValue("@ProjectId", ProjectId);
+            sqlConnection.Open();
+            SqlDataAdapter sda=new SqlDataAdapter(cmd);
+            sda.Fill(dt);
+
+            cmd.Dispose();
+            sda.Dispose();
+            sqlConnection.Close();
+            return dt;
+        }
+        //end hare
 
         //Created by Sominath to get Skipped  records by FK_UploadedDataID and Project ID on Date 25/11/2016
         public List<InstallerMapHistoryVM> GetAllInstallerMapHistoryList(long projectID, long installerID)
