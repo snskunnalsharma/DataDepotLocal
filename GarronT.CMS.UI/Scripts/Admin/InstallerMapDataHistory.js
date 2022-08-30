@@ -87,8 +87,6 @@ $(document).ready(function () {
 var accountHistory = "";
 //#region --Load ActiveData Grid--
 function LoadActiveTable() {
-    debugger;
-    //$('#dynamic-table').DataTable({ "language": { "emptyTable": "No Data To Show" } });
     var _projectID = $('#ddlProject').val();
     var _installerID = $('#ddlInstaller').val();
     var _skipReason = $('#ddlSkipReason').val();
@@ -562,3 +560,20 @@ function VeiwRecords(data) {
 
 }
 //#endregion
+
+//#region -- Export skip account history
+$('#btnExport').click(function () {
+
+    var _projectID = $("#ddlProject option:selected").val();
+    
+    if (_projectID == "0") {
+        var $toast = toastr["error"]('Please select project first', 'Notification');
+    }
+    else {
+        var DownloadExcelExport = $('#urlExportSkipAccountHistory').val();
+        location.href = DownloadExcelExport + "?ProjectId=" + _projectID;
+        waitingDialog.show('Loading please wait...');
+        waitingDialog.hide();
+    }
+})
+//#wndregion

@@ -10,6 +10,7 @@
 @Html.Hidden("urlStoreSkippedID", Url.Action("StoreSkippedID", "InstallerMapDataHistory"))
 @Html.Hidden("urlViewMultiSkippedRecords", Url.Action("ViewMultiSkippedRecords", "InstallerMapDataHistory"))
 @Html.Hidden("urlGetSkipAccountDetail", Url.Action("GetSkipAccountDetail", "InstallerMapDataHistory"))
+@Html.Hidden("urlExportSkipAccountHistory", Url.Action("ExportSkipAccountHistory", "InstallerMapDataHistory"))
 
 <style>
     .instal-dat-hist {
@@ -849,9 +850,9 @@
                                             <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 reasgn_bx1">
                                                 <select id="ddlSkipReason" data-placeholder="Skip Reason" class="form-control chosen-select ">
                                                     <option value="0"></option>
+                                                    <option value="3">All Skip</option>
                                                     <option value="1">Current Skip</option>
                                                     <option value="2">Past Skip</option>
-                                                    @*<option value="3">UnAllocated Skip</option>*@
                                                 </select>
                                             </div>
                                         </div>
@@ -865,7 +866,7 @@
                                             <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 reasgn-bx4" style="margin-top:10px;width:220px;margin-left:126px">
                                                 <button id="btnSearch" class="btn btn-warning reasgn-srch-btn" type="button" style="background-color:green;border-color:green;">Search</button>
                                                 <button id="btnReset" class="btn btn-warning reasgn-res-btn" type="button" style="background-color:red;border-color:grey;">Reset</button>
-                                                <button id="btnSearch" class="btn btn-warning reasgn-srch-btn" type="button" style="background-color:green;border-color:green;">Export</button>
+                                                <button id="btnExport" class="btn btn-warning reasgn-srch-btn" type="button" style="background-color:green;border-color:green;">Export</button>
                                             </div>
                                         </div>
                                     </div>

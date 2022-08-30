@@ -11,6 +11,8 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
+using System.Data;
+using OfficeOpenXml;
 
 namespace GarronT.CMS.UI.Areas.Admin.Controllers
 {
@@ -306,5 +308,57 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             }
         }
 
+        public ActionResult ExportSkipAccountHistory(long ProjectId)
+        {
+
+            StatusMessage statusMessage = new StatusMessage();
+            DataTable dtSkipAccountHistory = new DataTable();
+            try
+            {
+                using (InstallerMapHistoryDAL objInstallerMapHistoryDAL = new InstallerMapHistoryDAL())
+                {
+                    dtSkipAccountHistory = objInstallerMapHistoryDAL.GetSkipAccountHistory(ProjectId);
+                }
+
+                statusMessage.Success = true;
+                //if (dtSkipAccountHistory.Rows.Count > 0 && dtSkipAccountHistory != null)
+                if (dtSkipAccountHistory.Columns.Contains("orderDate"))
+                {
+                    dtSkipAccountHistory.Columns.Remove("orderDate");
+                }
+                #region Export to excel
+                System.Web.UI.WebControls.GridView gv = new System.Web.UI.WebControls.GridView();
+                gv.DataSource = dtSkipAccountHistory;
+                gv.DataBind();
+                Response.Clear();
+                Response.Charset = "";
+                Response.ContentEncoding = System.Text.Encoding.UTF8;
+                Response.Cache.SetCacheability(HttpCacheability.NoCache);
+                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                Response.AddHeader("content-disposition", "attachment;filename=Skip Account History Report.xlsx");
+                System.Data.DataTable dt = dtSkipAccountHistory;
+
+                // gv.DataSource as System.Data.DataTable;
+                using (ExcelPackage pck = new ExcelPackage())
+                {
+                    ExcelWorksheet wsDt = pck.Workbook.Worksheets.Add("Sheet1");
+                    wsDt.Cells["A1"].LoadFromDataTable(dt, true, OfficeOpenXml.Table.TableStyles.None);
+                    wsDt.Cells[wsDt.Dimension.Address].AutoFitColumns();
+                    Response.BinaryWrite(pck.GetAsByteArray());
+                }
+
+                Response.Flush();
+                Response.End();
+                return View("Index");
+                #endregion
+
+            }
+            catch (Exception ex)
+            {
+                statusMessage.Success = false;
+                statusMessage.Message = "Unable to export report data";
+                return View("Index");
+            }
+        }
     }
 }
