@@ -572,8 +572,38 @@ $('#btnExport').click(function () {
     else {
         var DownloadExcelExport = $('#urlExportSkipAccountHistory').val();
         location.href = DownloadExcelExport + "?ProjectId=" + _projectID;
-        waitingDialog.show('Loading please wait...');
-        waitingDialog.hide();
+        //waitingDialog.show('Loading please wait...');
+        //waitingDialog.hide();
+        MessageStatus();
     }
 })
+
+function MessageStatus() {
+    var _projectID = $("#ddlProject option:selected").val();
+    var urlMessageStatus = $('#urlMessageStatus').val();
+        $.ajax({
+            type: 'GET',
+            data: { ProjectId: _projectID },
+            url: urlMessageStatus,
+            beforeSend: function () {
+                waitingDialog.show('Loading please wait...');
+            },
+            complete: function () {
+                waitingDialog.hide();
+            },
+            success: function (data) {
+                
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                waitingDialog.hide();
+                var $toast = toastr["error"](textStatus + "</br>" + errorThrown, "Error Notification");
+                console.log('jqXHR:');
+                console.log(jqXHR);
+                console.log('textStatus:');
+                console.log(textStatus);
+                console.log('errorThrown:');
+                console.log(errorThrown);
+            }
+        });
+}
 //#wndregion

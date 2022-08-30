@@ -308,7 +308,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             }
         }
 
-        public ActionResult ExportSkipAccountHistory(long ProjectId)
+        public void ExportSkipAccountHistory(long ProjectId)
         {
 
             StatusMessage statusMessage = new StatusMessage();
@@ -349,7 +349,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
                 Response.Flush();
                 Response.End();
-                return View("Index");
+                //return View("Index");
                 #endregion
 
             }
@@ -357,8 +357,13 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             {
                 statusMessage.Success = false;
                 statusMessage.Message = "Unable to export report data";
-                return View("Index");
+                //return View("Index");
             }
+        }
+        public ActionResult MessageStatus(long ProjectId)
+        {
+            bool success = true;
+            return base.Json(success, JsonRequestBehavior.AllowGet);
         }
     }
 }
