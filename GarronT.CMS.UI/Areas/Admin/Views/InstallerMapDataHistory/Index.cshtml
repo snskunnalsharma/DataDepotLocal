@@ -11,6 +11,7 @@
 @Html.Hidden("urlViewMultiSkippedRecords", Url.Action("ViewMultiSkippedRecords", "InstallerMapDataHistory"))
 @Html.Hidden("urlGetSkipAccountDetail", Url.Action("GetSkipAccountDetail", "InstallerMapDataHistory"))
 @Html.Hidden("urlExportSkipAccountHistory", Url.Action("ExportSkipAccountHistory", "InstallerMapDataHistory"))
+@Html.Hidden("urlMessageStatus", Url.Action("MessageStatus", "InstallerMapDataHistory"))
 <style>
     .instal-dat-hist {
         margin-top: 50px;
@@ -839,7 +840,7 @@
                                             </div>
 
                                             <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 reasgn_bx1">
-                                                <select id="ddlSkipReason" data-placeholder="Skip Reason" class="form-control chosen-select ">
+                                                <select id="ddlSkipReason" data-placeholder="Select Skip Reason" class="form-control chosen-select ">
                                                     <option value="0"></option>
                                                     <option value="3">All Skip</option>
                                                     <option value="1">Current Skip</option>
