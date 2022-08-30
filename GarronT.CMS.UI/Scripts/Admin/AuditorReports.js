@@ -738,17 +738,16 @@ function SelectAll_Recods() {
                 //bindTable()
                 oTable = $('#dynamic-table').DataTable(
                     {
+                        "bFilter": true,
+                        "bLengthChange": true,
+                        "bDestroy": true,
+                        "bserverSide": true,
+                        'responsive': true,
+                        "bDeferRender": true,
+                        //"sAjaxDataProp": 'aData',
                         "oLanguage": {
                             "sLengthMenu": '_MENU_ Records per page'
                         },
-                        // "sDom": '<flip><"clear">',
-                        //  "sDom": '<""flip>rt<lip><"clear">',
-                        "sDom": '<"col-lg-12 drp-rec"fl><"col-lg-12 rep-shw-ent"ip>rt<lip><"clear">',
-
-                        "bPaginate": true,
-                        "bAutoWidth": false,
-                        "bDestroy": true, "bserverSide": true,
-                        "bDeferRender": true,
 
                         "aaSorting": [],
                         "iDisplayLength": -1,
@@ -926,17 +925,16 @@ function _searchClick() {
 
                 oTable = $('#dynamic-table').DataTable(
                     {
+                        "bFilter": true,
+                        "bLengthChange": true,
+                        "bDestroy": true,
+                        "bserverSide": true,
+                        'responsive': true,
+                        "bDeferRender": true,
+                        //"sAjaxDataProp": 'aData',
                         "oLanguage": {
                             "sLengthMenu": '_MENU_ Records per page'
                         },
-                        // "sDom": '<flip><"clear">',
-                        //  "sDom": '<""flip>rt<lip><"clear">',
-                        "sDom": '<"col-lg-12 drp-rec"fl><"col-lg-12 rep-shw-ent"ip>rt<lip><"clear">',
-
-                        "bPaginate": true,
-                        "bAutoWidth": false,
-                        "bDestroy": true, "bserverSide": true,
-                        "bDeferRender": true,
 
                         "aaSorting": [],
                         "iDisplayLength": -1,
@@ -1287,15 +1285,16 @@ function bindTable() {
 
             oTable = $('#dynamic-table').dataTable(
                 {
+                    "bFilter": true,
+                    "bLengthChange": true,
+                    "bDestroy": true,
+                    "bserverSide": true,
+                    'responsive': true,
+                    "bDeferRender": true,
+                    //"sAjaxDataProp": 'aData',
                     "oLanguage": {
                         "sLengthMenu": '_MENU_ Records per page'
                     },
-                    // "sDom": '<flip><"clear">',
-                    "sDom": '<"col-lg-12 drp-rec"fl><"col-lg-12 rep-shw-ent"ip>rt<lip><"clear">',
-                    "bPaginate": true,
-                    "bAutoWidth": false,
-                    "bDestroy": true, "bserverSide": true,
-                    "bDeferRender": true, //"sAjaxDataProp": 'aData',
 
                     //"sAjaxSource": msg.result,
 
