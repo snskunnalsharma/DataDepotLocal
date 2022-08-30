@@ -77,9 +77,14 @@ $(document).ready(function () {
 
     // LoadActiveTable();
 
+   
+
+
+
+
 });
 //#endregion
-
+var accountHistory = "";
 //#region --Load ActiveData Grid--
 function LoadActiveTable() {
     var _projectID = $('#ddlProject').val();
@@ -105,46 +110,86 @@ function LoadActiveTable() {
         success: function (data) {
             if (data.success == true) {
                 debugger;
-                oTable = $('#dynamic-table').dataTable(
-                           {
-                               "bFilter": true,
-                               "bLengthChange": true,
-                               "bDestroy": true,
-                               "bserverSide": true,
+                oTable = $('#dynamic-table').DataTable(
+                    {
+                        "bFilter": true,
+                        "bLengthChange": true,
+                        "bDestroy": true,
+                        "bserverSide": true,
+                        'responsive': true,
+                        "bDeferRender": true,
+                        //"sAjaxDataProp": 'aData',
+                        "oLanguage": {
+                            "sLengthMenu": '_MENU_ Records per page'
+                        },
+                        //"sAjaxSource": msg.result,
+                        "aaData": data.installerMapHistoryList,
+                        "aoColumns": [
 
-                               "bDeferRender": true,
-                               //"sAjaxDataProp": 'aData',
-                               "oLanguage": {
-                                   "sLengthMenu": '_MENU_ Records per page'
-                               },
-                               //"sAjaxSource": msg.result,
-                               "aaData": data.installerMapHistoryList,
-                               "aoColumns": [
+                            { "mData": "VisitedDate" },
+                            { "mData": "projectname" },
+                            { "mData": "InstallerName" },
+                            { "mData": "Account" },
+                            { "mData": "Street" },
+                            { "mData": "Cycle" },
+                            { "mData": "Route" },
+                            { "mData": "SkippedReason" },
+                            { "mData": "SkipComment" },
+                            { "bSearchable": false, "mData": null, "sClass": "details-control" },
+                        ],
+                        "aoColumnDefs": [
+                                             {
+                                                 "mRender": function (data, type, full, row) {
+                                                     //return '<a href="' + urlViewMultiSkippedRecords + "/" + full.ProjectFieldDataId + '" id=' + full.ProjectFieldDataId + ' target="_blank" title="View" >  <i class="fa fa-file-text"></i></a>';
+                                                     //return '<a  id=' + full.WarehouseId + ' onclick="showDetail(' + _projectID + ',' + full.ID + ',\'' + full.Account + '\');" class="btn btn-primary btn-xs" role="button" alt="Skip Account History" title="Skip Account History"><i class="fa fa-history"></i></a>';
+                                                     var rowDetail = _projectID + '|' + full.ID + '|' + full.Account;
+                                                     return "<input type='hidden' value='"+rowDetail+"'>";
+                                                     //return '<a href="#" id=' + full.ID + '  onclick="window.open("<%= Url.Action("ViewSkippedRecords",  "InstallerMapDataHistory", new { id = ' + full.ID + ' } ) %>", "_blank"); return false;"  title="View" >  <i class="fa fa-file-text"></i></a>';
+                                                 },
+                                                 "aTargets": [9]
+                                             }
+                        ],
 
-                                                  { "mData": "VisitedDate" },
-                                                  { "mData": "projectname" },
-                                                  { "mData": "InstallerName" },
-                                                  { "mData": "Account" },
-                                                  { "mData": "Street" },
-                                                  { "mData": "Cycle" },
-                                                  { "mData": "Route" },
-                                                  { "mData": "SkippedReason" },
-                                                  { "mData": "SkipComment" },
-                                                  { "bSearchable": false, "mData": null },
-                               ],
-                               "aoColumnDefs": [
-                                                    {
-                                                        "mRender": function (data, type, full, row) {
-                                                            //return '<a href="' + urlViewMultiSkippedRecords + "/" + full.ProjectFieldDataId + '" id=' + full.ProjectFieldDataId + ' target="_blank" title="View" >  <i class="fa fa-file-text"></i></a>';
-                                                            return '<a  id=' + full.WarehouseId + ' onclick="showDetail(' + _projectID + ',' + full.ID + ',\'' + full.Account + '\');" class="btn btn-primary btn-xs" role="button" alt="Skip Account History" title="Skip Account History"><i class="fa fa-history"></i></a>';
-                                                            //return '<a href="#" id=' + full.ID + '  onclick="window.open("<%= Url.Action("ViewSkippedRecords",  "InstallerMapDataHistory", new { id = ' + full.ID + ' } ) %>", "_blank"); return false;"  title="View" >  <i class="fa fa-file-text"></i></a>';
-                                                        },
-                                                        "aTargets": [9]
-                                                    }
-                               ],
-
-                           }
-                            ), $('.dataTables_filter input').attr('maxlength', 50);
+                    }
+                );
+                
+                $('.dataTables_filter input').attr('maxlength', 50);
+                $('#dynamic-table').on('click', 'td.details-control', function () {
+                    
+                    var tr = $(this).closest('tr');
+                    var detailId = $(this).closest('tr td:last-child').find('input').val();
+                    console.log(detailId);
+                    var row = $("#dynamic-table").DataTable().row(tr);
+                    var detailIdArray = detailId.split('|');
+                    var proId = detailIdArray[0];
+                    var accId = detailIdArray[1];
+                    var accNo = detailIdArray[2];
+                    accountHistory = "";
+                    //oTable.rows('.parent').nodes().to$().find('td:last-child').trigger('click');
+                    
+                    if (row.child.isShown()) {
+                        // This row is already open - close it
+                        row.child.hide();
+                        tr.removeClass('shown');
+                        console.log('Close data details');
+                    } else {
+                        //hide opened row
+                        $("#dynamic-table").DataTable().rows().every(function () {
+                            var tr = $(this.node());
+                            //this.child().show();
+                            this.child.hide();
+                            tr.removeClass('shown');
+                        });
+                        // Open this row
+                        console.log('Open data details');
+                        //row.child(format($('#example td.details-control').index($(this)))).show();
+                        showDetail(proId, accId, accNo);
+                        console.log(accountHistory);
+                        row.child(accountHistory).show();
+                        //row.child('<span>hell dear</span>').show();
+                        tr.addClass('shown');
+                    }
+                });
             }
             else {
 
@@ -177,23 +222,27 @@ function showDetail(projectID, AccountId, AccountNo) {
     $.ajax({
         type: 'POST',
         url: urlGetSkipAccountDetail,
-        async: true,
+        async: false,
         data: { ProjectId: _projectID, AccountId: AccountId, AccountNo: AccountNo},
         success: function (data) {
             waitingDialog.hide();
             if (data.success == "false") {
+                console.log("error from function");
                 var $toast = toastr["error"](data.ErrorMessage, "Notification");
             }
             else {
                 debugger;
                 if (data.objSkipAccountDetailLIst != null) {
-                    $("#skipAccountHistoryDetailModal").modal({
+                    /*$("#skipAccountHistoryDetailModal").modal({
                         show: true,
                         backdrop: 'static',
                         keyboard: true
-                    });
+                    });*/
                     debugger;
-                    ShowDataInTable(data.objSkipAccountDetailLIst);
+                    //ShowDataInTable(data.objSkipAccountDetailLIst);
+                    accountHistory = ShowDataAsChildTable(data.objSkipAccountDetailLIst);
+                    console.log("###### " + accountHistory)
+                    //return tableHtml;
                 }
                 else {
                     var $toast = toastr["error"]("No Account History Available", "Notification");
@@ -208,6 +257,34 @@ function showDetail(projectID, AccountId, AccountNo) {
         }
 
     })
+}
+
+function ShowDataAsChildTable(varData) {
+    debugger;
+    console.log(varData);
+
+    debugger;
+    $('#viewTable').empty();
+    $.each(varData, function (index, value) {
+        debugger;
+
+        $('#viewTable').append(
+            '<tr>' +
+            '<td>' + value.AccountNo + '</td>' +
+            '<td>' + value.CustomerAddress + '</td>' +
+            '<td>' + value.Cycle + '</td>' +
+            '<td>' + value.Route + '</td>' +
+            '<td>' + value.InstallerName + '</td>' +
+            '<td>' + value.AssignedUser + '</td>' +
+            '<td>' + value.ActionDate + '</td>' +
+            '<td>' + value.Status + '</td>' +
+            '<td>' + value.SkippedReason + '</td>' +
+            '<td>' + value.SkipComment + '</td>' +
+            '</tr>'
+        );
+        debugger;
+    });
+    return $('#dynamic-table-detail-data').prop('outerHTML');
 }
 
 function ShowDataInTable(varData) {

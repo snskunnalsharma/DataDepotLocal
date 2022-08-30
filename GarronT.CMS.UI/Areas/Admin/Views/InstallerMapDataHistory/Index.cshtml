@@ -16,6 +16,14 @@
     .instal-dat-hist {
         margin-top: 50px;
     }
+    td.details-control {
+        background: url('http://www.datatables.net/examples/resources/details_open.png') no-repeat center center;
+        cursor: pointer;
+    }
+
+    tr.shown td.details-control {
+        background: url('http://www.datatables.net/examples/resources/details_close.png') no-repeat center center;
+    }
 </style>
 <style>
     .disabledli {
@@ -911,8 +919,8 @@
                                     </p>
                                 </div>
                             </div>
-                            <table id="dynamic-table-detail-data" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
-                                <thead>
+                            <table id="dynamic-table-detail-data" class="display table-bordered table-striped dataTable"  aria-describedby="dynamic-table_info">
+                                <thead style="background-color: darkgrey;">
                                     <tr>
                                         <th width="10%">Account No</th>
                                         <th width="13%">Customer Address</th>
@@ -926,8 +934,7 @@
                                         <th width="20%">Skip Comment</th>
                                     </tr>
                                 </thead>
-                                <tbody id="viewTable">
-                                </tbody>
+                                <tbody id="viewTable"></tbody>
                             </table>
                         </div>
                         <div class="form-group">
@@ -945,8 +952,18 @@
 <!-- MOdel -->
 <!-- page end-->
 <link href="~/jquery-confirm-master/css/jquery-confirm.css" rel="stylesheet" />
+
 <script src="~/jquery-confirm-master/js/jquery-confirm.js"></script>
 <link href="~/Scripts/js/style.css" rel="stylesheet" />
 <link href="~/Scripts/js/jquery-ui.css" rel="stylesheet" />
 <script src="~/Scripts/js/jquery-ui.js"></script>
 <script src='@Url.Content("~/Scripts/Admin/InstallerMapDataHistory.js")'></script>
+<script>
+    $(window).load(function () {
+        // ..
+        $(".nicescroll-rails").hide();
+        // ..
+    });
+
+
+</script>
