@@ -71,8 +71,22 @@
 
 @Html.Hidden("urlGetImagesList", Url.Action("GetImagesList", "Reports"))
 
+@Html.Hidden("urlGetAccountHistory", Url.Action("GetAccountHistory", "Reports"))
 
+<style>
+    .instal-dat-hist {
+        margin-top: 50px;
+    }
 
+    td.details-control {
+        background: url('http://www.datatables.net/examples/resources/details_open.png') no-repeat center center;
+        cursor: pointer;
+    }
+
+    tr.shown td.details-control {
+        background: url('http://www.datatables.net/examples/resources/details_close.png') no-repeat center center;
+    }
+</style>
 <script>
     var slideIndex = 1;
     $(document).ready(function () {
@@ -2041,7 +2055,6 @@
     }
 
     @@media (min-width:768px) and (max-width:991px) {
-
         /*.show_deactive {
         padding-left: 40px;
     }*/
@@ -2523,8 +2536,9 @@
         .xs-clear-none {
             clear: none;
         }
-        .xs-right{
-            float:right;
+
+        .xs-right {
+            float: right;
         }
 
         .form-control {
@@ -2776,8 +2790,9 @@
         .xxs-none {
             display: none;
         }
-        .xxs-center{
-            text-align:center;
+
+        .xxs-center {
+            text-align: center;
         }
 
         .wrapper {
@@ -2995,10 +3010,10 @@
                             @*<div class="form-group col-lg-3 col-sm-6 col-xs-5 rep_srch ">*@
                             <button id="btnSearch" class="btn btn-success" type="button">Search</button>
                             @*</div>
-            <div class="form-group col-lg-3 col-sm-6 col-xs-5 rep_res ">*@
+                                <div class="form-group col-lg-3 col-sm-6 col-xs-5 rep_res ">*@
                             <button class="btn btn-danger" id="btnReset" type="button">Reset</button>
                             @*</div>
-            <div class="form-group col-lg-3 col-sm-6 col-xs-5 rep_srch ">*@
+                                <div class="form-group col-lg-3 col-sm-6 col-xs-5 rep_srch ">*@
                             @*<button id="btnExport" class="btn btn-success btn-exp" type="button">Export</button>*@
                             <button id="btnExport" class="btn btn-success" type="button">Export</button>
                         </div>
@@ -3006,7 +3021,7 @@
                         @*</div>
 
 
-        <div class="row">*@
+                            <div class="row">*@
                         @*<div class="col-lg-3 col-sm-6 col-xs-8 dup-color-bootstrap" style="float:right;">*@
                         <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 col-xxs-12 sm-clear xs-clear xxs-clear xs-right xxs-right dup-color-bootstrap" style="float:right;">
                             @*<div class="form-group dup-text-div text-right">*@
@@ -3038,20 +3053,20 @@
                         <thead>
                             <tr>
                                 @*
-                        <th><input type="checkbox" name="select_all" value="1" id="example-select-all"></th>
-                        <th width="40%">Services Date Time</th>
-                        <th width="7%">Account</th>
-                        <th width="30%">Form Name</th>
-                        <th width="1%">Cycle</th>
-                        <th width="1%">Route</th>
-                        <th width="40%">Address</th>
-                        <th width="12%">Installer</th>
-                        <th width="7%">Status</th>
-                        <th width="8%">Reason</th>
-                        <th width="1%">C</th>
-                        <th width="13%">Action</th>*@
+                                    <th><input type="checkbox" name="select_all" value="1" id="example-select-all"></th>
+                                    <th width="40%">Services Date Time</th>
+                                    <th width="7%">Account</th>
+                                    <th width="30%">Form Name</th>
+                                    <th width="1%">Cycle</th>
+                                    <th width="1%">Route</th>
+                                    <th width="40%">Address</th>
+                                    <th width="12%">Installer</th>
+                                    <th width="7%">Status</th>
+                                    <th width="8%">Reason</th>
+                                    <th width="1%">C</th>
+                                    <th width="13%">Action</th>*@
                                 <th><input type="checkbox" name="select_all" value="1" id="example-select-all"></th>
-                                <th width="20%">Services Date <br />Time</th>
+                                <th width="15%">Services Date <br />Time</th>
                                 <th width="7%">Account</th>
                                 <th width="1%">Cycle</th>
                                 <th width="1%">Route</th>
@@ -3066,15 +3081,15 @@
                                 <th width="5%">New Meter<br>Number</th>
                                 <th width="5%">New Meter<br>Size</th>
                                 @*
-                        <th width="5%">New Meter<br>Final Reading</th>*@
+                                    <th width="5%">New Meter<br>Final Reading</th>*@
                                 <th width="5%">New Radio<br>Number</th>
                                 <th width="12%">Installer</th>
                                 <th width="7%">Status</th>
                                 @*
-                        <th width="8%">Reason</th>
-                        <th width="1%">C</th>*@
+                                    <th width="8%">Reason</th>
+                                    <th width="1%">C</th>*@
                                 <th width="13%">Action</th>
-
+                                <th width="5%">History</th>
                             </tr>
                         </thead>
                     </table>

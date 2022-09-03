@@ -165,7 +165,7 @@ namespace GarronT.CMS.Model.DAL
             cmd.Parameters.AddWithValue("@AccountId", AccountId);
             cmd.Parameters.AddWithValue("@AccountNo", AccountNo);
             sqlConnection.Open();
-
+            cmd.CommandTimeout = sqlConnection.ConnectionTimeout;
             reader = cmd.ExecuteReader();
             while (reader.Read())
             {

@@ -3055,5 +3055,41 @@ namespace GarronT.CMS.Model.DAL
             }
         }
         //ends hare
+
+        public List<AccountHistoryDetailModel> getAccountHistorySummary(long ProjectId, long AccountId)
+        {
+            List<AccountHistoryDetailModel> objList = new List<AccountHistoryDetailModel>();
+            CompassEntities compassEntities = new CompassEntities();
+            SqlConnection sqlConnection = new SqlConnection(compassEntities.Database.Connection.ConnectionString);
+            SqlCommand cmd = new SqlCommand();
+            SqlDataReader reader;
+
+            cmd.CommandText = "PROC_GetAccountHistory";
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Connection = sqlConnection;
+            cmd.Parameters.AddWithValue("@ProjectId", ProjectId);
+            cmd.Parameters.AddWithValue("@AccountId", AccountId);
+            sqlConnection.Open();
+            cmd.CommandTimeout = sqlConnection.ConnectionTimeout;
+
+            reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                objList.Add(new AccountHistoryDetailModel
+                {
+                    AccountNo = Convert.ToString(reader["Account No"]),
+                    CustomerAddress = Convert.ToString(reader["Customer Address"]),
+                    Cycle = Convert.ToString(reader["Cycle"]),
+                    Route = Convert.ToString(reader["Route"]),
+                    InstallerName = Convert.ToString(reader["Installer Name"]),
+                    AssignedUser = Convert.ToString(reader["assignedUser"]),
+                    ActionDate = Convert.ToString(reader["Action Date"]),
+                    Status = Convert.ToString(reader["Status"]),
+                    SkippedReason = Convert.ToString(reader["Skipped Reason"]),
+                    SkipComment = Convert.ToString(reader["Skip Comment"])
+                });
+            }
+            return objList;
+        }
     }
 }

@@ -930,7 +930,7 @@ function SelectAll_Recods() {
         }
     });
 }
-
+var accountHistory = "";
 function _searchClick() {
 
     var objProjectStatusList = [];
@@ -1044,6 +1044,7 @@ function _searchClick() {
                             //{ "mData": "ShortComment" },
                             //{ "mData": "IsDuplicate" },
                             { "bSearchable": false, "mData": null },
+                            { "bSearchable": false, "mData": null, "sClass": "details-control" },
                         ],
                         "aoColumnDefs": [
                             {
@@ -1133,16 +1134,13 @@ function _searchClick() {
                                 },
                                 "aTargets": [0]
                             },
-                            //{
-                            //    "mRender": function (data, type, full, row) {
-                            //        if (full.ShortComment != "") {
-                            //            return '<input type="checkbox" id=' + full.ID + ' disabled="disabled"  value=' + full.FormId + ' checked " >';
-                            //        } else {
-                            //            return '<input type="checkbox" id=' + full.ID + ' disabled="disabled"  value=' + full.FormId + '" >';
-                            //        }
-                            //    },
-                            //    "aTargets": [13]
-                            //},
+                            {
+                                "mRender": function (data, type, full, row) {
+                                    var rowDetail = full.ProjectId + '|' + full.ID;
+                                    return "<input type='hidden' value='" + rowDetail + "'>";
+                                },
+                                "aTargets": [16]
+                            },
                         ],
                         "fnRowCallback": function (nRow, data, iDisplayIndex, iDisplayIndexFull) {
 
@@ -1163,12 +1161,6 @@ function _searchClick() {
                 //var $toast = toastr["error"](ErrorMessage, '');
                 waitingDialog.hide();
             }
-
-
-
-
-
-
         },
         error: function () {
             alert("something seems wrong");
@@ -1176,6 +1168,119 @@ function _searchClick() {
         }
     });
     // waitingDialog.hide();
+}
+
+//$('.dataTables_filter input').attr('maxlength', 50);
+$('#dynamic-table').on('click', 'td.details-control', function () {
+    var tr = $(this).closest('tr');
+    var detailId = $(this).closest('tr td:last-child').find('input').val();
+    console.log(detailId);
+    var row = $("#dynamic-table").DataTable().row(tr);
+    var detailIdArray = detailId.split('|');
+    var proId = detailIdArray[0];
+    var accId = detailIdArray[1];
+    
+    accountHistory = "";
+
+    if (row.child.isShown()) {
+        // This row is already open - close it
+        row.child.hide();
+        tr.removeClass('shown');
+        console.log('Close data details');
+    } else {
+        //hide opened row
+        $("#dynamic-table").DataTable().rows().every(function () {
+            var tr = $(this.node());
+            this.child.hide();
+            tr.removeClass('shown');
+        });
+        // Open this row
+        console.log('Open data details');
+        showDetail(proId, accId);
+        //console.log(accountHistory);
+        row.child(accountHistory).show();
+        tr.addClass('shown');
+    }
+});
+
+// Load Account history data
+function showDetail(ProjectID, AccountId) {
+    //var _projectID = $('#ddlProject').val();
+    waitingDialog.show('Loading Please Wait...');
+    var urlGetAccountHistory = $("#urlGetAccountHistory").val();
+    $.ajax({
+        type: 'POST',
+        url: urlGetAccountHistory,
+        async: false,
+        data: { ProjectId: ProjectID, AccountId: AccountId },
+        success: function (data) {
+            waitingDialog.hide();
+            if (data.success == "false") {
+                console.log("error from function");
+                var $toast = toastr["error"](data.ErrorMessage, "Notification");
+            }
+            else {
+                debugger;
+                if (data.objSkipAccountDetailLIst != null) {
+                    accountHistory = ShowDataAsChildTable(data.objSkipAccountDetailLIst);
+                    //console.log("###### " + accountHistory)
+                }
+                else {
+                    var $toast = toastr["error"]("No Account History Available", "Notification");
+                }
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            waitingDialog.hide();
+            console.log("error " + textStatus);
+            console.log("incoming Text " + jqXHR.responseText);
+            var $toast = toastr["error"]("something seems wrong", "Notification");
+        }
+
+    })
+}
+
+function ShowDataAsChildTable(varData) {
+    //console.log(varData);
+    var data = "";
+    $.each(varData, function (index, value) {
+        data +=
+            "<tr>" +
+            "<td>" + value.AccountNo + "</td>" +
+            "<td>" + value.CustomerAddress + "</td>" +
+            "<td>" + value.Cycle + "</td>" +
+            "<td>" + value.Route + "</td>" +
+            "<td>" + value.InstallerName + "</td>" +
+            "<td>" + value.AssignedUser + "</td>" +
+            "<td>" + value.ActionDate + "</td>" +
+            "<td>" + value.Status + "</td>" +
+            "<td>" + value.SkippedReason + "</td>" +
+            "<td>" + value.SkipComment + "</td>" +
+            "</tr>"
+    });
+    //console.log(data);
+    var tblData = "<table id='dynamic-table-detail-data' class='display table-bordered table-striped dataTable' aria-describedby='dynamic-table_info'>"+
+                "<thead style='background-color: darkgrey;'>"+
+                    "<tr>"+
+                        "<th width='10%'>Account No</th>"+
+                        "<th width='13%'>Customer Address</th>"+
+                        "<th width='7%'>Cycle</th>" +
+                        "<th width='5%'>Route</th>" +
+                        "<th width='7%'>Installer Name</th>" +
+                        "<th width='5%'>Assigned User</th>" +
+                        "<th width='10%'>Action Date</th>" +
+                        "<th width='5%'>Status</th>" +
+                        "<th width='18%'>Skipped Reason</th>" +
+                        "<th width='20%'>Skip Comment</th>" +
+                    "</tr>"+
+                "</thead>"+
+                "<tbody id='viewTable'>"+data+
+                
+                "</tbody>"+
+        "</table>";
+    //console.log(tblData);
+    return tblData;
+    //return $('#dynamic-table-detail-data').prop('outerHTML');
 }
 
 $('#btnReopen').click(function () {

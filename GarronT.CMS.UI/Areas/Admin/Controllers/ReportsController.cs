@@ -4076,7 +4076,27 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         }
 
 
+        [HttpPost]
+        public ActionResult GetAccountHistory(long ProjectId, long AccountId)
+        {
+            StatusMessage statusMessage = new StatusMessage();
+            List<AccountHistoryDetailModel> objSkipAccountDetailLIst = new List<AccountHistoryDetailModel>();
+            ReportDAL objReportDAL = new ReportDAL();
+            try
+            {
+                objSkipAccountDetailLIst = objReportDAL.getAccountHistorySummary(ProjectId, AccountId);
+                statusMessage.Success = true;
+
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                statusMessage.Success = false;
+                statusMessage.Message = "Unable to get summary data";
+            }
+            var jsonResult = Json(new { statusMessage, objSkipAccountDetailLIst }, JsonRequestBehavior.AllowGet);
+            jsonResult.MaxJsonLength = int.MaxValue;
+            return jsonResult;
+        }
     }
-
-
 }
