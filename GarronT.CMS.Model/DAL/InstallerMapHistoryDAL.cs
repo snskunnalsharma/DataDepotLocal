@@ -115,7 +115,7 @@ namespace GarronT.CMS.Model.DAL
                     #region --Get Records--
                     //   installerHistoryList = _dbcontext.PROC_Get_InstallerMapDataHistory().Where(a => a.projectid == projectID).Select(a => new InstallerMapHistoryVM
                     installerHistoryList = installerHistoryList.Where(a => a.ProjectId == projectID).ToList();
-                    #endregion }
+                    #endregion
                 }
                 else
                 {
