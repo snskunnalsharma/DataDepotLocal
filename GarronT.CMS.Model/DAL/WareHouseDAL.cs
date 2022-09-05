@@ -479,7 +479,7 @@ namespace GarronT.CMS.Model.DAL
                     {
                         query = query.Where(f => f.ProductId == productId);
                     }
-                    if (LocationType != "0")
+                    if (LocationType != "0" && !string.IsNullOrEmpty(LocationType))
                     {
                         query = query.Where(f => f.Location == LocationType);
                     }
@@ -537,7 +537,7 @@ namespace GarronT.CMS.Model.DAL
                 {
                     query = query.Where(f => f.ProductId == productId);
                 }
-                if (LocationFromValue != "0")
+                if (LocationFromValue != "0" && !string.IsNullOrEmpty(LocationFromValue))
                 {
                     query = query.Where(f => f.Location == LocationFromValue);
                 }
