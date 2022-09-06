@@ -1697,36 +1697,72 @@ namespace GarronT.CMS.Model.DAL
                                 {
 
                                     long recordId = long.Parse(skipOrRtuFlag.ToString());
-                                    TblProjectFieldData objTblProjectFieldData = objCompassEntities.TblProjectFieldDatas.
-                                        Where(o => o.ID == recordId).FirstOrDefault();
-                                    objTblProjectFieldData.Active = 0;
-                                    objTblProjectFieldData.ModifiedOn = new CommonFunctions().ServerDate();
-                                    objCompassEntities.SaveChanges();
+                                    var oldTblProjectFieldData = objCompassEntities.TblProjectFieldDatas.Where(o => o.FK_UploadedExcelData_Id == objForm.currentAccountData.initialFieldId 
+                                                                 && o.InstallerId == int.Parse(objForm.userId.ToString()) 
+                                                                 && o.SkipId!=null && o.Active == 1).OrderByDescending(o => o.ID).FirstOrDefault();
+                                    if (oldTblProjectFieldData != null)
+                                    {
+                                        //oldTblProjectFieldData.Active = 1;
+                                        //oldTblProjectFieldData.CreatedOn = new CommonFunctions().ServerDate();
+                                        //oldTblProjectFieldData.CreatedBy = int.Parse(objForm.userId.ToString());
+                                        oldTblProjectFieldData.ModifiedOn = new CommonFunctions().ServerDate();
+                                        oldTblProjectFieldData.ModifiedBy = int.Parse(objForm.userId.ToString());
+                                        oldTblProjectFieldData.InstallerId = long.Parse(objForm.userId.ToString());
+                                        oldTblProjectFieldData.FormId = objForm.formId;
+                                        //objTblProjectFieldData.tblUploadedData_Id = objForm.currentAccountData.initialFieldId;
+                                        oldTblProjectFieldData.FK_UploadedExcelData_Id = objForm.currentAccountData.initialFieldId;
+                                        oldTblProjectFieldData.IsSkipped = objForm.currentAccountData.isAccountSkipped;
+                                        oldTblProjectFieldData.IsReAssign = false;
+                                        oldTblProjectFieldData.IsMediaPending = objForm.isMediaPending;
 
-                                    #region history inserted
-                                    TblProjectFieldDataHistory objTblProjectFieldDataHistory = new TblProjectFieldDataHistory();
-                                    objTblProjectFieldDataHistory.Active = 1;
-                                    objTblProjectFieldDataHistory.CreatedBy = 1;
-                                    objTblProjectFieldDataHistory.CreatedOn = new CommonFunctions().ServerDate();
-                                    objTblProjectFieldDataHistory.FormId = objTblProjectFieldData.FormId;
-                                    objTblProjectFieldDataHistory.InstallerId = objTblProjectFieldData.InstallerId;
-                                    objTblProjectFieldDataHistory.InstallerMapId = objTblProjectFieldData.InstallerId;
-                                    objTblProjectFieldDataHistory.IsReAssign = objTblProjectFieldData.IsReAssign;
-                                    objTblProjectFieldDataHistory.IsSkipped = objTblProjectFieldData.IsSkipped;
-                                    objTblProjectFieldDataHistory.JsonDataVal = objTblProjectFieldData.JsonDataVal;
-                                    objTblProjectFieldDataHistory.SkipComment = objTblProjectFieldData.SkipComment;
-                                    objTblProjectFieldDataHistory.SkipId = objTblProjectFieldData.SkipId;
-                                    objTblProjectFieldDataHistory.SkippedDatetime = objTblProjectFieldData.SkippedDatetime;
-                                    objTblProjectFieldDataHistory.SkippedReason = objTblProjectFieldData.SkippedReason;
-                                    // objTblProjectFieldDataHistory.tblUploadedData_Id = objTblProjectFieldData.tblUploadedData_Id;
-                                    objTblProjectFieldDataHistory.FK_UploadedExcelData_Id = objTblProjectFieldData.FK_UploadedExcelData_Id;
-                                    objTblProjectFieldDataHistory.visitdatetime = objTblProjectFieldData.visitdatetime;
+                                        if (!string.IsNullOrEmpty(objForm.currentAccountData.skipeCapturedDateTime))
+                                        {
+                                            oldTblProjectFieldData.SkippedDatetime = getDate(objForm.visitDateTime);
+                                            oldTblProjectFieldData.SkippedReason = objForm.currentAccountData.skipeReason;
+                                            oldTblProjectFieldData.SkipComment = objForm.currentAccountData.skipComment;
+                                            oldTblProjectFieldData.SkipGPSLocation = objForm.currentAccountData.skipGPSLocation;
+                                            oldTblProjectFieldData.SkipId = objForm.currentAccountData.skipId != null ? long.Parse(objForm.currentAccountData.skipId.ToString()) : 0;
+                                        }
+                                        if (!string.IsNullOrEmpty(objForm.visitDateTime))
+                                        {
+                                            oldTblProjectFieldData.visitdatetime = getDate(objForm.visitDateTime); ;
+                                        }
+                                        oldTblProjectFieldData.JsonDataVal = _jsonData;
+                                        objCompassEntities.SaveChanges();
+                                        saveRecord = false;
+                                    }
+                                    else
+                                    {
+                                        TblProjectFieldData objTblProjectFieldData = objCompassEntities.TblProjectFieldDatas.Where(o => o.ID == recordId).FirstOrDefault();
+                                        objTblProjectFieldData.Active = 0;
+                                        objTblProjectFieldData.ModifiedOn = new CommonFunctions().ServerDate();
+                                        objCompassEntities.SaveChanges();
 
-                                    objCompassEntities.TblProjectFieldDataHistories.Add(objTblProjectFieldDataHistory);
-                                    objCompassEntities.SaveChanges();
-                                    #endregion
+                                        #region history inserted
+                                        TblProjectFieldDataHistory objTblProjectFieldDataHistory = new TblProjectFieldDataHistory();
+                                        objTblProjectFieldDataHistory.Active = 1;
+                                        objTblProjectFieldDataHistory.CreatedBy = 1;
+                                        objTblProjectFieldDataHistory.CreatedOn = new CommonFunctions().ServerDate();
+                                        objTblProjectFieldDataHistory.FormId = objTblProjectFieldData.FormId;
+                                        objTblProjectFieldDataHistory.InstallerId = objTblProjectFieldData.InstallerId;
+                                        objTblProjectFieldDataHistory.InstallerMapId = objTblProjectFieldData.InstallerId;
+                                        objTblProjectFieldDataHistory.IsReAssign = objTblProjectFieldData.IsReAssign;
+                                        objTblProjectFieldDataHistory.IsSkipped = objTblProjectFieldData.IsSkipped;
+                                        objTblProjectFieldDataHistory.JsonDataVal = objTblProjectFieldData.JsonDataVal;
+                                        objTblProjectFieldDataHistory.SkipComment = objTblProjectFieldData.SkipComment;
+                                        objTblProjectFieldDataHistory.SkipId = objTblProjectFieldData.SkipId;
+                                        objTblProjectFieldDataHistory.SkippedDatetime = objTblProjectFieldData.SkippedDatetime;
+                                        objTblProjectFieldDataHistory.SkippedReason = objTblProjectFieldData.SkippedReason;
+                                        // objTblProjectFieldDataHistory.tblUploadedData_Id = objTblProjectFieldData.tblUploadedData_Id;
+                                        objTblProjectFieldDataHistory.FK_UploadedExcelData_Id = objTblProjectFieldData.FK_UploadedExcelData_Id;
+                                        objTblProjectFieldDataHistory.visitdatetime = objTblProjectFieldData.visitdatetime;
 
-                                    saveRecord = true;
+                                        objCompassEntities.TblProjectFieldDataHistories.Add(objTblProjectFieldDataHistory);
+                                        objCompassEntities.SaveChanges();
+                                        #endregion
+
+                                        saveRecord = true;
+                                    }
                                 }
                             }
                             else
