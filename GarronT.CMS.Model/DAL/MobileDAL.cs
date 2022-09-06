@@ -1699,7 +1699,8 @@ namespace GarronT.CMS.Model.DAL
                                     long recordId = long.Parse(skipOrRtuFlag.ToString());
                                     var oldTblProjectFieldData = objCompassEntities.TblProjectFieldDatas.Where(o => o.FK_UploadedExcelData_Id == objForm.currentAccountData.initialFieldId 
                                                                  && o.InstallerId == int.Parse(objForm.userId.ToString()) 
-                                                                 && o.SkipId!=null && o.Active == 1).OrderByDescending(o => o.ID).FirstOrDefault();
+                                                                 && o.SkipId!=null && o.Active == 1).FirstOrDefault();
+                                                                 //.OrderByDescending(o => o.ID).FirstOrDefault();
                                     if (oldTblProjectFieldData != null)
                                     {
                                         //oldTblProjectFieldData.Active = 1;
