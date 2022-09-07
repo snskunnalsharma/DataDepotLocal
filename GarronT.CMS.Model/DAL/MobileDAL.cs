@@ -1735,7 +1735,7 @@ namespace GarronT.CMS.Model.DAL
                                         {
                                             // Old imges/Audio/Video Inactive save
                                             CompassEntities CE = new CompassEntities();
-                                            var oldTblProjectFieldDataAttachment = CE.TblProjectFieldDataAttachments.Where(o => o.ProjectFieldDataId == oldTblProjectFieldData.ID && o.Active == 1).ToList();
+                                            var oldTblProjectFieldDataAttachment = CE.TblProjectFieldDataAttachments.Where(o => o.ProjectFieldDataId == oldTblProjectFieldData.ID && o.Active == 1 && o.IsSkipped == true).ToList();
                                             foreach (var item in oldTblProjectFieldDataAttachment)
                                             {
                                                 item.Active = 0;
