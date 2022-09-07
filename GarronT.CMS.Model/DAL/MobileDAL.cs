@@ -1730,6 +1730,43 @@ namespace GarronT.CMS.Model.DAL
                                         oldTblProjectFieldData.JsonDataVal = _jsonData;
                                         objCompassEntities.SaveChanges();
                                         saveRecord = false;
+
+                                        if (objForm.currentAccountData.skipId != null && objForm.currentAccountData.skipId > 0)
+                                        {
+
+                                            string latlng = objForm.currentAccountData.skipGPSLocation;
+                                            string urlPath = "https://maps.googleapis.com/maps/api/staticmap?center=" + latlng +
+                                               "&zoom=15&size=200x200&maptype=roadmap&markers=color:green%7C" + latlng + "&sensor=false&key=" + googleKey;
+
+                                            string ServerUploadFolder = @"~\MobileUploadData\";
+                                            string ServerUploadFolder1 = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["UploadFilePath"]);
+                                            string tempPath = ServerUploadFolder + objForm.projectId + @"\" + objForm.formId + @"\" +
+                                            objForm.currentAccountData.accountNumber + @"\" + objForm.currentAccountData.initialFieldId + @"\" + "MAP" + @"\";
+                                            string mapFilePath = System.Web.HttpContext.Current.Request.MapPath(tempPath);
+                                            grantAccess(mapFilePath);
+
+                                            mapFilePath = mapFilePath + @"img.png";
+                                            string tempPath1 = ServerUploadFolder1 + objForm.projectId + @"\" + objForm.formId + @"\" +
+                                            objForm.currentAccountData.accountNumber + @"\" + objForm.currentAccountData.initialFieldId + @"\" + "MAP" + @"\img.png";
+
+                                            //String Url to Bytes
+                                            byte[] bytes = GetBytesFromUrl(urlPath);
+
+                                            //Bytes Saved to Specified File
+                                            WriteBytesToFile(mapFilePath, bytes);
+
+                                            TblProjectFieldDataAttachment obj = new TblProjectFieldDataAttachment();
+                                            obj.Active = 1;
+                                            obj.CreatedOn = new CommonFunctions().ServerDate();
+                                            obj.CreatedBy = 1;
+                                            obj.ProjectFieldDataId = oldTblProjectFieldData.ID;
+                                            obj.IsAudioVideoImage = 3;
+                                            obj.strFilePath = tempPath1;
+                                            obj.IsSkipped = true;
+                                            obj.isServiceData = false;
+                                            objCompassEntities.TblProjectFieldDataAttachments.Add(obj);
+                                            objCompassEntities.SaveChanges();
+                                        }
                                     }
                                     else
                                     {
