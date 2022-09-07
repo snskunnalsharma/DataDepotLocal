@@ -1696,12 +1696,11 @@ namespace GarronT.CMS.Model.DAL
                                 else if (skipOrRtuFlag != null)
                                 {
 
-                                    long recordId = long.Parse(skipOrRtuFlag.ToString());
+                                    long objInstallerId = long.Parse(objForm.userId.ToString());
                                     var oldTblProjectFieldData = objCompassEntities.TblProjectFieldDatas.Where(o => o.FK_UploadedExcelData_Id == objForm.currentAccountData.initialFieldId 
-                                                                 && o.InstallerId == int.Parse(objForm.userId.ToString()) 
-                                                                 && o.SkipId!=null && o.Active == 1).FirstOrDefault();
-                                                                 //.OrderByDescending(o => o.ID).FirstOrDefault();
-                                    if (oldTblProjectFieldData != null)
+                                                                 && o.InstallerId == objInstallerId
+                                                                 && o.SkipId!=null && o.Active == 1).OrderByDescending(o => o.ID).FirstOrDefault();
+                                    if (oldTblProjectFieldData != null && objForm.currentAccountData.isAccountSkipped == true)
                                     {
                                         //oldTblProjectFieldData.Active = 1;
                                         //oldTblProjectFieldData.CreatedOn = new CommonFunctions().ServerDate();
@@ -1734,6 +1733,7 @@ namespace GarronT.CMS.Model.DAL
                                     }
                                     else
                                     {
+                                        long recordId = long.Parse(skipOrRtuFlag.ToString());
                                         TblProjectFieldData objTblProjectFieldData = objCompassEntities.TblProjectFieldDatas.Where(o => o.ID == recordId).FirstOrDefault();
                                         objTblProjectFieldData.Active = 0;
                                         objTblProjectFieldData.ModifiedOn = new CommonFunctions().ServerDate();
