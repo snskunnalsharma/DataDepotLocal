@@ -1778,6 +1778,10 @@ namespace GarronT.CMS.Model.DAL
                                             obj.isServiceData = false;
                                             objCompassEntities.TblProjectFieldDataAttachments.Add(obj);
                                             objCompassEntities.SaveChanges();
+
+                                            projectFieldDataId = oldTblProjectFieldData.ID;
+                                            isRecrodSaved = true;
+                                            responseMessage = "Record Saved Successfull.";
                                         }
                                     }
                                     else
@@ -2629,10 +2633,8 @@ namespace GarronT.CMS.Model.DAL
                                 }
 
                                 projectFieldDataId = objTblProjectFieldData.ID;
-
                                 isRecrodSaved = true;
                                 responseMessage = "Record Saved Successfull.";
-
                                 #endregion
                             }
 
