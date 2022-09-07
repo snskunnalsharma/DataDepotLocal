@@ -1734,13 +1734,14 @@ namespace GarronT.CMS.Model.DAL
                                         if (objForm.currentAccountData.skipId != null && objForm.currentAccountData.skipId > 0)
                                         {
                                             // Old imges/Audio/Video Inactive save
-                                            var oldTblProjectFieldDataAttachment = objCompassEntities.TblProjectFieldDataAttachments.Where(o => o.ProjectFieldDataId == oldTblProjectFieldData.ID && o.Active == 1).ToList();
+                                            CompassEntities CE = new CompassEntities();
+                                            var oldTblProjectFieldDataAttachment = CE.TblProjectFieldDataAttachments.Where(o => o.ProjectFieldDataId == oldTblProjectFieldData.ID && o.Active == 1).ToList();
                                             foreach (var item in oldTblProjectFieldDataAttachment)
                                             {
                                                 item.Active = 0;
                                                 item.ModifiedBy = int.Parse(objForm.userId.ToString());
                                                 item.ModifiedOn = new CommonFunctions().ServerDate();
-                                                objCompassEntities.SaveChanges();
+                                                CE.SaveChanges();
                                             }
                                             //end hare
 
