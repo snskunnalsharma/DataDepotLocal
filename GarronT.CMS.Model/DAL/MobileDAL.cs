@@ -1696,12 +1696,13 @@ namespace GarronT.CMS.Model.DAL
                                 else if (skipOrRtuFlag != null)
                                 {
 
-                                    long recordId = long.Parse(skipOrRtuFlag.ToString());
+                                    long objInstallerId = long.Parse(objForm.userId.ToString());
                                     var oldTblProjectFieldData = objCompassEntities.TblProjectFieldDatas.Where(o => o.FK_UploadedExcelData_Id == objForm.currentAccountData.initialFieldId 
-                                                                 && o.InstallerId == int.Parse(objForm.userId.ToString()) 
+                                                                 && o.InstallerId == objInstallerId
                                                                  && o.SkipId!=null && o.Active == 1).OrderByDescending(o => o.ID).FirstOrDefault();
-                                    if (oldTblProjectFieldData != null)
+                                    if (oldTblProjectFieldData != null && objForm.currentAccountData.isAccountSkipped == true)
                                     {
+                                        //Already data present in Projectfielddata table only for update do not insert again
                                         //oldTblProjectFieldData.Active = 1;
                                         //oldTblProjectFieldData.CreatedOn = new CommonFunctions().ServerDate();
                                         //oldTblProjectFieldData.CreatedBy = int.Parse(objForm.userId.ToString());
@@ -1709,7 +1710,6 @@ namespace GarronT.CMS.Model.DAL
                                         oldTblProjectFieldData.ModifiedBy = int.Parse(objForm.userId.ToString());
                                         oldTblProjectFieldData.InstallerId = long.Parse(objForm.userId.ToString());
                                         oldTblProjectFieldData.FormId = objForm.formId;
-                                        //objTblProjectFieldData.tblUploadedData_Id = objForm.currentAccountData.initialFieldId;
                                         oldTblProjectFieldData.FK_UploadedExcelData_Id = objForm.currentAccountData.initialFieldId;
                                         oldTblProjectFieldData.IsSkipped = objForm.currentAccountData.isAccountSkipped;
                                         oldTblProjectFieldData.IsReAssign = false;
@@ -1730,9 +1730,63 @@ namespace GarronT.CMS.Model.DAL
                                         oldTblProjectFieldData.JsonDataVal = _jsonData;
                                         objCompassEntities.SaveChanges();
                                         saveRecord = false;
+
+                                        if (objForm.currentAccountData.skipId != null && objForm.currentAccountData.skipId > 0)
+                                        {
+                                            // Old imges/Audio/Video Inactive save
+                                            CompassEntities CE = new CompassEntities();
+                                            var oldTblProjectFieldDataAttachment = CE.TblProjectFieldDataAttachments.Where(o => o.ProjectFieldDataId == oldTblProjectFieldData.ID && o.Active == 1 && o.IsSkipped == true).ToList();
+                                            foreach (var item in oldTblProjectFieldDataAttachment)
+                                            {
+                                                item.Active = 0;
+                                                item.ModifiedBy = int.Parse(objForm.userId.ToString());
+                                                item.ModifiedOn = new CommonFunctions().ServerDate();
+                                                CE.SaveChanges();
+                                            }
+                                            //end hare
+
+                                            //Save New files
+                                            string latlng = objForm.currentAccountData.skipGPSLocation;
+                                            string urlPath = "https://maps.googleapis.com/maps/api/staticmap?center=" + latlng +
+                                               "&zoom=15&size=200x200&maptype=roadmap&markers=color:green%7C" + latlng + "&sensor=false&key=" + googleKey;
+
+                                            string ServerUploadFolder = @"~\MobileUploadData\";
+                                            string ServerUploadFolder1 = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["UploadFilePath"]);
+                                            string tempPath = ServerUploadFolder + objForm.projectId + @"\" + objForm.formId + @"\" +
+                                            objForm.currentAccountData.accountNumber + @"\" + objForm.currentAccountData.initialFieldId + @"\" + "MAP" + @"\";
+                                            string mapFilePath = System.Web.HttpContext.Current.Request.MapPath(tempPath);
+                                            grantAccess(mapFilePath);
+
+                                            mapFilePath = mapFilePath + @"img.png";
+                                            string tempPath1 = ServerUploadFolder1 + objForm.projectId + @"\" + objForm.formId + @"\" +
+                                            objForm.currentAccountData.accountNumber + @"\" + objForm.currentAccountData.initialFieldId + @"\" + "MAP" + @"\img.png";
+
+                                            //String Url to Bytes
+                                            byte[] bytes = GetBytesFromUrl(urlPath);
+
+                                            //Bytes Saved to Specified File
+                                            WriteBytesToFile(mapFilePath, bytes);
+
+                                            TblProjectFieldDataAttachment obj = new TblProjectFieldDataAttachment();
+                                            obj.Active = 1;
+                                            obj.CreatedOn = new CommonFunctions().ServerDate();
+                                            obj.CreatedBy = int.Parse(objForm.userId.ToString());
+                                            obj.ProjectFieldDataId = oldTblProjectFieldData.ID;
+                                            obj.IsAudioVideoImage = 3;
+                                            obj.strFilePath = tempPath1;
+                                            obj.IsSkipped = true;
+                                            obj.isServiceData = false;
+                                            objCompassEntities.TblProjectFieldDataAttachments.Add(obj);
+                                            objCompassEntities.SaveChanges();
+
+                                            projectFieldDataId = oldTblProjectFieldData.ID;
+                                            isRecrodSaved = true;
+                                            responseMessage = "Record Saved Successfull.";
+                                        }
                                     }
                                     else
                                     {
+                                        long recordId = long.Parse(skipOrRtuFlag.ToString());
                                         TblProjectFieldData objTblProjectFieldData = objCompassEntities.TblProjectFieldDatas.Where(o => o.ID == recordId).FirstOrDefault();
                                         objTblProjectFieldData.Active = 0;
                                         objTblProjectFieldData.ModifiedOn = new CommonFunctions().ServerDate();
@@ -1741,7 +1795,7 @@ namespace GarronT.CMS.Model.DAL
                                         #region history inserted
                                         TblProjectFieldDataHistory objTblProjectFieldDataHistory = new TblProjectFieldDataHistory();
                                         objTblProjectFieldDataHistory.Active = 1;
-                                        objTblProjectFieldDataHistory.CreatedBy = 1;
+                                        objTblProjectFieldDataHistory.CreatedBy = int.Parse(objForm.userId.ToString());
                                         objTblProjectFieldDataHistory.CreatedOn = new CommonFunctions().ServerDate();
                                         objTblProjectFieldDataHistory.FormId = objTblProjectFieldData.FormId;
                                         objTblProjectFieldDataHistory.InstallerId = objTblProjectFieldData.InstallerId;
@@ -1838,7 +1892,7 @@ namespace GarronT.CMS.Model.DAL
                                     TblProjectFieldDataAttachment obj = new TblProjectFieldDataAttachment();
                                     obj.Active = 1;
                                     obj.CreatedOn = new CommonFunctions().ServerDate();
-                                    obj.CreatedBy = 1;
+                                    obj.CreatedBy = int.Parse(objForm.userId.ToString());
                                     obj.ProjectFieldDataId = objTblProjectFieldData.ID;
                                     obj.IsAudioVideoImage = 3;
                                     obj.strFilePath = tempPath1;
@@ -2526,7 +2580,7 @@ namespace GarronT.CMS.Model.DAL
                                         TblProjectFieldDataAttachment obj = new TblProjectFieldDataAttachment();
                                         obj.Active = 1;
                                         obj.CreatedOn = new CommonFunctions().ServerDate();
-                                        obj.CreatedBy = 1;
+                                        obj.CreatedBy = int.Parse(objForm.userId.ToString());
                                         obj.tblProjectFieldDataMaster_ID = masterFieldId;
                                         obj.IsAudioVideoImage = 3;
                                         obj.strFilePath = tempPath1;
@@ -2540,7 +2594,7 @@ namespace GarronT.CMS.Model.DAL
                                         TblProjectFieldDataAttachment obj = new TblProjectFieldDataAttachment();
                                         obj.Active = 1;
                                         obj.CreatedOn = new CommonFunctions().ServerDate();
-                                        obj.CreatedBy = 1;
+                                        obj.CreatedBy = int.Parse(objForm.userId.ToString());
                                         obj.ProjectFieldDataId = objTblProjectFieldData.ID;
                                         obj.IsAudioVideoImage = 3;
                                         obj.strFilePath = CommonTempPath;
@@ -2579,10 +2633,8 @@ namespace GarronT.CMS.Model.DAL
                                 }
 
                                 projectFieldDataId = objTblProjectFieldData.ID;
-
                                 isRecrodSaved = true;
                                 responseMessage = "Record Saved Successfull.";
-
                                 #endregion
                             }
 
