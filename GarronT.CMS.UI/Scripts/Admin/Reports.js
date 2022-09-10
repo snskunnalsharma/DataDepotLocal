@@ -17,7 +17,8 @@ $(document).ready(function () {
 
     $("#modalAuditorAllocation").modal('hide');
     $('#dynamic-table').DataTable({
-        "sDom": '<"dt_head"fp>t<"F"l>'
+        //"sDom": '<"dt_head"fp>t<"F"l>'
+        "sDom": '<"col-lg-12 drp-rec"fl><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">'
     });
 
     $("#Reports").addClass('active');
@@ -798,7 +799,7 @@ function SelectAll_Recods() {
                         "oLanguage": {
                             "sLengthMenu": '_MENU_ Records per page'
                         },
-
+                        "sDom": '<"col-lg-12 drp-rec"fl><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
                         "aaSorting": [],
                         "iDisplayLength": -1,
                         "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
@@ -1009,6 +1010,7 @@ function _searchClick() {
                         'responsive': true,
                         "bDeferRender": true,
                         //"sAjaxDataProp": 'aData',
+                        "sDom": '<"col-lg-12 drp-rec"fl><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
                         "oLanguage": {
                             "sLengthMenu": '_MENU_ Records per page'
                         },
@@ -1598,7 +1600,7 @@ function bindTable() {
                     "oLanguage": {
                         "sLengthMenu": '_MENU_ Records per page'
                     },
-
+                    "sDom": '<"col-lg-12 drp-rec"fl><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
                     //"sAjaxSource": msg.result,
 
                     "aaSorting": [],
