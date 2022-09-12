@@ -4375,7 +4375,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                             if (!string.IsNullOrEmpty(objNewMeterNum))
                             {
                                 string result = objNewMeterNum.Substring(0, 3);
-                                if (result.ToUpper().Equals("1NF"))
+                                if (result.ToUpper().Equals("1NF") || result.ToUpper().Equals("2JF"))
                                 {
                                     string finalSeNo = objNewMeterNum.Replace(result, "");  // Remove frist 3 cher
                                                                                             //string finalSeNo2nd = objNewMeterNum.Remove(0, 3);

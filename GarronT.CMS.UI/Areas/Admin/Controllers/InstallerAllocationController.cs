@@ -431,8 +431,10 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     bool Flag = false;
                     List<string> DeallocatedItem = null;
 
-
-                    bool success = installerDAL.create(InstallerMap, out returnMessage, out DeallocatedItem, out Flag, unAllocatedSkipStatus);
+                    CompassEntities AIBCARMEntities = new CompassEntities();
+                    var vr = User.Identity.Name;
+                    var logedInUserid = AIBCARMEntities.tblUsers.Where(x => x.UserName == vr).Select(x => x.UserID).FirstOrDefault();
+                    bool success = installerDAL.create(InstallerMap, out returnMessage, out DeallocatedItem, out Flag, unAllocatedSkipStatus, logedInUserid);
                     
 
                     #region Added code by vishal To send mail to installer

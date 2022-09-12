@@ -1118,7 +1118,7 @@ namespace GarronT.CMS.Model.DAL
         /// <param name="InstallerMap"></param>
         /// <param name="Message"></param>
         /// <returns></returns>
-        public bool create(InstallerMap InstallerMap, out string Message, out List<string> DeallocatedItem, out bool Flag,string unAllocatedSkipStatus)
+        public bool create(InstallerMap InstallerMap, out string Message, out List<string> DeallocatedItem, out bool Flag,string unAllocatedSkipStatus, long logedInUserid)
         {
             bool result = false;
             Flag = false;
@@ -1196,12 +1196,13 @@ namespace GarronT.CMS.Model.DAL
                     cmd2.CommandText = "PROC_InstallerAllocation_DeactivateCurrentVisits";
                     cmd2.CommandType = CommandType.StoredProcedure;
                     cmd2.Connection = sqlConnection2;
-                    cmd2.Parameters.Add("@ProjectId", InstallerMap.ProjectID);
-                    cmd2.Parameters.Add("@fromDate", fromDate);
-                    cmd2.Parameters.Add("@toDate", toDate);
-                    cmd2.Parameters.Add("@InstallerId", InstallerMap.InstallerID);
-                    cmd2.Parameters.Add("@RouteList", routeValues);
-                    cmd2.Parameters.Add("@CycleList", cycleValues);
+                    cmd2.Parameters.AddWithValue("@ProjectId", InstallerMap.ProjectID);
+                    cmd2.Parameters.AddWithValue("@fromDate", fromDate);
+                    cmd2.Parameters.AddWithValue("@toDate", toDate);
+                    cmd2.Parameters.AddWithValue("@InstallerId", InstallerMap.InstallerID);
+                    cmd2.Parameters.AddWithValue("@RouteList", routeValues);
+                    cmd2.Parameters.AddWithValue("@CycleList", cycleValues);
+                    cmd2.Parameters.AddWithValue("@logedInUserid", int.Parse(Convert.ToString(logedInUserid)));
 
                     sqlConnection2.Open();
                     cmd2.ExecuteNonQuery();
@@ -1279,6 +1280,7 @@ namespace GarronT.CMS.Model.DAL
                         cmd2.Parameters.AddWithValue("@InstallerId", InstallerMap.InstallerID);
                         cmd2.Parameters.AddWithValue("@RouteList", routeValues);
                         cmd2.Parameters.AddWithValue("@CycleList", cycleValues);
+                        cmd2.Parameters.AddWithValue("@logedInUserid", int.Parse(Convert.ToString(logedInUserid)));
                         sqlConnection2.Open();
                         cmd2.ExecuteNonQuery();
                         sqlConnection2.Close();
@@ -1308,6 +1310,8 @@ namespace GarronT.CMS.Model.DAL
                                 installerdata.FromDate = Convert.ToDateTime(InstallerMap.FromDate);
                                 installerdata.ToDate = Convert.ToDateTime(InstallerMap.ToDate);
                                 installerdata.Active = 1;
+                                installerdata.ModifiedBy = int.Parse(Convert.ToString(logedInUserid));
+                                installerdata.ModifiedOn= new CommonFunctions().ServerDate();
                             }
                             //installerdata.Active = 1;
                             dbcontext.SaveChanges();
@@ -1327,8 +1331,8 @@ namespace GarronT.CMS.Model.DAL
                                 objtblInstallerMapData.ToDate = Convert.ToDateTime(InstallerMap.ToDate);
                             }
                             objtblInstallerMapData.Active = 1;
-                            objtblInstallerMapData.CreatedBy = 1;
-                            objtblInstallerMapData.CreatedOn = dt;
+                            objtblInstallerMapData.CreatedBy = int.Parse(Convert.ToString(logedInUserid));
+                            objtblInstallerMapData.CreatedOn = new CommonFunctions().ServerDate();
                             dbcontext.tblInstallerMapDatas.Add(objtblInstallerMapData);
                             dbcontext.SaveChanges();
                         }
@@ -1414,7 +1418,7 @@ namespace GarronT.CMS.Model.DAL
                         {
                             TblProjectFieldDataHistory objTblProjectFieldDataHistory = new TblProjectFieldDataHistory();
                             objTblProjectFieldDataHistory.Active = 1;
-                            objTblProjectFieldDataHistory.CreatedBy = 1;
+                            objTblProjectFieldDataHistory.CreatedBy = itemRow.CreatedBy;
                             objTblProjectFieldDataHistory.CreatedOn = new CommonFunctions().ServerDate();
                             objTblProjectFieldDataHistory.FormId = itemRow.FormId;
                             objTblProjectFieldDataHistory.InstallerId = itemRow.InstallerId;
@@ -1442,7 +1446,7 @@ namespace GarronT.CMS.Model.DAL
                             objTblUnAllocatedSkipHistory.SkippedReason = itemRow.SkippedReason;
                             objTblUnAllocatedSkipHistory.SkipComment = itemRow.SkipComment;
                             objTblUnAllocatedSkipHistory.Active = 1;
-                            objTblUnAllocatedSkipHistory.CreatedBy = 1;
+                            objTblUnAllocatedSkipHistory.CreatedBy = itemRow.CreatedBy;
                             objTblUnAllocatedSkipHistory.CreatedOn = new CommonFunctions().ServerDate();
                             compassEntities.TblUnAllocatedSkipHistories.Add(objTblUnAllocatedSkipHistory);
                             compassEntities.SaveChanges();
