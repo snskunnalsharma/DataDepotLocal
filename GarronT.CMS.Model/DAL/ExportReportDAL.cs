@@ -868,21 +868,27 @@ namespace GarronT.CMS.Model.DAL
         }
 
 
-        public DataTable NotAllocatedData_FormType(long projectId)
+        public DataTable NotAllocatedData_FormType(long projectId,bool status)
         {
             CompassEntities objCompassEntities = new CompassEntities();
             // var data = objCompassEntities.STP_ExportReportData_NotAllocated(formId).ToList();
 
             using (CompassEntities dbcontext = new CompassEntities())
             {
+                string ProcName = string.Empty;
+                if (status)
+                { ProcName = "PROC_ExportReport_UnAllocatedSkipRecords_FormType"; }
+                else
+                { ProcName = "PROC_ExportReport_NotAllocatedRecords_FormType"; }
+
                 List<STP_ExportReportData_NotAllocated_Result> objList = new List<STP_ExportReportData_NotAllocated_Result>();
                 SqlConnection sqlConnection1 = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
                 SqlCommand cmd = new SqlCommand();
                 DataTable dt = new DataTable();
-                cmd.CommandText = "PROC_ExportReport_NotAllocatedRecords_FormType";
+                cmd.CommandText = ProcName;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Connection = sqlConnection1;
-                cmd.Parameters.Add("@ProjectId", projectId);
+                cmd.Parameters.AddWithValue("@ProjectId", projectId);
                 sqlConnection1.Open();
 
                 using (SqlDataAdapter da = new SqlDataAdapter(cmd))

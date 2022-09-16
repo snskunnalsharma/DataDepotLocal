@@ -3051,7 +3051,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         }
 
 
-        public DataTable NotAllocatedRecordDataTable(long formTypeId, long projectId, out List<string> columnNameList1)
+        public DataTable NotAllocatedRecordDataTable(long formTypeId, long projectId, out List<string> columnNameList1,bool status)
         {
             string _webUrl = System.Configuration.ConfigurationManager.AppSettings["WebURL"].ToString();
 
@@ -3065,7 +3065,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
             using (ExportReportDAL exportReportDAL = new ExportReportDAL())
             {
-                DataTable dtNotAllocatedData = exportReportDAL.NotAllocatedData_FormType(projectId);
+                DataTable dtNotAllocatedData = exportReportDAL.NotAllocatedData_FormType(projectId, status);
 
                 if (dtNotAllocatedData != null && dtNotAllocatedData.Rows.Count > 0)
                 {
@@ -3157,8 +3157,11 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     {
 
                         DataRow dr = dt.NewRow();
-
-                        dr["VISIT STATUS"] = "NOT ALLOCATED";
+                        if (status)
+                        { dr["VISIT STATUS"] = "UNALLOCATED SKIP"; }
+                        else
+                        { dr["VISIT STATUS"] = "NOT ALLOCATED"; }
+                        
                         // dr["VISIT START DATE"] = "-";
                         // dr["VISIT END DATE"] = "-";
 
@@ -3640,12 +3643,14 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             }
 
 
-            if (visitStatus.Contains("Not Allocated"))
+            if (visitStatus.Contains("Not Allocated") || visitStatus.Contains("UnAllocated Skip"))
             {
                 #region Not Allocated
-
+                bool status = false;
+                if (visitStatus.Contains("UnAllocated Skip"))
+                { status = true; }
                 List<string> NotAllocatedColumns;
-                DataTable dt4 = NotAllocatedRecordDataTable(formTypeId, projectId, out NotAllocatedColumns);
+                DataTable dt4 = NotAllocatedRecordDataTable(formTypeId, projectId, out NotAllocatedColumns, status);
 
 
                 if (dt4 != null && dt4.Rows.Count > 0)
@@ -4384,20 +4389,22 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                             }
                         }
 
-                        var dis = tempObjList.Where(o => o.FieldValue == dt.Rows[k]["ACCOUNT"].ToString()).FirstOrDefault();
-                        var objLatLong = tempObjList.Where(o => o.TblProjectFieldData_Id == dis.TblProjectFieldData_Id && o.InitialFieldName == "LOCATION/GPS").FirstOrDefault();
-                        if (!string.IsNullOrEmpty(objLatLong.FieldLatitude) && !string.IsNullOrEmpty(objLatLong.FieldLongitude))
+                        if (tempObjList != null && tempObjList.Count > 0)
                         {
-                            dt.Rows[k]["V_NEW_LATITUDE"] = objLatLong.FieldLatitude;
-                            dt.Rows[k]["V_NEW_LONGITUDE"] = objLatLong.FieldLongitude;
+                            var dis = tempObjList.Where(o => o.FieldValue == dt.Rows[k]["ACCOUNT"].ToString()).FirstOrDefault();
+                            var objLatLong = tempObjList.Where(o => o.TblProjectFieldData_Id == dis.TblProjectFieldData_Id && o.InitialFieldName == "LOCATION/GPS").FirstOrDefault();
+                            if (!string.IsNullOrEmpty(objLatLong.FieldLatitude) && !string.IsNullOrEmpty(objLatLong.FieldLongitude))
+                            {
+                                dt.Rows[k]["V_NEW_LATITUDE"] = objLatLong.FieldLatitude;
+                                dt.Rows[k]["V_NEW_LONGITUDE"] = objLatLong.FieldLongitude;
+                            }
+                            else
+                            {
+                                var objWorkCompletLatLong = tempObjList.Where(o => o.TblProjectFieldData_Id == dis.TblProjectFieldData_Id && o.InitialFieldName == "WORK COMPLETED").FirstOrDefault();
+                                dt.Rows[k]["V_NEW_LATITUDE"] = objWorkCompletLatLong.FieldLatitude;
+                                dt.Rows[k]["V_NEW_LONGITUDE"] = objWorkCompletLatLong.FieldLongitude;
+                            }
                         }
-                        else
-                        {
-                            var objWorkCompletLatLong = tempObjList.Where(o => o.TblProjectFieldData_Id == dis.TblProjectFieldData_Id && o.InitialFieldName == "WORK COMPLETED").FirstOrDefault();
-                            dt.Rows[k]["V_NEW_LATITUDE"] = objWorkCompletLatLong.FieldLatitude;
-                            dt.Rows[k]["V_NEW_LONGITUDE"] = objWorkCompletLatLong.FieldLongitude;
-                        }
-                        
                         /*if (dt.Columns.Contains("V_NEW_LATITUDE") && dt.Columns.Contains("V_NEW_LONGITUDE") && dt.Columns.Contains("ACCOUNT"))
                         {
                             string objAccount = dt.Rows[k]["ACCOUNT"].ToString();
