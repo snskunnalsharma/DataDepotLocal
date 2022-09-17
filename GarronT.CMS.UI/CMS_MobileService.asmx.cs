@@ -2942,5 +2942,32 @@ namespace GarronT.CMS.UI
                 log.Info("ERROR ex.InnerException.Message - " + (ex.InnerException.Message != null ? ex.InnerException.Message : ""));
             }
         }
+
+        // Add Code by SNS date 13 Sep 2022 
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public void GetAccountAssignedStatus(long InstallerId, long UploadExcelId)
+        {
+            try
+            {
+                JavaScriptSerializer s = new JavaScriptSerializer();
+                s.MaxJsonLength = 2147483644;
+                log.Info("WEB Service Get Account Assigned Status Started at - " + DateTime.Now.ToString());
+                MobileDAL mobileDal = new MobileDAL();
+                var result = mobileDal.getAccountAssignedStatus(InstallerId, UploadExcelId);
+                Context.Response.ContentType = "application/json";
+                Context.Response.Write(s.Serialize(new { status = "Success", assignedStatus = result }));
+
+                log.Info("WEB Service Get Account Assigned Status Started Ended at - " + DateTime.Now.ToString());
+            }
+            catch (Exception ex)
+            {
+                setJsonReponse(4, "Fail", ex.Message);
+                log.Info("WEB Service Get Account  ERROR at " + DateTime.Now.ToString());
+                log.Info("ERROR  ex.Message - " + (ex.Message != null ? ex.Message : ""));
+                log.Info("ERROR  ex.StackTrace - " + (ex.StackTrace != null ? ex.StackTrace : ""));
+                log.Info("ERROR ex.InnerException.Message - " + (ex.InnerException.Message != null ? ex.InnerException.Message : ""));
+            }
+        }
     }
 }
