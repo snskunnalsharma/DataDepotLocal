@@ -3617,6 +3617,30 @@ namespace GarronT.CMS.Model.DAL
             }
         }
 
+        public bool getAccountAssignedStatus(long userId, long uploadExcelId)
+        {
+            try
+            {
+                bool a = false;
+
+                CompassEntities objCompassEntities = new CompassEntities();
+                var objAccountDetails = objCompassEntities.tblInstallerMapDatas.Where(o => o.InstallerId == userId && o.FK_UploadedExcelData_Id == uploadExcelId && o.Active == 1).FirstOrDefault();
+                if (objAccountDetails != null)
+                {
+                    a = true;
+                }
+                else
+                {
+                    a = false;
+                }
+                return a;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
     }
 
 
