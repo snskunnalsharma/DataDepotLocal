@@ -491,6 +491,7 @@ $('#ddlformtype').change(function () {
                     $('#ulVisitStatus').append($('<li></li>').val('2').addClass("liVisitStatus active-result").html('Pending'));
                     $('#ulVisitStatus').append($('<li></li>').val('4').addClass("liVisitStatus active-result").html('RTU'));
                     $('#ulVisitStatus').append($('<li></li>').val('3').addClass("liVisitStatus active-result").html('Skip'));
+                    $('#ulVisitStatus').append($('<li></li>').val('6').addClass("liVisitStatus active-result").html('UnAllocated Skip'));
 
                 }
 
