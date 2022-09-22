@@ -1304,11 +1304,17 @@ function fnValidateDynamicContent(element) {
 
 var marker;
 function initMap(strlat, strLong) {
-
+    //initialize(strlat, strLong);
     var map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 24,
+        zoom: 20,
         center: { lat: parseFloat(strlat), lng: parseFloat(strLong) },
-        mapTypeId: google.maps.MapTypeId.ROADMAP
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        zoomControl: true,
+        zoomControlOptions: { style: google.maps.ZoomControlStyle.DEFAULT },
+        scaleControl: true,
+        scrollwheel: true,
+        panControl: true,
+        streetViewControl: true,
     });
 
     marker = new google.maps.Marker({
@@ -1319,12 +1325,37 @@ function initMap(strlat, strLong) {
     });
     //marker.addListener('click', toggleBounce);
 
+
     var infoWindow = new google.maps.InfoWindow({ maxWidth: 400 });
 
     var geocoder = new google.maps.Geocoder();
 
     //google.maps.event.addListener(marker, 'dragend', function (event) {
+    var marker2 = new google.maps.StreetViewPanorama(
+        document.getElementById("pano"),
+        {
+            map: map,
+            position: { lat: parseFloat(strlat), lng: parseFloat(strLong) },
+            pov: {
+                heading: 34,
+                pitch: 10,
+            },
+            draggable: true,
+            animation: google.maps.Animation.DROP,
+        }
+    );
+    map.setStreetView(marker2);
+    google.maps.event.addListener(marker2, 'dragend', function (event) {
 
+
+
+        var a = marker.getPosition().lat().toFixed(6).toString();
+        var b = marker.getPosition().lng().toFixed(6).toString();
+        infoWindow.setContent(a, b);
+        infoWindow.open(map, marker2);
+        $('#NewLatitude').text(a);
+        $('#NewLongitude').text(b);
+    })
     google.maps.event.addListener(marker, 'dragend', function (event) {
 
 
@@ -1335,10 +1366,6 @@ function initMap(strlat, strLong) {
         infoWindow.open(map, marker);
         $('#NewLatitude').text(a);
         $('#NewLongitude').text(b);
-
-
-
-
     })
 
 
@@ -1352,11 +1379,124 @@ function initMap(strlat, strLong) {
 
 }
 
-//btnUpdateLatLong    btnLatLongCancel
+function initialize(strlat, strLong) {
+    initMaps(strlat, strLong);
+    /*const map = new google.maps.Map(
+        document.getElementById("map"),
+        {
+            center: { lat: parseFloat(strlat), lng: parseFloat(strLong) },
+            zoom: 14,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        }
+    );
+    marker = new google.maps.StreetViewPanorama(
+        document.getElementById("pano"),
+        {
+            map: map,
+            position: { lat: parseFloat(strlat), lng: parseFloat(strLong) },
+            pov: {
+                heading: 34,
+                pitch: 10,
+            },
+            draggable: true,
+            animation: google.maps.Animation.DROP,
+        }
+    );
+    map.setStreetView(marker);
+    var infoWindow = new google.maps.InfoWindow({ maxWidth: 400 });
+
+    var geocoder = new google.maps.Geocoder();
+    google.maps.event.addListener(marker, 'dragend', function (event) {
+
+
+
+        var a = marker.getPosition().lat().toFixed(6).toString();
+        var b = marker.getPosition().lng().toFixed(6).toString();
+        infoWindow.setContent(a, b);
+        infoWindow.open(map, marker);
+        $('#NewLatitude').text(a);
+        $('#NewLongitude').text(b)
+    })*/
+    
+};
+
+// Initialize and add the map
+function initMaps(strlat, strLong) {
+    debugger;
+    $("#map").val("");
+    $("#pano").val("");
+    // The location of Uluru
+    //const uluru = { lat: -25.344, lng: 131.031 };
+    // The map, centered at Uluru
+    const map = new google.maps.Map(
+        document.getElementById("map"),
+        {
+            zoom: 15,
+            center: { lat: parseFloat(strlat), lng: parseFloat(strLong) },
+            zoomControl: true,
+            zoomControlOptions: { style: google.maps.ZoomControlStyle.DEFAULT },
+            scaleControl: true,
+            scrollwheel: true,
+            panControl: true,
+            streetViewControl: true,
+            
+        }
+    );
+
+    // The marker, positioned at Uluru
+    marker = new google.maps.Marker({
+        position: { lat: parseFloat(strlat), lng: parseFloat(strLong) },
+        map: map,
+        draggable: true,
+        animation: google.maps.Animation.DROP,
+    });
+
+    var marker2 = new google.maps.StreetViewPanorama(
+        document.getElementById("pano"),
+        {
+            map: map,
+            position: { lat: parseFloat(strlat), lng: parseFloat(strLong) },
+            pov: {
+                heading: 34,
+                pitch: 10,
+            },
+            draggable: true,
+            animation: google.maps.Animation.DROP,
+        }
+    );
+    map.setStreetView(marker2);
+
+    var infoWindow = new google.maps.InfoWindow({ maxWidth: 400 });
+    var geocoder = new google.maps.Geocoder();
+    google.maps.event.addListener(marker2, 'dragend', function (event) {
+
+
+
+        /*var a = marker.getPosition().lat().toFixed(6).toString();
+        var b = marker.getPosition().lng().toFixed(6).toString();
+        infoWindow.setContent(a, b);*/
+        infoWindow.open(map, marker2);
+       /* $('#NewLatitude').text(a);
+        $('#NewLongitude').text(b)*/
+    })
+    google.maps.event.addListener(marker, 'dragend', function (event) {
+
+
+
+        var a = marker.getPosition().lat().toFixed(6).toString();
+        var b = marker.getPosition().lng().toFixed(6).toString();
+        infoWindow.setContent(a, b);
+        infoWindow.open(map, marker);
+        $('#NewLatitude').text(a);
+        $('#NewLongitude').text(b)
+    })
+};
+//window.initMaps = initMaps;
+
 
 
 $(document).on('click', '#btnUpdateLatLong', function () {
-
+    debugger;
     var elem = $("#NewLatitude").text();
 
     var elem1 = $("#NewLongitude").text();
