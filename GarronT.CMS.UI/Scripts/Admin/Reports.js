@@ -18,7 +18,13 @@ $(document).ready(function () {
     $("#modalAuditorAllocation").modal('hide');
     $('#dynamic-table').DataTable({
         //"sDom": '<"dt_head"fp>t<"F"l>'
-        "sDom": '<"col-lg-12 drp-rec"fl><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">'
+        //"sDom": "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+        //    "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+        //    "<'row'<'col-sm-12'tr>>" +
+        //    "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+        //"sDom": '<"col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xxs-12 drp-rec"<"col-lg-6 col-md-6 col-sm-12 col-xs-12 col-xxs-12"l><"col-lg-6 col-md-6 col-sm-12 col-xs-12 col-xxs-12"f>><"col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xxs-12 rep-shw-ent"<"col-lg-6 col-md-6 col-sm-12 col-xs-12 col-xxs-12"i><"col-lg-6 col-md-6 col-sm-12 col-xs-12 col-xxs-12"p>>rt<ip><"clear">',
+        "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
+
     });
 
     $("#Reports").addClass('active');
@@ -799,7 +805,9 @@ function SelectAll_Recods() {
                         "oLanguage": {
                             "sLengthMenu": '_MENU_ Records per page'
                         },
-                        "sDom": '<"col-lg-12 drp-rec"fl><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
+                        //"sDom": '<"col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xxs-12 drp-rec"fl><"col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xxs-12 rep-shw-ent"ip>rt<ip><"clear">',
+                        //"sDom": '<"col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xxs-12 drp-rec"<"col-lg-6 col-md-6 col-sm-12 col-xs-12 col-xxs-12"l><"col-lg-6 col-md-6 col-sm-12 col-xs-12 col-xxs-12"f>><"col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xxs-12 rep-shw-ent"<"col-lg-6 col-md-6 col-sm-12 col-xs-12 col-xxs-12"i><"col-lg-6 col-md-6 col-sm-12 col-xs-12 col-xxs-12"p>>rt<ip><"clear">',
+                        "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
                         "aaSorting": [],
                         "iDisplayLength": -1,
                         "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
@@ -1007,10 +1015,15 @@ function _searchClick() {
                         "bLengthChange": true,
                         "bDestroy": true,
                         "bserverSide": true,
-                        'responsive': true,
+                        //'responsive': true,
                         "bDeferRender": true,
                         //"sAjaxDataProp": 'aData',
-                        "sDom": '<"col-lg-12 drp-rec"fl><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
+                        //col-lg-3 col-md-4 col-sm-6 col-xs-6 col-xxs-12
+                        //"sDom": '<"col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xxs-12 drp-rec"<"col-lg-6 col-md-6 col-sm-12 col-xs-12 col-xxs-12"l><"col-lg-6 col-md-6 col-sm-12 col-xs-12 col-xxs-12"f>><"col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xxs-12 rep-shw-ent"<"col-lg-6 col-md-6 col-sm-12 col-xs-12 col-xxs-12"i><"col-lg-6 col-md-6 col-sm-12 col-xs-12 col-xxs-12"p>>rt<ip><"clear">',
+                        /*"sDom": "<'row'<'col-sm-6'l><'col-sm-6'f><'col-sm-12'ip>>" +
+                            "<'row'<'col-sm-12'tr>>" +
+                            "<'row'<'col-sm-6'i><'col-sm-6'p>>",*/
+                        "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
                         "oLanguage": {
                             "sLengthMenu": '_MENU_ Records per page'
                         },
@@ -1600,7 +1613,8 @@ function bindTable() {
                     "oLanguage": {
                         "sLengthMenu": '_MENU_ Records per page'
                     },
-                    "sDom": '<"col-lg-12 drp-rec"fl><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
+                    //"sDom": '<"col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xxs-12 drp-rec"<"col-lg-6 col-md-6 col-sm-12 col-xs-12 col-xxs-12"l><"col-lg-6 col-md-6 col-sm-12 col-xs-12 col-xxs-12"f>><"col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xxs-12 rep-shw-ent"<"col-lg-6 col-md-6 col-sm-12 col-xs-12 col-xxs-12"i><"col-lg-6 col-md-6 col-sm-12 col-xs-12 col-xxs-12"p>>rt<ip><"clear">',
+                    "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
                     //"sAjaxSource": msg.result,
 
                     "aaSorting": [],
