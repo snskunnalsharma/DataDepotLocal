@@ -19,7 +19,7 @@ $(document).ready(function () {
     $("#ProjectId").chosen({ placeholder_text_single: "Select Project", no_results_text: "Oops, nothing found!" });
     $('#ProjectId').trigger('chosen:updated');
 
-    $('#dynamic-table').DataTable({ "language": { "emptyTable": "No Data To Show" } });
+    $('#dynamic-table').DataTable({ "language": { "emptyTable": "No Data To Show" }, "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">', });
     debugger;
     $('#divSaveCancel').hide();
 });
@@ -197,7 +197,8 @@ function BindData(varData) {
      "bDeferRender": true,
      "oLanguage": {
          "sLengthMenu": '_MENU_ Records per page'
-     },
+            },
+            "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
      "aaData": varData,
      // "aaSorting": [[3, "asc"]],
      "aoColumns": [

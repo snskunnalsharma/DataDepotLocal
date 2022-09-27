@@ -50,7 +50,8 @@ $(document).ready(function () {
     }).datepicker("setDate", actualDate);
 
     //$('#dynamic-table').DataTable().clear().draw();
-    $('#dynamic-table').DataTable({ "language": { "emptyTable": "No Data To Show" } });
+    $('#dynamic-table').DataTable({ "language": { "emptyTable": "No Data To Show" }, "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">', });
+     
     //#region --Make Menu Active--
     $("#Reports").addClass('active');
     $("#subReports").addClass('block');
@@ -116,14 +117,16 @@ function LoadActiveTable() {
                         "bLengthChange": true,
                         "bDestroy": true,
                         "bserverSide": true,
-                        'responsive': true,
+                        /*'responsive': true,*/
                         "bDeferRender": true,
                         //"sAjaxDataProp": 'aData',
                         "oLanguage": {
                             "sLengthMenu": '_MENU_ Records per page'
                         },
+                        "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
                         //"sAjaxSource": msg.result,
                         "aaData": data.installerMapHistoryList,
+                     
                         "aoColumns": [
 
                             { "mData": "VisitedDate" },
@@ -165,6 +168,7 @@ function LoadActiveTable() {
                     var accId = detailIdArray[1];
                     var accNo = detailIdArray[2];
                     accountHistory = "";
+
                     //oTable.rows('.parent').nodes().to$().find('td:last-child').trigger('click');
                     
                     if (row.child.isShown()) {
@@ -180,6 +184,7 @@ function LoadActiveTable() {
                             this.child.hide();
                             tr.removeClass('shown');
                         });
+                      
                         // Open this row
                         console.log('Open data details');
                         //row.child(format($('#example td.details-control').index($(this)))).show();
@@ -188,6 +193,7 @@ function LoadActiveTable() {
                         row.child(accountHistory).show();
                         //row.child('<span>hell dear</span>').show();
                         tr.addClass('shown');
+                     
                     }
                 });
             }
@@ -282,8 +288,10 @@ function ShowDataAsChildTable(varData) {
             '<td>' + value.SkipComment + '</td>' +
             '</tr>'
         );
+        
         debugger;
     });
+   
     return $('#dynamic-table-detail-data').prop('outerHTML');
 }
 
@@ -309,9 +317,11 @@ function ShowDataInTable(varData) {
             '<td>' + value.SkippedReason + '</td>' +
             '<td>' + value.SkipComment + '</td>' +
             '</tr>'
+             
         );
         debugger;
     });
+   
 }
 $("#filter").on("keyup", function () {
     var value = $(this).val().toLowerCase();
@@ -474,7 +484,9 @@ $('#ddlProject').change(function () {
                 console.log(textStatus);
                 console.log('errorThrown:');
                 console.log(errorThrown);
+               
             }
+           
         });
     }
 });

@@ -14,10 +14,21 @@
 @Html.Hidden("urlTransferInventory", Url.Action("saveTransferInventory", "InventoryBulkTransfer"))
 
 <style>
+    @@media (min-width:375px) {
+        .dataTables_length > label {
+            white-space: normal;
+            width: auto;
+        }
+    }
+
     .recinv-drp3 {
         margin-bottom: 4px;
     }
-
+    .rep-shw-ent{
+        margin-top:-18px;
+        margin-bottom:-18px;
+        padding:0px;
+    }
     .recinv-drp4 {
         margin-top: 8px;
         margin-bottom: 8px;
@@ -1358,8 +1369,8 @@
         $("#ReportType").chosen();
         $('#ReportType').val("0").attr("selected", "selected").trigger('chosen:updated');
 
-        $('#dynamic-table').DataTable({ "language": { "emptyTable": "No Data To Show" } });
-        $('#dynamic-table-summary').DataTable({ "language": { "emptyTable": "No Data To Show" } });
+        $('#dynamic-table').DataTable({ "language": { "emptyTable": "No Data To Show" }, "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">', });
+        $('#dynamic-table-summary').DataTable({ "language": { "emptyTable": "No Data To Show" }, "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">', });
 
         $("#LocationType").chosen({ placeholder_text_single: "Select Location", no_results_text: "Oops, nothing found!" });
         $('#LocationType').val("0").attr("selected", "selected").trigger('chosen:updated');
@@ -1753,6 +1764,7 @@
                 "oLanguage": {
                     "sLengthMenu": '_MENU_ Records per page'
                 },
+                "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
                 "aaData": varData,
                 // "aaSorting": [[3, "asc"]],
                 "aoColumns": [

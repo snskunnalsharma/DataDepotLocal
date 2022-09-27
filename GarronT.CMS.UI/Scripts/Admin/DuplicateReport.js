@@ -26,7 +26,8 @@ $(document).ready(function () {
     $('#dynamic-table').DataTable({
         "language": {
             "emptyTable": "No Data To Show"
-        }
+        }, "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
+
     });
 });
 
@@ -108,6 +109,7 @@ $('#ddlProject').change(function () {
             complete: function () {
                 //waitingDialog.hide();
             },
+            "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
             success: function (data) {
                 debugger;
                 $('#ddlInstaller').empty();
@@ -189,6 +191,7 @@ function GetDuplicateRecords(projectID, InstallerID, SearchField) {
             BindData(data.varData);
 
         },
+        "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
         error: function (jqXHR, textStatus, errorThrown) {
             waitingDialog.hide();
             var $toast = toastr["error"](textStatus + "</br>" + errorThrown, "Error Notification");
@@ -217,7 +220,8 @@ function BindData(varData) {
      "bDeferRender": true,
      "oLanguage": {
          "sLengthMenu": '_MENU_ Records per page'
-     },
+            },
+            "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
      "aaData": varData,
      //"aaSorting": [[3, "asc"]],
      "aoColumns": [
