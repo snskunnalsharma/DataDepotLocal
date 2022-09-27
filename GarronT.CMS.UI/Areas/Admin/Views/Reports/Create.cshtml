@@ -365,9 +365,9 @@
 
 
                     @*<div class="col-lg-4 col-sm-4 rp-hd" style="text-align:center">
-                        <label class="repfrm-lab"><b> Form Name</b></label>
-                        <div id="FormName" class="FormName rep-proj-nm"></div>
-                    </div>*@
+                            <label class="repfrm-lab"><b> Form Name</b></label>
+                            <div id="FormName" class="FormName rep-proj-nm"></div>
+                        </div>*@
                     <div id="FormName_and_CustomerAdd"></div>
 
                 </div>
@@ -549,25 +549,40 @@
 
 
 
-
-<div class="modal fade modal-dialog-center" id="myModalChangeLatLong" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade modal-dialog-center reveal-modal large" id="myModalChangeLatLong" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content-wrap">
-            <div class="modal-content" style="height:580px;">
+            <div class="modal-content" style="height: 580px; width: 1000px;">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     <h4 class="modal-title">Map</h4>
                 </div>
                 <div class="modal-body">
                     <div class="panel-body">
-                        <div class="panel-body panel_top" style="height:400px; width:500px;">
-                            <form role="form" action="" method="post" style=" background: rgb(190, 210, 230);" class="form-horizontal">
+                        <div class="panel-body panel_top" style="height:400px;">
+                            <form role="form" action="" method="post" style="width: 194%;" class="form-horizontal">
                                 <input type="hidden" id="txtCurrentReportFieldId" />
-                                <div class="row setup-content" id="ShowDynamicMap" style="height:400px; width:500px;">
-
-
+                                @*<div class="row setup-content" id="ShowDynamicMap" style="height:400px; width:500px;">*@
+                                <div class="row setup-content" id="ShowDynamicMap" style="height: 400px; width: 989px;">
+                                    <div id="map" style="width: 100%; height: 100%; "></div>
                                 </div>
+                                <div class="col-xs-12 aud-cntrl" style="bottom:-70px; position:absolute;">
+                                    <div class="form-group ">
+                                        <span id="CLatLongId" style="display:none"></span>
+                                        <span id="COldLat" style="display:none"></span>
+                                        <span id="COldLong" style="display:none"></span>
+                                        <span class="col-lg-2 col-sm-2 col-xs-2 control-label">Latitude -</span>
+                                        <span id="NewLatitude" class="col-lg-3 col-sm-3 col-xs-3 control-label"></span>
+                                        <span class="col-lg-2 col-sm-2 col-xs-2 control-label">Longitude - </span>
+                                        <span id="NewLongitude" class="col-lg-2 col-sm-2 col-xs-2 control-label"></span>
+                                    </div>
 
+                                    <div class="form-group" style="text-align:center">
+                                        <input type="button" class="btn btn-success" id="btnUpdateLatLong" value="Update" />
+                                        <input type="button" class="btn btn-danger" id="btnLatLongCancel" value="Cancel" />
+
+                                    </div>
+                                </div>
                             </form>
                         </div>
                     </div>
@@ -614,6 +629,6 @@
 
 <script async defer>
     var script = document.createElement('script');
-    script.src = "https://maps.googleapis.com/maps/api/js?v=3.33&key=" + "@System.Configuration.ConfigurationManager.AppSettings["googleapiKey"].ToString()";
+    script.src = "https://maps.googleapis.com/maps/api/js?v=3.33&key=" + "@System.Configuration.ConfigurationManager.AppSettings["googleapiKey"].ToString()" + "&sensor=false";
     document.body.appendChild(script);
 </script>

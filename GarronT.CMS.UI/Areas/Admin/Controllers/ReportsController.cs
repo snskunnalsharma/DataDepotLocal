@@ -4059,7 +4059,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
 
         [HttpGet]
-        public ActionResult SetGLocation()
+        public ActionResult SetGLocation()  //This code not use because partial view don't use because partial view Map Street view not working
         {
             return PartialView("_UpdateLatLong");
         }
