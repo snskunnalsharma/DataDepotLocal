@@ -1307,19 +1307,23 @@ function fnValidateDynamicContent(element) {
 var marker;
 function initMap(strlat, strLong) {
     //initialize(strlat, strLong);
-
-    var map = new google.maps.Map.WebGLOverlayView(document.getElementById('map'), {
+    //console.log("map===>");
+    //console.log(document.getElementById('map'));
+    var map = new google.maps.Map(document.getElementById('map'), {
         zoom: 18,
         center: { lat: parseFloat(strlat), lng: parseFloat(strLong) },
-        mapTypeId: google.maps.MapTypeId.ROADMAP.WebGLOverlayView,
+        //mapTypeId: google.maps.MapTypeId.ROADMAP,
+        mapTypeId: 'satellite',
         zoomControl: true,
         zoomControlOptions: { style: google.maps.ZoomControlStyle.DEFAULT },
         scaleControl: true,
         scrollwheel: true,
         panControl: true,
         streetViewControl: true,
+        
     });
-
+    //console.log(map);
+    //map.setTilt(45);
     marker = new google.maps.Marker({
         map: map,
         draggable: true,
@@ -1360,8 +1364,63 @@ function initMap(strlat, strLong) {
 
     })*/
     google.maps.event.addListener(marker, 'dragend', function (event) {
+        var a = marker.getPosition().lat().toFixed(6).toString();
+        var b = marker.getPosition().lng().toFixed(6).toString();
+        infoWindow.setContent(a, b);
+        infoWindow.open(map, marker);
+        $('#NewLatitude').text(a);
+        $('#NewLongitude').text(b);
+    })
 
 
+    /*function toggleBounce() {
+        if (marker.getAnimation() !== null) {
+            marker.setAnimation(null);
+        } else {
+            marker.setAnimation(google.maps.Animation.BOUNCE);
+        }
+    }*/
+
+}
+
+    var map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 24,
+        center: { lat: parseFloat(strlat), lng: parseFloat(strLong) },
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+    });
+
+    marker = new google.maps.Marker({
+        map: map,
+        draggable: true,
+        animation: google.maps.Animation.DROP,
+        position: { lat: parseFloat(strlat), lng: parseFloat(strLong) },
+    });
+
+
+    var infoWindow = new google.maps.InfoWindow({ maxWidth: 400 });
+
+    var geocoder = new google.maps.Geocoder();
+
+    //google.maps.event.addListener(marker, 'dragend', function (event) {
+
+    google.maps.event.addListener(marker, 'dragend', function (event) {
+
+
+
+
+
+        var a = marker.getPosition().lat().toFixed(6).toString();
+        var b = marker.getPosition().lng().toFixed(6).toString();
+        infoWindow.setContent(a, b);
+        infoWindow.open(map, marker);
+        $('#NewLatitude').text(a);
+        $('#NewLongitude').text(b);
+
+
+
+
+    })
+    google.maps.event.addListener(marker, 'dragend', function (event) {
 
 
 
@@ -1383,123 +1442,6 @@ function initMap(strlat, strLong) {
     }
 
 }
-
-function initialize(strlat, strLong) {
-    //initMaps(strlat, strLong);
-    /*const map = new google.maps.Map(
-        document.getElementById("map"),
-        {
-            center: { lat: parseFloat(strlat), lng: parseFloat(strLong) },
-            zoom: 14,
-            mapTypeId: google.maps.MapTypeId.ROADMAP
-        }
-    );
-    marker = new google.maps.StreetViewPanorama(
-        document.getElementById("pano"),
-        {
-            map: map,
-            position: { lat: parseFloat(strlat), lng: parseFloat(strLong) },
-            pov: {
-                heading: 34,
-                pitch: 10,
-            },
-            draggable: true,
-            animation: google.maps.Animation.DROP,
-        }
-    );
-    map.setStreetView(marker);
-    var infoWindow = new google.maps.InfoWindow({ maxWidth: 400 });
-
-    var geocoder = new google.maps.Geocoder();
-    google.maps.event.addListener(marker, 'dragend', function (event) {
-
-
-
-        var a = marker.getPosition().lat().toFixed(6).toString();
-        var b = marker.getPosition().lng().toFixed(6).toString();
-        infoWindow.setContent(a, b);
-        infoWindow.open(map, marker);
-        $('#NewLatitude').text(a);
-        $('#NewLongitude').text(b)
-    })*/
-
-};
-
-// Initialize and add the map
-function initMaps(strlat, strLong) {
-    var map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 17,
-        center: { lat: parseFloat(strlat), lng: parseFloat(strLong) },
-        mapTypeId: google.maps.MapTypeId.ROADMAP,
-        zoomControl: true,
-        zoomControlOptions: { style: google.maps.ZoomControlStyle.DEFAULT },
-        scaleControl: true,
-        scrollwheel: true,
-        panControl: true,
-        streetViewControl: true,
-    });
-
-    marker = new google.maps.Marker({
-        map: map,
-        draggable: true,
-        animation: google.maps.Animation.DROP,
-        position: { lat: parseFloat(strlat), lng: parseFloat(strLong) }
-    });
-    //marker.addListener('click', toggleBounce);
-
-
-    var infoWindow = new google.maps.InfoWindow({ maxWidth: 400 });
-
-    var geocoder = new google.maps.Geocoder();
-
-    //google.maps.event.addListener(marker, 'dragend', function (event) {
-    var marker2 = new google.maps.StreetViewPanorama(
-        document.getElementById("pano"),
-        {
-            map: map,
-            position: { lat: parseFloat(strlat), lng: parseFloat(strLong) },
-            pov: {
-                heading: 34,
-                pitch: 10,
-            },
-            draggable: true,
-            animation: google.maps.Animation.DROP,
-        }
-    );
-    map.setStreetView(marker2);
-    google.maps.event.addListener(marker2, 'dragend', function (event) {
-
-
-
-        var a = marker.getPosition().lat().toFixed(6).toString();
-        var b = marker.getPosition().lng().toFixed(6).toString();
-        infoWindow.setContent(a, b);
-        infoWindow.open(map, marker2);
-        $('#NewLatitude').text(a);
-        $('#NewLongitude').text(b);
-    })
-    google.maps.event.addListener(marker, 'dragend', function (event) {
-
-
-
-        var a = marker.getPosition().lat().toFixed(6).toString();
-        var b = marker.getPosition().lng().toFixed(6).toString();
-        infoWindow.setContent(a, b);
-        infoWindow.open(map, marker);
-        $('#NewLatitude').text(a);
-        $('#NewLongitude').text(b);
-    })
-
-
-    function toggleBounce() {
-        if (marker.getAnimation() !== null) {
-            marker.setAnimation(null);
-        } else {
-            marker.setAnimation(google.maps.Animation.BOUNCE);
-        }
-    }
-};
-//window.initMaps = initMaps;
 
 
 
@@ -1541,8 +1483,8 @@ $(document).on('click', '#btnUpdateLatLong', function () {
                                 var $toast = toastr["success"]("Updated the lat long for the record successfully!", "Notification !");
 
 
-                                $("#myModalChangeLatLong").modal('hide');
-                                $('#ShowDynamicMap').html('');
+                                    $("#myModalChangeLatLong").modal('hide');
+                                    $('#ShowDynamicMap').html('');
 
 
 

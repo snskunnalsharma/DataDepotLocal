@@ -2,6 +2,7 @@
 using GarronT.CMS.Model.BO;
 using Goheer.EXIF;
 using log4net;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -1016,6 +1017,8 @@ namespace GarronT.CMS.UI.WebAPI
             return isSucessed;
         }
 
+
+
         #region CUSTOM IMAGE CAPTURE
         [System.Web.Http.HttpPost]
         [ActionName("UploadCustomImageFiles")]
@@ -1034,6 +1037,7 @@ namespace GarronT.CMS.UI.WebAPI
                 string fieldName = ""; string userId = "";
 
                 HttpFileCollection hfc = HttpContext.Current.Request.Files;
+                
 
                 userId = HttpContext.Current.Request.Form["userId"];
                 log.Info("WEB API Service UploadCustomImageFiles Requested by  - " + userId);
@@ -1142,7 +1146,6 @@ namespace GarronT.CMS.UI.WebAPI
                         for (int iCnt = 0; iCnt <= hfc.Count - 1; iCnt++)
                         {
                             System.Web.HttpPostedFile hpf = hfc[iCnt];
-
                             if (hpf.ContentLength > 0)
                             {
                                 //// CHECK IF THE SELECTED FILE(S) ALREADY EXISTS IN FOLDER. (AVOID DUPLICATE)
@@ -1151,7 +1154,6 @@ namespace GarronT.CMS.UI.WebAPI
                                 //    // SAVE THE FILES IN THE FOLDER.
                                 //    hpf.SaveAs(filePath + Path.GetFileName(hpf.FileName));
                                 //}
-
                                 if (System.IO.File.Exists(filePath + Path.GetFileName(hpf.FileName)))
                                 {
                                     System.GC.Collect();
@@ -1189,11 +1191,8 @@ namespace GarronT.CMS.UI.WebAPI
 
                                 iUploadedCnt = iUploadedCnt + 1;
                                 imageFileNameList.Add(tempPath + Path.GetFileName(hpf.FileName));
-
                             }
                         }
-
-
 
                         foreach (var item in imageFileNameList)
                         {
