@@ -241,7 +241,7 @@ $('#btnSaveData').unbind("click").click(function () {
     $.ajax({
         url: uri,
         data: $("#formsave").serialize() + "&userId=" + userId +
-                "&projectId=" + projectId + "&uploadId=" + accinifiledId + "&reportFormId=" + reportFId + "",
+            "&projectId=" + projectId + "&uploadId=" + accinifiledId + "&reportFormId=" + reportFId + "",
         type: 'POST',
         success: function (msg) {
             if (msg.result == true) {
@@ -870,51 +870,51 @@ $(document).on('click', '#btnRemoveImage', function () {
         content: 'Do you really want to delete current Image?',
         buttons: {
             Yes:
-                {
-                    text: 'Yes', // 
-                    btnClass: 'btn-danger',
-                    action: function () {
+            {
+                text: 'Yes', // 
+                btnClass: 'btn-danger',
+                action: function () {
 
-                        var uri = $('#urlRemoveImage').val();
-                        var aImageId = $('#txtCurrentImageId').val();
-                        waitingDialog.show('Loading Please Wait...');
-                        $.ajax({
-                            url: uri,
-                            type: 'POST',
-                            data: { imagesID: aImageId },
-                            success: function (msg) {
-                                var $toast = toastr["success"]("successfully Removed", "Success Notification");
-                                waitingDialog.hide();
-                                if (IsServiceField === false) {
-                                    //get image links for custom fields
-                                    //$("#viewer2").empty();
-                                    reportFieldImages($("#txtCurrentImageFieldId").val(), $("#txtCurrentFieldName").val(), $('#txtCurrentReportFieldId').val());
-                                }
-                                else {
-
-                                    // get image links for service.
-
-                                    var serviceName = $('#txtCurrentFieldName').val();
-
-                                    var initialId = $('#txtCurrentImageFieldId').val();
-
-                                    var reportFieldId = $('#txtCurrentReportFieldId').val();
-
-                                    var serviceId = $('#txtCurrentServiceId').val();
-
-                                    var IsAdditionalService = $('#txtIsAdditionalService').val();
-
-                                    reportServiceFieldImages(initialId, serviceId, serviceName, reportFieldId, IsAdditionalService);
-                                }
-
-                            },
-                            error: function (error) {
-                                var $toast = toastr["error"]('Failed to remove image. Please try again.', 'Notification');
-                                waitingDialog.hide();
+                    var uri = $('#urlRemoveImage').val();
+                    var aImageId = $('#txtCurrentImageId').val();
+                    waitingDialog.show('Loading Please Wait...');
+                    $.ajax({
+                        url: uri,
+                        type: 'POST',
+                        data: { imagesID: aImageId },
+                        success: function (msg) {
+                            var $toast = toastr["success"]("successfully Removed", "Success Notification");
+                            waitingDialog.hide();
+                            if (IsServiceField === false) {
+                                //get image links for custom fields
+                                //$("#viewer2").empty();
+                                reportFieldImages($("#txtCurrentImageFieldId").val(), $("#txtCurrentFieldName").val(), $('#txtCurrentReportFieldId').val());
                             }
-                        });
-                    }
-                },
+                            else {
+
+                                // get image links for service.
+
+                                var serviceName = $('#txtCurrentFieldName').val();
+
+                                var initialId = $('#txtCurrentImageFieldId').val();
+
+                                var reportFieldId = $('#txtCurrentReportFieldId').val();
+
+                                var serviceId = $('#txtCurrentServiceId').val();
+
+                                var IsAdditionalService = $('#txtIsAdditionalService').val();
+
+                                reportServiceFieldImages(initialId, serviceId, serviceName, reportFieldId, IsAdditionalService);
+                            }
+
+                        },
+                        error: function (error) {
+                            var $toast = toastr["error"]('Failed to remove image. Please try again.', 'Notification');
+                            waitingDialog.hide();
+                        }
+                    });
+                }
+            },
             No: {
                 text: 'No',
                 btnClass: 'btn-blue',
@@ -1216,11 +1216,10 @@ $("#btnUploadVideo").click(function () {
 
 $(document).on('keypress', '.Numeric-Only', function (e) {
     debugger;
-    
+
     var regex = new RegExp(/^\d*\.?\d*$/);//new RegExp("^[0-9\.b]+$");
     var fieldVal = $(this).val();
-    if (event.charCode == 0)
-    { return true; }
+    if (event.charCode == 0) { return true; }
     else {
         var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
         console.log('key = ' + key);
@@ -1248,7 +1247,17 @@ $(document).on('click', '.MapUpdateLocation', function () {
     var elem2 = $(this).attr('id');
 
     var urlSetGLocation = $('#urlSetGLocation').val();
-    waitingDialog.show('Please Wait...');
+    //$('#ShowDynamicMap').html(data);
+    fnValidateDynamicContent("#ShowDynamicMap")
+
+    $("#CLatLongId").text(elem2);
+    var array = elem.text().split(',');
+    $('#NewLatitude').text(array[0]);
+    $('#NewLongitude').text(array[1]);
+    initMap(array[0], array[1]);
+
+    $("#myModalChangeLatLong").modal({ show: true, backdrop: 'static', keyboard: false });
+    /*waitingDialog.show('Please Wait...');
     $.ajax({
         url: urlSetGLocation,
         datatype: "text",
@@ -1266,9 +1275,6 @@ $(document).on('click', '.MapUpdateLocation', function () {
             initMap(array[0], array[1]);
 
             $("#myModalChangeLatLong").modal({ show: true, backdrop: 'static', keyboard: false });
-
-
-
         },
         error: function (request, status, error) {
             waitingDialog.hide();
@@ -1277,15 +1283,11 @@ $(document).on('click', '.MapUpdateLocation', function () {
             console.log(request.responseText)
 
         }
-    });
-
-
-
-
+    });*/
 })
 
 function fnValidateDynamicContent(element) {
-     debugger;
+    debugger;
 
     var currForm = $(element).find("form");
     currForm.removeData("validator");
@@ -1304,28 +1306,62 @@ function fnValidateDynamicContent(element) {
 
 var marker;
 function initMap(strlat, strLong) {
+    //initialize(strlat, strLong);
 
-    var map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 24,
+    var map = new google.maps.Map.WebGLOverlayView(document.getElementById('map'), {
+        zoom: 18,
         center: { lat: parseFloat(strlat), lng: parseFloat(strLong) },
-        mapTypeId: google.maps.MapTypeId.ROADMAP
+        mapTypeId: google.maps.MapTypeId.ROADMAP.WebGLOverlayView,
+        zoomControl: true,
+        zoomControlOptions: { style: google.maps.ZoomControlStyle.DEFAULT },
+        scaleControl: true,
+        scrollwheel: true,
+        panControl: true,
+        streetViewControl: true,
     });
 
     marker = new google.maps.Marker({
         map: map,
         draggable: true,
         animation: google.maps.Animation.DROP,
-        position: { lat: parseFloat(strlat), lng: parseFloat(strLong) }
+        position: { lat: parseFloat(strlat), lng: parseFloat(strLong) },
     });
-    //marker.addListener('click', toggleBounce);
 
     var infoWindow = new google.maps.InfoWindow({ maxWidth: 400 });
 
     var geocoder = new google.maps.Geocoder();
 
     //google.maps.event.addListener(marker, 'dragend', function (event) {
+    /*var marker2 = new google.maps.StreetViewPanorama(
+        document.getElementById("pano"),
+        {
+            map: map,
+            position: { lat: parseFloat(strlat), lng: parseFloat(strLong) },
+            pov: {
+                heading: 34,
+                pitch: 10,
+            },
+            draggable: true,
+            animation: google.maps.Animation.DROP,
+        }
+    );
+    map.setStreetView(marker2);
+    google.maps.event.addListener(marker2, 'dragend', function (event) {
 
+        var a = marker.getPosition().lat().toFixed(6).toString();
+        var b = marker.getPosition().lng().toFixed(6).toString();
+        infoWindow.setContent(a, b);
+        infoWindow.open(map, marker2);
+        $('#NewLatitude').text(a);
+        $('#NewLongitude').text(b);
+
+
+
+
+    })*/
     google.maps.event.addListener(marker, 'dragend', function (event) {
+
+
 
 
 
@@ -1335,10 +1371,6 @@ function initMap(strlat, strLong) {
         infoWindow.open(map, marker);
         $('#NewLatitude').text(a);
         $('#NewLongitude').text(b);
-
-
-
-
     })
 
 
@@ -1352,11 +1384,127 @@ function initMap(strlat, strLong) {
 
 }
 
-//btnUpdateLatLong    btnLatLongCancel
+function initialize(strlat, strLong) {
+    //initMaps(strlat, strLong);
+    /*const map = new google.maps.Map(
+        document.getElementById("map"),
+        {
+            center: { lat: parseFloat(strlat), lng: parseFloat(strLong) },
+            zoom: 14,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        }
+    );
+    marker = new google.maps.StreetViewPanorama(
+        document.getElementById("pano"),
+        {
+            map: map,
+            position: { lat: parseFloat(strlat), lng: parseFloat(strLong) },
+            pov: {
+                heading: 34,
+                pitch: 10,
+            },
+            draggable: true,
+            animation: google.maps.Animation.DROP,
+        }
+    );
+    map.setStreetView(marker);
+    var infoWindow = new google.maps.InfoWindow({ maxWidth: 400 });
+
+    var geocoder = new google.maps.Geocoder();
+    google.maps.event.addListener(marker, 'dragend', function (event) {
+
+
+
+        var a = marker.getPosition().lat().toFixed(6).toString();
+        var b = marker.getPosition().lng().toFixed(6).toString();
+        infoWindow.setContent(a, b);
+        infoWindow.open(map, marker);
+        $('#NewLatitude').text(a);
+        $('#NewLongitude').text(b)
+    })*/
+
+};
+
+// Initialize and add the map
+function initMaps(strlat, strLong) {
+    var map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 17,
+        center: { lat: parseFloat(strlat), lng: parseFloat(strLong) },
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        zoomControl: true,
+        zoomControlOptions: { style: google.maps.ZoomControlStyle.DEFAULT },
+        scaleControl: true,
+        scrollwheel: true,
+        panControl: true,
+        streetViewControl: true,
+    });
+
+    marker = new google.maps.Marker({
+        map: map,
+        draggable: true,
+        animation: google.maps.Animation.DROP,
+        position: { lat: parseFloat(strlat), lng: parseFloat(strLong) }
+    });
+    //marker.addListener('click', toggleBounce);
+
+
+    var infoWindow = new google.maps.InfoWindow({ maxWidth: 400 });
+
+    var geocoder = new google.maps.Geocoder();
+
+    //google.maps.event.addListener(marker, 'dragend', function (event) {
+    var marker2 = new google.maps.StreetViewPanorama(
+        document.getElementById("pano"),
+        {
+            map: map,
+            position: { lat: parseFloat(strlat), lng: parseFloat(strLong) },
+            pov: {
+                heading: 34,
+                pitch: 10,
+            },
+            draggable: true,
+            animation: google.maps.Animation.DROP,
+        }
+    );
+    map.setStreetView(marker2);
+    google.maps.event.addListener(marker2, 'dragend', function (event) {
+
+
+
+        var a = marker.getPosition().lat().toFixed(6).toString();
+        var b = marker.getPosition().lng().toFixed(6).toString();
+        infoWindow.setContent(a, b);
+        infoWindow.open(map, marker2);
+        $('#NewLatitude').text(a);
+        $('#NewLongitude').text(b);
+    })
+    google.maps.event.addListener(marker, 'dragend', function (event) {
+
+
+
+        var a = marker.getPosition().lat().toFixed(6).toString();
+        var b = marker.getPosition().lng().toFixed(6).toString();
+        infoWindow.setContent(a, b);
+        infoWindow.open(map, marker);
+        $('#NewLatitude').text(a);
+        $('#NewLongitude').text(b);
+    })
+
+
+    function toggleBounce() {
+        if (marker.getAnimation() !== null) {
+            marker.setAnimation(null);
+        } else {
+            marker.setAnimation(google.maps.Animation.BOUNCE);
+        }
+    }
+};
+//window.initMaps = initMaps;
+
 
 
 $(document).on('click', '#btnUpdateLatLong', function () {
-
+    debugger;
     var elem = $("#NewLatitude").text();
 
     var elem1 = $("#NewLongitude").text();
@@ -1374,55 +1522,55 @@ $(document).on('click', '#btnUpdateLatLong', function () {
         content: 'The new latitude & longitude will be directly updated in system. Do you want continue?',
         buttons: {
             Yes:
-                {
-                    text: 'Yes',
-                    btnClass: 'btn-danger',
-                    action: function () {
+            {
+                text: 'Yes',
+                btnClass: 'btn-danger',
+                action: function () {
 
-                        var urlUpdateLatLong = $('#urlUpdateLatLong').val();
-                        waitingDialog.show('Please Wait...');
-                        $.ajax({
-                            url: urlUpdateLatLong,
-                            datatype: "text",
-                            type: "POST",
-                            data: { 'ProjectFieldDataMasterId': elem2, 'strLat': elem, 'strLong': elem1 },
-                            success: function (data) {
+                    var urlUpdateLatLong = $('#urlUpdateLatLong').val();
+                    waitingDialog.show('Please Wait...');
+                    $.ajax({
+                        url: urlUpdateLatLong,
+                        datatype: "text",
+                        type: "POST",
+                        data: { 'ProjectFieldDataMasterId': elem2, 'strLat': elem, 'strLong': elem1 },
+                        success: function (data) {
 
-                                waitingDialog.hide();
-                                if (data.success) {
-                                    var $toast = toastr["success"]("Updated the lat long for the record successfully!", "Notification !");
-
-
-                                    $("#myModalChangeLatLong").modal('hide');
-                                    $('#ShowDynamicMap').html('');
+                            waitingDialog.hide();
+                            if (data.success) {
+                                var $toast = toastr["success"]("Updated the lat long for the record successfully!", "Notification !");
 
 
+                                $("#myModalChangeLatLong").modal('hide');
+                                $('#ShowDynamicMap').html('');
 
 
-                                    $('.MapUpdateLocation').each(function () {
-
-                                        if ($(this).attr('id') === elem2) {
-                                            $(this).closest('div').find('span.dynamiclatLong').text(elem + "," + elem1);
-                                        }
-
-                                    });
-                                }
-                                else {
-                                    var $toast = toastr["error"]("Update failed!", "Notification !");
-                                }
 
 
-                            },
-                            error: function (request, status, error) {
-                                waitingDialog.hide();
-                                var $toast = toastr["error"](request.responseText, "Notification !");
+                                $('.MapUpdateLocation').each(function () {
 
-                                console.log(request.responseText)
+                                    if ($(this).attr('id') === elem2) {
+                                        $(this).closest('div').find('span.dynamiclatLong').text(elem + "," + elem1);
+                                    }
 
+                                });
                             }
-                        });
-                    }
-                },
+                            else {
+                                var $toast = toastr["error"]("Update failed!", "Notification !");
+                            }
+
+
+                        },
+                        error: function (request, status, error) {
+                            waitingDialog.hide();
+                            var $toast = toastr["error"](request.responseText, "Notification !");
+
+                            console.log(request.responseText)
+
+                        }
+                    });
+                }
+            },
             No: {
                 text: 'No',
                 btnClass: 'btn-blue',

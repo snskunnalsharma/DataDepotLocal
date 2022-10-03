@@ -928,15 +928,15 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
                 var Details = new ReportDAL().detailsOfProjetcs(obj1.userId1, obj1.projectId1, obj1.reportFormId, uploadId);
                 // Session["Details"] = Details;
-                
-                if (Details.UtilityType == "Electric")
+                htmlData1.Append("<div class='col-lg-4 col-sm-4 rp-hd' style='text-align:center'><label class='repfrm-lab'><b> Customer Address</b></label><div id='FormName' class='FieldNametd rep-proj-nm'>" + Details.CustomerAddress + "</div></div>");
+                /*if (Details.UtilityType == "Electric")
                 {
                     htmlData1.Append("<div class='col-lg-4 col-sm-4 rp-hd' style='text-align:center'><label class='repfrm-lab'><b> Customer Address</b></label><div id='FormName' class='FormName rep-proj-nm'>" + Details.CustomerAddress + "</div></div>");
                 }
-                else
+               *//* else
                 {
                     htmlData1.Append("<div class='col-lg-4 col-sm-4 rp-hd' style='text-align:center'><label class='repfrm-lab'><b> Form Name</b></label><div id='FormName' class='FormName rep-proj-nm'>" + Details.FromName + "</div></div>");
-                }
+                }*/
                 string objStr = htmlData1.ToString();
                 
 
@@ -2546,7 +2546,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 string mm = "";
                 string ss = "";
                 @ViewBag.ProjectId = proId;
-                if (proId == 10075) // Only for Garland Project
+                if (proId > 0) // Only for Garland Project
                 {
                     string beforeTime = string.Empty;
                     string afterTime = string.Empty;
