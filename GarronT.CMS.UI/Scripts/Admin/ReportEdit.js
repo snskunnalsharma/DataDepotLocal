@@ -1308,19 +1308,23 @@ function fnValidateDynamicContent(element) {
 var marker;
 function initMap(strlat, strLong) {
     //initialize(strlat, strLong);
-   
+    //console.log("map===>");
+    //console.log(document.getElementById('map'));
     var map = new google.maps.Map(document.getElementById('map'), {
         zoom: 18,
         center: { lat: parseFloat(strlat), lng: parseFloat(strLong) },
-        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        //mapTypeId: google.maps.MapTypeId.ROADMAP,
+        mapTypeId: 'satellite',
         zoomControl: true,
         zoomControlOptions: { style: google.maps.ZoomControlStyle.DEFAULT },
         scaleControl: true,
         scrollwheel: true,
         panControl: true,
         streetViewControl: true,
+        
     });
-    map.setTilt(45);
+    //console.log(map);
+    //map.setTilt(45);
     marker = new google.maps.Marker({
         map: map,
         draggable: true,
@@ -1370,13 +1374,13 @@ function initMap(strlat, strLong) {
     })
 
 
-    function toggleBounce() {
+    /*function toggleBounce() {
         if (marker.getAnimation() !== null) {
             marker.setAnimation(null);
         } else {
             marker.setAnimation(google.maps.Animation.BOUNCE);
         }
-    }
+    }*/
 
 }
 
@@ -1538,8 +1542,8 @@ $(document).on('click', '#btnUpdateLatLong', function () {
 
 
                                     $("#myModalChangeLatLong").modal('hide');
-                                    $('#ShowDynamicMap').html('');
-
+                                    //$('#ShowDynamicMap').html('');
+                                    $('#map').html('');
 
 
 

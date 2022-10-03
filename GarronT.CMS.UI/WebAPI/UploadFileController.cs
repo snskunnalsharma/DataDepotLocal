@@ -2,6 +2,7 @@
 using GarronT.CMS.Model.BO;
 using Goheer.EXIF;
 using log4net;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -19,13 +20,6 @@ using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
 using System.Web.Script.Serialization;
-using Amazon;
-using Amazon.Runtime;
-using Amazon.S3;
-using Amazon.S3.Model;
-using Amazon.S3.Transfer;
-
-
 
 namespace GarronT.CMS.UI.WebAPI
 {
@@ -1149,59 +1143,9 @@ namespace GarronT.CMS.UI.WebAPI
                         grantAccess(filePath);
 
                         List<string> imageFileNameList = new List<string>();
-
-                        //string keyName = "updatedtestfile.txt";
-                        string bucketName = ConfigurationManager.AppSettings["BucketName"];
-                        RegionEndpoint bucketRegion = RegionEndpoint.USWest2;
-                        string accesskey = ConfigurationManager.AppSettings["AWSAccessKey"];
-                        string secretkey = ConfigurationManager.AppSettings["AWSSecretKey"];
-
                         for (int iCnt = 0; iCnt <= hfc.Count - 1; iCnt++)
                         {
                             System.Web.HttpPostedFile hpf = hfc[iCnt];
-
-                            var s3Client = new AmazonS3Client(accesskey, secretkey, bucketRegion);
-                            var fileTransferUtility = new TransferUtility(s3Client);
-                            try
-                            {
-                                if (hpf.ContentLength > 0)
-                                {
-                                    //filePath = Path.Combine(Server.MapPath("~/Files"), Path.GetFileName(hpf.FileName));
-                                    filePath = System.IO.Path.Combine(tempPath + Path.GetFileName(hpf.FileName));
-                                    var fileTransferUtilityRequest = new TransferUtilityUploadRequest
-                                    {
-                                        BucketName = bucketName,
-                                        FilePath = filePath,
-                                        StorageClass = S3StorageClass.StandardInfrequentAccess,
-                                        //PartSize = 6291456, // 6 MB.  
-                                        Key = hpf.FileName,
-                                        CannedACL = S3CannedACL.PublicRead
-                                    };
-                                    //fileTransferUtilityRequest.Metadata.Add("param1", "Value1");
-                                    //fileTransferUtilityRequest.Metadata.Add("param2", "Value2");
-                                    fileTransferUtility.Upload(fileTransferUtilityRequest);
-                                    var uploadfileurl = fileTransferUtilityRequest.FilePath;
-                                    fileTransferUtility.Dispose();
-                                }
-                                //ViewBag.Message = "File Uploaded Successfully!!";
-                            }
-                            catch (AmazonS3Exception amazonS3Exception)
-                            {
-                                if (amazonS3Exception.ErrorCode != null &&
-                                    (amazonS3Exception.ErrorCode.Equals("InvalidAccessKeyId")
-                                    ||
-                                    amazonS3Exception.ErrorCode.Equals("InvalidSecurity")))
-                                {
-                                    //ViewBag.Message = "Check the provided AWS Credentials.";
-                                }
-                                else
-                                {
-                                    //ViewBag.Message = "Error occurred: " + amazonS3Exception.Message;
-                                }
-                            }
-
-                            
-
                             if (hpf.ContentLength > 0)
                             {
                                 //// CHECK IF THE SELECTED FILE(S) ALREADY EXISTS IN FOLDER. (AVOID DUPLICATE)
@@ -1210,7 +1154,6 @@ namespace GarronT.CMS.UI.WebAPI
                                 //    // SAVE THE FILES IN THE FOLDER.
                                 //    hpf.SaveAs(filePath + Path.GetFileName(hpf.FileName));
                                 //}
-
                                 if (System.IO.File.Exists(filePath + Path.GetFileName(hpf.FileName)))
                                 {
                                     System.GC.Collect();
@@ -1248,11 +1191,8 @@ namespace GarronT.CMS.UI.WebAPI
 
                                 iUploadedCnt = iUploadedCnt + 1;
                                 imageFileNameList.Add(tempPath + Path.GetFileName(hpf.FileName));
-
                             }
                         }
-
-
 
                         foreach (var item in imageFileNameList)
                         {
