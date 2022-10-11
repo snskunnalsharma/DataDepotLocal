@@ -461,7 +461,7 @@
                                                                 }
                                                                 else
                                                                 {
-                                                                    if (@item.strFilePath != null)
+                                                                    if (@item.strFilePath != null || item.strCloudUrl != null)
                                                                     {
 
                                                                         otherfieldcount--;
@@ -578,7 +578,7 @@
                                                                 else
                                                                 {
 
-                                                                    if (@item.strFilePath != null)
+                                                                    if (@item.strFilePath != null || item.strCloudUrl != null)
                                                                     {
 
                                                                         otherfieldcount--;
@@ -708,7 +708,7 @@
                                                                 }
                                                                 else
                                                                 {
-                                                                    if (@item.strFilePath != null)
+                                                                    if (@item.strFilePath != null || item.strCloudUrl != null)
                                                                     {
                                                                         //otherfieldcount--;
                                                                         if (item11.ToList().Count == _TotalItemCount)
@@ -857,18 +857,42 @@
                                                                             {
                                                                                 if (objServiceAttachment.IsAudioVideoImage == 3)
                                                                                 {
-                                                                                    String fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+                                                                                    String fileName = String.Empty;
+                                                                                    if (objServiceAttachment.strCloudUrl != null && objServiceAttachment.strCloudUrl != "")
+                                                                                    {
+                                                                                        fileName = objServiceAttachment.strCloudUrl;  // get Cloud file url
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+                                                                                    }
                                                                                     <img src='@fileName' height="180" width='210' />
                                                                                 }
                                                                                 else if (objServiceAttachment.IsAudioVideoImage == 2)
                                                                                 {
-                                                                                    String fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+                                                                                    String fileName = String.Empty;
+                                                                                    if (objServiceAttachment.strCloudUrl != null && objServiceAttachment.strCloudUrl != "")
+                                                                                    {
+                                                                                        fileName = objServiceAttachment.strCloudUrl;
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+                                                                                    }
                                                                                     <a target="_new" href="@fileName" class="btn btn-link">Video</a>
                                                                                 }
                                                                                 else if (objServiceAttachment.IsAudioVideoImage == 1)
                                                                                 {
-                                                                                    String fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
-                                                                                    <audio controls style="width:43px;">
+                                                                                    String fileName = String.Empty;
+                                                                                    if (objServiceAttachment.strCloudUrl != null && objServiceAttachment.strCloudUrl != "")
+                                                                                    {
+                                                                                        fileName = objServiceAttachment.strCloudUrl;
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+                                                                                    }
+                                                                                    <audio controls style="width:220px;">
                                                                                         <source src="@fileName" type="audio/mp4">
                                                                                         Your browser does not support the audio tag.
                                                                                     </audio>
@@ -922,18 +946,42 @@
                                                                             {
                                                                                 if (objServiceAttachment.IsAudioVideoImage == 3)
                                                                                 {
-                                                                                    String aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+                                                                                    String aditionalFileName = String.Empty;
+                                                                                    if (objServiceAttachment.strCloudUrl != null && objServiceAttachment.strCloudUrl != "")
+                                                                                    {
+                                                                                        aditionalFileName = objServiceAttachment.strCloudUrl;
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+                                                                                    }
                                                                                     <img src='@aditionalFileName' height="180" width='210' />
                                                                                 }
                                                                                 else if (objServiceAttachment.IsAudioVideoImage == 2)
                                                                                 {
-                                                                                    String fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+                                                                                    String fileName = String.Empty;
+                                                                                    if (objServiceAttachment.strCloudUrl != null && objServiceAttachment.strCloudUrl != "")
+                                                                                    {
+                                                                                        fileName = objServiceAttachment.strCloudUrl;
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+                                                                                    }
                                                                                     <a target="_new" href="@fileName" class="btn btn-link">Video</a>
                                                                                 }
                                                                                 else if (objServiceAttachment.IsAudioVideoImage == 1)
                                                                                 {
-                                                                                    String fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
-                                                                                    <audio controls @*style="width:43px;"*@>
+                                                                                    String fileName = String.Empty;
+                                                                                    if (objServiceAttachment.strCloudUrl != null && objServiceAttachment.strCloudUrl != "")
+                                                                                    {
+                                                                                        fileName = objServiceAttachment.strCloudUrl;
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+                                                                                    }
+                                                                                    <audio controls style="width: 220px;">
                                                                                         <source src="@fileName" type="audio/mp4">
                                                                                         Your browser does not support the audio tag.
                                                                                     </audio>
@@ -967,54 +1015,81 @@
                                                                     var center = "center=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
                                                                     var lastlist = "&markers=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
                                                                     var center1 = item.Fieldlatitude + "," + item.Fieldlongitude;
-
+                                                                    string imgPath = string.Empty;
                                                                     var locationPath = new GarronT.CMS.Model.DAL.ReportDAL().getLocationImage(item.IDS);
-                                                                    if (!string.IsNullOrEmpty(locationPath))
+                                                                    var locationCloudUrl = new GarronT.CMS.Model.DAL.ReportDAL().getLocationImageInCloud(item.IDS);
+                                                                    if (!string.IsNullOrEmpty(locationCloudUrl))
                                                                     {
-                                                                        locationPath = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + locationPath.Replace(@"..\", "").Replace(@"~\", "");
+                                                                        imgPath = locationCloudUrl;
+                                                                    }
+                                                                    else if (!string.IsNullOrEmpty(locationPath))
+                                                                    {
+                                                                        imgPath = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + locationPath.Replace(@"..\", "").Replace(@"~\", "");
                                                                     }
                                                                     else
                                                                     {
-                                                                        locationPath = "";
+                                                                        imgPath = "";
                                                                     }
                                                                     var link = "https://maps.googleapis.com/maps/api/staticmap?" + center + "&zoom=15" + lastlist + "&size=1236x493&sensor=FALSE&visual_refresh=true";
                                                                     otherfieldString.Append("<td width='25%' class='FieldNametd' style='text-align:center'>");
                                                                     //otherfieldString.Append("<td width='25%' class='FieldValuestd'>");
 
-                                                                    otherfieldString.Append(" <img src='" + @locationPath + "' class='img-width' /><br />");
+                                                                    otherfieldString.Append(" <img src='" + @imgPath + "' class='img-width' /><br />");
                                                                     otherfieldString.Append("<span>" + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + "</span></td>");
 
                                                                 }
                                                             }
                                                             else
                                                             {
-                                                                if (@item.strFilePath != null)
+                                                                if (@item.strFilePath != null || item.strCloudUrl != null)
                                                                 {
                                                                     otherfieldString.Append("<td width='25%' class='FieldNametd' style='text-align:center'>");
                                                                     //otherfieldString.Append("<td width='25%' class='FieldValuestd'>");
 
                                                                     otherfieldString.Append("<span>");
-
-                                                                    string[] strPathList = item.strFilePath.Split(',');
-                                                                    foreach (var strPath in strPathList)
+                                                                    if (item.strCloudUrl != null && item.strCloudUrl != "")
                                                                     {
-                                                                        var strpatharr = strPath.Split(';');
-                                                                        if (strpatharr.Length > 1 && strpatharr != null)
+                                                                        string[] strPathList = item.strCloudUrl.Split(',');
+                                                                        foreach (var strPath in strPathList)
                                                                         {
-                                                                            var isimageaudiovideo = strpatharr[0];
-
-                                                                            var strFilePath = strpatharr[1];
-
-                                                                            if (isimageaudiovideo == "3")
+                                                                            var strpatharr = strPath.Split(';');
+                                                                            if (strpatharr.Length > 1 && strpatharr != null)
                                                                             {
-                                                                                String aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + strFilePath.Replace(@"..\", "").Replace(@"~\", "");
-                                                                                //<img src='@aditionalFileName' height="150" width='180' />
+                                                                                var isimageaudiovideo = strpatharr[0];
 
-                                                                                otherfieldString.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
-                                                                                otherfieldString.Append("<br />");
+                                                                                String strFilePath = strpatharr[1].ToString();
+
+                                                                                if (isimageaudiovideo == "3")
+                                                                                {
+                                                                                    String aditionalFileName = strFilePath;
+                                                                                    otherfieldString.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
+                                                                                    otherfieldString.Append("<br />");
+                                                                                }
                                                                             }
-                                                                        }
 
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        string[] strPathList = item.strFilePath.Split(',');
+                                                                        foreach (var strPath in strPathList)
+                                                                        {
+                                                                            var strpatharr = strPath.Split(';');
+                                                                            if (strpatharr.Length > 1 && strpatharr != null)
+                                                                            {
+                                                                                var isimageaudiovideo = strpatharr[0];
+
+                                                                                var strFilePath = strpatharr[1];
+
+                                                                                if (isimageaudiovideo == "3")
+                                                                                {
+                                                                                    String aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+                                                                                    otherfieldString.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
+                                                                                    otherfieldString.Append("<br />");
+                                                                                }
+                                                                            }
+
+                                                                        }
                                                                     }
                                                                     otherfieldString.Append("</span>");
                                                                     if (@item.isLaLongCaptureRequired == true && @item.Fieldlatitude != "")
@@ -1080,22 +1155,27 @@
                                                                     var center = "center=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
                                                                     var lastlist = "&markers=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
                                                                     var center1 = item.Fieldlatitude + "," + item.Fieldlongitude;
-
+                                                                    string imgPath = string.Empty;
                                                                     var locationPath = new GarronT.CMS.Model.DAL.ReportDAL().getLocationImage(item.IDS);
-                                                                    if (!string.IsNullOrEmpty(locationPath))
+                                                                    var locationCloudUrl = new GarronT.CMS.Model.DAL.ReportDAL().getLocationImageInCloud(item.IDS);
+                                                                    if (!string.IsNullOrEmpty(locationCloudUrl))
                                                                     {
-                                                                        locationPath = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + locationPath.Replace(@"..\", "").Replace(@"~\", "");
+                                                                        imgPath = locationCloudUrl;
+                                                                    }
+                                                                    else if (!string.IsNullOrEmpty(locationPath))
+                                                                    {
+                                                                        imgPath = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + locationPath.Replace(@"..\", "").Replace(@"~\", "");
                                                                     }
                                                                     else
                                                                     {
-                                                                        locationPath = "";
+                                                                        imgPath = "";
                                                                     }
                                                                     var link = "https://maps.googleapis.com/maps/api/staticmap?" + center + "&zoom=15" + lastlist + "&size=1236x493&sensor=FALSE&visual_refresh=true";
                                                                     otherfieldString1.Append("<td width='25%' class='FieldNametd' style='text-align:center'>");
                                                                     //otherfieldString1.Append("<td width='25%' class='FieldValuestd'>");
 
 
-                                                                    otherfieldString1.Append(" <img src='" + @locationPath + "' class='img-width' /><br />");
+                                                                    otherfieldString1.Append(" <img src='" + @imgPath + "' class='img-width' /><br />");
                                                                     otherfieldString1.Append("<span>" + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + "</span></td>");
 
                                                                 }
@@ -1103,32 +1183,52 @@
                                                             }
                                                             else
                                                             {
-                                                                if (@item.strFilePath != null)
+                                                                if (@item.strFilePath != null || item.strCloudUrl != null)
                                                                 {
                                                                     otherfieldString1.Append("<td width='25%' class='FieldNametd' style='text-align:center'>");
 
                                                                     otherfieldString1.Append("<span>");
-
-                                                                    string[] strPathList = item.strFilePath.Split(',');
-                                                                    foreach (var strPath in strPathList)
+                                                                    if (item.strCloudUrl != null && item.strCloudUrl != "")
                                                                     {
-                                                                        var strpatharr = strPath.Split(';');
-                                                                        if (strpatharr.Length > 1 && strpatharr != null)
+                                                                        string[] strPathList = item.strCloudUrl.Split(',');
+                                                                        foreach (var strPath in strPathList)
                                                                         {
-                                                                            var isimageaudiovideo = strpatharr[0];
-
-                                                                            var strFilePath = strpatharr[1];
-
-                                                                            if (isimageaudiovideo == "3")
+                                                                            var strpatharr = strPath.Split(';');
+                                                                            if (strpatharr.Length > 1 && strpatharr != null)
                                                                             {
-                                                                                String aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + strFilePath.Replace(@"..\", "").Replace(@"~\", "");
-                                                                                //<img src='@aditionalFileName' height="150" width='180' />
-
-                                                                                otherfieldString1.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
-                                                                                otherfieldString1.Append("<br />");
+                                                                                var isimageaudiovideo = strpatharr[0];
+                                                                                var strFilePath = strpatharr[1];
+                                                                                if (isimageaudiovideo == "3")
+                                                                                {
+                                                                                    String aditionalFileName = strFilePath;
+                                                                                    otherfieldString1.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
+                                                                                    otherfieldString1.Append("<br />");
+                                                                                }
                                                                             }
                                                                         }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        string[] strPathList = item.strFilePath.Split(',');
+                                                                        foreach (var strPath in strPathList)
+                                                                        {
+                                                                            var strpatharr = strPath.Split(';');
+                                                                            if (strpatharr.Length > 1 && strpatharr != null)
+                                                                            {
+                                                                                var isimageaudiovideo = strpatharr[0];
 
+                                                                                var strFilePath = strpatharr[1];
+
+                                                                                if (isimageaudiovideo == "3")
+                                                                                {
+                                                                                    String aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+                                                                                    //<img src='@aditionalFileName' height="150" width='180' />
+
+                                                                                    otherfieldString1.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
+                                                                                    otherfieldString1.Append("<br />");
+                                                                                }
+                                                                            }
+                                                                        }
                                                                     }
                                                                     otherfieldString1.Append("</span>");
                                                                     if (@item.isLaLongCaptureRequired == true && @item.Fieldlatitude != "")
@@ -1199,22 +1299,27 @@
                                                                     var center = "center=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
                                                                     var lastlist = "&markers=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
                                                                     var center1 = item.Fieldlatitude + "," + item.Fieldlongitude;
-
+                                                                    string imgPath = string.Empty;
                                                                     var locationPath = new GarronT.CMS.Model.DAL.ReportDAL().getLocationImage(item.IDS);
-                                                                    if (!string.IsNullOrEmpty(locationPath))
+                                                                    var locationCloudUrl = new GarronT.CMS.Model.DAL.ReportDAL().getLocationImageInCloud(item.IDS);
+                                                                    if (!string.IsNullOrEmpty(locationCloudUrl))
                                                                     {
-                                                                        locationPath = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + locationPath.Replace(@"..\", "").Replace(@"~\", "");
+                                                                        imgPath = locationCloudUrl;
+                                                                    }
+                                                                    else if (!string.IsNullOrEmpty(locationPath))
+                                                                    {
+                                                                        imgPath = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + locationPath.Replace(@"..\", "").Replace(@"~\", "");
                                                                     }
                                                                     else
                                                                     {
-                                                                        locationPath = "";
+                                                                        imgPath = "";
                                                                     }
                                                                     var link = "https://maps.googleapis.com/maps/api/staticmap?" + center + "&zoom=15" + lastlist + "&size=1236x493&sensor=FALSE&visual_refresh=true";
                                                                     otherfieldString2.Append("<td width='25%' class='FieldNametd' style='text-align:center'>");
                                                                     //otherfieldString2.Append("<td width='25%' class='FieldValuestd'>");
 
 
-                                                                    otherfieldString2.Append(" <img src='" + @locationPath + "' class='img-width' /><br />");
+                                                                    otherfieldString2.Append(" <img src='" + @imgPath + "' class='img-width' /><br />");
                                                                     otherfieldString2.Append("<span>" + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + "</span></td>");
 
                                                                 }
@@ -1222,32 +1327,54 @@
                                                             }
                                                             else
                                                             {
-                                                                if (@item.strFilePath != null)
+                                                                if (@item.strFilePath != null || item.strCloudUrl != null)
                                                                 {
                                                                     otherfieldString2.Append("<td width='25%' class='FieldNametd' style='text-align:center'>");
 
                                                                     otherfieldString2.Append("<span>");
-
-                                                                    string[] strPathList = item.strFilePath.Split(',');
-                                                                    foreach (var strPath in strPathList)
+                                                                    if (item.strCloudUrl != null && item.strCloudUrl != "")
                                                                     {
-                                                                        var strpatharr = strPath.Split(';');
-                                                                        if (strpatharr.Length > 1 && strpatharr != null)
+                                                                        string[] strPathList = item.strCloudUrl.Split(',');
+                                                                        foreach (var strPath in strPathList)
                                                                         {
-                                                                            var isimageaudiovideo = strpatharr[0];
-
-                                                                            var strFilePath = strpatharr[1];
-
-                                                                            if (isimageaudiovideo == "3")
+                                                                            var strpatharr = strPath.Split(';');
+                                                                            if (strpatharr.Length > 1 && strpatharr != null)
                                                                             {
-                                                                                String aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + strFilePath.Replace(@"..\", "").Replace(@"~\", "");
-                                                                                //<img src='@aditionalFileName' height="150" width='180' />
+                                                                                var isimageaudiovideo = strpatharr[0];
 
-                                                                                otherfieldString2.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
-                                                                                otherfieldString2.Append("<br />");
+                                                                                String strFilePath = strpatharr[1].ToString();
+
+                                                                                if (isimageaudiovideo == "3")
+                                                                                {
+                                                                                    otherfieldString2.Append("<img src='" + @strFilePath + "' class='img-width' />");
+                                                                                    otherfieldString2.Append("<br />");
+                                                                                }
                                                                             }
                                                                         }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        string[] strPathList = item.strFilePath.Split(',');
+                                                                        foreach (var strPath in strPathList)
+                                                                        {
+                                                                            var strpatharr = strPath.Split(';');
+                                                                            if (strpatharr.Length > 1 && strpatharr != null)
+                                                                            {
+                                                                                var isimageaudiovideo = strpatharr[0];
 
+                                                                                var strFilePath = strpatharr[1];
+
+                                                                                if (isimageaudiovideo == "3")
+                                                                                {
+                                                                                    String aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+                                                                                    //<img src='@aditionalFileName' height="150" width='180' />
+
+                                                                                    otherfieldString2.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
+                                                                                    otherfieldString2.Append("<br />");
+                                                                                }
+                                                                            }
+
+                                                                        }
                                                                     }
                                                                     otherfieldString2.Append("</span>");
                                                                     if (@item.isLaLongCaptureRequired == true && @item.Fieldlatitude != "")
@@ -1340,20 +1467,25 @@
                                                                         var demo = "https://maps.googleapis.com/maps/api/staticmap?key=" + Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["googleapiKey"]) + center + " &zoom=13&size=200x200&maptype=roadmap" + lastlist + "&sensor=false";
                                                                         var link = "https://maps.googleapis.com/maps/api/staticmap?" + center + "&zoom=15" + lastlist + "&size=1236x493&sensor=FALSE&visual_refresh=true";
                                                                         var center1 = item.Fieldlatitude + "," + item.Fieldlongitude;
-
+                                                                        string imgPath = string.Empty;
                                                                         var locationPath = new GarronT.CMS.Model.DAL.ReportDAL().getLocationImage(item.IDS);
-                                                                        if (!string.IsNullOrEmpty(locationPath))
+                                                                        var locationCloudUrl = new GarronT.CMS.Model.DAL.ReportDAL().getLocationImageInCloud(item.IDS);
+                                                                        if (!string.IsNullOrEmpty(locationCloudUrl))
                                                                         {
-                                                                            locationPath = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + locationPath.Replace(@"..\", "").Replace(@"~\", "");
+                                                                            imgPath = locationCloudUrl;
+                                                                        }
+                                                                        else if (!string.IsNullOrEmpty(locationPath))
+                                                                        {
+                                                                            imgPath = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + locationPath.Replace(@"..\", "").Replace(@"~\", "");
                                                                         }
                                                                         else
                                                                         {
-                                                                            locationPath = "";
+                                                                            imgPath = "";
                                                                         }
 
                                                                         <td width='25%' class='FieldNametd' style='text-align:center'>
 
-                                                                            <img src='@locationPath' style="width:80%;height:10em;" class='img-width' /><br />
+                                                                            <img src='@imgPath' style="width:80%;height:10em;" class='img-width' /><br />
                                                                             <span>@System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower()))</span>
 
                                                                         </td>
@@ -1368,7 +1500,7 @@
                                                                 else
                                                                 {
 
-                                                                    if (@item.strFilePath != null)
+                                                                    if (@item.strFilePath != null || item.strCloudUrl != null)
                                                                     {
                                                                         @Html.Raw(otherfieldString)
 
@@ -1378,25 +1510,49 @@
                                                                         otherfieldString3.Append("<td width='25%' class='FieldNametd' style='text-align:center'>");
 
                                                                         otherfieldString3.Append("<span>");
-                                                                        string[] strPathList = item.strFilePath.Split(',');
-                                                                        foreach (var strPath in strPathList)
+                                                                        if (item.strCloudUrl != null && item.strCloudUrl != "")
                                                                         {
-                                                                            var strpatharr = strPath.Split(';');
-                                                                            if (strpatharr.Length > 1 && strpatharr != null)
+                                                                            string[] strPathList = item.strCloudUrl.Split(',');
+                                                                            foreach (var strPath in strPathList)
                                                                             {
-                                                                                var isimageaudiovideo = strpatharr[0];
-
-                                                                                var strFilePath = strpatharr[1];
-
-                                                                                if (isimageaudiovideo == "3")
+                                                                                var strpatharr = strPath.Split(';');
+                                                                                if (strpatharr.Length > 1 && strpatharr != null)
                                                                                 {
-                                                                                    String aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+                                                                                    var isimageaudiovideo = strpatharr[0];
 
-                                                                                    otherfieldString3.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
-                                                                                    otherfieldString3.Append("<br />");
+                                                                                    var strFilePath = strpatharr[1];
+
+                                                                                    if (isimageaudiovideo == "3")
+                                                                                    {
+                                                                                        String aditionalFileName = strFilePath.ToString();
+
+                                                                                        otherfieldString3.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
+                                                                                        otherfieldString3.Append("<br />");
+                                                                                    }
                                                                                 }
                                                                             }
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            string[] strPathList = item.strFilePath.Split(',');
+                                                                            foreach (var strPath in strPathList)
+                                                                            {
+                                                                                var strpatharr = strPath.Split(';');
+                                                                                if (strpatharr.Length > 1 && strpatharr != null)
+                                                                                {
+                                                                                    var isimageaudiovideo = strpatharr[0];
 
+                                                                                    var strFilePath = strpatharr[1];
+
+                                                                                    if (isimageaudiovideo == "3")
+                                                                                    {
+                                                                                        String aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+
+                                                                                        otherfieldString3.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
+                                                                                        otherfieldString3.Append("<br />");
+                                                                                    }
+                                                                                }
+                                                                            }
                                                                         }
                                                                         otherfieldString3.Append("</span>");
 
@@ -1486,7 +1642,12 @@
                                                     {
                                                         var MultipleMapPinsPath = "";
                                                         var allmapPin = new GarronT.CMS.Model.DAL.ReportDAL().getMultipleMapPins(SingleReport.UploadID, SingleReport.FormID);
-                                                        if (!string.IsNullOrEmpty(allmapPin))
+                                                        var allcloudmapPin = new GarronT.CMS.Model.DAL.ReportDAL().getMultipleCloudMapPins(@ViewBag.UploadID, @ViewBag.FormID);
+                                                        if (!string.IsNullOrEmpty(allcloudmapPin))
+                                                        {
+                                                            MultipleMapPinsPath = allcloudmapPin;
+                                                        }
+                                                        else if (!string.IsNullOrEmpty(allmapPin))
                                                         {
                                                             MultipleMapPinsPath = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + allmapPin.Replace(@"..\", "").Replace(@"~\", "");
                                                         }
@@ -1597,36 +1758,41 @@
                                                                     {
                                                                         GarronT.CMS.Model.BO.SkipRtuAttachmentModel objAttachementList1 =
                                                                         new GarronT.CMS.Model.DAL.ReportDAL().getGPSLocationImages(skiprtuModel.ID, skiprtuModel.InstallerId, skiprtuModel.FormId);
-                                                                        if (objAttachementList1 != null)
+                                                                        GarronT.CMS.Model.BO.SkipRtuAttachmentModel objCloudeAttachementList1 =
+                                                                        new GarronT.CMS.Model.DAL.ReportDAL().getCloudGPSLocationImages(skiprtuModel.ID, skiprtuModel.InstallerId, skiprtuModel.FormId);
+
+                                                                        bool status = false;
+                                                                        String aditionalFileName = String.Empty;
+                                                                        if (objCloudeAttachementList1.strCloudUrl != null && objCloudeAttachementList1.IsAudioVideoImage == 3)
                                                                         {
-                                                                            //foreach (GarronT.CMS.Model.BO.SkipRtuAttachmentModel obj1 in objAttachementList1)
-                                                                            //{
-                                                                            if (objAttachementList1.IsAudioVideoImage == 3)
-                                                                            {
-                                                                                var center = "center=" + @skiprtuModel.Latitude + "," + @skiprtuModel.Longitude + "";
-                                                                                var lastlist = "&markers=" + @skiprtuModel.Latitude + "," + @skiprtuModel.Longitude + "";
-                                                                                var center1 = @skiprtuModel.Latitude + "," + @skiprtuModel.Longitude;
-                                                                                var link = "https://maps.googleapis.com/maps/api/staticmap?" + center + "&zoom=15" + lastlist + "&size=1236x493&sensor=FALSE&visual_refresh=true";
+                                                                            aditionalFileName = objCloudeAttachementList1.strCloudUrl;
+                                                                            status = true;
+                                                                        }
+                                                                        else if (objAttachementList1.strFilePath != null && objAttachementList1.IsAudioVideoImage == 3)
+                                                                        {
+                                                                            aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objAttachementList1.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+                                                                            status = true;
+                                                                        }
+                                                                        if (status)
+                                                                        {
+                                                                            var center = "center=" + @skiprtuModel.Latitude + "," + @skiprtuModel.Longitude + "";
+                                                                            var lastlist = "&markers=" + @skiprtuModel.Latitude + "," + @skiprtuModel.Longitude + "";
+                                                                            var center1 = @skiprtuModel.Latitude + "," + @skiprtuModel.Longitude;
+                                                                            var link = "https://maps.googleapis.com/maps/api/staticmap?" + center + "&zoom=15" + lastlist + "&size=1236x493&sensor=FALSE&visual_refresh=true";
+                                                                            <img src='@aditionalFileName' height="180" width='210' />
 
-
-                                                                                String aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objAttachementList1.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
-                                                                                <img src='@aditionalFileName' height="180" width='210' />
-
-                                                                                <a href='https://maps.google.com/maps?q=@center1' target='_blank'>Map</a>
-                                                                                //otherfieldString.Append(" <a href=\"https://maps.google.com/maps?q=" + @center1 + "\" target='_blank'>Map</a>");
-                                                                                <br />
-                                                                                <img src='@LatImagesrc' height='13' width='13' />
-                                                                                <span style='font-size:13px;'> @((@skiprtuModel.Latitude.Length > 14) ? (@skiprtuModel.Latitude.Substring(0, 13)) : @skiprtuModel.Latitude) , @((@skiprtuModel.Longitude.Length > 14) ? (@skiprtuModel.Longitude.Substring(0, 13)) : @skiprtuModel.Longitude) </span>
-                                                                                <br />
-                                                                                <span style='font-size:13px;'>@skiprtuModel.Dates</span>
-
-                                                                            }
-
-                                                                            //}
+                                                                            <a href='https://maps.google.com/maps?q=@center1' target='_blank'>Map</a>
+                                                                            <br />
+                                                                            <img src='@LatImagesrc' height='13' width='13' />
+                                                                            <span style='font-size:13px;'> @((@skiprtuModel.Latitude.Length > 14) ? (@skiprtuModel.Latitude.Substring(0, 13)) : @skiprtuModel.Latitude) , @((@skiprtuModel.Longitude.Length > 14) ? (@skiprtuModel.Longitude.Substring(0, 13)) : @skiprtuModel.Longitude) </span>
+                                                                            <br />
+                                                                            <span style='font-size:13px;'>@skiprtuModel.Dates</span>
                                                                         }
                                                                     }
 
                                                                 }
+
+                                                            }
                                                             </td>
 
 
@@ -1651,18 +1817,32 @@
                                                                             {
                                                                                 if (obj1.IsAudioVideoImage == 2)
                                                                                 {
-                                                                                    String fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + obj1.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
-
+                                                                                    String fileName = String.Empty;
+                                                                                    if (obj1.strCloudUrl != null && obj1.strCloudUrl != "")
+                                                                                    {
+                                                                                        fileName = obj1.strCloudUrl;
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + obj1.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+                                                                                    }
                                                                                     <a target="_new" href="@fileName" class="btn btn-link">Video</a>
-
                                                                                 }
                                                                                 else if (obj1.IsAudioVideoImage == 1)
                                                                                 {
-                                                                                    String fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + obj1.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
-                                                                                    @*<audio controls style="width:43px;">
-                                                                                            <source src="@fileName" type="audio/mp4">
-                                                                                            Your browser does not support the audio tag.
-                                                                                        </audio>*@
+                                                                                    String fileName = String.Empty;
+                                                                                    if (obj1.strCloudUrl != null && obj1.strCloudUrl != "")
+                                                                                    {
+                                                                                        fileName = obj1.strCloudUrl;
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + obj1.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+                                                                                    }
+                                                                                    @*<audio controls style="width:220px;">
+                                                                                        <source src="@fileName" type="audio/mp4">
+                                                                                        Your browser does not support the audio tag.
+                                                                                    </audio>*@
                                                                                     <a target="_new" href="@fileName" class="btn btn-link">Audio</a>
                                                                                 }
                                                                             }

@@ -26,5 +26,6 @@ namespace GarronT.CMS.Model
         public Nullable<int> FieldOrder { get; set; }
         public Nullable<System.DateTime> CapturedDateTime { get; set; }
         public string strFilePath { get; set; }
+        public string strCloudUrl { get; set; }
     }
 }

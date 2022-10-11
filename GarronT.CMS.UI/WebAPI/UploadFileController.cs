@@ -169,8 +169,10 @@ namespace GarronT.CMS.UI.WebAPI
                     grantAccess(filePath);
 
                     List<string> imageFileNameList = new List<string>();
+                    string _imagePath = string.Empty;
                     for (int iCnt = 0; iCnt <= hfc.Count - 1; iCnt++)
                     {
+                        _imagePath = string.Empty;
                         System.Web.HttpPostedFile hpf = hfc[iCnt];
 
                         if (hpf.ContentLength > 0)
@@ -183,7 +185,7 @@ namespace GarronT.CMS.UI.WebAPI
                                 System.IO.File.Delete(filePath + Path.GetFileName(hpf.FileName));
                             }
                             hpf.SaveAs(filePath + Path.GetFileName(hpf.FileName));
-                            string _imagePath = filePath + Path.GetFileName(hpf.FileName);
+                            _imagePath = filePath + Path.GetFileName(hpf.FileName);
                             // Rotate the image according to EXIF data
                             var bmp = new Bitmap(_imagePath);
                             //if (System.IO.File.Exists(_imagePath))
@@ -283,6 +285,9 @@ namespace GarronT.CMS.UI.WebAPI
                                 && o.isServiceData == true).FirstOrDefault();
                             if (obj == null)
                             {
+                                // Image upload in s3 bucket
+                                string s3BucketFileUploadedPath = UploadFileS3Bucket(_imagePath);
+
                                 obj = new TblProjectFieldDataAttachment();
                                 obj.Active = 1;
                                 obj.CreatedOn = new CommonFunctions().ServerDate();
@@ -291,7 +296,7 @@ namespace GarronT.CMS.UI.WebAPI
                                 obj.IsAudioVideoImage = 3;
                                 obj.IsSkipped = false;
                                 obj.strFilePath = item;
-
+                                obj.strCloudUrl = s3BucketFileUploadedPath;
                                 //obj.tblService_Id = !_isAdditionalServices ? _serviceInitialId : masterId;
                                 obj.tblService_Id = _serviceInitialId;
                                 obj.TblServicePicture_ID = rv.ID;
@@ -531,8 +536,10 @@ namespace GarronT.CMS.UI.WebAPI
                     grantAccess(filePath);
 
                     List<string> imageFileNameList = new List<string>();
+                    string _videoPath = string.Empty;
                     for (int iCnt = 0; iCnt <= hfc.Count - 1; iCnt++)
                     {
+                        _videoPath = string.Empty;
                         System.Web.HttpPostedFile hpf = hfc[iCnt];
 
                         if (hpf.ContentLength > 0)
@@ -553,7 +560,7 @@ namespace GarronT.CMS.UI.WebAPI
 
                             iUploadedCnt = iUploadedCnt + 1;
                             imageFileNameList.Add(tempPath + Path.GetFileName(hpf.FileName));
-
+                            _videoPath = filePath + Path.GetFileName(hpf.FileName);
                         }
                     }
 
@@ -600,6 +607,8 @@ namespace GarronT.CMS.UI.WebAPI
                                && o.isServiceData == true).FirstOrDefault();
                             if (obj == null)
                             {
+                                // Image upload in s3 bucket
+                                string s3BucketFileUploadedPath = UploadFileS3Bucket(_videoPath);
 
                                 obj = new TblProjectFieldDataAttachment();
                                 obj.Active = 1;
@@ -609,6 +618,7 @@ namespace GarronT.CMS.UI.WebAPI
                                 obj.IsAudioVideoImage = 2;
                                 obj.IsSkipped = false;
                                 obj.strFilePath = item;
+                                obj.strCloudUrl = s3BucketFileUploadedPath;
                                 obj.tblService_Id = _serviceInitialId;
                                 //obj.TblServicePicture_ID = rv.ID;
                                 obj.isServiceData = true;
@@ -815,8 +825,10 @@ namespace GarronT.CMS.UI.WebAPI
                     grantAccess(filePath);
 
                     List<string> imageFileNameList = new List<string>();
+                    string _audioPath = string.Empty;
                     for (int iCnt = 0; iCnt <= hfc.Count - 1; iCnt++)
                     {
+                        _audioPath = string.Empty;
                         System.Web.HttpPostedFile hpf = hfc[iCnt];
 
                         if (hpf.ContentLength > 0)
@@ -835,7 +847,7 @@ namespace GarronT.CMS.UI.WebAPI
                             hpf.SaveAs(filePath + Path.GetFileName(hpf.FileName));
                             iUploadedCnt = iUploadedCnt + 1;
                             imageFileNameList.Add(tempPath + Path.GetFileName(hpf.FileName));
-
+                            _audioPath = filePath + Path.GetFileName(hpf.FileName);
                         }
                     }
 
@@ -879,6 +891,9 @@ namespace GarronT.CMS.UI.WebAPI
                                && o.isServiceData == true).FirstOrDefault();
                             if (obj == null)
                             {
+                                // Image upload in s3 bucket
+                                string s3BucketFileUploadedPath = UploadFileS3Bucket(_audioPath);
+
                                 obj = new TblProjectFieldDataAttachment();
                                 obj.Active = 1;
                                 obj.CreatedOn = new CommonFunctions().ServerDate();
@@ -887,6 +902,7 @@ namespace GarronT.CMS.UI.WebAPI
                                 obj.IsAudioVideoImage = 1;
                                 obj.IsSkipped = false;
                                 obj.strFilePath = item;
+                                obj.strCloudUrl = s3BucketFileUploadedPath;
                                 obj.tblService_Id = _serviceInitialId;
                                 //obj.TblServicePicture_ID = rv.ID;
                                 obj.isServiceData = true;
@@ -1143,8 +1159,10 @@ namespace GarronT.CMS.UI.WebAPI
                         grantAccess(filePath);
 
                         List<string> imageFileNameList = new List<string>();
+                        string _imagePath = string.Empty;
                         for (int iCnt = 0; iCnt <= hfc.Count - 1; iCnt++)
                         {
+                            _imagePath = string.Empty;
                             System.Web.HttpPostedFile hpf = hfc[iCnt];
                             if (hpf.ContentLength > 0)
                             {
@@ -1165,7 +1183,7 @@ namespace GarronT.CMS.UI.WebAPI
                                 hpf.SaveAs(filePath + Path.GetFileName(hpf.FileName));
 
 
-                                string _imagePath = filePath + Path.GetFileName(hpf.FileName);
+                                _imagePath = filePath + Path.GetFileName(hpf.FileName);
                                 // Rotate the image according to EXIF data
                                 var bmp = new Bitmap(_imagePath);
 
@@ -1201,6 +1219,9 @@ namespace GarronT.CMS.UI.WebAPI
                                o.strFilePath == item && o.isServiceData == false).FirstOrDefault();
                             if (obj == null)
                             {
+                                // Image upload in s3 bucket
+                                string s3BucketFileUploadedPath = UploadFileS3Bucket(_imagePath);
+
                                 obj = new TblProjectFieldDataAttachment();
                                 obj.Active = 1;
                                 obj.CreatedOn = new CommonFunctions().ServerDate();
@@ -1209,6 +1230,7 @@ namespace GarronT.CMS.UI.WebAPI
                                 obj.IsAudioVideoImage = 3;
                                 obj.IsSkipped = false;
                                 obj.strFilePath = item;
+                                obj.strCloudUrl = s3BucketFileUploadedPath;
                                 //obj.tblService_Id = _serviceInitialId;
                                 //obj.TblServicePicture_ID = rv.ID;
                                 obj.isServiceData = false;
@@ -1492,8 +1514,10 @@ namespace GarronT.CMS.UI.WebAPI
                         grantAccess(filePath);
 
                         List<string> imageFileNameList = new List<string>();
+                        string _filePath = string.Empty;
                         for (int iCnt = 0; iCnt <= hfc.Count - 1; iCnt++)
                         {
+                            _filePath = string.Empty;
                             System.Web.HttpPostedFile hpf = hfc[iCnt];
 
                             if (hpf.ContentLength > 0)
@@ -1512,7 +1536,7 @@ namespace GarronT.CMS.UI.WebAPI
                                 hpf.SaveAs(filePath + Path.GetFileName(hpf.FileName));
                                 iUploadedCnt = iUploadedCnt + 1;
                                 imageFileNameList.Add(tempPath + Path.GetFileName(hpf.FileName));
-
+                                _filePath = filePath + Path.GetFileName(hpf.FileName);
                             }
                         }
 
@@ -1524,6 +1548,8 @@ namespace GarronT.CMS.UI.WebAPI
                                o.strFilePath == item && o.isServiceData == false).FirstOrDefault();
                             if (obj == null)
                             {
+                                // Image upload in s3 bucket
+                                string s3BucketFileUploadedPath = UploadFileS3Bucket(_filePath);
 
                                 obj = new TblProjectFieldDataAttachment();
                                 obj.Active = 1;
@@ -1533,6 +1559,7 @@ namespace GarronT.CMS.UI.WebAPI
                                 obj.IsAudioVideoImage = 1;
                                 obj.IsSkipped = false;
                                 obj.strFilePath = item;
+                                obj.strCloudUrl = s3BucketFileUploadedPath;
                                 // obj.tblService_Id = _serviceInitialId;
                                 //obj.TblServicePicture_ID = rv.ID;
                                 obj.isServiceData = false;
@@ -1789,8 +1816,10 @@ namespace GarronT.CMS.UI.WebAPI
                         grantAccess(filePath);
 
                         List<string> imageFileNameList = new List<string>();
+                        string _filePath = string.Empty;
                         for (int iCnt = 0; iCnt <= hfc.Count - 1; iCnt++)
                         {
+                            _filePath = string.Empty;
                             System.Web.HttpPostedFile hpf = hfc[iCnt];
 
                             if (hpf.ContentLength > 0)
@@ -1809,6 +1838,7 @@ namespace GarronT.CMS.UI.WebAPI
                                 hpf.SaveAs(filePath + Path.GetFileName(hpf.FileName));
                                 iUploadedCnt = iUploadedCnt + 1;
                                 imageFileNameList.Add(tempPath + Path.GetFileName(hpf.FileName));
+                                _filePath = filePath + Path.GetFileName(hpf.FileName);
                             }
                         }
 
@@ -1819,6 +1849,8 @@ namespace GarronT.CMS.UI.WebAPI
                                o.strFilePath == item && o.isServiceData == false).FirstOrDefault();
                             if (obj == null)
                             {
+                                // Image upload in s3 bucket
+                                string s3BucketFileUploadedPath = UploadFileS3Bucket(_filePath);
                                 obj = new TblProjectFieldDataAttachment();
                                 obj.Active = 1;
                                 obj.CreatedOn = new CommonFunctions().ServerDate();
@@ -1827,6 +1859,7 @@ namespace GarronT.CMS.UI.WebAPI
                                 obj.IsAudioVideoImage = 2;
                                 obj.IsSkipped = false;
                                 obj.strFilePath = item;
+                                obj.strCloudUrl = s3BucketFileUploadedPath;
                                 //obj.tblService_Id = _serviceInitialId;
                                 //obj.TblServicePicture_ID = rv.ID;
                                 obj.isServiceData = false;
@@ -2078,8 +2111,10 @@ namespace GarronT.CMS.UI.WebAPI
                         grantAccess(filePath);
 
                         List<string> imageFileNameList = new List<string>();
+                        string _imagePath = string.Empty;
                         for (int iCnt = 0; iCnt <= hfc.Count - 1; iCnt++)
                         {
+                            _imagePath = string.Empty;
                             System.Web.HttpPostedFile hpf = hfc[iCnt];
 
                             if (hpf.ContentLength > 0)
@@ -2113,7 +2148,7 @@ namespace GarronT.CMS.UI.WebAPI
 
                                 iUploadedCnt = iUploadedCnt + 1;
                                 imageFileNameList.Add(tempPath + Path.GetFileName(newFilePath));
-
+                                _imagePath = newFilePath;
                             }
                         }
 
@@ -2121,7 +2156,8 @@ namespace GarronT.CMS.UI.WebAPI
 
                         foreach (var item in imageFileNameList)
                         {
-
+                            // Image upload in s3 bucket
+                            string s3BucketFileUploadedPath = UploadFileS3Bucket(_imagePath);
                             var obj = new TblProjectFieldDataAttachment();
                             obj.Active = 1;
                             obj.CreatedOn = new CommonFunctions().ServerDate();
@@ -2131,6 +2167,7 @@ namespace GarronT.CMS.UI.WebAPI
                             obj.IsAudioVideoImage = 3;
                             obj.IsSkipped = true;
                             obj.strFilePath = item;
+                            obj.strCloudUrl = s3BucketFileUploadedPath;
                             obj.isServiceData = false;
                             objCompassEntities.TblProjectFieldDataAttachments.Add(obj);
                             objCompassEntities.SaveChanges();
@@ -2364,8 +2401,10 @@ namespace GarronT.CMS.UI.WebAPI
                         grantAccess(filePath);
 
                         List<string> imageFileNameList = new List<string>();
+                        string _audioPath = string.Empty;
                         for (int iCnt = 0; iCnt <= hfc.Count - 1; iCnt++)
                         {
+                            _audioPath = string.Empty;
                             System.Web.HttpPostedFile hpf = hfc[iCnt];
 
                             if (hpf.ContentLength > 0)
@@ -2379,13 +2418,14 @@ namespace GarronT.CMS.UI.WebAPI
 
                                 iUploadedCnt = iUploadedCnt + 1;
                                 imageFileNameList.Add(tempPath + Path.GetFileName(newFilePath));
-
+                                _audioPath = newFilePath;
                             }
                         }
 
                         foreach (var item in imageFileNameList)
                         {
-
+                            // Image upload in s3 bucket
+                            string s3BucketFileUploadedPath = UploadFileS3Bucket(_audioPath);
                             var obj = new TblProjectFieldDataAttachment();
                             obj.Active = 1;
                             obj.CreatedOn = new CommonFunctions().ServerDate();
@@ -2395,11 +2435,10 @@ namespace GarronT.CMS.UI.WebAPI
                             obj.IsAudioVideoImage = 1;
                             obj.IsSkipped = true;
                             obj.strFilePath = item;
+                            obj.strCloudUrl = s3BucketFileUploadedPath;
                             obj.isServiceData = false;
                             objCompassEntities.TblProjectFieldDataAttachments.Add(obj);
                             objCompassEntities.SaveChanges();
-
-
                         }
 
                         if (imageFileNameList.Count > 0)
@@ -2631,8 +2670,10 @@ namespace GarronT.CMS.UI.WebAPI
                         grantAccess(filePath);
 
                         List<string> imageFileNameList = new List<string>();
+                        string _videoPath = string.Empty;
                         for (int iCnt = 0; iCnt <= hfc.Count - 1; iCnt++)
                         {
+                            _videoPath = string.Empty;
                             System.Web.HttpPostedFile hpf = hfc[iCnt];
 
                             if (hpf.ContentLength > 0)
@@ -2647,12 +2688,14 @@ namespace GarronT.CMS.UI.WebAPI
 
                                 iUploadedCnt = iUploadedCnt + 1;
                                 imageFileNameList.Add(tempPath + Path.GetFileName(newFilePath));
+                                _videoPath = newFilePath;
                             }
                         }
 
                         foreach (var item in imageFileNameList)
                         {
-
+                            // Image upload in s3 bucket
+                            string s3BucketFileUploadedPath = UploadFileS3Bucket(_videoPath);
                             var obj = new TblProjectFieldDataAttachment();
                             obj.Active = 1;
                             obj.CreatedOn = new CommonFunctions().ServerDate();
@@ -2662,6 +2705,7 @@ namespace GarronT.CMS.UI.WebAPI
                             obj.IsAudioVideoImage = 2;
                             obj.IsSkipped = true;
                             obj.strFilePath = item;
+                            obj.strCloudUrl = s3BucketFileUploadedPath;
                             obj.isServiceData = false;
                             objCompassEntities.TblProjectFieldDataAttachments.Add(obj);
                             objCompassEntities.SaveChanges();
@@ -2930,8 +2974,10 @@ namespace GarronT.CMS.UI.WebAPI
                     grantAccess(filePath);
 
                     List<string> imageFileNameList = new List<string>();
+                    string _filePath = string.Empty;
                     for (int iCnt = 0; iCnt <= hfc.Count - 1; iCnt++)
                     {
+                        _filePath = string.Empty;
                         System.Web.HttpPostedFile hpf = hfc[iCnt];
 
                         if (hpf.ContentLength > 0)
@@ -2951,7 +2997,7 @@ namespace GarronT.CMS.UI.WebAPI
 
                             iUploadedCnt = iUploadedCnt + 1;
                             imageFileNameList.Add(tempPath + Path.GetFileName(hpf.FileName));
-
+                            _filePath = filePath + Path.GetFileName(hpf.FileName);
                         }
                     }
 
@@ -2964,6 +3010,8 @@ namespace GarronT.CMS.UI.WebAPI
                            o.strFilePath == item && o.isServiceData == false).FirstOrDefault();
                         if (obj == null)
                         {
+                            // Image upload in s3 bucket
+                            string s3BucketFileUploadedPath = UploadFileS3Bucket(_filePath);
                             obj = new TblProjectFieldDataAttachment();
                             obj.Active = 1;
                             obj.CreatedOn = new CommonFunctions().ServerDate();
@@ -2972,6 +3020,7 @@ namespace GarronT.CMS.UI.WebAPI
                             obj.IsAudioVideoImage = 3;
                             obj.IsSkipped = false;
                             obj.strFilePath = item;
+                            obj.strCloudUrl = s3BucketFileUploadedPath;
                             //obj.tblService_Id = _serviceInitialId;
                             //obj.TblServicePicture_ID = rv.ID;
                             obj.isServiceData = false;
@@ -2979,13 +3028,8 @@ namespace GarronT.CMS.UI.WebAPI
                             objCompassEntities.SaveChanges();
                         }
                     }
-
-
-
                     return JsonErrorResponse(s, "Success", "File Uploaded Sucessfully.");
                 }
-
-
             }
             catch (Exception ex)
             {
@@ -3112,8 +3156,10 @@ namespace GarronT.CMS.UI.WebAPI
                     grantAccess(filePath);
 
                     List<string> imageFileNameList = new List<string>();
+                    string _filePath = string.Empty;
                     for (int iCnt = 0; iCnt <= hfc.Count - 1; iCnt++)
                     {
+                        _filePath = string.Empty;
                         System.Web.HttpPostedFile hpf = hfc[iCnt];
 
                         if (hpf.ContentLength > 0)
@@ -3130,6 +3176,7 @@ namespace GarronT.CMS.UI.WebAPI
 
                             iUploadedCnt = iUploadedCnt + 1;
                             imageFileNameList.Add(tempPath + Path.GetFileName(hpf.FileName));
+                            _filePath = filePath + Path.GetFileName(hpf.FileName);
                         }
                     }
 
@@ -3203,6 +3250,8 @@ namespace GarronT.CMS.UI.WebAPI
                         //    && o.isServiceData == true).FirstOrDefault();
                         //if (obj == null)
                         //{
+                        // Image upload in s3 bucket
+                        string s3BucketFileUploadedPath = UploadFileS3Bucket(_filePath);
                         TblProjectFieldDataAttachment obj = new TblProjectFieldDataAttachment();
                         obj.Active = 1;
                         obj.CreatedOn = new CommonFunctions().ServerDate();
@@ -3211,7 +3260,7 @@ namespace GarronT.CMS.UI.WebAPI
                         obj.IsAudioVideoImage = 3;
                         obj.IsSkipped = false;
                         obj.strFilePath = item;
-
+                        obj.strCloudUrl = s3BucketFileUploadedPath;
                         //obj.tblService_Id = !_isAdditionalServices ? _serviceInitialId : masterId;
                         obj.tblService_Id = ServiceId;
                         obj.TblServicePicture_ID = rv.ID;
@@ -3650,7 +3699,7 @@ namespace GarronT.CMS.UI.WebAPI
 
                             iUploadedCnt = iUploadedCnt + 1;
                             imageFileNameList.Add(tempPath + Path.GetFileName(hpf.FileName));
-
+                            
                         }
                     }
 
@@ -3662,7 +3711,7 @@ namespace GarronT.CMS.UI.WebAPI
                            o.FK_ProjectAuditFieldDataMaster_ID == _currentFieldDataMasterId && o.IsAudioVideoImage == 3 &&
                            o.StrFilePath == item && o.IsServiceData == false).FirstOrDefault();
                         if (obj == null)
-                        {
+                        {   
                             obj = new ProjectAuditFieldDataAttachment();
                             obj.Active = 1;
                             obj.CreatedOn = new CommonFunctions().ServerDate();
@@ -3968,7 +4017,6 @@ namespace GarronT.CMS.UI.WebAPI
                             obj.IsAudioVideoImage = 3;
                             obj.IsSkipped = false;
                             obj.StrFilePath = item;
-
                             //obj.tblService_Id = !_isAdditionalServices ? _serviceInitialId : masterId;
                             obj.Fk_tblService_Id = _serviceInitialId;
                             obj.FK_TblServicePicture_ID = rv.ID;
@@ -4016,7 +4064,33 @@ namespace GarronT.CMS.UI.WebAPI
 
         #endregion
 
+        public static string UploadFileS3Bucket(string filePath)
+        {
+            try
+            {
+                string path = @"" + filePath + "";
+                ServicePointManager.Expect100Continue = true;
+                ServicePointManager.DefaultConnectionLimit = 9999;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3;
+                var client = new RestClient("https://cashfreeapi.snssystem.com/api/v1/");
+                var request = new RestRequest("file-upload", Method.Post);
+                request.AddParameter("token", "wLZfNogqzMB0tlbACpqceL");
+                request.AddParameter("type", "public");
+                request.AddFile("attachments", path);
+                RestResponse response = client.Execute(request);
+                var jsonData = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(response.Content);
+                //dynamic jsonData2 = JsonConvert.DeserializeObject<object>(jsonString);
+                var imgUrl = (string)jsonData.data;
+                return imgUrl;
+            }
+            catch (Exception ex)
+            {
+                string ss = ex.Message.ToString();
+                log.Info("WEB API Service  Does't upload file in S3 Bucket:- Error Message :- " + ss + " - " + DateTime.Now.ToString());
+                return "";
+            }
+            //end hare
+            
+        }
     }
-
-
 }

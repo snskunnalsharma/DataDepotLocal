@@ -1350,6 +1350,7 @@
                     <Property Name="tblProjectFieldDataMaster_ID" Type="bigint" Nullable="false" />
                     <Property Name="IsAudioVideoImage" Type="int" Nullable="false" />
                     <Property Name="strFilePath" Type="varchar" MaxLength="500" Nullable="false" />
+                    <Property Name="strCloudUrl" Type="varchar" MaxLength="500" Nullable="true" />
                     <Property Name="isServiceData" Type="bit" />
                     <Property Name="tblService_Id" Type="bigint" />
                     <Property Name="TblServicePicture_ID" Type="bigint" />
@@ -6554,6 +6555,7 @@
                     <Property Name="tblProjectFieldDataMaster_ID" Type="Int64" Nullable="false" />
                     <Property Name="IsAudioVideoImage" Type="Int32" Nullable="false" />
                     <Property Name="strFilePath" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+                    <Property Name="strCloudUrl" Type="String" Nullable="true" MaxLength="500" FixedLength="false" Unicode="false" />
                     <Property Name="isServiceData" Type="Boolean" />
                     <Property Name="tblService_Id" Type="Int64" />
                     <Property Name="TblServicePicture_ID" Type="Int64" />
@@ -7020,6 +7022,7 @@
                     <Property Type="Int32" Name="FieldOrder" Nullable="true" />
                     <Property Type="DateTime" Name="CapturedDateTime" Nullable="true" Precision="23" />
                     <Property Type="String" Name="strFilePath" Nullable="true" />
+                    <Property Type="String" Name="strCloudUrl" Nullable="true" />
                 </ComplexType>
                 <ComplexType Name="PROC_ProjectStatus_AllData_Result">
                     <Property Type="Int64" Name="ProjectId" Nullable="true" />
@@ -10403,6 +10406,27 @@
                             </ComplexTypeMapping>
                         </ResultMapping>
                     </FunctionImportMapping>
+                  <EntitySetMapping Name="TblProjectFieldDataAttachments">
+                    <EntityTypeMapping TypeName="CompassModel.TblProjectFieldDataAttachment">
+                      <MappingFragment StoreEntitySet="TblProjectFieldDataAttachments">
+                        <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+                        <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                        <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                        <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                        <ScalarProperty Name="Active" ColumnName="Active" />
+                        <ScalarProperty Name="TblServicePicture_ID" ColumnName="TblServicePicture_ID" />
+                        <ScalarProperty Name="tblService_Id" ColumnName="tblService_Id" />
+                        <ScalarProperty Name="isServiceData" ColumnName="isServiceData" />
+                        <ScalarProperty Name="strCloudUrl" ColumnName="strCloudUrl" />
+                        <ScalarProperty Name="strFilePath" ColumnName="strFilePath" />
+                        <ScalarProperty Name="IsAudioVideoImage" ColumnName="IsAudioVideoImage" />
+                        <ScalarProperty Name="tblProjectFieldDataMaster_ID" ColumnName="tblProjectFieldDataMaster_ID" />
+                        <ScalarProperty Name="ProjectFieldDataId" ColumnName="ProjectFieldDataId" />
+                        <ScalarProperty Name="IsSkipped" ColumnName="IsSkipped" />
+                        <ScalarProperty Name="ID" ColumnName="ID" />
+                      </MappingFragment>
+                    </EntityTypeMapping>
+                  </EntitySetMapping>
                     <FunctionImportMapping FunctionImportName="STP_GetClient" FunctionName="CompassModel.Store.STP_GetClient">
                         <ResultMapping>
                             <ComplexTypeMapping TypeName="CompassModel.STP_GetClient_Result">
@@ -11514,26 +11538,7 @@
                             </ComplexTypeMapping>
                         </ResultMapping>
                     </FunctionImportMapping>
-                    <EntitySetMapping Name="TblProjectFieldDataAttachments">
-                        <EntityTypeMapping TypeName="CompassModel.TblProjectFieldDataAttachment">
-                            <MappingFragment StoreEntitySet="TblProjectFieldDataAttachments">
-                                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
-                                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
-                                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
-                                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                                <ScalarProperty Name="Active" ColumnName="Active" />
-                                <ScalarProperty Name="TblServicePicture_ID" ColumnName="TblServicePicture_ID" />
-                                <ScalarProperty Name="tblService_Id" ColumnName="tblService_Id" />
-                                <ScalarProperty Name="isServiceData" ColumnName="isServiceData" />
-                                <ScalarProperty Name="strFilePath" ColumnName="strFilePath" />
-                                <ScalarProperty Name="IsAudioVideoImage" ColumnName="IsAudioVideoImage" />
-                                <ScalarProperty Name="tblProjectFieldDataMaster_ID" ColumnName="tblProjectFieldDataMaster_ID" />
-                                <ScalarProperty Name="ProjectFieldDataId" ColumnName="ProjectFieldDataId" />
-                                <ScalarProperty Name="IsSkipped" ColumnName="IsSkipped" />
-                                <ScalarProperty Name="ID" ColumnName="ID" />
-                            </MappingFragment>
-                        </EntityTypeMapping>
-                    </EntitySetMapping>
+
                     <FunctionImportMapping FunctionImportName="PROC_UserNotification" FunctionName="CompassModel.Store.PROC_UserNotification">
                         <ResultMapping>
                             <ComplexTypeMapping TypeName="CompassModel.PROC_UserNotification_Result">
@@ -12065,6 +12070,7 @@
                                 <ScalarProperty Name="FieldOrder" ColumnName="FieldOrder" />
                                 <ScalarProperty Name="CapturedDateTime" ColumnName="CapturedDateTime" />
                                 <ScalarProperty Name="strFilePath" ColumnName="strFilePath" />
+                                <ScalarProperty Name="strCloudUrl" ColumnName="strCloudUrl" />
                             </ComplexTypeMapping>
                         </ResultMapping>
                     </FunctionImportMapping>

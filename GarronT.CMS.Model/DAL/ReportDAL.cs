@@ -667,6 +667,7 @@ namespace GarronT.CMS.Model.DAL
                     Fieldlatitude = a.FieldLatitude,
                     Fieldlongitude = a.FieldLongitude,
                     strFilePath = a.strFilePath,
+                    strCloudUrl=a.strCloudUrl,
                     // IsAudioVideoImage = a.IsAudioVideoImage
                     FieldOrder = a.FieldOrder,
                     SortOrderNumber = a.SortOrderNumber,
@@ -762,6 +763,7 @@ namespace GarronT.CMS.Model.DAL
                                          IsAudioVideoImage = o.IsAudioVideoImage,
                                          isServiceData = o.isServiceData,
                                          strFilePath = o.strFilePath,
+                                         strCloudUrl=o.strCloudUrl,
                                          tblProjectFieldDataMaster_ID = o.tblProjectFieldDataMaster_ID,
                                          TblServicePicture_ID = o.TblServicePicture_ID
                                      }).OrderBy(a => a.IsAudioVideoImage).ToList();
@@ -789,8 +791,14 @@ namespace GarronT.CMS.Model.DAL
             string paths = Convert.ToString((from o in objCompassEntities.TblProjectFieldDataAttachments.AsNoTracking()
                                              where o.tblProjectFieldDataMaster_ID == tblProjectFieldDataMaster_ID
                                              select o.strFilePath).FirstOrDefault());
-
-
+            return paths;
+        }
+        public string getLocationImageInCloud(long? tblProjectFieldDataMaster_ID)
+        {
+            CompassEntities objCompassEntities = new CompassEntities();
+            string paths = Convert.ToString((from o in objCompassEntities.TblProjectFieldDataAttachments.AsNoTracking()
+                                             where o.tblProjectFieldDataMaster_ID == tblProjectFieldDataMaster_ID
+                                             select o.strCloudUrl).FirstOrDefault());
             return paths;
         }
 
@@ -1607,7 +1615,7 @@ namespace GarronT.CMS.Model.DAL
                 Obj.ModifiedBy = createdBy;
                 Obj.ModifiedOn = new CommonFunctions().ServerDate();
                 compassEntities.SaveChanges();
-
+                
 
                 TblProjectFieldDataAttachment objTblProjectFieldDataAttachment = new TblProjectFieldDataAttachment();
                 objTblProjectFieldDataAttachment.Active = 1;
@@ -2375,7 +2383,8 @@ namespace GarronT.CMS.Model.DAL
                          {
                              id = o.ID,
                              IsAudioVideoImage = o.IsAudioVideoImage,
-                             strFilePath = o.strFilePath
+                             strFilePath = o.strFilePath,
+                             strCloudUrl=o.strCloudUrl
                          }).OrderBy(o => o.IsAudioVideoImage).ToList();
             }
             return paths;
@@ -2404,7 +2413,8 @@ namespace GarronT.CMS.Model.DAL
                          {
                              id = o.ID,
                              IsAudioVideoImage = o.IsAudioVideoImage,
-                             strFilePath = o.strFilePath
+                             strFilePath = o.strFilePath,
+                             strCloudUrl=o.strCloudUrl
                          }).OrderBy(o => o.IsAudioVideoImage).ToList();
             }
             return paths;
@@ -2482,6 +2492,30 @@ namespace GarronT.CMS.Model.DAL
                              id = o.ID,
                              IsAudioVideoImage = o.IsAudioVideoImage,
                              strFilePath = o.strFilePath
+                         }).FirstOrDefault();
+            }
+            return paths;
+        }
+        public SkipRtuAttachmentModel getCloudGPSLocationImages(long? _uploadId, long? _installerId, long? _formId)
+        {
+            long uploadId = long.Parse(_uploadId.ToString());
+            long installerId = long.Parse(_installerId.ToString());
+            long formId = long.Parse(_formId.ToString());
+            CompassEntities dbcontext = new CompassEntities();
+
+            var ID = dbcontext.TblProjectFieldDatas.Where(o => o.Active == 1 && o.FormId == formId
+                && o.FK_UploadedExcelData_Id == uploadId && o.InstallerId == installerId).FirstOrDefault();
+
+            SkipRtuAttachmentModel paths = new SkipRtuAttachmentModel();
+            if (ID != null)
+            {//
+                paths = dbcontext.TblProjectFieldDataAttachments.AsNoTracking()
+                         .Where(o => o.ProjectFieldDataId == ID.ID && o.IsSkipped == true && o.strCloudUrl.Contains("img.png") &&
+                         o.Active == 1).Select(o => new SkipRtuAttachmentModel
+                         {
+                             id = o.ID,
+                             IsAudioVideoImage = o.IsAudioVideoImage,
+                             strCloudUrl = o.strCloudUrl
                          }).FirstOrDefault();
             }
             return paths;
@@ -2806,8 +2840,17 @@ namespace GarronT.CMS.Model.DAL
                                              on o.ID equals ua.ProjectFieldDataId
                                              where o.FormId == Formid && o.FK_UploadedExcelData_Id == uploadid && ua.IsSkipped == false //&& o.strFilePath.Contains("MultipleMapPins")
                                              select ua.strFilePath).FirstOrDefault());
+            return paths;
+        }
 
-
+        public string getMultipleCloudMapPins(long? uploadid, long? Formid)
+        {
+            CompassEntities objCompassEntities = new CompassEntities();
+            string paths = Convert.ToString((from o in objCompassEntities.TblProjectFieldDatas.AsNoTracking()
+                                             join ua in objCompassEntities.TblProjectFieldDataAttachments.AsNoTracking()
+                                             on o.ID equals ua.ProjectFieldDataId
+                                             where o.FormId == Formid && o.FK_UploadedExcelData_Id == uploadid && ua.IsSkipped == false //&& o.strFilePath.Contains("MultipleMapPins")
+                                             select ua.strCloudUrl).FirstOrDefault());
             return paths;
         }
 

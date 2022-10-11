@@ -20,6 +20,7 @@ namespace GarronT.CMS.Model
         public long tblProjectFieldDataMaster_ID { get; set; }
         public int IsAudioVideoImage { get; set; }
         public string strFilePath { get; set; }
+        public string strCloudUrl { get; set; }
         public Nullable<bool> isServiceData { get; set; }
         public Nullable<long> tblService_Id { get; set; }
         public Nullable<long> TblServicePicture_ID { get; set; }

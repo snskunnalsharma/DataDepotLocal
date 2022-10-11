@@ -12,6 +12,7 @@ namespace GarronT.CMS.Model.BO
         public long tblProjectFieldDataMaster_ID { get; set; }
         public int IsAudioVideoImage { get; set; }
         public string strFilePath { get; set; }
+        public string strCloudUrl { get; set; }
         public bool? isServiceData { get; set; }
         public long? TblServicePicture_ID { get; set; }
         public int Active { get; set; }
@@ -25,5 +26,6 @@ namespace GarronT.CMS.Model.BO
         public long ProjectFieldDataID { get; set; }
         public int IsAudioVideoImage { get; set; }
         public string strFilePath { get; set; }
+        public string strCloudUrl { get; set; }
     }
 }

@@ -193,6 +193,7 @@ namespace GarronT.CMS.Model.BO
         public int? FieldOrder { get; set; }
         public int? SortOrderNumber { get; set; }
         public string strFilePath { get; set; }
+        public string strCloudUrl { get; set; }
         public bool isLaLongCaptureRequired { get; set; }
         public bool isTimeStampCaptureRequired { get; set; }
         public string captureTimeStamp { get; set; }

@@ -1,4 +1,5 @@
 ﻿using GarronT.CMS.Model.BO;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -9,17 +10,19 @@ using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
+using log4net;
+using Newtonsoft.Json;
 
 namespace GarronT.CMS.Model.DAL
 {
     public class MobileDAL : IDisposable
     {
-
         bool disposed;
         protected virtual void Dispose(bool disposing)
         {
@@ -40,8 +43,9 @@ namespace GarronT.CMS.Model.DAL
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-
-
+        #region Create Object ILog for Logger write
+        private static readonly ILog log = LogManager.GetLogger(typeof(MobileDAL));
+        #endregion
         /// <summary>
         /// 
         /// </summary>
@@ -1332,6 +1336,33 @@ namespace GarronT.CMS.Model.DAL
             }
         }
 
+        public static string UploadFileS3Bucket(string filePath)
+        {
+            try
+            {
+                string path = @"" + filePath + "";
+                ServicePointManager.Expect100Continue = true;
+                ServicePointManager.DefaultConnectionLimit = 9999;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3;
+                var client = new RestClient("https://cashfreeapi.snssystem.com/api/v1/");
+                var request = new RestRequest("file-upload", Method.Post);
+                request.AddParameter("token", "wLZfNogqzMB0tlbACpqceL");
+                request.AddParameter("type", "public");
+                request.AddFile("attachments", path);
+                RestResponse response = client.Execute(request);
+                var jsonData = JsonConvert.DeserializeObject<dynamic>(response.Content);
+                //dynamic jsonData2 = JsonConvert.DeserializeObject<object>(jsonString);
+                var imgUrl = (string)jsonData.data;
+                return imgUrl;
+            }
+            catch (Exception ex)
+            {
+                string ss = ex.Message.ToString();
+                log.Info("File Does't upload file in S3 Bucket:- Error Message :- " + ss + " - " + DateTime.Now.ToString());
+                return "";
+            }
+            //end hare            
+        }
 
         /// <summary>
         /// Date 2016-10-06 Devloper Bharat Magdum
@@ -1767,6 +1798,9 @@ namespace GarronT.CMS.Model.DAL
                                             //Bytes Saved to Specified File
                                             WriteBytesToFile(mapFilePath, bytes);
 
+                                            
+                                            string s3BucketFileUploadedPath = UploadFileS3Bucket(mapFilePath);
+                                            
                                             TblProjectFieldDataAttachment obj = new TblProjectFieldDataAttachment();
                                             obj.Active = 1;
                                             obj.CreatedOn = new CommonFunctions().ServerDate();
@@ -1774,6 +1808,7 @@ namespace GarronT.CMS.Model.DAL
                                             obj.ProjectFieldDataId = oldTblProjectFieldData.ID;
                                             obj.IsAudioVideoImage = 3;
                                             obj.strFilePath = tempPath1;
+                                            obj.strCloudUrl = s3BucketFileUploadedPath;
                                             obj.IsSkipped = true;
                                             obj.isServiceData = false;
                                             objCompassEntities.TblProjectFieldDataAttachments.Add(obj);
@@ -1889,6 +1924,8 @@ namespace GarronT.CMS.Model.DAL
                                     //Bytes Saved to Specified File
                                     WriteBytesToFile(mapFilePath, bytes);
 
+                                    string s3BucketFileUploadedPath = UploadFileS3Bucket(mapFilePath);
+
                                     TblProjectFieldDataAttachment obj = new TblProjectFieldDataAttachment();
                                     obj.Active = 1;
                                     obj.CreatedOn = new CommonFunctions().ServerDate();
@@ -1896,6 +1933,7 @@ namespace GarronT.CMS.Model.DAL
                                     obj.ProjectFieldDataId = objTblProjectFieldData.ID;
                                     obj.IsAudioVideoImage = 3;
                                     obj.strFilePath = tempPath1;
+                                    obj.strCloudUrl = s3BucketFileUploadedPath;
                                     obj.IsSkipped = true;
                                     obj.isServiceData = false;
                                     objCompassEntities.TblProjectFieldDataAttachments.Add(obj);
@@ -2576,7 +2614,8 @@ namespace GarronT.CMS.Model.DAL
 
 
                                     if (masterFieldId != 0 && !string.IsNullOrEmpty(mapFilePath))
-                                    {
+                                    { 
+                                        string s3BucketFileUploadedPath = UploadFileS3Bucket(mapFilePath);
                                         TblProjectFieldDataAttachment obj = new TblProjectFieldDataAttachment();
                                         obj.Active = 1;
                                         obj.CreatedOn = new CommonFunctions().ServerDate();
@@ -2584,6 +2623,7 @@ namespace GarronT.CMS.Model.DAL
                                         obj.tblProjectFieldDataMaster_ID = masterFieldId;
                                         obj.IsAudioVideoImage = 3;
                                         obj.strFilePath = tempPath1;
+                                        obj.strCloudUrl = s3BucketFileUploadedPath;
                                         obj.isServiceData = false;
                                         objCompassEntities.TblProjectFieldDataAttachments.Add(obj);
                                         objCompassEntities.SaveChanges();
@@ -2591,6 +2631,7 @@ namespace GarronT.CMS.Model.DAL
 
                                     if (!string.IsNullOrEmpty(CommonMapFilePath))
                                     {
+                                        string s3BucketFileUploadedPath = UploadFileS3Bucket(CommonMapFilePath);
                                         TblProjectFieldDataAttachment obj = new TblProjectFieldDataAttachment();
                                         obj.Active = 1;
                                         obj.CreatedOn = new CommonFunctions().ServerDate();
@@ -2598,6 +2639,7 @@ namespace GarronT.CMS.Model.DAL
                                         obj.ProjectFieldDataId = objTblProjectFieldData.ID;
                                         obj.IsAudioVideoImage = 3;
                                         obj.strFilePath = CommonTempPath;
+                                        obj.strCloudUrl = s3BucketFileUploadedPath;
                                         obj.isServiceData = false;
                                         objCompassEntities.TblProjectFieldDataAttachments.Add(obj);
                                         objCompassEntities.SaveChanges();
@@ -2668,8 +2710,6 @@ namespace GarronT.CMS.Model.DAL
             return isRecrodSaved;
 
         }
-
-
 
 
         /// <summary>
@@ -3640,7 +3680,6 @@ namespace GarronT.CMS.Model.DAL
                 throw ex;
             }
         }
-
     }
 
 
@@ -3682,9 +3721,4 @@ namespace GarronT.CMS.Model.DAL
             return Enumerable.Empty<string>();
         }
     }
-
-
-
-
-
 }
