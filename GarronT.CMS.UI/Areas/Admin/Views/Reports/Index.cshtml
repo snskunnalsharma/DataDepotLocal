@@ -329,8 +329,13 @@
             min-width: 90% !important;
         }
     }
-
-    @@media (max-width:320px) {
+    @@media (min-width:375px) {
+        .dataTables_length > label {
+            white-space: normal;
+            width: auto;
+        }
+    }
+    @@media (max-width:375px) {
         .rep-box {
             /*margin-left: 10%;*/
         }
@@ -411,6 +416,9 @@
             width: auto;
         }
 
+        @*        .table-responsive .dataTables_wrapper .drp-rec .dataTables_length > label::after {
+            height:20vh;
+        }*@
         div.dataTables_info {
             margin-top: -10%;
         }
@@ -3085,7 +3093,7 @@
                                 <th width="5%">New Radio<br>Number</th>
                                 <th width="12%">Installer</th>
                                 <th width="7%">Status</th>
-                                @*
+                                @* 
                                     <th width="8%">Reason</th>
                                     <th width="1%">C</th>*@
                                 <th width="13%">Action</th>

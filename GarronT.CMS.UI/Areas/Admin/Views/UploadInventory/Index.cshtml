@@ -18,8 +18,20 @@
 @Html.Hidden("urlSaveInventryRecord", Url.Action("SaveInventryRecord", "UploadInventory"))
 @Html.Hidden("urlViewUpload", Url.Action("ViewUpload", "UploadInventory"))
 <style>
+    @@media (min-width:375px) {
+        .dataTables_length > label {
+            white-space: normal;
+            width: auto;
+        }
+    }
+
     .toast-top-center {
         margin-top: -50px;
+    }
+    .rep-shw-ent {
+        margin-top: -18px;
+        margin-bottom: -18px;
+        padding: 0px
     }
 
     /*@@media (max-width:320px) {

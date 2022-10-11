@@ -15,7 +15,10 @@ $(document).ready(function () {
     //$("#Reports").addClass('active').css('background-color', '#EF6C00').css('border-radius', '6px');
     //$("#Reports").children().css('color', '#fff');
     $('#dynamic-table').DataTable({
-        "sDom": '<"dt_head"fp>t<"F"l>'
+        "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
+
+        
+
     });
 
     $("#Reports").addClass('active');
@@ -742,12 +745,13 @@ function SelectAll_Recods() {
                         "bLengthChange": true,
                         "bDestroy": true,
                         "bserverSide": true,
-                        'responsive': true,
+                       /* 'responsive': true,*/
                         "bDeferRender": true,
                         //"sAjaxDataProp": 'aData',
                         "oLanguage": {
                             "sLengthMenu": '_MENU_ Records per page'
                         },
+                        "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
 
                         "aaSorting": [],
                         "iDisplayLength": -1,
@@ -929,12 +933,14 @@ function _searchClick() {
                         "bLengthChange": true,
                         "bDestroy": true,
                         "bserverSide": true,
-                        'responsive': true,
+                       /* 'responsive': true,*/
                         "bDeferRender": true,
                         //"sAjaxDataProp": 'aData',
                         "oLanguage": {
                             "sLengthMenu": '_MENU_ Records per page'
                         },
+                        "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
+
 
                         "aaSorting": [],
                         "iDisplayLength": -1,
@@ -1289,12 +1295,14 @@ function bindTable() {
                     "bLengthChange": true,
                     "bDestroy": true,
                     "bserverSide": true,
-                    'responsive': true,
+                  /*  'responsive': true,*/
                     "bDeferRender": true,
                     //"sAjaxDataProp": 'aData',
                     "oLanguage": {
                         "sLengthMenu": '_MENU_ Records per page'
                     },
+                    "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
+
 
                     //"sAjaxSource": msg.result,
 

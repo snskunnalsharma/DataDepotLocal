@@ -20,10 +20,21 @@
 @Html.Hidden("urlViewUpload", Url.Action("ViewUpload", "ReceiveInventry"))
 
 <style>
+    @@media (min-width:375px) {
+        .dataTables_length > label {
+            white-space: normal;
+            width: auto;
+        }
+    }
+
     .recinv-drp3 {
         margin-bottom: 4px;
     }
-
+    .rep-shw-ent{
+        margin-top:-18px;
+        margin-bottom:-18px;
+        padding:0px
+    }
     .recinv-drp4 {
         margin-top: 8px;
         margin-bottom: 8px;

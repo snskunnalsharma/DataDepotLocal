@@ -26,7 +26,7 @@ $(document).ready(function () {
     $("#ProductId").chosen({ placeholder_text_single: "Select Product", no_results_text: "Oops, nothing found!" });
     $('#ProductId').trigger('chosen:updated');
 
-    $('#dynamic-table').DataTable({ "language": { "emptyTable": "No Data To Show" } });
+    $('#dynamic-table').DataTable({ "language": { "emptyTable": "No Data To Show" }, "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',  });
 
     $("#btnupdate").hide();
 
@@ -953,7 +953,8 @@ function BindDataTable(varData) {
      "bDeferRender": true,
      "oLanguage": {
          "sLengthMenu": '_MENU_ Records per page'
-     },
+            },
+            "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
      "aaData": varData,
      // "aaSorting": [[3, "asc"]],
      "aoColumns": [

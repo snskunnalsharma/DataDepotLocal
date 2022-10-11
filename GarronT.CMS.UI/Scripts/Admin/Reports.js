@@ -799,7 +799,7 @@ function SelectAll_Recods() {
                         "bLengthChange": true,
                         "bDestroy": true,
                         "bserverSide": true,
-                        'responsive': true,
+                        /*'responsive': true,*/
                         "bDeferRender": true,
                         //"sAjaxDataProp": 'aData',
                         "oLanguage": {
@@ -1607,7 +1607,7 @@ function bindTable() {
                     "bLengthChange": true,
                     "bDestroy": true,
                     "bserverSide": true,
-                    'responsive': true,
+                    /*'responsive': true,*/
                     "bDeferRender": true,
                     //"sAjaxDataProp": 'aData',
                     "oLanguage": {

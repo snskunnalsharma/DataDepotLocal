@@ -10,6 +10,13 @@
 @Html.Hidden("urlGetDuplicateRecords", Url.Action("GetDuplicateRecords", "DuplicateReport"))
 @Html.Hidden("urlExportDuplicateRecords", Url.Action("ExportDuplicateRecordsExcel", "DuplicateReport"))
 <style>
+    @@media (min-width:375px) {
+        .dataTables_length > label {
+            white-space: normal;
+            width: auto;
+        }
+    }
+
     .btn-lg{
         margin-right:0px;
     }
@@ -19,7 +26,11 @@
     .btn.focus, .btn:focus, .btn:hover{
             border: 0px solid white;
     }
-
+    .rep-shw-ent {
+        margin-top: -18px;
+        margin-bottom: -18px;
+        padding: 0px
+    }
     @@media only screen and (min-width:480px)and (max-width:530px) {
         .wrapper {
             margin-top:0%;

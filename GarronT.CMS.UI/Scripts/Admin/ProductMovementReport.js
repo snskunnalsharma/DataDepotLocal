@@ -5,7 +5,7 @@
     $('.sub').find("*").removeClass('active');
     $('#liInventoryMovementReport').addClass("active");
 
-    $('#dynamic-table').DataTable({ "language": { "emptyTable": "No Data To Show" } });
+    $('#dynamic-table').DataTable({ "language": { "emptyTable": "No Data To Show" }, "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">', });
 
     $("#UtilityId").chosen({ placeholder_text_single: "Select Utility", no_results_text: "Oops, nothing found!" });
     $('#UtilityId').trigger('chosen:updated');
@@ -121,7 +121,8 @@ function BindData(varData) {
      "bDeferRender": true,
      "oLanguage": {
          "sLengthMenu": '_MENU_ Records per page'
-     },
+            },
+            "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
      "aaData": varData,
      "iDisplayLength": -1,
      "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
