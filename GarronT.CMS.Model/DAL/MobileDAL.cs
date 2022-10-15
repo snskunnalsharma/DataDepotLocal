@@ -19,6 +19,7 @@ using System.Transactions;
 using log4net;
 using Newtonsoft.Json;
 
+
 namespace GarronT.CMS.Model.DAL
 {
     public class MobileDAL : IDisposable
@@ -1071,6 +1072,10 @@ namespace GarronT.CMS.Model.DAL
             return isSucessed;
         }
 
+        public string getFilePath(long tblProjectFieldDataMaster_ID)
+        {
+            return "sdfdsf";
+        }
 
         public bool updateCompletionFlag(long userId, long formId, long initialId)
         {
@@ -1303,8 +1308,6 @@ namespace GarronT.CMS.Model.DAL
                 }
 
                 myResp.Close();
-
-
             }
             catch (Exception ex)
             {
@@ -1345,11 +1348,11 @@ namespace GarronT.CMS.Model.DAL
                 ServicePointManager.DefaultConnectionLimit = 9999;
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3;
                 var client = new RestClient("https://cashfreeapi.snssystem.com/api/v1/");
-                var request = new RestRequest("file-upload", Method.Post);
+                var request = new RestRequest("file-upload", Method.POST);
                 request.AddParameter("token", "wLZfNogqzMB0tlbACpqceL");
                 request.AddParameter("type", "public");
                 request.AddFile("attachments", path);
-                RestResponse response = client.Execute(request);
+                IRestResponse response = client.Execute(request);
                 var jsonData = JsonConvert.DeserializeObject<dynamic>(response.Content);
                 //dynamic jsonData2 = JsonConvert.DeserializeObject<object>(jsonString);
                 var imgUrl = (string)jsonData.data;

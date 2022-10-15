@@ -1090,7 +1090,13 @@ $("#btnUploadAudio").click(function () {
                     $("#" + aAudioID).attr('id', response.ObjList.AttachmentID);
 
                     $("#audioPlayer1").removeAttr("src");
-                    $("#audioPlayer1").attr('src', response.ObjList.strPath);
+                    if (ObjList.strCloudUrl !== null && ObjList.strCloudUrl !== "") {
+                        $("#audioPlayer1").attr('src', response.ObjList.strCloudUrl);
+                    }
+                    else {
+                        $("#audioPlayer1").attr('src', response.ObjList.strPath);
+                    }
+                    
 
                     $("#vA").load();
 
@@ -1440,8 +1446,6 @@ function initMap(strlat, strLong) {
             marker.setAnimation(google.maps.Animation.BOUNCE);
         }
     }
-
-}
 
 
 

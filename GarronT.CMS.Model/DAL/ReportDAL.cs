@@ -1600,7 +1600,7 @@ namespace GarronT.CMS.Model.DAL
         /// <param name="newAttachmentId"></param>
         /// <param name="createdBy"></param>
         /// <returns></returns>
-        public bool UploadAudio(string newFilePath, long oldAttachId, out long newAttachmentId, int createdBy)
+        public bool UploadAudio(string cluodAudioFilePath, string newFilePath, long oldAttachId, out long newAttachmentId, int createdBy)
         {
             bool result = false;
 
@@ -1624,6 +1624,7 @@ namespace GarronT.CMS.Model.DAL
                 objTblProjectFieldDataAttachment.IsAudioVideoImage = 1;
                 objTblProjectFieldDataAttachment.isServiceData = true;
                 objTblProjectFieldDataAttachment.strFilePath = newFilePath;
+                objTblProjectFieldDataAttachment.strCloudUrl = cluodAudioFilePath;
                 objTblProjectFieldDataAttachment.tblProjectFieldDataMaster_ID = Obj.tblProjectFieldDataMaster_ID;
                 objTblProjectFieldDataAttachment.tblService_Id = Obj.tblService_Id;
                 objTblProjectFieldDataAttachment.TblServicePicture_ID = Obj.TblServicePicture_ID;
@@ -1649,7 +1650,7 @@ namespace GarronT.CMS.Model.DAL
         /// <param name="newAttachmentId"></param>
         /// <param name="createdBy"></param>
         /// <returns></returns>
-        public bool UploadVideo(string newFilePath, long oldAttachId, out long newAttachmentId, int createdBy)
+        public bool UploadVideo(string cluodAudioFilePath, string newFilePath, long oldAttachId, out long newAttachmentId, int createdBy)
         {
             bool result = false;
 
@@ -1673,6 +1674,7 @@ namespace GarronT.CMS.Model.DAL
                 objTblProjectFieldDataAttachment.IsAudioVideoImage = 2;
                 objTblProjectFieldDataAttachment.isServiceData = true;
                 objTblProjectFieldDataAttachment.strFilePath = newFilePath;
+                objTblProjectFieldDataAttachment.strCloudUrl = cluodAudioFilePath;
                 objTblProjectFieldDataAttachment.tblProjectFieldDataMaster_ID = Obj.tblProjectFieldDataMaster_ID;
                 objTblProjectFieldDataAttachment.tblService_Id = Obj.tblService_Id;
                 objTblProjectFieldDataAttachment.TblServicePicture_ID = Obj.TblServicePicture_ID;
@@ -1992,6 +1994,13 @@ namespace GarronT.CMS.Model.DAL
 
             return (resData != null ? resData.strFilePath : "");
         }
+        public TblProjectFieldDataAttachment getServiceFieldAudioVideoPathNew(long initialFieldId)
+        {
+            CompassEntities ComEntities = new CompassEntities();
+            var resData = ComEntities.TblProjectFieldDataAttachments.
+            Where(o => o.Active == 1 && (o.IsAudioVideoImage == 1 || o.IsAudioVideoImage == 2) && o.ID == initialFieldId).FirstOrDefault();
+            return resData;
+        }
 
         public GetAttachmentBo GetAttachmentDetails(long attachmentID)
         {
@@ -2005,7 +2014,8 @@ namespace GarronT.CMS.Model.DAL
                         {
                             AttachmentID = b.ID,
                             strPath = b.strFilePath,
-                            strServiceName = c.Service
+                            strServiceName = c.Service,
+                            strCloudUrl=b.strCloudUrl
                         }).FirstOrDefault();
             }
             return List;
@@ -2405,7 +2415,7 @@ namespace GarronT.CMS.Model.DAL
 
             List<SkipRtuAttachmentModel> paths = new List<SkipRtuAttachmentModel>();
             if (ID != null)
-            {//
+            {
                 paths = dbcontext.TblProjectFieldDataAttachments.AsNoTracking()
                          .Where(o => o.ProjectFieldDataId == ID.ID && o.IsSkipped == true &&
                          !o.strFilePath.Contains("MAP") &&
@@ -2413,12 +2423,36 @@ namespace GarronT.CMS.Model.DAL
                          {
                              id = o.ID,
                              IsAudioVideoImage = o.IsAudioVideoImage,
-                             strFilePath = o.strFilePath,
-                             strCloudUrl=o.strCloudUrl
+                             strFilePath = o.strFilePath
                          }).OrderBy(o => o.IsAudioVideoImage).ToList();
             }
             return paths;
+        }
 
+        public List<SkipRtuAttachmentModel> getCloudSkipRtuImagesWithoutMap(long? _uploadId, long? _installerId, long? _formId)
+        {
+            long uploadId = long.Parse(_uploadId.ToString());
+            long installerId = long.Parse(_installerId.ToString());
+            long formId = long.Parse(_formId.ToString());
+            CompassEntities dbcontext = new CompassEntities();
+
+            var ID = dbcontext.TblProjectFieldDatas.Where(o => o.Active == 1 && o.FormId == formId
+                && o.FK_UploadedExcelData_Id == uploadId && o.InstallerId == installerId).FirstOrDefault();
+
+            List<SkipRtuAttachmentModel> paths = new List<SkipRtuAttachmentModel>();
+            if (ID != null)
+            {
+                paths = dbcontext.TblProjectFieldDataAttachments.AsNoTracking()
+                         .Where(o => o.ProjectFieldDataId == ID.ID && o.IsSkipped == true &&
+                         !o.strCloudUrl.Contains("img.png") &&
+                         o.Active == 1).Select(o => new SkipRtuAttachmentModel
+                         {
+                             id = o.ID,
+                             IsAudioVideoImage = o.IsAudioVideoImage,
+                             strCloudUrl = o.strCloudUrl
+                         }).OrderBy(o => o.IsAudioVideoImage).ToList();
+            }
+            return paths;
         }
 
 
@@ -2430,10 +2464,7 @@ namespace GarronT.CMS.Model.DAL
             long formId = long.Parse(_formId.ToString());
 
             string mapPath = "";
-
-
             CompassEntities dbcontext = new CompassEntities();
-
             var ID = dbcontext.TblProjectFieldDatas.Where(o => o.Active == 1 && o.FormId == formId
                 && o.FK_UploadedExcelData_Id == uploadId && o.InstallerId == installerId).FirstOrDefault();
 
@@ -2445,7 +2476,26 @@ namespace GarronT.CMS.Model.DAL
                          o.strFilePath.Contains("MAP") && o.Active == 1).Select(o => o.strFilePath).FirstOrDefault();
             }
             return mapPath;
+        }
+        public string getCloudSkipRtuMapPath(long? _uploadId, long? _installerId, long? _formId)
+        {
+            long uploadId = long.Parse(_uploadId.ToString());
+            long installerId = long.Parse(_installerId.ToString());
+            long formId = long.Parse(_formId.ToString());
 
+            string mapPath = "";
+            CompassEntities dbcontext = new CompassEntities();
+            var ID = dbcontext.TblProjectFieldDatas.Where(o => o.Active == 1 && o.FormId == formId
+                && o.FK_UploadedExcelData_Id == uploadId && o.InstallerId == installerId).FirstOrDefault();
+
+            List<SkipRtuAttachmentModel> paths = new List<SkipRtuAttachmentModel>();
+            if (ID != null)
+            {
+                mapPath = dbcontext.TblProjectFieldDataAttachments.AsNoTracking()
+                         .Where(o => o.ProjectFieldDataId == ID.ID && o.IsSkipped == true &&
+                         o.strCloudUrl.Contains("img.png") && o.Active == 1).Select(o => o.strCloudUrl).FirstOrDefault();
+            }
+            return mapPath;
         }
 
 

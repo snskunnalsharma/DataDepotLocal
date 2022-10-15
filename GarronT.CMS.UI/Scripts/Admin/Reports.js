@@ -1776,27 +1776,49 @@ function GetSKipRTU_Details(InstallerId, ProjectId, ID, FormId) {
                         if (item.IsAudioVideoImage == "3") {
                             $("#imagenotfound").text("");
                             $("#divImage").show();
-
+                            debugger;
                             var imagetag = $("#divImage")
-
+                            var path = "";
+                            if (item.strCloudUrl !== null && item.strCloudUrl !== "") {
+                                path = item.strCloudUrl;
+                            }
+                            else {
+                                path = item.strFilePath;
+                            }
                             var imageElement = $('<img/>', {
-                                src: item.strFilePath,
+                                src: path,
                                 class: "mySlides",
                                 style: "width: 29em;height: 25em;"
                             }).appendTo('#divImage');
                         }
                         else if (item.IsAudioVideoImage == "1") {
+                            debugger;
                             $("#audionotfound").text("");
                             $("#divAudio").show();
+                            var path = "";
+                            if (item.strCloudUrl !== null && item.strCloudUrl !== "") {
+                                path = item.strCloudUrl;
+                            }
+                            else {
+                                path = item.strFilePath;
+                            }
                             var audiotag = $("#srcAudio")
-                            audiotag.attr("src", item.strFilePath)
+                            audiotag.attr("src", path)
                             $("#aT").load();
                         }
                         else if (item.IsAudioVideoImage == "2") {
+                            debugger;
                             $("#videonotfound").text("");
                             $("#divVideo").show();
+                            var path = "";
+                            if (item.strCloudUrl !== null && item.strCloudUrl !== "") {
+                                path = item.strCloudUrl;
+                            }
+                            else {
+                                path = item.strFilePath;
+                            }
                             var videotag = $("#srcVideo");
-                            videotag.attr("src", item.strFilePath)
+                            videotag.attr("src", path)
                             $("#vT").load();
 
                         }

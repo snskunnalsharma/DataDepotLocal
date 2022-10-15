@@ -34,6 +34,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using System.Web.Hosting;
 using GarronT.CMS.UI.CustomHelpers;
+using System.Web;
 
 
 namespace GarronT.CMS.UI.Areas.Admin.Controllers
@@ -314,51 +315,67 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 if (demo1.Count > 0)
                 {
                     //AddedBy AniketJ on 7-oct-2016 to get media
+                    List<SkipRtuAttachmentModel> objCloudAttachementList = new ReportDAL().getCloudSkipRtuImagesWithoutMap(_ID, _InstallerId, _FormID);
                     List<SkipRtuAttachmentModel> objAttachementList = new ReportDAL().getSkipRtuImagesWithoutMap(_ID, _InstallerId, _FormID);
                     STP_GetReportTableNew_bak_Result skipRTUModel = new STP_GetReportTableNew_bak_Result();
                     skipRTUModel = demo1.Where(i => i.ID == _ID).FirstOrDefault();
 
-                    foreach (var item in objAttachementList)
+                    if (objCloudAttachementList != null)
                     {
-                        string strFilePath = item.strFilePath;
-                        if (!string.IsNullOrEmpty(item.strFilePath))
+                        skipRTUModel.SkipRtuAttachmentModel = objCloudAttachementList;
+                    }
+                    else
+                    {
+                        foreach (var item in objAttachementList)
                         {
-                            // item.strFilePath = "" + item.strFilePath.Replace("..\\..\\", _webUrl);
-
-                            if (item.strFilePath.Contains("..\\..\\"))
+                            string strFilePath = item.strFilePath;
+                            if (!string.IsNullOrEmpty(item.strFilePath))
                             {
-                                item.strFilePath = "" + item.strFilePath.Replace("..\\..\\", _webUrl);
-                            }
+                                // item.strFilePath = "" + item.strFilePath.Replace("..\\..\\", _webUrl);
 
-                            if (item.strFilePath.Contains("~"))
-                            {
-                                item.strFilePath = "" + item.strFilePath.Replace("~\\", _webUrl);
+                                if (item.strFilePath.Contains("..\\..\\"))
+                                {
+                                    item.strFilePath = "" + item.strFilePath.Replace("..\\..\\", _webUrl);
+                                }
+
+                                if (item.strFilePath.Contains("~"))
+                                {
+                                    item.strFilePath = "" + item.strFilePath.Replace("~\\", _webUrl);
+                                }
+                                item.strFilePath = "" + item.strFilePath.Replace('\\', '/');
+                                item.strFilePath = item.strFilePath.Trim();
                             }
-                            item.strFilePath = "" + item.strFilePath.Replace('\\', '/');
-                            item.strFilePath = item.strFilePath.Trim();
                         }
+                        skipRTUModel.SkipRtuAttachmentModel = objAttachementList;
                     }
 
-                    string MapImagePath = new ReportDAL().getSkipRtuMapPath(_ID, _InstallerId, _FormID);
-
+                    // Get skip GPS lat and long
                     skipRTUModel.skipGPSLocation = new ReportDAL().getSkipRtuGPSLocation(_ID, _InstallerId, _FormID);
 
-
-                    //MapImagePath = "" + MapImagePath.Replace("..\\..\\", _webUrl);
-
-                    if (MapImagePath.Contains("..\\..\\"))
+                    string MapImagePath = new ReportDAL().getSkipRtuMapPath(_ID, _InstallerId, _FormID);
+                    string CloudMapImagePath = new ReportDAL().getCloudSkipRtuMapPath(_ID, _InstallerId, _FormID);
+                    if (!string.IsNullOrEmpty(CloudMapImagePath))
                     {
-                        MapImagePath = "" + MapImagePath.Replace("..\\..\\", _webUrl);
+                        MapImagePath = string.Empty;
+                        MapImagePath = CloudMapImagePath;   // Stored the img cloud path
                     }
-
-                    if (MapImagePath.Contains("~"))
+                    else
                     {
-                        MapImagePath = "" + MapImagePath.Replace("~\\", _webUrl);
+                        if (MapImagePath.Contains("..\\..\\"))
+                        {
+                            MapImagePath = "" + MapImagePath.Replace("..\\..\\", _webUrl);
+                        }
+
+                        if (MapImagePath.Contains("~"))
+                        {
+                            MapImagePath = "" + MapImagePath.Replace("~\\", _webUrl);
+                        }
+                        MapImagePath = "" + MapImagePath.Replace('\\', '/');
+                        MapImagePath = MapImagePath.Trim();
                     }
-                    MapImagePath = "" + MapImagePath.Replace('\\', '/');
-                    MapImagePath = MapImagePath.Trim();
+                    
                     skipRTUModel.mapImagePath = MapImagePath;
-                    skipRTUModel.SkipRtuAttachmentModel = objAttachementList;
+                    //skipRTUModel.SkipRtuAttachmentModel = objAttachementList;  // define upper line no. 353 and 348
 
                     TempData.Keep("List");
 
@@ -1264,61 +1281,77 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                                 string serviceBase = "";
                                 foreach (var item3 in list)
                                 {
+                                    string ImageAvilable = Convert.ToString(objAttachmentRecords.Where(o => o.IsAudioVideoImage == 3 && o.isServiceData == true && o.tblService_Id == item3.initialFieldId).Select(o => o.strCloudUrl).FirstOrDefault());
+                                    if (!string.IsNullOrEmpty(ImageAvilable))
+                                    {
+                                        // img cloud path
+                                        ImageAvilable = string.IsNullOrEmpty(ImageAvilable) ? "btn btn-danger btn-xs" : "btn btn-success btn-xs";
+                                    }
+                                    else
+                                    {
+                                        ImageAvilable = Convert.ToString(objAttachmentRecords.Where(o => o.IsAudioVideoImage == 3 && o.isServiceData == true && o.tblService_Id == item3.initialFieldId).Select(o => o.strFilePath).FirstOrDefault());
+                                        ImageAvilable = string.IsNullOrEmpty(ImageAvilable) ? "btn btn-danger btn-xs" : "btn btn-success btn-xs";
+                                    }
 
-                                    string ImageAvilable = Convert.ToString(objAttachmentRecords.Where(o => o.IsAudioVideoImage == 3 && o.isServiceData == true && o.tblService_Id == item3.initialFieldId).Select(o => o.strFilePath).FirstOrDefault());
+                                    string strVideoFilePath = Convert.ToString(objAttachmentRecords.Where(o => o.IsAudioVideoImage == 2 && o.isServiceData == true && o.tblService_Id == item3.initialFieldId).Select(o => o.strCloudUrl).FirstOrDefault());
+                                    if (!string.IsNullOrEmpty(strVideoFilePath))
+                                    {
+                                        // No take any action because direct get the file path cloud
+                                    }
+                                    else
+                                    {
+                                        // this local path
+                                        strVideoFilePath = Convert.ToString(objAttachmentRecords.Where(o => o.IsAudioVideoImage == 2 && o.isServiceData == true && o.tblService_Id == item3.initialFieldId).Select(o => o.strFilePath).FirstOrDefault());
+                                        if (!string.IsNullOrEmpty(strVideoFilePath))
+                                        {
+                                            if (strVideoFilePath.Contains("..\\..\\"))
+                                            {
+                                                strVideoFilePath = "" + strVideoFilePath.Replace("..\\..\\", _webUrl);
+                                            }
 
+                                            if (strVideoFilePath.Contains("~"))
+                                            {
+                                                strVideoFilePath = "" + strVideoFilePath.Replace("~\\", _webUrl);
+                                            }
 
-                                    ImageAvilable = string.IsNullOrEmpty(ImageAvilable) ? "btn btn-danger btn-xs" : "btn btn-success btn-xs";
+                                            strVideoFilePath = "" + strVideoFilePath.Replace('\\', '/');
+                                            strVideoFilePath = strVideoFilePath.Trim();
+                                        }
+                                    }
 
+                                    string strAudioFilePath = Convert.ToString(objAttachmentRecords.Where(o => o.IsAudioVideoImage == 1 && o.isServiceData == true && o.tblService_Id == item3.initialFieldId).Select(o => o.strCloudUrl).FirstOrDefault());
+                                    if (!string.IsNullOrEmpty(strAudioFilePath))
+                                    {
+                                        // No take any action because direct get the file path cloud
+                                    }
+                                    else
+                                    {
+                                        // this local path
+                                        strAudioFilePath = Convert.ToString(objAttachmentRecords.Where(o => o.IsAudioVideoImage == 1 && o.isServiceData == true && o.tblService_Id == item3.initialFieldId).Select(o => o.strFilePath).FirstOrDefault());
+                                        if (!string.IsNullOrEmpty(strAudioFilePath))
+                                        {
+                                            if (strAudioFilePath.Contains("..\\..\\"))
+                                            {
+                                                strAudioFilePath = "" + strAudioFilePath.Replace("..\\..\\", _webUrl);
+                                            }
 
-                                    string strVideoFilePath = Convert.ToString(objAttachmentRecords.Where(o => o.IsAudioVideoImage == 2 && o.isServiceData == true && o.tblService_Id == item3.initialFieldId).Select(o => o.strFilePath).FirstOrDefault());
-                                    string strAudioFilePath = Convert.ToString(objAttachmentRecords.Where(o => o.IsAudioVideoImage == 1 && o.isServiceData == true && o.tblService_Id == item3.initialFieldId).Select(o => o.strFilePath).FirstOrDefault());
+                                            if (strAudioFilePath.Contains("~"))
+                                            {
+                                                strAudioFilePath = "" + strAudioFilePath.Replace("~\\", _webUrl);
+                                            }
+                                            strAudioFilePath = "" + strAudioFilePath.Replace('\\', '/');
+                                            strAudioFilePath = strAudioFilePath.Trim();
+                                        }
+                                    }
+                                    strVideoFilePath = string.IsNullOrEmpty(strVideoFilePath) ? null : strVideoFilePath;
+                                    strAudioFilePath = string.IsNullOrEmpty(strAudioFilePath) ? null : strAudioFilePath;
+
 
                                     string Video_AttachmentID = Convert.ToString(objAttachmentRecords.Where(o => o.IsAudioVideoImage == 2
                                       && o.isServiceData == true && o.tblService_Id == item3.initialFieldId).Select(o => o.ID).FirstOrDefault());
 
                                     string Audio_AttachmentID = Convert.ToString(objAttachmentRecords.Where(o => o.IsAudioVideoImage == 1
                                           && o.isServiceData == true && o.tblService_Id == item3.initialFieldId).Select(o => o.ID).FirstOrDefault());
-
-
-                                    if (!string.IsNullOrEmpty(strVideoFilePath))
-                                    {
-                                        //strVideoFilePath = "" + strVideoFilePath.Replace("..\\..\\", _webUrl);
-                                        if (strVideoFilePath.Contains("..\\..\\"))
-                                        {
-                                            strVideoFilePath = "" + strVideoFilePath.Replace("..\\..\\", _webUrl);
-                                        }
-
-                                        if (strVideoFilePath.Contains("~"))
-                                        {
-                                            strVideoFilePath = "" + strVideoFilePath.Replace("~\\", _webUrl);
-                                        }
-
-                                        strVideoFilePath = "" + strVideoFilePath.Replace('\\', '/');
-                                        strVideoFilePath = strVideoFilePath.Trim();
-                                    }
-
-                                    if (!string.IsNullOrEmpty(strAudioFilePath))
-                                    {
-                                        //strAudioFilePath = "" + strAudioFilePath.Replace("..\\..\\", _webUrl);
-
-                                        if (strAudioFilePath.Contains("..\\..\\"))
-                                        {
-                                            strAudioFilePath = "" + strAudioFilePath.Replace("..\\..\\", _webUrl);
-                                        }
-
-                                        if (strAudioFilePath.Contains("~"))
-                                        {
-                                            strAudioFilePath = "" + strAudioFilePath.Replace("~\\", _webUrl);
-                                        }
-                                        strAudioFilePath = "" + strAudioFilePath.Replace('\\', '/');
-                                        strAudioFilePath = strAudioFilePath.Trim();
-                                    }
-
-                                    strVideoFilePath = string.IsNullOrEmpty(strVideoFilePath) ? null : strVideoFilePath;
-                                    strAudioFilePath = string.IsNullOrEmpty(strAudioFilePath) ? null : strAudioFilePath;
-
-
 
 
                                     var result1 = serviceList == null ? null : (serviceList.Where(o => o == item3.initialFieldId.ToString()).FirstOrDefault());
@@ -1383,58 +1416,77 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                                 string serviceBase = "";
                                 foreach (var item3 in list)
                                 {
-                                    string ImageAvilable = Convert.ToString(objAttachmentRecords.Where(o => o.IsAudioVideoImage == 3 && o.isServiceData == true && o.tblService_Id == item3.initialFieldId).Select(o => o.strFilePath).FirstOrDefault());
-
-
+                                    string ImageAvilable = Convert.ToString(objAttachmentRecords.Where(o => o.IsAudioVideoImage == 3 && o.isServiceData == true && o.tblService_Id == item3.initialFieldId).Select(o => o.strCloudUrl).FirstOrDefault());
+                                    if (!string.IsNullOrEmpty(ImageAvilable))
+                                    { // img cloud path diect access img
+                                    }
+                                    else
+                                    {
+                                        ImageAvilable = Convert.ToString(objAttachmentRecords.Where(o => o.IsAudioVideoImage == 3 && o.isServiceData == true && o.tblService_Id == item3.initialFieldId).Select(o => o.strFilePath).FirstOrDefault());
+                                    }
                                     ImageAvilable = string.IsNullOrEmpty(ImageAvilable) ? "btn btn-danger btn-xs" : "btn btn-success btn-xs";
 
                                     string strVideoFilePath = Convert.ToString(objAttachmentRecords.Where(o => o.IsAudioVideoImage == 2
-                                        && o.isServiceData == true && o.tblService_Id == item3.initialFieldId).Select(o => o.strFilePath).FirstOrDefault());
+                                        && o.isServiceData == true && o.tblService_Id == item3.initialFieldId).Select(o => o.strCloudUrl).FirstOrDefault());
+                                    if (!string.IsNullOrEmpty(strVideoFilePath))
+                                    {
+                                        // No take any action because direct get the file path cloud
+                                    }
+                                    else
+                                    {
+                                        strVideoFilePath = Convert.ToString(objAttachmentRecords.Where(o => o.IsAudioVideoImage == 2
+                                            && o.isServiceData == true && o.tblService_Id == item3.initialFieldId).Select(o => o.strFilePath).FirstOrDefault());
+                                        if (!string.IsNullOrEmpty(strVideoFilePath))
+                                        {
+                                            if (strVideoFilePath.Contains("..\\..\\"))
+                                            {
+                                                strVideoFilePath = "" + strVideoFilePath.Replace("..\\..\\", _webUrl);
+                                            }
+
+                                            if (strVideoFilePath.Contains("~"))
+                                            {
+                                                strVideoFilePath = "" + strVideoFilePath.Replace("~\\", _webUrl);
+                                            }
+                                            strVideoFilePath = "" + strVideoFilePath.Replace('\\', '/');
+                                            strVideoFilePath = strVideoFilePath.Trim();
+                                        }
+                                    }
+
                                     string strAudioFilePath = Convert.ToString(objAttachmentRecords.Where(o => o.IsAudioVideoImage == 1
-                                        && o.isServiceData == true && o.tblService_Id == item3.initialFieldId).Select(o => o.strFilePath).FirstOrDefault());
+                                        && o.isServiceData == true && o.tblService_Id == item3.initialFieldId).Select(o => o.strCloudUrl).FirstOrDefault());
+                                    if (!string.IsNullOrEmpty(strAudioFilePath))
+                                    {
+                                        // No take any action because direct get the file path cloud
+                                    }
+                                    else
+                                    {
+                                        strAudioFilePath = Convert.ToString(objAttachmentRecords.Where(o => o.IsAudioVideoImage == 1
+                                            && o.isServiceData == true && o.tblService_Id == item3.initialFieldId).Select(o => o.strFilePath).FirstOrDefault());
+                                        if (!string.IsNullOrEmpty(strAudioFilePath))
+                                        {
+                                            if (strAudioFilePath.Contains("..\\..\\"))
+                                            {
+                                                strAudioFilePath = "" + strAudioFilePath.Replace("..\\..\\", _webUrl);
+                                            }
+
+                                            if (strAudioFilePath.Contains("~"))
+                                            {
+                                                strAudioFilePath = "" + strAudioFilePath.Replace("~\\", _webUrl);
+                                            }
+
+                                            strAudioFilePath = "" + strAudioFilePath.Replace('\\', '/');
+                                            strAudioFilePath = strAudioFilePath.Trim();
+                                        }
+                                    }
+
+                                    strVideoFilePath = string.IsNullOrEmpty(strVideoFilePath) ? null : strVideoFilePath;
+                                    strAudioFilePath = string.IsNullOrEmpty(strAudioFilePath) ? null : strAudioFilePath;
 
                                     string Video_AttachmentID = Convert.ToString(objAttachmentRecords.Where(o => o.IsAudioVideoImage == 2
                                           && o.isServiceData == true && o.tblService_Id == item3.initialFieldId).Select(o => o.ID).FirstOrDefault());
 
                                     string Audio_AttachmentID = Convert.ToString(objAttachmentRecords.Where(o => o.IsAudioVideoImage == 1
                                           && o.isServiceData == true && o.tblService_Id == item3.initialFieldId).Select(o => o.ID).FirstOrDefault());
-
-                                    if (!string.IsNullOrEmpty(strVideoFilePath))
-                                    {
-                                        //strVideoFilePath = "" + strVideoFilePath.Replace("..\\..\\", _webUrl);
-                                        if (strVideoFilePath.Contains("..\\..\\"))
-                                        {
-                                            strVideoFilePath = "" + strVideoFilePath.Replace("..\\..\\", _webUrl);
-                                        }
-
-                                        if (strVideoFilePath.Contains("~"))
-                                        {
-                                            strVideoFilePath = "" + strVideoFilePath.Replace("~\\", _webUrl);
-                                        }
-                                        strVideoFilePath = "" + strVideoFilePath.Replace('\\', '/');
-                                        strVideoFilePath = strVideoFilePath.Trim();
-                                    }
-
-                                    if (!string.IsNullOrEmpty(strAudioFilePath))
-                                    {
-                                        // strAudioFilePath = "" + strAudioFilePath.Replace("..\\..\\", _webUrl);
-                                        if (strAudioFilePath.Contains("..\\..\\"))
-                                        {
-                                            strAudioFilePath = "" + strAudioFilePath.Replace("..\\..\\", _webUrl);
-                                        }
-
-                                        if (strAudioFilePath.Contains("~"))
-                                        {
-                                            strAudioFilePath = "" + strAudioFilePath.Replace("~\\", _webUrl);
-                                        }
-
-                                        strAudioFilePath = "" + strAudioFilePath.Replace('\\', '/');
-                                        strAudioFilePath = strAudioFilePath.Trim();
-                                    }
-
-                                    strVideoFilePath = string.IsNullOrEmpty(strVideoFilePath) ? null : strVideoFilePath;
-                                    strAudioFilePath = string.IsNullOrEmpty(strAudioFilePath) ? null : strAudioFilePath;
-
 
                                     var result1 = serviceList == null ? null : (serviceList.Where(o => o == item3.initialFieldId.ToString()).FirstOrDefault());
                                     serviceBase = serviceBase + "<select class='col-lg-6 col-sm-5 col-xs-5 sel-rep' style='margin:9px 0px 0 0px; text-align:left'>";
@@ -1574,23 +1626,30 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             int i = 1;
             foreach (var item in details)
             {
-                string strFilePath = item.strFilePath;
-                if (!string.IsNullOrEmpty(strFilePath))
+                string strFilePath = string.Empty;
+                if (!string.IsNullOrEmpty(item.strCloudUrl))
                 {
-                    if (strFilePath.Contains("..\\..\\"))
-                    {
-                        strFilePath = "" + strFilePath.Replace("..\\..\\", _webUrl);
-                    }
-
-                    if (strFilePath.Contains("~"))
-                    {
-                        strFilePath = "" + strFilePath.Replace("~\\", _webUrl);
-                    }
-
-                    strFilePath = "" + strFilePath.Replace('\\', '/');
-                    strFilePath = strFilePath.Trim();
+                    strFilePath = item.strCloudUrl;
                 }
+                else
+                {
+                    strFilePath = item.strFilePath;
+                    if (!string.IsNullOrEmpty(strFilePath))
+                    {
+                        if (strFilePath.Contains("..\\..\\"))
+                        {
+                            strFilePath = "" + strFilePath.Replace("..\\..\\", _webUrl);
+                        }
 
+                        if (strFilePath.Contains("~"))
+                        {
+                            strFilePath = "" + strFilePath.Replace("~\\", _webUrl);
+                        }
+
+                        strFilePath = "" + strFilePath.Replace('\\', '/');
+                        strFilePath = strFilePath.Trim();
+                    }
+                }
                 //<img id="278" src="/client/cms/MobileUploadData\2\2\231352\1608\HOUSE PHOTO\2016-07-06-13-40-51.jpeg">
                 //htmlData.Append("<img id='" + item.ID + "' src=\"" + strFilePath + "\">");
 
@@ -1633,24 +1692,30 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             List<ImageSliderList> objList = new List<Model.BO.ImageSliderList>();
             foreach (var item in details)
             {
-                string strFilePath = item.strFilePath;
-                if (!string.IsNullOrEmpty(strFilePath))
+                string strFilePath = string.Empty;
+                if (!string.IsNullOrEmpty(item.strCloudUrl))
                 {
-                    if (strFilePath.Contains("..\\..\\"))
-                    {
-                        strFilePath = "" + strFilePath.Replace("..\\..\\", _webUrl);
-                    }
-
-                    if (strFilePath.Contains("~"))
-                    {
-                        strFilePath = "" + strFilePath.Replace("~\\", _webUrl);
-                    }
-
-                    strFilePath = "" + strFilePath.Replace('\\', '/');
-                    strFilePath = strFilePath.Trim();
+                    strFilePath = item.strCloudUrl;
                 }
-                strFilePath = strFilePath.Replace(" ", "%20");
+                else
+                {
+                    strFilePath = item.strFilePath;
+                    if (!string.IsNullOrEmpty(strFilePath))
+                    {
+                        if (strFilePath.Contains("..\\..\\"))
+                        {
+                            strFilePath = "" + strFilePath.Replace("..\\..\\", _webUrl);
+                        }
 
+                        if (strFilePath.Contains("~"))
+                        {
+                            strFilePath = "" + strFilePath.Replace("~\\", _webUrl);
+                        }
+                        strFilePath = "" + strFilePath.Replace('\\', '/');
+                        strFilePath = strFilePath.Trim();
+                    }
+                    strFilePath = strFilePath.Replace(" ", "%20");
+                }
                 objList.Add(new Model.BO.ImageSliderList { ImageId = item.ID, ImageName = "", ImagePath = strFilePath });
 
 
@@ -1691,24 +1756,30 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
             foreach (var item in details)
             {
-                string strFilePath = item.strFilePath;
-                if (!string.IsNullOrEmpty(strFilePath))
+                string strFilePath = string.Empty;
+                if (!string.IsNullOrEmpty(item.strCloudUrl))
                 {
-                    //strFilePath = "" + strFilePath.Replace("..\\..\\", _webUrl);
-                    if (strFilePath.Contains("..\\..\\"))
-                    {
-                        strFilePath = "" + strFilePath.Replace("..\\..\\", _webUrl);
-                    }
-
-                    if (strFilePath.Contains("~"))
-                    {
-                        strFilePath = "" + strFilePath.Replace("~\\", _webUrl);
-                    }
-
-                    strFilePath = "" + strFilePath.Replace('\\', '/');
-                    strFilePath = strFilePath.Trim();
+                    strFilePath = item.strCloudUrl;
                 }
+                else
+                {
+                    strFilePath = item.strFilePath;
+                    if (!string.IsNullOrEmpty(strFilePath))
+                    {
+                        if (strFilePath.Contains("..\\..\\"))
+                        {
+                            strFilePath = "" + strFilePath.Replace("..\\..\\", _webUrl);
+                        }
 
+                        if (strFilePath.Contains("~"))
+                        {
+                            strFilePath = "" + strFilePath.Replace("~\\", _webUrl);
+                        }
+
+                        strFilePath = "" + strFilePath.Replace('\\', '/');
+                        strFilePath = strFilePath.Trim();
+                    }
+                }
                 //<img id="278" src="/client/cms/MobileUploadData\2\2\231352\1608\HOUSE PHOTO\2016-07-06-13-40-51.jpeg">
                 if (i == 1)
                 {
@@ -1744,25 +1815,31 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
             foreach (var item in details)
             {
-                string strFilePath = item.strFilePath;
-                if (!string.IsNullOrEmpty(strFilePath))
+                string strFilePath = string.Empty;
+                if (!string.IsNullOrEmpty(item.strCloudUrl))
                 {
-                    //strFilePath = "" + strFilePath.Replace("..\\..\\", _webUrl);
-                    if (strFilePath.Contains("..\\..\\"))
-                    {
-                        strFilePath = "" + strFilePath.Replace("..\\..\\", _webUrl);
-                    }
-
-                    if (strFilePath.Contains("~"))
-                    {
-                        strFilePath = "" + strFilePath.Replace("~\\", _webUrl);
-                    }
-
-                    strFilePath = "" + strFilePath.Replace('\\', '/');
-                    strFilePath = strFilePath.Trim();
+                    strFilePath = item.strCloudUrl;
                 }
+                else
+                {
+                    strFilePath = item.strFilePath;
+                    if (!string.IsNullOrEmpty(strFilePath))
+                    {
+                        if (strFilePath.Contains("..\\..\\"))
+                        {
+                            strFilePath = "" + strFilePath.Replace("..\\..\\", _webUrl);
+                        }
 
-                strFilePath = strFilePath.Replace(" ", "%20");
+                        if (strFilePath.Contains("~"))
+                        {
+                            strFilePath = "" + strFilePath.Replace("~\\", _webUrl);
+                        }
+
+                        strFilePath = "" + strFilePath.Replace('\\', '/');
+                        strFilePath = strFilePath.Trim();
+                    }
+                    strFilePath = strFilePath.Replace(" ", "%20");
+                }
                 objList.Add(new Model.BO.ImageSliderList { ImageId = item.ID, ImageName = item.ImageName, ImagePath = strFilePath });
 
                 //<img id="278" src="/client/cms/MobileUploadData\2\2\231352\1608\HOUSE PHOTO\2016-07-06-13-40-51.jpeg">
@@ -2223,10 +2300,14 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                                         {
                                             if (objServiceAttachment.IsAudioVideoImage == 3)
                                             {
-
-                                                HTMLContent.Append("<img src='" + Convert.ToString(ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace("..\\", "") + "' height=\"200\" width=\"150\" />");
-
-
+                                                if (!string.IsNullOrEmpty(objServiceAttachment.strCloudUrl))
+                                                {
+                                                    HTMLContent.Append("<img src='" + objServiceAttachment.strCloudUrl + "' height=\"200\" width=\"150\" />");
+                                                }
+                                                else
+                                                {
+                                                    HTMLContent.Append("<img src='" + Convert.ToString(ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace("..\\", "") + "' height=\"200\" width=\"150\" />");
+                                                }
                                             }
                                         }
                                         HTMLContent.Append("</td>");
@@ -2261,10 +2342,14 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                                         {
                                             if (objServiceAttachment.IsAudioVideoImage == 3)
                                             {
-
-                                                HTMLContent.Append("<img src='" + Convert.ToString(ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace("..\\", "") + "' height=\"200\" width=\"150\" />");
-
-
+                                                if (!string.IsNullOrEmpty(objServiceAttachment.strCloudUrl))
+                                                {
+                                                    HTMLContent.Append("<img src='" + objServiceAttachment.strCloudUrl + "' height=\"200\" width=\"150\" />");
+                                                }
+                                                else
+                                                {
+                                                    HTMLContent.Append("<img src='" + Convert.ToString(ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace("..\\", "") + "' height=\"200\" width=\"150\" />");
+                                                }
                                             }
                                         }
                                         HTMLContent.Append("</td>");
@@ -3472,43 +3557,78 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 HttpPostedFileBase hpf = Request.Files[file] as HttpPostedFileBase;
                 var fileContent = Request.Files[file];
                 ReportDAL objReportDAL = new ReportDAL();
-
+                DateTime DT = new CommonFunctions().ServerDate();
+                int CreatedBy = Convert.ToInt32(GetLoggedUserID());
                 if (fileContent != null && fileContent.ContentLength > 0)
                 {
                     var stream = fileContent.InputStream;
 
                     //get existing file path from database for give id
-                    string path1 = objReportDAL.getServiceFieldAudioVideoPath(AudioID);
-
-                    if (path1 != "")
+                    //string path1 = objReportDAL.getServiceFieldAudioVideoPath(AudioID);
+                    var objAttList = objReportDAL.getServiceFieldAudioVideoPathNew(AudioID);
+                    if (!string.IsNullOrEmpty(objAttList.strCloudUrl))
                     {
-                        DateTime DT = new CommonFunctions().ServerDate();
-
-                        var fileName = Path.GetFileName(hpf.FileName);
-
-                        string oldFilePath = HttpContext.Server.MapPath(path1);
-                        string directoryPath = Path.GetDirectoryName(oldFilePath);
-
-                        //created new file path
-                        string newFilePath = directoryPath + "/" + DT.ToString("dd_MM_yyyy_hh_mm_ss_tt") + Path.GetExtension(oldFilePath);
-
-                        //save new file on given new file path on server 
-                        using (FileStream fileStream = System.IO.File.Create(newFilePath))
+                        try
                         {
+                            CompassEntities objCE = new CompassEntities();
+                            var ProjectFieldDataId = objCE.tblProjectFieldDataMasters.Where(o => o.ID == objAttList.tblProjectFieldDataMaster_ID && o.Active == 1).Select(o => o.TblProjectFieldData_Id).FirstOrDefault();
+                            var objList = objCE.TblProjectFieldDatas.Where(o => o.ID == ProjectFieldDataId && o.Active == 1).FirstOrDefault();
+                            var objAccInfo = objCE.UploadedExcelDatas.Where(o => o.Id == objList.FK_UploadedExcelData_Id && o.Active == 1).FirstOrDefault();
 
-                            stream.CopyTo(fileStream);
-                            log.Info("Copy File succesfully........");
-
-                            string newfileName = Path.GetFileName(newFilePath);
-
-                            string oldFileName = Path.GetFileName(oldFilePath);
-                            string newFileDBPath = path1.Replace(oldFileName, newfileName);
-                            log.Info("newFileDBPath " + newFileDBPath);
-
-                            int CreatedBy = Convert.ToInt32(GetLoggedUserID());
+                            string ServerUploadFolder = Convert.ToString(ConfigurationManager.AppSettings["UploadFilePath"]);
+                            string tempPath = ServerUploadFolder + objAccInfo.FKProjectId + @"\" + objList.FormId + @"\" + objAccInfo.Account12 + @"\" + objAccInfo.Id + @"\";
+                            string filePath = HttpContext.Server.MapPath(tempPath);
+                            MobileDAL.grantAccess(filePath);
+                            string finalPath = filePath + DT.ToString("dd_MM_yyyy_hh_mm_ss_tt") + ".m4a";
+                            using (FileStream fileStream = System.IO.File.Create(finalPath))
+                            {
+                                stream.CopyTo(fileStream);
+                                log.Info("Copy File succesfully........");
+                            }
+                            string cluodAudioFilePath = MobileDAL.UploadFileS3Bucket(finalPath);
                             //method that deactivates existing record & insert new record.
-                            result = objReportDAL.UploadAudio(newFileDBPath, AudioID, out AttachmentId, CreatedBy);
+                            //finalPath = "filesaves3Bucket";
+                            log.Info("newFileCloudPath == " + cluodAudioFilePath);
+                            finalPath = tempPath + Path.GetFileName(finalPath);
+                            result = objReportDAL.UploadAudio(cluodAudioFilePath, finalPath, AudioID, out AttachmentId, CreatedBy);
+                            //System.IO.File.Delete(@"" + finalPath + "");
+                        }
+                        catch (Exception ex)
+                        { throw ex; }
+                    }
+                    else
+                    {
+                        if (!string.IsNullOrEmpty(objAttList.strFilePath))
+                        {
+                            string path1 = objAttList.strFilePath.ToString();
+                            var fileName = Path.GetFileName(hpf.FileName);
+                            string oldFilePath = HttpContext.Server.MapPath(path1);
+                            string directoryPath = Path.GetDirectoryName(oldFilePath);
+                            //created new file path
+                            string newFilePath = directoryPath + "/" + DT.ToString("dd_MM_yyyy_hh_mm_ss_tt") + Path.GetExtension(oldFilePath);
+                            string newFileDBPath = string.Empty;
+                            //save new file on given new file path on server 
+                            try
+                            {
+                                using (FileStream fileStream = System.IO.File.Create(newFilePath))
+                                {
+                                    stream.CopyTo(fileStream);
+                                    log.Info("Copy File succesfully........");
 
+                                    string newfileName = Path.GetFileName(newFilePath);
+
+                                    string oldFileName = Path.GetFileName(oldFilePath);
+                                    newFileDBPath = path1.Replace(oldFileName, newfileName);
+                                    log.Info("newFileDBPath " + newFileDBPath);
+                                    //method that deactivates existing record & insert new record.
+                                    //result = objReportDAL.UploadAudio(cluodAudioFilePath,newFileDBPath, AudioID, out AttachmentId, CreatedBy);
+                                }
+                                string cluodAudioFilePath = MobileDAL.UploadFileS3Bucket(newFilePath);
+                                //method that deactivates existing record & insert new record.
+                                result = objReportDAL.UploadAudio(cluodAudioFilePath, newFileDBPath, AudioID, out AttachmentId, CreatedBy);
+                            }
+                            catch (Exception ex)
+                            { }
                         }
                     }
                 }
@@ -3526,21 +3646,26 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
                 if (ObjList != null)
                 {
-                    if (!string.IsNullOrEmpty(ObjList.strPath))
+                    if (!string.IsNullOrEmpty(ObjList.strCloudUrl))
                     {
-                        //ObjList.strPath = "" + ObjList.strPath.Replace("..\\..\\", _webUrl);
-                        if (ObjList.strPath.Contains("..\\..\\"))
+                    }
+                    else
+                    {
+                        if (!string.IsNullOrEmpty(ObjList.strPath))
                         {
-                            ObjList.strPath = "" + ObjList.strPath.Replace("..\\..\\", _webUrl);
-                        }
+                            //ObjList.strPath = "" + ObjList.strPath.Replace("..\\..\\", _webUrl);
+                            if (ObjList.strPath.Contains("..\\..\\"))
+                            {
+                                ObjList.strPath = "" + ObjList.strPath.Replace("..\\..\\", _webUrl);
+                            }
 
-                        if (ObjList.strPath.Contains("~"))
-                        {
-                            ObjList.strPath = "" + ObjList.strPath.Replace("~\\", _webUrl);
+                            if (ObjList.strPath.Contains("~"))
+                            {
+                                ObjList.strPath = "" + ObjList.strPath.Replace("~\\", _webUrl);
+                            }
+                            ObjList.strPath = "" + ObjList.strPath.Replace('\\', '/');
+                            ObjList.strPath = ObjList.strPath.Trim();
                         }
-
-                        ObjList.strPath = "" + ObjList.strPath.Replace('\\', '/');
-                        ObjList.strPath = ObjList.strPath.Trim();
                     }
                 }
                 return Json(new { success = result, status = "Success", ObjList }, JsonRequestBehavior.AllowGet);
@@ -3565,46 +3690,76 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             long AttachentID = 0;
             foreach (string file in Request.Files)
             {
-
                 HttpPostedFileBase hpf = Request.Files[file] as HttpPostedFileBase;
                 var fileContent = Request.Files[file];
                 ReportDAL objReportDAL = new ReportDAL();
-
+                DateTime DT = new CommonFunctions().ServerDate();
+                int CreatedBy = Convert.ToInt32(GetLoggedUserID());
                 if (fileContent != null && fileContent.ContentLength > 0)
                 {
                     var stream = fileContent.InputStream;
 
                     //returns the existing file path
-                    string path1 = objReportDAL.getServiceFieldAudioVideoPath(VideoId);
-
-                    if (path1 != "")
+                    //string path1 = objReportDAL.getServiceFieldAudioVideoPath(VideoId);
+                    var objAttList = objReportDAL.getServiceFieldAudioVideoPathNew(VideoId);
+                    if (!string.IsNullOrEmpty(objAttList.strCloudUrl))
                     {
-                        DateTime DT = new CommonFunctions().ServerDate();
-
-                        var fileName = Path.GetFileName(hpf.FileName);
-                        string oldFilePath = HttpContext.Server.MapPath(path1);
-                        string directoryPath = Path.GetDirectoryName(oldFilePath);
-
-                        //new file path for new file
-                        string newFilePath = directoryPath + "/" + DT.ToString("dd_MM_yyyy_hh_mm_ss_tt") + Path.GetExtension(oldFilePath);
-
-
-                        //code of save the new file on given path
-                        using (FileStream fileStream = System.IO.File.Create(newFilePath))
+                        try
                         {
-                            stream.CopyTo(fileStream);
-                            log.Info("Copy File Successfully...");
+                            CompassEntities objCE = new CompassEntities();
+                            var ProjectFieldDataId = objCE.tblProjectFieldDataMasters.Where(o => o.ID == objAttList.tblProjectFieldDataMaster_ID && o.Active == 1).Select(o => o.TblProjectFieldData_Id).FirstOrDefault();
+                            var objList = objCE.TblProjectFieldDatas.Where(o => o.ID == ProjectFieldDataId && o.Active == 1).FirstOrDefault();
+                            var objAccInfo = objCE.UploadedExcelDatas.Where(o => o.Id == objList.FK_UploadedExcelData_Id && o.Active == 1).FirstOrDefault();
 
-                            string newfileName = Path.GetFileName(newFilePath);
-
-                            string oldFileName = Path.GetFileName(oldFilePath);
-                            string newFileDBPath = path1.Replace(oldFileName, newfileName);
-                            int CreatedBy = Convert.ToInt32(GetLoggedUserID());
-
-
+                            string ServerUploadFolder = Convert.ToString(ConfigurationManager.AppSettings["UploadFilePath"]);
+                            string tempPath = ServerUploadFolder + objAccInfo.FKProjectId + @"\" + objList.FormId + @"\" + objAccInfo.Account12 + @"\" + objAccInfo.Id + @"\";
+                            string filePath = HttpContext.Server.MapPath(tempPath);
+                            MobileDAL.grantAccess(filePath);
+                            string finalPath = filePath + DT.ToString("dd_MM_yyyy_hh_mm_ss_tt") + ".mp4";
+                            using (FileStream fileStream = System.IO.File.Create(finalPath))
+                            {
+                                stream.CopyTo(fileStream);
+                                log.Info("Copy File succesfully........");
+                            }
+                            string cluodAudioFilePath = MobileDAL.UploadFileS3Bucket(finalPath);
                             //method that deactivates existing record & insert new record.
-                            result = objReportDAL.UploadVideo(newFileDBPath, VideoId, out AttachentID, CreatedBy);
-
+                            //finalPath = "filesaves3Bucket";
+                            log.Info("newFileCloudPath == " + cluodAudioFilePath);
+                            finalPath = tempPath + Path.GetFileName(finalPath);
+                            result = objReportDAL.UploadVideo(cluodAudioFilePath, finalPath, VideoId, out AttachentID, CreatedBy);
+                            //System.IO.File.Delete(@"" + finalPath + "");
+                        }
+                        catch (Exception ex)
+                        { throw ex; }
+                    }
+                    else
+                    {
+                        if (!string.IsNullOrEmpty(objAttList.strFilePath))
+                        {
+                            string path1 = objAttList.strFilePath.ToString();
+                            var fileName = Path.GetFileName(hpf.FileName);
+                            string oldFilePath = HttpContext.Server.MapPath(path1);
+                            string directoryPath = Path.GetDirectoryName(oldFilePath);
+                            //new file path for new file
+                            string newFilePath = directoryPath + "/" + DT.ToString("dd_MM_yyyy_hh_mm_ss_tt") + Path.GetExtension(oldFilePath);
+                            string newFileDBPath = string.Empty;
+                            //code of save the new file on given path
+                            try
+                            {
+                                using (FileStream fileStream = System.IO.File.Create(newFilePath))
+                                {
+                                    stream.CopyTo(fileStream);
+                                    log.Info("Copy File Successfully...");
+                                    string newfileName = Path.GetFileName(newFilePath);
+                                    string oldFileName = Path.GetFileName(oldFilePath);
+                                    newFileDBPath = path1.Replace(oldFileName, newfileName);
+                                }
+                                string cluodAudioFilePath = MobileDAL.UploadFileS3Bucket(newFilePath);
+                                //method that deactivates existing record & insert new record.
+                                result = objReportDAL.UploadVideo(cluodAudioFilePath, newFileDBPath, VideoId, out AttachentID, CreatedBy);
+                            }
+                            catch (Exception ex)
+                            { throw ex; }
                         }
                     }
                 }
@@ -3623,25 +3778,28 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
                 if (ObjList != null)
                 {
-                    if (!string.IsNullOrEmpty(ObjList.strPath))
+                    if (!string.IsNullOrEmpty(ObjList.strCloudUrl))
                     {
-                        // ObjList.strPath = "" + ObjList.strPath.Replace("..\\..\\", _webUrl);
-                        if (ObjList.strPath.Contains("..\\..\\"))
-                        {
-                            ObjList.strPath = "" + ObjList.strPath.Replace("..\\..\\", _webUrl);
-                        }
-
-                        if (ObjList.strPath.Contains("~"))
-                        {
-                            ObjList.strPath = "" + ObjList.strPath.Replace("~\\", _webUrl);
-                        }
-                        ObjList.strPath = "" + ObjList.strPath.Replace('\\', '/');
-                        ObjList.strPath = ObjList.strPath.Trim();
                     }
+                    else
+                    {
+                        if (!string.IsNullOrEmpty(ObjList.strPath))
+                        {
+                            // ObjList.strPath = "" + ObjList.strPath.Replace("..\\..\\", _webUrl);
+                            if (ObjList.strPath.Contains("..\\..\\"))
+                            {
+                                ObjList.strPath = "" + ObjList.strPath.Replace("..\\..\\", _webUrl);
+                            }
 
-
-                    ObjList.strPath = string.IsNullOrEmpty(ObjList.strPath) ? null : ObjList.strPath;
-                    ObjList.strPath = string.IsNullOrEmpty(ObjList.strPath) ? null : ObjList.strPath;
+                            if (ObjList.strPath.Contains("~"))
+                            {
+                                ObjList.strPath = "" + ObjList.strPath.Replace("~\\", _webUrl);
+                            }
+                            ObjList.strPath = "" + ObjList.strPath.Replace('\\', '/');
+                            ObjList.strPath = ObjList.strPath.Trim();
+                        }
+                        ObjList.strPath = string.IsNullOrEmpty(ObjList.strPath) ? null : ObjList.strPath;
+                    }
                 }
 
                 return Json(new { success = result, status = "Success", ObjList }, JsonRequestBehavior.AllowGet);

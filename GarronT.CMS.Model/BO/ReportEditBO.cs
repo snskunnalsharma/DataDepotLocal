@@ -58,7 +58,7 @@ namespace GarronT.CMS.Model.BO
         public long AttachmentID { get; set; }
         public string strPath { get; set; }
         public string strServiceName { get; set; }
-
+        public string strCloudUrl { get; set; }
     }
 
     //Added by Sominath to display report data on popup

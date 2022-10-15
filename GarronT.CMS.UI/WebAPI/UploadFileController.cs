@@ -4073,11 +4073,11 @@ namespace GarronT.CMS.UI.WebAPI
                 ServicePointManager.DefaultConnectionLimit = 9999;
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3;
                 var client = new RestClient("https://cashfreeapi.snssystem.com/api/v1/");
-                var request = new RestRequest("file-upload", Method.Post);
+                var request = new RestRequest("file-upload", Method.POST);
                 request.AddParameter("token", "wLZfNogqzMB0tlbACpqceL");
                 request.AddParameter("type", "public");
                 request.AddFile("attachments", path);
-                RestResponse response = client.Execute(request);
+                IRestResponse response = client.Execute(request);
                 var jsonData = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(response.Content);
                 //dynamic jsonData2 = JsonConvert.DeserializeObject<object>(jsonString);
                 var imgUrl = (string)jsonData.data;
