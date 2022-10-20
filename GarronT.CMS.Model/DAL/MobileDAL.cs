@@ -2168,7 +2168,7 @@ namespace GarronT.CMS.Model.DAL
 
                                                                 objCompassEntities.tblProjectFieldDataInventoryDetails.Add(objInvent);
                                                                 objCompassEntities.SaveChanges();
-
+                                                                
                                                                 var OutWardRow = objCompassEntities.OutwardDetails.Where(o => o.AllocatedTo == userId
                                                                  && o.AllStockUtilized == false && o.Active == 1 && o.StockDetail.FKProductId == itemProduct.Id
                                                                  && o.StockDetail.SerialNumber == serialNumber && o.StockDetail.FKProjectId == objForm.projectId).FirstOrDefault();

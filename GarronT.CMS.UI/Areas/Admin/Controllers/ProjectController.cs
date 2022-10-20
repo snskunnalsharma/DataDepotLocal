@@ -733,7 +733,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         mailcc.Add("deepak.yadav@snssystem.com");
                         if (ProjectID == 10085)     // for project TNMP Texas V10
                         {
-                            mailcc.Add("awright@cmsmeter.com");
+                            /*mailcc.Add("awright@cmsmeter.com");  // Removed all mail id from Client side.
                             mailcc.Add("bob@cmsmeter.com");
                             mailcc.Add("sporter@cmsmeter.com");
                             mailcc.Add("jmurillo@cmsmeter.com");
@@ -741,7 +741,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                             mailcc.Add("jfoster@cmsmeter.com");
                             mailcc.Add("cworkman@cmsmeter.com");
                             mailcc.Add("christopher.gerety@tnmp.com");
-                            mailcc.Add("garron@cmsmeter.com");
+                            mailcc.Add("garron@cmsmeter.com");*/
                         }
                         if (ProjectID == 10087)     // for project Texas New Mexico Power HQ
                         {

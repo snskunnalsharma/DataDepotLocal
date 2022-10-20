@@ -22,14 +22,14 @@ namespace TNMPUploadUtility
             /*Console.WriteLine("Test Succeed or not - " + DateTime.Now.ToShortTimeString());
             Console.ReadLine();*/
             //Note==> Emails comment for a testsing time  ==> UploadFile.cs
-            /*long ProjectID = 0;
+            long ProjectID = 0;
             if (args.Length > 0)
             {
                 ProjectID = Convert.ToInt64(args[0]);  // Get project id in Task Schedular Argumnet
-            }*/
-            long ProjectID = 10085; // Static project id
+            }
+            //long ProjectID = 10085; // Static project id
             #region Upload file class
-            /*ErrorLogFile.writeStatus("\n\nThread Started at Uploading file - " + DateTime.Now.ToShortTimeString());
+            ErrorLogFile.writeStatus("\n\nThread Started at Uploading file - " + DateTime.Now.ToShortTimeString());
             Console.WriteLine("Thread Started at - " + DateTime.Now.ToShortTimeString());
             ErrorLogFile.writeStatus("Get Project Id ==> Project Id:-" + ProjectID + " -" + DateTime.Now.ToShortTimeString());
             Console.WriteLine("Get Project Id ==> Project Id:-" + ProjectID + "");
@@ -72,7 +72,7 @@ namespace TNMPUploadUtility
                 Console.WriteLine("Error:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
             }
             ErrorLogFile.writeStatus("Thread Ended at Upload file - " + DateTime.Now.ToShortTimeString());
-            Console.WriteLine("Thread Ended at - " + DateTime.Now.ToShortTimeString());*/
+            Console.WriteLine("Thread Ended at - " + DateTime.Now.ToShortTimeString());
             #endregion
             //Ends uploading file code
 
@@ -122,7 +122,7 @@ namespace TNMPUploadUtility
                     }
 
                     ErrorLogFile.writeStatus("Pass FromDateTime:- " + fromDate + " and ToDateTime:- " + toDate + " to Method  ==>" + DateTime.Now.ToShortTimeString());
-                    Console.WriteLine("Pass FromDate:- " + fromDate + " and ToDate:- " + toDate + " to Method");
+                    Console.WriteLine("Pass FromDate:- " + fromDate + " and ToDate :- " + toDate + " to Method");
                 }
                 // Get data in dt from Databse
                 DownloadExportReport objDER = new DownloadExportReport();
@@ -174,7 +174,7 @@ namespace TNMPUploadUtility
 
             //Start code => SkipAccountMovedToUnAllocate
             #region SkipAccountMovedToUnAllocate
-            ErrorLogFile.writeStatus("\n\nThread Started at Skip Account Moved To UnAllocate - " + DateTime.Now.ToShortTimeString());
+            /*ErrorLogFile.writeStatus("\n\nThread Started at Skip Account Moved To UnAllocate - " + DateTime.Now.ToShortTimeString());
             Console.WriteLine("Thread Started at Skip Account Moved To UnAllocate - " + DateTime.Now.ToShortTimeString());
             ErrorLogFile.writeStatus("Get Project Id ==> Project Id:-" + ProjectID + " -" + DateTime.Now.ToShortTimeString());
             Console.WriteLine("Get Project Id ==> Project Id:-" + ProjectID + "");
@@ -200,65 +200,9 @@ namespace TNMPUploadUtility
                 Console.WriteLine("Error for SkipAccountMovedToUnAllocate:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
             }
             ErrorLogFile.writeStatus("Thread Ended at Skip Account Moved To UnAllocate - " + DateTime.Now.ToShortTimeString());
-            Console.WriteLine("Thread Ended at Skip Account Moved To UnAllocate - " + DateTime.Now.ToShortTimeString());
+            Console.WriteLine("Thread Ended at Skip Account Moved To UnAllocate - " + DateTime.Now.ToShortTimeString());*/
             #endregion
             //ends hare
         }
     }
 }
-
-
-
-// Old Code Expport Utility Code before date ==> 30 May 2022
-/*ErrorLogFile.writeStatus("\n\nThread Started at Download Export Report - " + DateTime.Now.ToShortTimeString());
-Console.WriteLine("Thread Started at Download Export Report - " + DateTime.Now.ToShortTimeString());
-
-// All Parameter Set defualt
-DateTime date = new CommonFunctions().ServerDate(); // Get current date
-string fromDate = date.ToString("MMM-dd-yyyy");   //"Apr-25-2022";
-string toDate = date.ToString("MMM-dd-yyyy");    //"Apr-25-2022";
-                                                 //fromDate = "Apr-26-2022";
-                                                 //toDate = "Apr-26-2022";
-long formTypeId = 2;   // Form type 2 set because project data, 1 for Audit data
-long projectId = ProjectID; // Project id ==> 10085
-string[] visitStatus = new string[] { "Completed" };  // Onlt export report ==> Completed
-int latlongRequired = 1;  // latlongRequired set=1 because 1 for not requied, Pass 2 requied
-int mediaRequired = 1;    // mediaRequired set=1 because 1 for not requied, Pass 2 requied
-
-if (date.DayOfWeek.ToString() != "Saturday" && date.DayOfWeek.ToString() != "Sunday") // Don't run utility sat & sun
-{
-    if (date.DayOfWeek.ToString() == "Monday")
-    {
-        date = date.AddDays(-2);
-        fromDate = date.ToString("MMM-dd-yyyy");   // Back two days ==> Monday export report ==> export to 3 days Sat,Sun and Mon
-                                                   //toDate = date.ToString("MMM-dd-yyyy");  //
-    }
-    DownloadExportReport objDER = new DownloadExportReport();
-    // Get data in dt from Databse
-    DataTable dt = objDER.createExcelNew(fromDate, toDate, formTypeId, projectId, visitStatus, latlongRequired, mediaRequired);
-    if (dt.Rows.Count > 0)
-    {
-        string filePath = objDER.DownloadCSVExport(dt);  // Generate CSV file
-        if (!string.IsNullOrEmpty(filePath))
-        {
-            bool status = objDER.UploadFileSFTPServer(filePath); // Upload file in SFTP server.
-            if (status)
-            {
-                ErrorLogFile.writeStatus("Export File uploaded successfully in SFTP server -" + DateTime.Now.ToShortTimeString());
-                Console.WriteLine("Export File uploaded successfully in SFTP server");
-            }
-            else
-            {
-                ErrorLogFile.writeStatus("Export File don't uploaded -" + DateTime.Now.ToShortTimeString());
-                Console.WriteLine("Export File don't uploaded");
-            }
-        }
-    }
-}
-else
-{
-    ErrorLogFile.writeStatus("Utility does not run on this day ==> " + date.DayOfWeek.ToString() + " -" + DateTime.Now.ToShortTimeString());
-}
-ErrorLogFile.writeStatus("Thread Ended at Download Export Report - " + DateTime.Now.ToShortTimeString());
-Console.WriteLine("Thread Ended at Download Export Report - " + DateTime.Now.ToShortTimeString());*/
-//End hare
