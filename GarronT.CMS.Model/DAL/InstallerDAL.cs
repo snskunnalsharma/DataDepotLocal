@@ -1296,12 +1296,12 @@ namespace GarronT.CMS.Model.DAL
                             && a.InstallerId == InstallerMap.InstallerID).OrderByDescending(a => a.ID).FirstOrDefault();
 
 
-                        if (installerdata != null)
+                        if (installerdata != null && installerdata.Active == 0)
                         {
                             /// if record present
                             /// Update existing record.
-                            if (installerdata.Active == 0)
-                            {
+                            //if (installerdata.Active == 0)
+                            //{
                                 installerdata.MobileResponse = null;
                                 installerdata.BatchNumber = null;
                                 installerdata.SynchCheckSumString = null;
@@ -1312,7 +1312,7 @@ namespace GarronT.CMS.Model.DAL
                                 installerdata.Active = 1;
                                 installerdata.ModifiedBy = int.Parse(Convert.ToString(logedInUserid));
                                 installerdata.ModifiedOn= new CommonFunctions().ServerDate();
-                            }
+                            //}
                             //installerdata.Active = 1;
                             dbcontext.SaveChanges();
                         }
