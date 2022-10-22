@@ -4183,25 +4183,29 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 foreach (var item in objResult)
                 {
                     string strFilePath = item.strFilePath;
-                    if (!string.IsNullOrEmpty(strFilePath))
+                    if (!string.IsNullOrEmpty(strFilePath) && strFilePath.Contains("https://"))
                     {
-
-                        if (strFilePath.Contains("..\\..\\"))
-                        {
-                            strFilePath = "" + strFilePath.Replace("..\\..\\", _webUrl);
-                        }
-
-                        if (strFilePath.Contains("~"))
-                        {
-                            strFilePath = "" + strFilePath.Replace("~\\", _webUrl);
-                        }
-
-                        strFilePath = "" + strFilePath.Replace('\\', '/');
-                        strFilePath = strFilePath.Trim();
+                        // No changes apply because image path direct get cloud
                     }
+                    else
+                    {
+                        if (!string.IsNullOrEmpty(strFilePath))
+                        {
+                            if (strFilePath.Contains("..\\..\\"))
+                            {
+                                strFilePath = "" + strFilePath.Replace("..\\..\\", _webUrl);
+                            }
 
-                    item.strFilePath = strFilePath.Replace(" ", "%20");
+                            if (strFilePath.Contains("~"))
+                            {
+                                strFilePath = "" + strFilePath.Replace("~\\", _webUrl);
+                            }
 
+                            strFilePath = "" + strFilePath.Replace('\\', '/');
+                            strFilePath = strFilePath.Trim();
+                        }
+                        item.strFilePath = strFilePath.Replace(" ", "%20");
+                    }
                 }
 
                 return base.Json(new { success = true, IsSkip = IsSkip, returnMsg = objResult }, JsonRequestBehavior.AllowGet);
