@@ -29,7 +29,7 @@ namespace TNMPUploadUtility
             }
             //long ProjectID = 10085; // Static project id
             #region Upload file class
-            ErrorLogFile.writeStatus("\n\nThread Started at Uploading file - " + DateTime.Now.ToShortTimeString());
+            /*ErrorLogFile.writeStatus("\n\nThread Started at Uploading file - " + DateTime.Now.ToShortTimeString());
             Console.WriteLine("Thread Started at - " + DateTime.Now.ToShortTimeString());
             ErrorLogFile.writeStatus("Get Project Id ==> Project Id:-" + ProjectID + " -" + DateTime.Now.ToShortTimeString());
             Console.WriteLine("Get Project Id ==> Project Id:-" + ProjectID + "");
@@ -72,7 +72,7 @@ namespace TNMPUploadUtility
                 Console.WriteLine("Error:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
             }
             ErrorLogFile.writeStatus("Thread Ended at Upload file - " + DateTime.Now.ToShortTimeString());
-            Console.WriteLine("Thread Ended at - " + DateTime.Now.ToShortTimeString());
+            Console.WriteLine("Thread Ended at - " + DateTime.Now.ToShortTimeString());*/
             #endregion
             //Ends uploading file code
 
@@ -201,6 +201,25 @@ namespace TNMPUploadUtility
             }
             ErrorLogFile.writeStatus("Thread Ended at Skip Account Moved To UnAllocate - " + DateTime.Now.ToShortTimeString());
             Console.WriteLine("Thread Ended at Skip Account Moved To UnAllocate - " + DateTime.Now.ToShortTimeString());*/
+            #endregion
+            //ends hare
+
+            // Start code => Upload old files s3 bucket
+            #region Upload old files s3 bucket
+            ErrorLogFile.writeStatus("\n\nThread Started at Upload old files s3 bucket - " + DateTime.Now.ToShortTimeString());
+            Console.WriteLine("Thread Started at Upload old files s3 bucket - " + DateTime.Now.ToShortTimeString());
+            try
+            {
+                UploadFilesS3Bucekt uploadFilesS3Bucekt = new UploadFilesS3Bucekt();
+                uploadFilesS3Bucekt.getFilesPath();
+            }
+            catch (Exception ex)
+            {
+                ErrorLogFile.writeStatus("Error for Upload old files s3 bucket:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
+                Console.WriteLine("Error for Upload old files s3 bucket:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
+            }
+            ErrorLogFile.writeStatus("Thread Ended at Uploaded old files s3 bucket - " + DateTime.Now.ToShortTimeString());
+            Console.WriteLine("Thread Ended at Uploaded old files s3 bucket - " + DateTime.Now.ToShortTimeString());
             #endregion
             //ends hare
         }
