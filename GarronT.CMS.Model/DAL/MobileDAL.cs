@@ -2215,6 +2215,17 @@ namespace GarronT.CMS.Model.DAL
 
                                                             #region
 
+                                                            var productQty=objCompassEntities.StockDetails.Where(o=>o.Active==1 
+                                                                           && o.FKProductId== itemProduct.Id && o.FKProjectId== objForm.projectId 
+                                                                           && o.IsSerialNumber==0 && o.SerialNumber==null).FirstOrDefault();
+                                                            if (productQty != null && productQty.BalanceQty > 0 && itemProduct.Quantity != null)
+                                                            {
+                                                                if (productQty.BalanceQty >= int.Parse(itemProduct.Quantity.ToString()))
+                                                                {
+                                                                    productQty.BalanceQty = productQty.BalanceQty - (itemProduct.Quantity == null ? 0 : int.Parse(itemProduct.Quantity.ToString()));
+                                                                    objCompassEntities.SaveChanges();
+                                                                }
+                                                            }
 
                                                             tblProjectFieldDataInventoryDetail objInvent = new tblProjectFieldDataInventoryDetail();
                                                             objInvent.Active = 1;

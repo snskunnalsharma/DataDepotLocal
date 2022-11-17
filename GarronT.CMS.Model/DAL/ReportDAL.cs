@@ -891,11 +891,10 @@ namespace GarronT.CMS.Model.DAL
                     //}
                     var FormIds = objDependantFormList.Select(o => o.AffectingFormTypeId).ToList();
                     FormIds.Add(formObject.FormId);
-
+                    string[] serviceCurrentlist = null;
                     foreach (var itemFormId in FormIds)
                     {
                         var fieldData = objCompassEntities.TblProjectFieldDatas.Where(o => o.FK_UploadedExcelData_Id == uploadId && o.FormId == itemFormId && o.Active == 1).FirstOrDefault();
-
                         if (fieldData != null)
                         {
 
@@ -911,6 +910,8 @@ namespace GarronT.CMS.Model.DAL
 
 
                             var listFieldDataMaster = objCompassEntities.tblProjectFieldDataMasters.Where(o => o.Active == 1 && o.TblProjectFieldData_Id == fieldData.ID).ToList();
+                            var servicesIds = objCompassEntities.tblProjectFieldDataMasters.Where(o => o.Active == 1 && o.TblProjectFieldData_Id == fieldData.ID && o.InitialFieldName.ToUpper() == "SERVICES").Select(o => o.FieldValue).FirstOrDefault();
+                            serviceCurrentlist = servicesIds.Split('|').ToArray();
 
                             foreach (var item1 in listFieldDataMaster)
                             {
@@ -1069,6 +1070,35 @@ namespace GarronT.CMS.Model.DAL
                             }
                             objCompassEntities.SaveChanges();
                         }
+
+                        // Return without serial number product qty 
+                        if (serviceCurrentlist.Length > 0)
+                        {
+                            //string[] serviceCurrentlist = servicesIds.Split('|').ToArray();
+                            var ServiceProductList = objCompassEntities.PROC_ProjectServiceProductlist(projectId).ToList();
+                            foreach (var SID in serviceCurrentlist)
+                            {
+                                var currentServiceId = long.Parse(SID);
+                                var currentServiceProductList = ServiceProductList.Where(o => o.FKServiceId == currentServiceId).ToList();
+                                foreach (var itemProduct in currentServiceProductList)
+                                {
+                                    var Product = objCompassEntities.ProductMasters.Where(o => o.Id == itemProduct.Id).FirstOrDefault();
+                                    if (Product.SerialNumberRequired == false)  // False condition checking bexause false no serial number in the product of qty availabe
+                                    {
+                                        var productQty = objCompassEntities.StockDetails.Where(o => o.Active == 1
+                                                                               && o.FKProductId == itemProduct.Id && o.FKProjectId == projectId
+                                                                               && o.IsSerialNumber == 0 && o.SerialNumber == null).FirstOrDefault();
+                                        if (productQty != null && itemProduct.Quantity != null && itemProduct.Quantity > 0)
+                                        {
+                                            productQty.BalanceQty = productQty.BalanceQty + (itemProduct.Quantity == null ? 0 : int.Parse(itemProduct.Quantity.ToString()));
+                                            objCompassEntities.SaveChanges();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        //var servicesId= listFieldDataMaster.
+                        //end hare
                         //make history of serial number
                         /*DataTable dt = new DataTable();
                         using (SqlConnection sqlcon = new SqlConnection(objCompassEntities.Database.Connection.ConnectionString))
