@@ -523,7 +523,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         private bool CheckDataTableColumns(ref DataTable objDataTable)
         {
 
-            var columnNamList = objDataTable.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToList();
+            var columnNamList = objDataTable.Columns.Cast<DataColumn>().Select(x => x.ColumnName.Trim()).ToList();
 
             var checkColumn = columnNamList.Where(o => o == "Utility Type").Count();
             if (checkColumn == 0)

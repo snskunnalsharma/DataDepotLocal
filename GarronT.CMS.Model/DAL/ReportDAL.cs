@@ -891,7 +891,7 @@ namespace GarronT.CMS.Model.DAL
                     //}
                     var FormIds = objDependantFormList.Select(o => o.AffectingFormTypeId).ToList();
                     FormIds.Add(formObject.FormId);
-                    string[] serviceCurrentlist = null;
+                    //string[] serviceCurrentlist = null;
                     foreach (var itemFormId in FormIds)
                     {
                         var fieldData = objCompassEntities.TblProjectFieldDatas.Where(o => o.FK_UploadedExcelData_Id == uploadId && o.FormId == itemFormId && o.Active == 1).FirstOrDefault();
@@ -910,8 +910,8 @@ namespace GarronT.CMS.Model.DAL
 
 
                             var listFieldDataMaster = objCompassEntities.tblProjectFieldDataMasters.Where(o => o.Active == 1 && o.TblProjectFieldData_Id == fieldData.ID).ToList();
-                            var servicesIds = objCompassEntities.tblProjectFieldDataMasters.Where(o => o.Active == 1 && o.TblProjectFieldData_Id == fieldData.ID && o.InitialFieldName.ToUpper() == "SERVICES").Select(o => o.FieldValue).FirstOrDefault();
-                            serviceCurrentlist = servicesIds.Split('|').ToArray();
+                            //var servicesIds = objCompassEntities.tblProjectFieldDataMasters.Where(o => o.Active == 1 && o.TblProjectFieldData_Id == fieldData.ID && o.InitialFieldName.ToUpper() == "SERVICES").Select(o => o.FieldValue).FirstOrDefault();
+                            //serviceCurrentlist = servicesIds.Split('|').ToArray();
 
                             foreach (var item1 in listFieldDataMaster)
                             {
@@ -1072,7 +1072,7 @@ namespace GarronT.CMS.Model.DAL
                         }
 
                         // Return without serial number product qty 
-                        if (serviceCurrentlist.Length > 0)
+                        /*if (serviceCurrentlist.Length > 0)
                         {
                             //string[] serviceCurrentlist = servicesIds.Split('|').ToArray();
                             var ServiceProductList = objCompassEntities.PROC_ProjectServiceProductlist(projectId).ToList();
@@ -1096,7 +1096,7 @@ namespace GarronT.CMS.Model.DAL
                                     }
                                 }
                             }
-                        }
+                        }*/
                         //var servicesId= listFieldDataMaster.
                         //end hare
                         //make history of serial number
