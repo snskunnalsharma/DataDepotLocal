@@ -92,7 +92,7 @@ $('#ddlUtilityType').change(function () {
 function BindProjects() {
 
     var projectUtilityType = $('#ddlUtilityType').val() == "0" ? "no" :
-       ($('#ddlUtilityType').val() == 1 ? "Electric" : ($('#ddlUtilityType').val() == 2 ? "Gas" : "Water"));
+        ($('#ddlUtilityType').val() == 1 ? "Electric" : ($('#ddlUtilityType').val() == 2 ? "Gas" : "Water" ));
 
 
     if ($('#ddlProjectStatus').val() == "0") {
@@ -194,7 +194,7 @@ $('#ddlformtype').change(function () {
     $('#ddlInstaller').trigger("chosen:updated");
 
 
-    var Project = $("#ddlProject option:selected")
+    var Project =  $("#ddlProject option:selected")
     var formType = $("#ddlformtype option:selected")
     // GetAddress(Project.val(), 0)
 
@@ -222,8 +222,7 @@ $('#ddlformtype').change(function () {
 
 
                     $('#ddlInstaller').append(
-                             $('<option></option>').val('0').html("All"));
-
+                        $('<option></option>').val('0').html("All"))
                     $.each(data, function (index, item) {
                         if (index == 0) {
 

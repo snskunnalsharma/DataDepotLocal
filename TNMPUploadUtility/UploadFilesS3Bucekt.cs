@@ -9,6 +9,7 @@ using GarronT.CMS.Model;
 using Newtonsoft.Json;
 using System.Net;
 using RestSharp;
+using System.IO;
 
 namespace TNMPUploadUtility
 {
@@ -21,10 +22,10 @@ namespace TNMPUploadUtility
                 ErrorLogFile.writeStatus("Getting files path from DB Table" + DateTime.Now.ToShortTimeString());
                 Console.WriteLine("Getting files path from DB Table");
                 CompassEntities compassEntities = new CompassEntities();
-                var filesPath = compassEntities.TblProjectFieldDataAttachments.Where(o => o.Active == 1 && o.strFilePath!=null && o.strCloudUrl == null).ToList();
-                //var filesPath = compassEntities.TblProjectFieldDataAttachments.Where(o => o.ID == 617802 || o.ID == 617803).ToList();
+                var filesPath = compassEntities.TblProjectFieldDataAttachments.Where(o => o.Active == 1 && o.strFilePath!=null && o.strCloudUrl == null && o.CreatedOn.Value.Year == 2023).ToList();
+                //var filesPath = compassEntities.TblProjectFieldDataAttachments.Where(o => o.CreatedOn.Value.Year == 2023).ToList();
                 string _webUrl = "C:\\inetpub\\vhosts\\datadepotonline.com\\httpdocs\\"; // Server Image defualt file path
-                //_webUrl= "D:\\DataDepot\\GarronT.CMS.UI\\"; //Local path for development purpose.
+                //string _webUrl = "D:\\DataDepot\\GarronT.CMS.UI\\"; //Local path for development purpose.
                 ErrorLogFile.writeStatus("Number of old files:- " + filesPath.Count() + " : " + DateTime.Now.ToShortTimeString());
                 Console.WriteLine("Number of old files:- " + filesPath.Count() + " : " + DateTime.Now.ToShortTimeString());
                 int count = 0;
@@ -47,28 +48,30 @@ namespace TNMPUploadUtility
                             }
                             oldFilePath = "" + oldFilePath.Replace('\\', '/');
                             oldFilePath = oldFilePath.Trim();
+                            Console.WriteLine("Oldfile" + oldFilePath);
 
                             string cluodFilePath = UploadFileS3Bucket(oldFilePath);
+  
                             if (!string.IsNullOrEmpty(cluodFilePath))
                             {
                                 objfilespath.strCloudUrl = cluodFilePath;
                                 compassEntities.SaveChanges();
                                 ErrorLogFile.writeStatus("File successfully uploaded " + DateTime.Now.ToShortTimeString());
-                                ErrorLogFile.writeStatus("Old file path:- "+ oldFilePath + " - " + DateTime.Now.ToShortTimeString());
+                                ErrorLogFile.writeStatus("Old file path:- " + oldFilePath + " - " + DateTime.Now.ToShortTimeString());
                                 ErrorLogFile.writeStatus("New file path:- " + cluodFilePath + " - " + DateTime.Now.ToShortTimeString());
                                 cluodFilePath = null;
                                 count++;
                             }
                         }
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         ErrorLogFile.writeStatus("getFilesPath have caught an exception " + ex.Message.ToString() + DateTime.Now.ToShortTimeString());
                         //Console.WriteLine("getFilesPath have caught an exception " + ex.Message.ToString());
                     }
                 }
-                ErrorLogFile.writeStatus("Number of uploaded files => "+ count + " : " + DateTime.Now.ToShortTimeString());
-                Console.WriteLine("Number of uploaded files => "+ count + " : " + DateTime.Now.ToShortTimeString());
+                ErrorLogFile.writeStatus("Number of uploaded files => " + count + " : " + DateTime.Now.ToShortTimeString());
+                Console.WriteLine("Number of uploaded files => " + count + " : " + DateTime.Now.ToShortTimeString());
             }
             catch (Exception ex)
             {
@@ -87,7 +90,7 @@ namespace TNMPUploadUtility
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3;
                 var client = new RestClient("https://cashfreeapi.snssystem.com/api/v1/");
                 var request = new RestRequest("file-upload", Method.POST);
-                request.AddParameter("token", "wLZfNogqzMB0tlbACpqceL");
+                request.AddParameter("token", "RcAxZ2ncVHmT5m9y4wClek");
                 request.AddParameter("type", "public");
                 request.AddFile("attachments", path);
                 IRestResponse response = client.Execute(request);
@@ -99,8 +102,7 @@ namespace TNMPUploadUtility
             {
                 ErrorLogFile.writeStatus("UploadFileS3Bucket have caught an exception  " + ex.Message.ToString() + DateTime.Now.ToShortTimeString());
                 return null;
-            }       
+            }
         }
     }
 }
-

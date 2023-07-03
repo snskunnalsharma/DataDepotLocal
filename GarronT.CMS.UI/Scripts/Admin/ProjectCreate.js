@@ -1397,10 +1397,10 @@ function checkTab3Status() {
             //ddlService767
             var selectedProductList = $('#ddlService' + $(this)[0].id).val();
 
-            debugger;
+       
             var serviceObject = { serviceId: $(this)[0].id, servicePrice: $(this).val(), imageCaptureRequired: imageRequired, AssignedProductList: selectedProductList };
             data1.push(serviceObject);
-            debugger;
+      
         }
         else {
             checkVal = true;

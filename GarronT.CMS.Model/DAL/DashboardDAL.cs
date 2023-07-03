@@ -334,7 +334,7 @@ namespace GarronT.CMS.Model.DAL
                 list.Add(obj1);
 
                 // ordering list
-                if (projectID == 10085) // This changes chnage for TNMP Project 
+                if (projectID == 10085 || projectID == 10108) // This changes chnage for TNMP Project 
                 {
                     CompletionModel obj5 = new CompletionModel();
                     obj5.Status = "UnAllocated Skip";
@@ -342,7 +342,7 @@ namespace GarronT.CMS.Model.DAL
                     obj5.percentage = (int)Math.Round((double)(100 * UnAllocatedSkip) / TotalRecords);
                     list.Add(obj5);
                 }
-
+               
                 CompletionModel obj2 = new CompletionModel();
                 obj2.Status = "Pending";
                 obj2.Installations = PendingRecords;

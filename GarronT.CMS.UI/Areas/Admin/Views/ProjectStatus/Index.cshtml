@@ -1198,7 +1198,7 @@
     }
 </style>
 @{
-    var href = "https://maps.googleapis.com/maps/api/js?key=" + System.Configuration.ConfigurationManager.AppSettings["googleapiKey"].ToString() + "&sensor=false";
+    var href = "https://maps.googleapis.com/maps/api/js?key=" + System.Configuration.ConfigurationManager.AppSettings["googleapiKey"].ToString() + "&sensor=false&callback=Function.prototype";
 }
 <script type="text/javascript" src="@href"></script>
 <div id="loading"> <div id="loadingcontent"> <p id="loadingspinner"> Searching things... </p> </div> </div>
@@ -1230,6 +1230,7 @@
                                                 <option value="1">Electric</option>
                                                 <option value="2">Gas</option>
                                                 <option value="3">Water</option>
+                                                <option value="4">Electric and Water</option>
                                             </select>
                                         </div>
                                         <div class="col-lg-4 col-md-3 col-sm-6 col-xs-12 prj-btn ">

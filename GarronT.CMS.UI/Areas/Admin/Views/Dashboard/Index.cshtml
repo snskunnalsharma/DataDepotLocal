@@ -22,7 +22,17 @@
     .ui-datepicker-calendar, .ui-datepicker-month {
         display: none;
     }
+    
 
+/*/@@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}*/
     .right {
         text-align: right;
     }
@@ -63,11 +73,17 @@
                             <option value="1">Electric</option>
                             <option value="2">Gas</option>
                             <option value="3">Water</option>
+                           
+
                         </select>
+                        <input type="text" id="utility" style="display:none" />
+
+
                     </div>
                     <label for="Month" class="col-lg-1 col-sm-2 dasproj-lab"><span class="month_font">Project</span></label>
                     <div class="col-lg-5 col-sm-10 proj-drp">
                         <select id="ddlProjectComvsPending" class="form-control chosen-select"></select>
+                        <input type="text" id="projectId" style="display:none"/>
                     </div>
 
                 </div>
@@ -76,6 +92,12 @@
         <div class="row exp-btn-row" style="padding-top:42px">
             <div class="col-lg-12 col-md-12 col-sm-12 btn-exppdf" style="text-align:right;">
                 <button id="btnExportCPChart" class="btn btn-warning" type="button">Export To PDF</button>
+            </div>
+            <div class="nodata row text-center" style="display:none">
+                <h1>NO DATA FOUND</h1>
+            </div>
+            <div class="loader row text-center">
+                <img src="https://i.stack.imgur.com/hzk6C.gif"  style="width:10%;margin:0 auto;padding:0px "/>
             </div>
             <div class="col-lg-12 col-md-12 col-sm-12">
                 <div class="custom-bar-chart">
@@ -98,6 +120,7 @@
                 </div>
                 <div class=" form-group col-md-12 ">
                     <br />
+                    
                     <div class="custom-bar-chart">
                         <div id="chartContainerInstallation" style="height:300px;width: 100%;">
                         </div>
@@ -106,6 +129,7 @@
 
             </div>
         </div>
+
 
         <div class="row" style="padding-top:10px">
             <div class="col-lg-12 col-md-12 col-sm-12">
@@ -116,6 +140,9 @@
                 </div>
                 <div class=" form-group col-md-12 ">
                     <br />
+                   <div class="loader row text-center">
+                        <img src="https://i.stack.imgur.com/hzk6C.gif" style="width:10%;margin:0 auto;padding:0px " />
+                    </div>
                     <div class="custom-bar-chart">
                         <div id="chartContainerInstallationbyInstaller" style="height:300px;width: 100%;">
                         </div>

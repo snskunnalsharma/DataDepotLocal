@@ -4223,6 +4223,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         public ActionResult SetGLocation()  //This code not use because partial view don't use because partial view Map Street view not working
         {
             return PartialView("_UpdateLatLong");
+          
         }
 
 
@@ -4234,6 +4235,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             bool Result = objReportDAL.UpdateLatitudeLongitude(ProjectFieldDataMasterId, strLat, strLong);
 
             return base.Json(new { success = Result }, JsonRequestBehavior.AllowGet);
+
         }
 
 

@@ -481,7 +481,7 @@ $('#ddlProject').unbind().change(function () {
         var projectid = Project.val();
 
         // This condition Applied for TNMP Project
-        if (projectid === "10085")
+        if (projectid === "10085" || projectid === "10108" )
         {
             $("#pIdHideShow").css("display", "block");
         }

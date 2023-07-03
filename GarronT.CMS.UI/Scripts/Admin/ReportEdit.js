@@ -1388,8 +1388,9 @@ function initMap(strlat, strLong) {
     }*/
 
 }
-
-    var map = new google.maps.Map(document.getElementById('map'), {
+function initialize() {
+    console.log("map api initialize");
+    /*var map = new google.maps.Map(document.getElementById('map'), {
         zoom: 24,
         center: { lat: parseFloat(strlat), lng: parseFloat(strLong) },
         mapTypeId: google.maps.MapTypeId.ROADMAP
@@ -1436,7 +1437,9 @@ function initMap(strlat, strLong) {
         infoWindow.open(map, marker);
         $('#NewLatitude').text(a);
         $('#NewLongitude').text(b);
-    })
+    })*/
+}
+   
 
 
     function toggleBounce() {

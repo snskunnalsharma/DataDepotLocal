@@ -4074,7 +4074,7 @@ namespace GarronT.CMS.UI.WebAPI
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3;
                 var client = new RestClient("https://cashfreeapi.snssystem.com/api/v1/");
                 var request = new RestRequest("file-upload", Method.POST);
-                request.AddParameter("token", "wLZfNogqzMB0tlbACpqceL");
+                request.AddParameter("token", "RcAxZ2ncVHmT5m9y4wClek");
                 request.AddParameter("type", "public");
                 request.AddFile("attachments", path);
                 IRestResponse response = client.Execute(request);

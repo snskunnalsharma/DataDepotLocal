@@ -110,6 +110,7 @@ namespace TNMPUploadUtility
             }
             catch (Exception ex)
             {
+
                 ex.Message.ToString();
                 ErrorLogFile.writeStatus("Error:- " + ex.Message.ToString() + DateTime.Now.ToShortTimeString());
                 Console.WriteLine("Error:- " + ex.Message.ToString());

@@ -24,7 +24,6 @@ $(document).ready(function () {
         //    "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
         //"sDom": '<"col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xxs-12 drp-rec"<"col-lg-6 col-md-6 col-sm-12 col-xs-12 col-xxs-12"l><"col-lg-6 col-md-6 col-sm-12 col-xs-12 col-xxs-12"f>><"col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xxs-12 rep-shw-ent"<"col-lg-6 col-md-6 col-sm-12 col-xs-12 col-xxs-12"i><"col-lg-6 col-md-6 col-sm-12 col-xs-12 col-xxs-12"p>>rt<ip><"clear">',
         "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
-
     });
 
     $("#Reports").addClass('active');
@@ -82,7 +81,7 @@ $(document).ready(function () {
     //#region ProjectStatus dropdown
 
     $("#ulProjectStatus").selectable({
-
+       
         start: function (event, ui) {
 
             var target = event.target || event.srcElement;
@@ -123,7 +122,7 @@ $(document).ready(function () {
     //#region Status dropdown
 
     $("#ulStatus").selectable({
-
+      
         start: function (event, ui) {
 
             var target = event.target || event.srcElement;
@@ -332,15 +331,19 @@ function setControllOnBack() {
 
 //Aniket code
 function GetProjectStatusList() {
+
     var ProjectStatusList = [];
     ProjectStatusList = [
         { ID: 0, ProjectStatus: "Active" },
         { ID: 1, ProjectStatus: "Complete" },
+
     ]
 
 
     $('#ulProjectStatus').empty();
     $("#ProjectStatusHeader").removeClass("ddlHeader").text("Select Project Status")
+    
+
     $("#ProjectStatus_SelectAll").prop("checked", false);
     $.each(ProjectStatusList, function (index, item) {
         $('#ulProjectStatus').append($('<li></li>').val(item.ID).attr("ID", item.ProjectStatus).addClass("liProjectStatus active-result").html(item.ProjectStatus));
@@ -419,8 +422,17 @@ function GetProjectListbyProjectStatus() {
     });
 }
 
+$('#ddlProjectStatus_chosen li.highlighted').change(function () {
+    var table = $('#dynamic-table').DataTable();
+    table.clear().draw();
+});
+$('#ulProjectStatus li.highlighted').change(function () {
+    var table = $('#dynamic-table').DataTable();
+    table.clear().draw();
+});
 $('#ddlProject').change(function () {
-
+    var table = $('#dynamic-table').DataTable();
+    table.clear().draw();
     document.getElementById("quickSearch").disabled = false;
     var projectID = $("#ddlProject option:selected").val();
     ResetInstaller()
@@ -583,6 +595,15 @@ function GetInstallerByProjectID(projectID) {
     });
 }
 
+/*var table = $('#dynamic-table').DataTable({
+    colReorder: true
+});
+ 
+$('#btnReset').click(function () {
+    table.colReorder.ResetAllData();
+});*/
+//$('#btnReset').dataTables().fnDraw(false)
+
 function GetCycleListbyProjectID(projectID) {
 
     var urlCycleData = $('#GetCycle').val();
@@ -608,12 +629,21 @@ function GetCycleListbyProjectID(projectID) {
 }
 
 $("#btnReset").click(function () {
-    ResetAllData()
+    var ProjectIdssss = $('#ddlProject').val();
+    ResetAllData();
+    
+    var table = $('#dynamic-table').DataTable();
+    table.clear().draw();
+   
 
 })
 
 
 function ResetProject() {
+
+    var table = $('#dynamic-table').DataTable();
+    table.clear().draw();
+
     $('#ddlProject').empty();
     $('.chosen-select').trigger('chosen:updated');
 
@@ -621,6 +651,8 @@ function ResetProject() {
 }
 
 function ResetInstaller() {
+    var table = $('#dynamic-table').DataTable();
+    table.clear().draw();
     $('#ulInstaller').empty();
     $("#InstallerHeader").removeClass("ddlHeader").text("Select Installer")
     $('#txtfilterallInstaller').val("");
@@ -629,6 +661,9 @@ function ResetInstaller() {
 }
 
 function ResetCycle() {
+    var table = $('#dynamic-table').DataTable();
+    table.clear().draw();
+
     $('#ulCycle').empty();
     $("#CycleHeader").removeClass("ddlHeader").text("Select Cycle")
     $('#txtfilterallCycle').val("");
@@ -637,6 +672,9 @@ function ResetCycle() {
 }
 
 function ResetRoute() {
+    var table = $('#dynamic-table').DataTable();
+    table.clear().draw();
+
     $('#ulRoute').empty();
     $("#RouteHeader").removeClass("ddlHeader").text("Select Route")
     $('#txtfilterallRoute').val("");
@@ -647,6 +685,9 @@ function ResetRoute() {
 }
 
 function ResetAddress() {
+    var table = $('#dynamic-table').DataTable();
+    table.clear().draw();
+
     $('#txtfilterallAddress').val("");
     $('#Address_SelectAll').prop('checked', false);
     $('#ulAddress').empty();
@@ -654,19 +695,19 @@ function ResetAddress() {
 }
 
 function ResetAllData() {
+
     GetProjectStatusList()
     GetStatusList()
     ResetProject()
+    $('#ulProjectStatus').val("");
     $('.txtfilterall').val("");
+    $('#ddlProject').val("");
     $('.chbSelectAll').prop('checked', false);
     $('#datepicker1').datepicker('setDate', null);
     $('#datepicker2').datepicker('setDate', null);
 
     document.getElementById("quickSearch").disabled = true;
-
-
 }
-
 //#region Cancel button on Create Model
 $("#btnCancel1").click(function () {
 
@@ -680,6 +721,8 @@ $("#btnCancel1").click(function () {
 $('#quickSearch').change(function () {
 
     if ($(this).is(":checked")) {
+        var table = $('#dynamic-table').DataTable();
+        table.clear().draw();
 
         $('#divStatus .chosen-drop').css('display', 'none');
         $('#divInstaller .chosen-drop').css('display', 'none');
@@ -722,7 +765,9 @@ $('#quickSearch').change(function () {
 });
 //#endregion
 
+
 $('#btnSearch').unbind("click").click(function () {
+    //alert("fds");
     debugger;
     $("#example-select-all").attr('checked', false);
     _searchClick();
@@ -776,7 +821,7 @@ function SelectAll_Recods() {
     AdressId.each(function (index, item) {
         AdressIdList.push($(this).text())
     });
-
+    
 
 
     var fromDate = $('#datepicker1').val();
@@ -793,6 +838,7 @@ function SelectAll_Recods() {
 
             if (msg.status == true) {
                 //bindTable()
+
                 oTable = $('#dynamic-table').DataTable(
                     {
                         "bFilter": true,
@@ -946,19 +992,19 @@ function _searchClick() {
     var ProjectStatusvalue = $('#ulProjectStatus li.highlighted')
     ProjectStatusvalue.each(function (index, item) { objProjectStatusList.push($(this)[0].id) });
 
-    if (objProjectStatusList.length < 1) {
+    /*if (objProjectStatusList.length < 1) {
         var $toast = toastr["error"]('Please select Project Status first', 'Error Notification');
         return false;
-    }
+    }*/
 
     var objStatusList = [];
     var Statusvalue = $('#ulStatus li.highlighted')
     Statusvalue.each(function (index, item) { objStatusList.push($(this)[0].id) });
 
-    if ($('#ddlProject').val() < 1) {
+   /* if ($('#ddlProject').val() < 1) {
         var $toast = toastr["error"]('Please select project name first', 'Error Notification');
         return false;
-    }
+    }*/
 
     var ProjectId = $("#ddlProject").val();
 
@@ -995,7 +1041,16 @@ function _searchClick() {
             return false;
         }
     }
-    
+    /*if ($('#ddlProject').val() < 1) {
+        var ProjectId = newproj;
+
+        //ProjectId = "10085";
+        alert(ProjectId);
+        fromDate= "Jun-12-2023";
+        Todate= "Jun-27-2023";
+
+  
+    }*/
     $.ajax({
         type: 'POST',
         url: urlRoleData,
@@ -1069,6 +1124,7 @@ function _searchClick() {
 
                                     if (full.ProjectStatus == "Active") {
                                         if (full.CategoryType == "COMPLETED") {
+                                            
 
                                             if (full.AuditStaus == 1) {
                                                 return '<a href="#" id=' + full.ID + ' onclick="EditRecords(' + full.InstallerId + ',' + +full.ProjectId + ',' + full.ID + ',' + full.FormId + ');" class="btn btn-primary btn-xs rep_btn_primary" role="button" alt="Edit" title="Edit"><i class="fa fa-pencil"></i></a>'
@@ -1191,6 +1247,7 @@ $('#dynamic-table').on('click', 'td.details-control', function () {
     var detailId = $(this).closest('tr td:last-child').find('input').val();
     console.log(detailId);
     var row = $("#dynamic-table").DataTable().row(tr);
+
     var detailIdArray = detailId.split('|');
     var proId = detailIdArray[0];
     var accId = detailIdArray[1];
@@ -1471,6 +1528,8 @@ function Reopen(UpId, instId, formId, taskStatus, NewMeterNumber, NewMeterRadio)
     $("#txtReopenReason").val('');
     console.log("serial no === " + NewMeterNumber + ", " + NewMeterRadio + ", " + taskStatus);
     var Project = $("#ddlProject option:selected")
+    
+
     var urlGetReopenData = $('#urlGetReopenData').val();
     $.ajax({
         type: 'GET',
@@ -1600,8 +1659,9 @@ function bindTable() {
         dataType: "json",
         type: 'POST',
         success: function (msg) {
-
+            
             oTable = $('#dynamic-table').dataTable(
+
                 {
                     "bFilter": true,
                     "bLengthChange": true,
@@ -2643,6 +2703,8 @@ function selectProjectStatus() {
         $("#ProjectStatusHeader").removeClass("ddlHeader").text("Select Project Status")
     } else {
         $("#ProjectStatusHeader").addClass("ddlHeader").text(selectedlilength + " Project Status selected")
+        
+
     }
 
     //#region SelectAll checked/unchecked
@@ -2659,6 +2721,8 @@ function selectProjectStatus() {
 }
 
 function selectStatus() {
+    var table = $('#dynamic-table').DataTable();
+    table.clear().draw();
 
     var selectedlivalue = $('#ulStatus li.highlighted').map(function (i, el) {
         return $(el).val();
@@ -2694,6 +2758,8 @@ function selectStatus() {
 //#region open/close Cycle dropdown
 $("#ancProjectStatus_chosen").click(function () {
     $("#ddlProjectStatus_chosen").toggleClass("chosen-with-drop chosen-container-active")
+    
+
 });
 
 $('body').on('click', function (e) {
@@ -2701,6 +2767,7 @@ $('body').on('click', function (e) {
         && $('#divProjectStatus').has(e.target).length === 0
     ) {
         $('#ddlProjectStatus_chosen').removeClass('chosen-with-drop chosen-container-active');
+       
     }
 });
 //#endregion
@@ -2708,13 +2775,20 @@ $('body').on('click', function (e) {
 //#region open/close visit status dropdown
 $("#ancStatus_chosen").click(function () {
     $("#ddlStatus_chosen").toggleClass("chosen-with-drop chosen-container-active")
-});
+  
+
+}); 
+
+
 
 $('body').on('click', function (e) {
     if (!$('#divStatus').is(e.target)
         && $('#divStatus').has(e.target).length === 0
     ) {
         $('#ddlStatus_chosen').removeClass('chosen-with-drop chosen-container-active');
+        //var table = $('#dynamic-table').DataTable();
+       // table.clear().draw();
+
     }
 });
 
@@ -2777,6 +2851,8 @@ $('#ProjectStatus_SelectAll').on('click', function () {
             var selectedlilength = selectedlitext.length;
             if (selectedlilength == 0) {
                 $("#ProjectStatusHeader").removeClass("ddlHeader").text("Select Project Status")
+                
+
             } else {
                 $("#ProjectStatusHeader").addClass("ddlHeader").text(selectedlilength + " Project Status selected")
             }
@@ -2818,6 +2894,8 @@ $('#Status_SelectAll').on('click', function () {
             var selectedlilength = selectedlitext.length;
             if (selectedlilength == 0) {
                 $("#StatusHeader").removeClass("ddlHeader").text("Select visit Status")
+               
+
             } else {
                 $("#StatusHeader").addClass("ddlHeader").text(selectedlilength + " Visit Status selected")
             }
@@ -2834,6 +2912,8 @@ $('#Status_SelectAll').on('click', function () {
             var selectedlilength = selectedlitext.length;
             if (selectedlilength == 0) {
                 $("#StatusHeader").removeClass("ddlHeader").text("Select Visit Status")
+                var table = $('#dynamic-table').DataTable();
+                table.clear().draw();
             } else {
                 $("#StatusHeader").addClass("ddlHeader").text(selectedlilength + " Visit Status selected")
             }
@@ -2876,6 +2956,8 @@ function selectInstaller() {
 //#region open/close Cycle dropdown
 $("#ancInstaller_chosen").click(function () {
     $("#ddlInstaller_chosen").toggleClass("chosen-with-drop chosen-container-active")
+  
+
 });
 
 $('body').on('click', function (e) {

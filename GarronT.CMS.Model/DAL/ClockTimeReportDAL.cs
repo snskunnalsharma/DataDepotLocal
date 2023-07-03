@@ -26,6 +26,9 @@ namespace GarronT.CMS.Model.DAL
 {
     public class ClockTimeReportDAL
     {
+        #region Create Object ILog for Logger write
+        private static readonly ILog log = LogManager.GetLogger(typeof(ClockTimeReportDAL));
+        #endregion
         public List<WeeksModel> GetWeekRangeDateCollection(List<Tuple<DateTime, DateTime>> weeksrangedate)
         {
             try
@@ -200,10 +203,10 @@ namespace GarronT.CMS.Model.DAL
         // Craete getting installer start or end time
         public List<Model_FinalResult> GetInstallerTotalWorkedTime(long _ProjectID, int installerid, string weekrangedate)
         {
-
+            List<Model_FinalResult> finalResult = new List<Model_FinalResult>();
             try
             {
-                List<Model_FinalResult> finalResult = new List<Model_FinalResult>();
+                
 
                 List<string> weekDayName = new List<string>();      // First of all one static list create in week days as me requirement
                 weekDayName.Add("Monday");
@@ -216,9 +219,18 @@ namespace GarronT.CMS.Model.DAL
 
                 List<Get_CTR> final_CTR_List = new List<Get_CTR>();
                 List<Model_UserWorkedTime> final_List = new List<Model_UserWorkedTime>();
-
-                var WeekRangefromDate = Convert.ToDateTime(weekrangedate.Split()[0]).ToString("yyyy-MM-dd"); // From date format change as my requirement
-                var WeekRangetoDate = Convert.ToDateTime(weekrangedate.Split()[3]).ToString("yyyy-MM-dd");  // To date format change as my requirement
+                log.Info("from date - " + weekrangedate);
+                var dateArray = weekrangedate.Split(',');
+                //var WeekRangefromDate = Convert.ToDateTime(weekrangedate.Split()[0]).ToString("yyyy-MM-dd"); // From date format change as my requirement
+                //var WeekRangetoDate = Convert.ToDateTime(weekrangedate.Split()[2]).ToString("yyyy-MM-dd");  // To date format change as my requirement
+                var startDate = dateArray[0].Trim().Split()[0];
+                var endDate = dateArray[1].Trim().Split()[0];
+                log.Info("split from date - " + startDate);
+                log.Info("split to date -   " + endDate);
+                var WeekRangefromDate = DateTime.Parse(startDate).ToString("yyyy-MM-dd"); // From date format change as my requirement
+                var WeekRangetoDate = DateTime.Parse(endDate).ToString("yyyy-MM-dd");  // To date format change as my requirement
+                log.Info("from date - " + WeekRangefromDate);
+                log.Info("to date -   " + WeekRangefromDate);
                 CompassEntities CompassEntities = new CompassEntities();
                 SqlConnection con = new SqlConnection(CompassEntities.Database.Connection.ConnectionString);
                 SqlCommand cmd = new SqlCommand();
@@ -226,9 +238,10 @@ namespace GarronT.CMS.Model.DAL
                 con.Open();
                 List<Model_InstalledMeterDetailPayRate> objInstalledMeterDetailPayRate = new List<Model_InstalledMeterDetailPayRate>();
                 objInstalledMeterDetailPayRate = getInstalledMetersDetails(_ProjectID, installerid, WeekRangefromDate, WeekRangetoDate, con);
+                log.Info("objInstalledMeterDetailPayRate list size - " + objInstalledMeterDetailPayRate.Count);
                 // This function use to get All selected week date renage all date list in dynamic form show in html view table in first row
                 final_CTR_List = getDynamicDates(Convert.ToDateTime(WeekRangefromDate), Convert.ToDateTime(WeekRangetoDate));
-
+                log.Info("final_CTR_List  size - " + final_CTR_List.Count);
                 decimal totalWorkingHoursInWeek = 0.00m;
                 int totalInstalledMeterInWeek = 0;
                 decimal totalPay = 0.00m;
@@ -469,6 +482,7 @@ namespace GarronT.CMS.Model.DAL
                 }
                 if (totalPay > 0 && totalInstalledMeterInWeek > 0)
                 {
+                    log.Info("total pay  > 0 and totalInstalledMeterInWeek > 0");
                     #region get file folder path
                     string clockTimeReportFilePath = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["ClockTimeReportUploadPath"]);
                     GrantAccess(HttpContext.Current.Server.MapPath(clockTimeReportFilePath));
@@ -550,7 +564,9 @@ namespace GarronT.CMS.Model.DAL
             }
             catch (Exception ex)
             {
-                throw ex;
+                log.Error("Error in DAL GetInstallerTotalWorkedTime Method : ", ex.InnerException);
+                return finalResult;
+                //throw ex;
             }
         }
         //ends hare

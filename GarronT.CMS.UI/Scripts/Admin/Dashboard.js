@@ -5,7 +5,7 @@ var CityData;
 var BindCon;
 var colorcodearray = Array('#CCCCCC', '#1DAADF', '#37B7E6', '#54C7F3', '#6FD9FF',
                     '#20CA6A', '#46DE89', '#51FF9D', '#78FFB3', '#808080', '#999999', '#B3B3B3');
-
+var chartCVP = "";
 $(document).ready(function () {
     $("#Dashboard").addClass('active').css('background-color', '#EF6C00').css('border-radius', '6px');
     $("#Dashboard").children().css('color', '#fff');
@@ -20,12 +20,13 @@ $(document).ready(function () {
     $("#ddlProjectComvsPending").chosen({ placeholder_text_single: "Select Project", no_results_text: "Oops, nothing found!" }).trigger('chosen:updated');;
     GetCurrentProjectDefault();    // For Dashboard showing project info comment getProjectList() function  call bellow
 
-
+   
 });
 
 
 function GetCurrentProjectDefault()     //Code for displaying project info  Pie chart according to utility
 {
+   
     var GetProjectUrl = $("#urlLodDefualtProjectDetails").val();
 
 
@@ -39,7 +40,7 @@ function GetCurrentProjectDefault()     //Code for displaying project info  Pie 
 
             if (data != undefined && data.length != '') {
 
-                $('#ddlUtilityType').val(data.Utilitytype === "Electric" ? '1' : (data.Utilitytype === "Gas" ? '2' : '3')).trigger('chosen:updated');
+                $('#ddlUtilityType').val(data.Utilitytype === "Electric" ? '1' : (data.Utilitytype === "Gas" ? '2' :  '3' )).trigger('chosen:updated');
 
                 getProjectList();
 
@@ -56,10 +57,18 @@ function GetCurrentProjectDefault()     //Code for displaying project info  Pie 
 
 }
 
-
-
+function loading() {
+    $("div.loader").show();
+    $('#chartContainer').css('visibility','hidden');
+    $('#chartContainerInstallationbyInstaller').css('visibility', 'hidden');    
+}
+function closeloading() {
+    $("div.loader").fadeOut('normal');
+    $('#chartContainer').css('visibility', 'visible');
+    $('#chartContainerInstallationbyInstaller').css("visibility", "visible");}
+    
 function getProjectList() {
-
+    
     var projectUtilityType = $('#ddlUtilityType').val() == "0" ? "no" :
         ($('#ddlUtilityType').val() == 1 ? "Electric" : ($('#ddlUtilityType').val() == 2 ? "Gas" : "Water"));
 
@@ -67,32 +76,37 @@ function getProjectList() {
         ($('#ddlProjectStatus').val() == 1 ? "Active" : "Complete");
 
     var GetProject = $('#urlGetProject').val();
-
-    $.ajax({
+     loading();
+     $('.nodata').hide();
+        $.ajax({
         type: 'GET',
         url: GetProject,
         async: false,
         data: { utilityType: projectUtilityType, ProjectStatus: projectStatus },
-        success: function (data) {
-
+            success: function (data) {
+                
+                closeloading();
+                
             $('#ddlProjectComvsPending').empty();
             var id;
             var name;
             var count = data.length;
-            if (count > 0) {
+                if (count > 0) {
 
-                $.each(data, function (index, item) {
-                    if (index == 0) {
-                        id = item.ProjectId;
-                    }
-                    $('#ddlProjectComvsPending').append($('<option></option>').val(item.ProjectId).html(item.ProjectCityState));
-                });
+                    $.each(data, function (index, item) {
+                        if (index == 0) {
+                            id = item.ProjectId;
+                        }
+                        $('#ddlProjectComvsPending').append($('<option></option>').val(item.ProjectId).html(item.ProjectCityState));
+                    });
 
-            }
-
+                }
+                else {
+                    $('.nodata').show();
+                }
             $('#ddlProjectComvsPending').val(id).trigger('chosen:updated');
-            bindGraph();
-
+            bindGraph()
+                
         },
         error: function () {
             var $toast = toastr["error"]("something seems wrong", "Error Notification");
@@ -104,7 +118,11 @@ function getProjectList() {
 
 
 $('#ddlUtilityType').change(function () {
-    getProjectList();
+   
+    setTimeout(getProjectList, 5000);
+    //setTimeout(getProjectList, 0);
+    loading();
+    $('.nodata').hide(); 
 })
 
 $('#ddlProjectStatus').change(function () {
@@ -118,17 +136,30 @@ var ProjectwiseInstallationprojectname = "";
 
 
 $('#ddlProjectComvsPending').change(function () {
-    bindGraph();
+    setTimeout(bindGraph, 5000);
+    loading();       
 })
+$('#projectId').change(function () {
+  
+    $('div.chartContainer').html('');
+    $('#chartContainerInstallationbyInstaller').html('');
+    loading();
+    bindGraph();
+    closeloading();
+});
 
-function bindGraph() {
+async function bindGraph() {
+  
+    $('div.chartContainer').html("");
+    loading();
     var projectID = $('#ddlProjectComvsPending').val();
+    
     if (projectID != "" && projectID != undefined) {
 
 
         if (projectID != 0) {
             CompletionvsPendingprojectname = $("#ddlProjectComvsPending option[value='" + projectID + "']").text();
-
+            //clearCompletedVsPending();
             //Complete vs Pending chart
             CompletionvsPendingChart(projectID);
 
@@ -150,6 +181,7 @@ function bindGraph() {
         }
         else {
             CompletionvsPendingprojectname = "";
+
             clearCompletedVsPending();
 
             clearInstallationPerInstaller();
@@ -173,7 +205,9 @@ function bindGraph() {
 
         cleareInstallerAllocationChart();
     }
+    closeloading();
 }
+
 
 function clearCompletedVsPending() {
     var data = eval(null);
@@ -182,13 +216,18 @@ function clearCompletedVsPending() {
     //for (var i = 0; i <= data.length - 1; i++) {
     //    dataPoints.push({ Installation: parseInt(data[i].Installations), y: parseInt(data[i].percentage), legendText: data[i].Status });
     //}
-
-    var chart = new CanvasJS.Chart("chartContainer", {
+    /*if (chartCVP != '') {
+        chartCVP.destroy();
+    }*/
+   
+    chartCVP = new CanvasJS.Chart("chartContainer", {
+       
         title: {
             text: "  Completed vs Pending Chart",
             fontSize: 20,
             backgroundColor: "#FFFFE0",
         },
+        
         animationEnabled: true,
         axisX: {
             interval: 1,
@@ -208,7 +247,7 @@ function clearCompletedVsPending() {
         }
         ]
     });
-    chart.render();
+    chartCVP.render();
 }
 
 function clearInstallationPerInstaller() {
@@ -229,8 +268,9 @@ function clearInstallationPerInstaller() {
     var RTUTotal = 0;
 
 
-
+    
     var chart = new CanvasJS.Chart("chartContainerInstallationbyInstaller", {
+       
         // exportEnabled: true,
         exportFileName: "Installations Per Installer",
         zoomEnabled: true,
@@ -726,6 +766,7 @@ $("#btnExportCPChart1").click(function () {
 
 $("#btnExportCPChart2").click(function () {
     //debugger;
+    //loading();
     var canvas = $("#chartContainerInstallationbyInstaller .canvasjs-chart-canvas").get(0);
 
     createPDF(canvas)
@@ -766,11 +807,29 @@ $("#btnExportAuditChart1").click(function () {
     //pdf.output('dataurlnewwindow');
 })
 
-//
+// Get all the elements with the class 'hideable'
+const chartContainerElements = document.getElementsByClassName('chartContainer');
+
+// Add a click event listener to each hideable element
+for (let i = 0; i < chartContainerElements.length; i++) {
+    chartContainerElements[i].addEventListener('click', function () {
+        // Hide the currently clicked element
+        this.style.display = 'none';
+
+        // Show all the other hideable elements
+        for (let j = 0; j < chartContainerElements.length; j++) {
+            if (chartContainerElements[j] !== this) {
+                chartContainerElements[j].style.display = 'block';
+            }
+        }
+    });
+}
+
 function CompletionvsPendingChart(projectID) {
 
     var urlGetCompleteVsPendingChartData = $('#urlGetCompleteVsPendingChartData').val();
-
+   // alert("GetCompleteVsPendingChartData");
+    loading();
     $.ajax({
         url: urlGetCompleteVsPendingChartData,
         type: 'GET',
@@ -791,15 +850,20 @@ function CompletionvsPendingChart(projectID) {
                 if (data[i].Status == "Not Allocated")
                     dataPoints.push({ Installation: parseInt(data[i].Installations), y: parseInt(data[i].percentage), legendText: data[i].Status, color: "Grey", markerBorderThickness: 2 });
 
-                if (projectID == 10085) {
+                if (projectID === "10085" || projectID === "10108" ) {
                     if (data[i].Status == "UnAllocated Skip") {
                         dataPoints.push({ Installation: parseInt(data[i].Installations), y: parseInt(data[i].percentage), legendText: data[i].Status, color: "Black", markerBorderThickness: 2 });
                     }
                 }
             }
+          
+           // alert("wwww");
+            $('div.chartContainer').hide('');
 
-            var chart = new CanvasJS.Chart("chartContainer", {
+            chartCVP = new CanvasJS.Chart("chartContainer", {
+                
                 title: {
+                    
                     text: CompletionvsPendingprojectname + "  Completed vs Pending Chart",
                     fontSize: 20,
                     backgroundColor: "#FFFFE0",
@@ -830,7 +894,8 @@ function CompletionvsPendingChart(projectID) {
                 }
                 ]
             });
-            chart.render();
+            chartCVP.render();
+            closeloading();
 
         },
         error: function () {
@@ -858,7 +923,7 @@ function LoadInstallationChart(projectID) {
         },
         success: function (msg) {
 
-            //debugger;
+
             var data = eval(msg.list);
 
             var dataPoint_Completed = [];
@@ -885,7 +950,7 @@ function LoadInstallationChart(projectID) {
             }
 
 
-
+           
             var chart = new CanvasJS.Chart("chartContainerInstallation", {
                 //exportEnabled: true,
                 exportFileName: "Installations Per Month",
@@ -925,7 +990,6 @@ function LoadInstallationChart(projectID) {
                             showInLegend: true,
 
 
-                            //toolTipContent: "<strong>{label}: '1000'</strong> <br/><span style='\"'color: {color};'\"'>Completed</span>: {y}",
 
                             dataPoints: dataPoint_Completed
                         },
@@ -969,9 +1033,11 @@ function LoadInstallationChart(projectID) {
 
         },
         error: function () {
-            //alert("something seems wrong" + urlMyGoalChart);
         }
     });
+    if (urlGetInstallationspermonth == null && urlGetInstallationspermonth == '') {
+
+    }
 
 }
 
@@ -990,7 +1056,6 @@ function LoadInstallationPerInstaller(projectID) {
             waitingDialog.hide();
         },
         success: function (msg) {
-            //debugger;
             var data = eval(msg.list);
             var totaluploadedrecords = msg.totaluploadedrecords;
             var dataPoint_Completed = [];
@@ -1025,6 +1090,7 @@ function LoadInstallationPerInstaller(projectID) {
 
 
             var chart = new CanvasJS.Chart("chartContainerInstallationbyInstaller", {
+               
                 //exportEnabled: true,
                 exportFileName: CompletionvsPendingprojectname + " Installations Per Installer",
                 zoomEnabled: true,
@@ -1123,7 +1189,6 @@ function LoadInstallationPerInstaller(projectID) {
 
         },
         error: function () {
-            //alert("something seems wrong" + urlMyGoalChart);
         }
     });
 
@@ -1144,7 +1209,7 @@ function LoadInstallationPerProject() {
             for (var i = 0; i <= data.length - 1; i++) {
                 dataPoints.push({ indexLabel: data[i].Project, goal: data[i].Sales, y: parseInt(data[i].Sales), legendText: data[i].Project });
             }
-
+            
             var chart = new CanvasJS.Chart("chartContainerProjectwiseInstallation", {
                 title: {
                     text: "Installations Per Project",
@@ -1173,7 +1238,6 @@ function LoadInstallationPerProject() {
 
         },
         error: function () {
-            //alert("something seems wrong" + urlMyGoalChart);
         }
     });
 
@@ -1183,7 +1247,7 @@ function LoadInstallationPerProject() {
 function LoadProjectCompletionInPercentGraph() {
 
     var projectUtilityType = $('#ddlUtilityType').val() == "0" ? "no" :
-       ($('#ddlUtilityType').val() == 1 ? "Electric" : ($('#ddlUtilityType').val() == 2 ? "Gas" : "Water"));
+        ($('#ddlUtilityType').val() == 1 ? "Electric" : ($('#ddlUtilityType').val() == 2 ? "Gas" :  "Water" ));
 
     var projectStatus = $('#ddlProjectStatus').val() == "0" ? "no" :
        ($('#ddlProjectStatus').val() == 1 ? "Active" : "Complete");
@@ -1194,7 +1258,6 @@ function LoadProjectCompletionInPercentGraph() {
         type: 'GET',
         data: { utilityType: projectUtilityType, ProjectStatus: projectStatus },
         beforeSend: function () {
-            //  waitingDialog.show('Loading Please Wait...');
         },
         complete: function () {
             waitingDialog.hide();
@@ -1214,7 +1277,7 @@ function LoadProjectCompletionInPercentGraph() {
 
 
 
-
+           
             var chart = new CanvasJS.Chart("chartProjectPercentage", {
                 //exportEnabled: true,
                 exportFileName: "Project completion in percentage",
@@ -1327,7 +1390,7 @@ function LoadInstallationAuditDataChart(projectID) {
             }
 
 
-
+            
             var chart = new CanvasJS.Chart("chartInstallerAuditChart", {
                 //exportEnabled: true,
                 exportFileName: CompletionvsPendingprojectname + " Audits Per Installer",

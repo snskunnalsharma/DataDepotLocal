@@ -626,9 +626,15 @@
 
 
 @*<script async defer src="https://maps.googleapis.com/maps/api/js?v=3.33&key=AIzaSyBuy8PkXAoVQWsNpBl7Wt-mlYJNde4sals" />*@
-
-<script async defer>
-    var script = document.createElement('script');
-    script.src = "https://maps.googleapis.com/maps/api/js?v=3.33&key=" + "@System.Configuration.ConfigurationManager.AppSettings["googleapiKey"].ToString()" + "&sensor=false";
-    document.body.appendChild(script);
+<script>
+    function initmap() {
+        console.log("initmap");
+    }
 </script>
+
+<script >
+   
+        var script = document.createElement('script');
+    script.src = "https://maps.googleapis.com/maps/api/js?v=3.33&key=" + "@System.Configuration.ConfigurationManager.AppSettings["googleapiKey"].ToString()" + "&sensor=false&callback=initialize";
+        document.body.appendChild(script);
+    </script>

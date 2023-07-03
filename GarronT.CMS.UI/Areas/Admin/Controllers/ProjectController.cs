@@ -728,9 +728,9 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         mailto.Add(loginUserDetail.Email);
 
                         List<String> mailcc = new List<String>();
-                        mailcc.Add("garron@garront.com");
+                        //mailcc.Add("garron@garront.com");
                         mailcc.Add("yogendra.rajpoot@snssystem.com");
-                        mailcc.Add("deepak.yadav@snssystem.com");
+                        mailcc.Add("kunal.sharma@snssystem.com");
                         if (ProjectID == 10085)     // for project TNMP Texas V10
                         {
                             /*mailcc.Add("awright@cmsmeter.com");  // Removed all mail id from Client side.

@@ -91,7 +91,7 @@ namespace TNMPUploadUtility
             {
                 ExportReportController objERC = new ExportReportController();
                 string fileName = string.Empty;
-                if (projectId == 10085)
+                if (projectId == 10085 || projectId == 10108)
                 {
                     fileName = "meter_exchange_CMS_" + DateTime.Now.ToString("yyyyMMdd") + ".csv";
                 }

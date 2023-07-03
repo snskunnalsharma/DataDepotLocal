@@ -213,7 +213,7 @@ namespace GarronT.CMS.Model.DAL
                 sqlConnection1.Dispose();
 
                 //return list.OrderBy(o => o.Dates).ThenBy(o => o.Account).ToList();
-                return list.OrderBy(o=>o.DateTimeOrdering).ToList();
+                return list.OrderByDescending(o=>o.DateTimeOrdering).ToList();
             }
             catch (Exception ex)
             {

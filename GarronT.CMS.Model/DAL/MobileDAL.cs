@@ -1349,7 +1349,8 @@ namespace GarronT.CMS.Model.DAL
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3;
                 var client = new RestClient("https://cashfreeapi.snssystem.com/api/v1/");
                 var request = new RestRequest("file-upload", Method.POST);
-                request.AddParameter("token", "wLZfNogqzMB0tlbACpqceL");
+                //request.AddParameter("token", "RcAxZ2ncVHmT5m9y4wClek");
+                request.AddParameter("token", "RcAxZ2ncVHmT5m9y4wClek");
                 request.AddParameter("type", "public");
                 request.AddFile("attachments", path);
                 IRestResponse response = client.Execute(request);
@@ -3391,7 +3392,6 @@ namespace GarronT.CMS.Model.DAL
                                     sb.Append("<td  width='60%' style=\"padding-left:-5px;border-bottom: 1px solid gray !important;\">:&nbsp;" + Service + "</td>");
                                     sb.Append("</tr>");
                                 }
-
                             }
                             else
                             {

@@ -4190,11 +4190,11 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             {
                 Response.Clear();
                 Response.Buffer = true;
-                if (projectId == 10085)
+                if (projectId == 10085 || projectId == 10108)
                 {
                     Response.AddHeader("content-disposition", "attachment;filename=meter_exchange_CMS_" + DateTime.Now.ToString("yyyyMMdd") + ".csv");
                 }
-                else if (projectId == 10087)
+               else if (projectId == 10087)
                 {
                     Response.AddHeader("content-disposition", "attachment;filename=meter_exchange_TNMP_" + DateTime.Now.ToString("yyyyMMdd") + ".csv");
                 }

@@ -22,6 +22,7 @@ using System.Xml.Linq;
 using log4net;
 
 
+
 namespace GarronT.CMS.Model.DAL
 {
     public class ProjectMasterDAL : IDisposable
@@ -348,7 +349,7 @@ namespace GarronT.CMS.Model.DAL
                         objtblProject.StateId = objProject.StateId;
                         objtblProject.CityId = objProject.CityId;
                         objtblProject.ContactId = objProject.ContactId;
-                        objtblProject.Utilitytype = objProject.Utilitytype == "1" ? "Electric" : (objProject.Utilitytype == "2" ? "Gas" : "Water");
+                        objtblProject.Utilitytype = objProject.Utilitytype == "1" ? "Electric" : (objProject.Utilitytype == "2" ? "Gas" :  "Water");
                         objtblProject.CreatedBy = objProject.CreatedBy;
                         objtblProject.Active = 1;
                         objtblProject.CreatedOn = objtblProject.CreatedOn;
@@ -2294,6 +2295,14 @@ namespace GarronT.CMS.Model.DAL
                             string dyReadDateColName = inDal.getDynamicColumnName("read_date", Convert.ToString(ProjectID));*/
                             //var list = objCompassEntities1.UploadedExcelDatas.Where(o => o.FKProjectId == ProjectID && o.Active == 1).ToList();
                             CompassEntities _oldObj = new CompassEntities();
+                            /*if (projectObject.Utilitytype == "Water")
+                            {
+                                SerialPort port = new SerialPort();
+                                port.Open();
+                                port.Write(dyCycleColName.ToString().PadLeft(2, '0'));
+                                port.Close();
+
+                            }*/
                             var list = _oldObj.UploadedExcelDatas.Where(o => o.FKProjectId == ProjectID && o.Active == 1).ToList();
                             foreach (DataRow dtRow in dt.Rows)
                             {
@@ -2548,9 +2557,10 @@ namespace GarronT.CMS.Model.DAL
                                                 //mergeColumnData(ProjectID, objRecord.Id);
                                                 if (!string.IsNullOrEmpty(dyCycleColName) && !string.IsNullOrEmpty(dyOfficeColName))
                                                 {
+                                                    
+
                                                     var propertyInfoCycle = objRecord.GetType().GetProperty(dyCycleColName);
                                                     var cycleValue = propertyInfoCycle.GetValue(objRecord);
-
                                                     var propertyInfoOffice = objRecord.GetType().GetProperty(dyOfficeColName);
                                                     var officeValue = propertyInfoOffice.GetValue(objRecord);
 
@@ -2889,7 +2899,7 @@ namespace GarronT.CMS.Model.DAL
                     cmd.Parameters.Add("@projectId", ProjectID);
                     cmd.CommandTimeout = sqlConnection1.ConnectionTimeout;
 
-                    sqlConnection1.Open();
+                    sqlConnection1.Open(); 
 
                     reader = cmd.ExecuteReader();
                     while (reader.Read())
