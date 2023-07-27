@@ -1080,529 +1080,529 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             }
 
         }
+        
+
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="ProjectID"></param>
+/// <returns></returns>
+[HttpPost]
+public JsonResult FileUploadFieldMapping(long ProjectID)
+{
+try
+{
+List<string> tempdata = TempData["ObjCurrentProject"] as List<string>;
+
+List<VW_GETTab6DropdownData> objData = new List<VW_GETTab6DropdownData>();
+using (ProjectMasterDAL obj = new ProjectMasterDAL())
+{
+objData = obj.GetViewData(ProjectID);
+TempData["FieldMapingView"] = objData;
+TempData.Keep("FieldMapingView");
+}
+
+
+string s = "<div class='form-group' style='padding:2px;'>" +
+" <div class='col-lg-2 col-sm-2'></div><div class='col-lg-4 col-sm-4' style='white-space: nowrap; font-weight: bold;'>" +
+"Excel File Fields</div>" +
+"<div class='col-lg-4 col-sm-4' style='white-space:nowrap; font-weight: bold;'>" +
+"Data</div><div class='col-lg-2 col-sm-2'></div> </div>";
+int i = 1;
+
+foreach (var item in tempdata)
+{
+s = s + "<div class='form-group' style='padding:2px;'><div class='col-lg-2 col-sm-2'></div> <div class='col-lg-4 col-sm-4'>" +
+item + "</div><div class='col-lg-4 col-sm-4' id='opt'>" +
+"<select class='dropDownFoo' id='_DFoo" + i.ToString() + "'> <option value='0'>-- Select --</option>";
+
+foreach (var item1 in objData)
+{
+string checkMatch = item1.FieldName.ToLower().Trim() == item.ToLower().Trim() ? "selected" : "";
+s = s + "<option value='" + item1.Id + "' " + checkMatch + ">" + item1.FieldName + "</option>";
+}
+s = s + "</select> </div> <div class='col-lg-2 col-sm-2'></div> </div> ";
+i++;
+}
+return Json(new { success = true, excelData = s }, JsonRequestBehavior.AllowGet);
+}
+catch (Exception ex)
+{
+return Json(new { success = false, excelData = ex.Message }, JsonRequestBehavior.AllowGet);
+}
+}
+
+static bool isExcel(FileInfo wbook)
+{
+bool isOpened = true;
+
+try
+{
+ExcelPackage xlPackage = new ExcelPackage(wbook);
+}
+catch (Exception)
+{
+isOpened = false;
+}
+return isOpened;
+}
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="newFilePath"></param>
+/// <param name="List1"></param>
+/// <returns></returns>
+private List<string> ValidateExcel1(string newFilePath, out List<string> List1)
+{
+List<string> objList1 = new List<string>();
+TempData["ExcelData"] = null;
+try
+{
+
+#region getExcel data
+string[] fileTypeArray = newFilePath.Split('.');
+string fileType = fileTypeArray[1];
+System.Data.DataTable dt = new System.Data.DataTable();
+List1 = null;
+FileInfo existingFile = new FileInfo(newFilePath);
+if (isExcel(existingFile))
+{
+using (ExcelPackage xlPackage = new ExcelPackage(existingFile))
+{
+ExcelWorksheet worksheet = xlPackage.Workbook.Worksheets[1];
+dt = new DataTable();
+//adding columns  
+int iCol = 1;
+int iRow = 1;
+bool CanRead = true;
+while (CanRead)
+{
+if (worksheet.Cells[iRow, iCol].Value != null)
+{
+    if (worksheet.Cells[iRow, iCol].Value != DBNull.Value && !string.IsNullOrEmpty(Convert.ToString(worksheet.Cells[iRow, iCol].Value)))
+    {
+        dt.Columns.Add(Convert.ToString(worksheet.Cells[iRow, iCol].Value));
+        objList1.Add(Convert.ToString(worksheet.Cells[iRow, iCol].Value));
+        iCol++;
+
+    }
+    else
+    {
+        CanRead = false;
+    }
+}
+else
+{
+    CanRead = false;
+}
+
+}
+//adding rows  
+iRow = 2;
+bool canRowRead = true;
+while (canRowRead)
+{
 
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="ProjectID"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public JsonResult FileUploadFieldMapping(long ProjectID)
+DataRow dr = dt.NewRow();
+bool rowVal = true;
+int colCount = 1;
+while (colCount <= iCol)
+{
+    if (worksheet.Cells[iRow, colCount].Value != DBNull.Value && !string.IsNullOrEmpty(Convert.ToString(worksheet.Cells[iRow, colCount].Value)))
+    {
+        try
+        {
+            dr[colCount - 1] = worksheet.Cells[iRow, colCount].Value;
+        }
+        catch
+        {
+        }
+        rowVal = false;
+    }
+    colCount++;
+}
+
+
+
+if (rowVal)
+{
+    canRowRead = false;
+}
+else
+{
+    dt.Rows.Add(dr);
+    iRow++;
+}
+
+}
+TempData["ExcelData"] = dt;
+TempData.Keep("ExcelData");
+}
+#endregion
+}
+else
+{
+#region getCSV data
+//csv file
+string Fulltext;
+using (StreamReader sr = new StreamReader(newFilePath))
+{
+Regex CSVParser = new Regex(",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))");
+dt = new DataTable();
+while (!sr.EndOfStream)
+{
+Fulltext = sr.ReadToEnd().ToString(); //read full file text  
+string[] rows = Fulltext.Split('\n'); //split full file text into rows  
+
+//for (int i = 0; i < rows.Count() - 1; i++)
+
+for (int i = 0; i < rows.Count(); i++)
+{
+    //var s = rows[rows.Length - 1].ToString();
+    //string[] rowValues = rows[i].Split(','); //split each row with comma to get individual values  
+    string[] rowValues = CSVParser.Split(rows[i]);
+    if(!string.IsNullOrEmpty(rowValues[0]))
+    {
+        if (i == 0)
+        {
+            for (int j = 0; j < rowValues.Count(); j++)
+            {
+                string rvalue = rowValues[j].TrimStart(' ', '"');
+                rvalue = rvalue.TrimEnd('"');
+                rvalue = rvalue.Replace("\r\n", "").Replace("\r", "").Replace("\n", "");
+                rvalue = rvalue.ToString().TrimEnd();
+                dt.Columns.Add(rvalue); //add headers 
+                objList1.Add(rvalue);
+            }
+        }
+        else
         {
             try
             {
-                List<string> tempdata = TempData["ObjCurrentProject"] as List<string>;
-
-                List<VW_GETTab6DropdownData> objData = new List<VW_GETTab6DropdownData>();
-                using (ProjectMasterDAL obj = new ProjectMasterDAL())
+                DataRow dr = dt.NewRow();
+                for (int k = 0; k < rowValues.Count(); k++)
                 {
-                    objData = obj.GetViewData(ProjectID);
-                    TempData["FieldMapingView"] = objData;
-                    TempData.Keep("FieldMapingView");
+                    string rvalue = rowValues[k].ToString().TrimStart(' ', '"');
+                    rvalue = rvalue.TrimEnd('"');
+                    rvalue = rvalue.Replace("\r\n", "").Replace("\r", "").Replace("\n", "");
+                    rvalue = rvalue.ToString().TrimEnd();
+                    dr[k] = rvalue;
                 }
-
-
-                string s = "<div class='form-group' style='padding:2px;'>" +
-                    " <div class='col-lg-2 col-sm-2'></div><div class='col-lg-4 col-sm-4' style='white-space: nowrap; font-weight: bold;'>" +
-                      "Excel File Fields</div>" +
-                        "<div class='col-lg-4 col-sm-4' style='white-space:nowrap; font-weight: bold;'>" +
-                    "Data</div><div class='col-lg-2 col-sm-2'></div> </div>";
-                int i = 1;
-
-                foreach (var item in tempdata)
-                {
-                    s = s + "<div class='form-group' style='padding:2px;'><div class='col-lg-2 col-sm-2'></div> <div class='col-lg-4 col-sm-4'>" +
-                         item + "</div><div class='col-lg-4 col-sm-4' id='opt'>" +
-                         "<select class='dropDownFoo' id='_DFoo" + i.ToString() + "'> <option value='0'>-- Select --</option>";
-
-                    foreach (var item1 in objData)
-                    {
-                        string checkMatch = item1.FieldName.ToLower().Trim() == item.ToLower().Trim() ? "selected" : "";
-                        s = s + "<option value='" + item1.Id + "' " + checkMatch + ">" + item1.FieldName + "</option>";
-                    }
-                    s = s + "</select> </div> <div class='col-lg-2 col-sm-2'></div> </div> ";
-                    i++;
-                }
-                return Json(new { success = true, excelData = s }, JsonRequestBehavior.AllowGet);
+                dt.Rows.Add(dr); //add other rows  
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, excelData = ex.Message }, JsonRequestBehavior.AllowGet);
-            }
-        }
-
-        static bool isExcel(FileInfo wbook)
-        {
-            bool isOpened = true;
-
-            try
-            {
-                ExcelPackage xlPackage = new ExcelPackage(wbook);
-            }
-            catch (Exception)
-            {
-                isOpened = false;
-            }
-            return isOpened;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="newFilePath"></param>
-        /// <param name="List1"></param>
-        /// <returns></returns>
-        private List<string> ValidateExcel1(string newFilePath, out List<string> List1)
-        {
-            List<string> objList1 = new List<string>();
-            TempData["ExcelData"] = null;
-            try
-            {
-
-                #region getExcel data
-                string[] fileTypeArray = newFilePath.Split('.');
-                string fileType = fileTypeArray[1];
-                System.Data.DataTable dt = new System.Data.DataTable();
-                List1 = null;
-                FileInfo existingFile = new FileInfo(newFilePath);
-                if (isExcel(existingFile))
-                {
-                    using (ExcelPackage xlPackage = new ExcelPackage(existingFile))
-                    {
-                        ExcelWorksheet worksheet = xlPackage.Workbook.Worksheets[1];
-                        dt = new DataTable();
-                        //adding columns  
-                        int iCol = 1;
-                        int iRow = 1;
-                        bool CanRead = true;
-                        while (CanRead)
-                        {
-                            if (worksheet.Cells[iRow, iCol].Value != null)
-                            {
-                                if (worksheet.Cells[iRow, iCol].Value != DBNull.Value && !string.IsNullOrEmpty(Convert.ToString(worksheet.Cells[iRow, iCol].Value)))
-                                {
-                                    dt.Columns.Add(Convert.ToString(worksheet.Cells[iRow, iCol].Value));
-                                    objList1.Add(Convert.ToString(worksheet.Cells[iRow, iCol].Value));
-                                    iCol++;
-
-                                }
-                                else
-                                {
-                                    CanRead = false;
-                                }
-                            }
-                            else
-                            {
-                                CanRead = false;
-                            }
-
-                        }
-                        //adding rows  
-                        iRow = 2;
-                        bool canRowRead = true;
-                        while (canRowRead)
-                        {
-
-
-
-                            DataRow dr = dt.NewRow();
-                            bool rowVal = true;
-                            int colCount = 1;
-                            while (colCount <= iCol)
-                            {
-                                if (worksheet.Cells[iRow, colCount].Value != DBNull.Value && !string.IsNullOrEmpty(Convert.ToString(worksheet.Cells[iRow, colCount].Value)))
-                                {
-                                    try
-                                    {
-                                        dr[colCount - 1] = worksheet.Cells[iRow, colCount].Value;
-                                    }
-                                    catch
-                                    {
-                                    }
-                                    rowVal = false;
-                                }
-                                colCount++;
-                            }
-
-
-
-                            if (rowVal)
-                            {
-                                canRowRead = false;
-                            }
-                            else
-                            {
-                                dt.Rows.Add(dr);
-                                iRow++;
-                            }
-
-                        }
-                        TempData["ExcelData"] = dt;
-                        TempData.Keep("ExcelData");
-                    }
-                    #endregion
-                }
-                else
-                {
-                    #region getCSV data
-                    //csv file
-                    string Fulltext;
-                    using (StreamReader sr = new StreamReader(newFilePath))
-                    {
-                        Regex CSVParser = new Regex(",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))");
-                        dt = new DataTable();
-                        while (!sr.EndOfStream)
-                        {
-                            Fulltext = sr.ReadToEnd().ToString(); //read full file text  
-                            string[] rows = Fulltext.Split('\n'); //split full file text into rows  
-
-                            //for (int i = 0; i < rows.Count() - 1; i++)
-
-                            for (int i = 0; i < rows.Count(); i++)
-                            {
-                                //var s = rows[rows.Length - 1].ToString();
-                                //string[] rowValues = rows[i].Split(','); //split each row with comma to get individual values  
-                                string[] rowValues = CSVParser.Split(rows[i]);
-                                if(!string.IsNullOrEmpty(rowValues[0]))
-                                {
-                                    if (i == 0)
-                                    {
-                                        for (int j = 0; j < rowValues.Count(); j++)
-                                        {
-                                            string rvalue = rowValues[j].TrimStart(' ', '"');
-                                            rvalue = rvalue.TrimEnd('"');
-                                            rvalue = rvalue.Replace("\r\n", "").Replace("\r", "").Replace("\n", "");
-                                            rvalue = rvalue.ToString().TrimEnd();
-                                            dt.Columns.Add(rvalue); //add headers 
-                                            objList1.Add(rvalue);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        try
-                                        {
-                                            DataRow dr = dt.NewRow();
-                                            for (int k = 0; k < rowValues.Count(); k++)
-                                            {
-                                                string rvalue = rowValues[k].ToString().TrimStart(' ', '"');
-                                                rvalue = rvalue.TrimEnd('"');
-                                                rvalue = rvalue.Replace("\r\n", "").Replace("\r", "").Replace("\n", "");
-                                                rvalue = rvalue.ToString().TrimEnd();
-                                                dr[k] = rvalue;
-                                            }
-                                            dt.Rows.Add(dr); //add other rows  
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            string obj = ex.Message.ToString();
-                                            log.Info("Error at File Uploading - " + DateTime.Now.ToString() + " -" + ex.Message);
-                                        }
-
-                                    }
-                                }
-                            }
-                        }
-                        TempData["ExcelData"] = dt;
-                        TempData.Keep("ExcelData");
-                    }
-                    #endregion
-                }
-
-
-                return List1 = objList1;
-
-            }
-            catch (Exception ex)
-            {
-
-                throw ex;
-            }
-        }
-        #endregion
-
-        #region Index page Actions
-        /// <summary>
-        /// Index page method
-        /// </summary>
-        /// <param name="ProjectId">Project id</param>
-        /// <param name="status">True=>Activate, False=>Deactivate</param>
-        /// <returns></returns>
-        public ActionResult A_Or_D_Project(long ProjectId, bool status)
-        {
-            var objPermissionCheck = UserPermissionCheck.checkUserStatus("Project", "Delete");
-
-            if (objPermissionCheck)
-            {
-                ProjectMasterDAL obj = new ProjectMasterDAL();
-                string result;
-                int currentUserId = (int)new UserDetails().GetUserId(User.Identity.GetUserId());
-                bool a = obj.A_Or_D_Project(ProjectId, currentUserId, status, out result);
-                return Json(new { success = a, returnMessage = result }, JsonRequestBehavior.AllowGet);
-            }
-            else
-            {
-                var strMessage = objPermissionCheck == false ? UserPermissionCheck.PerMessage : "";
-                return Json(new { success = objPermissionCheck, returnMessage = strMessage }, JsonRequestBehavior.AllowGet);
-            }
-        }
-
-        #endregion
-
-
-        public JsonResult CheckLatLongCalculatedStatus(long projectId)
-        {
-            tblProject data = new tblProject();
-            int? status = 0;
-            bool success = false;
-            try
-            {
-                CompassEntities CompassEntities = new CompassEntities();
-                data = (from b in CompassEntities.tblProjects
-                        where b.Active == 1 && b.ProjectId == projectId
-                        select b).FirstOrDefault();
-                if (data != null)
-                {
-                    status = data.IsLatLongCalculated;
-                    success = true;
-                }
-            }
-            catch (Exception)
-            {
-                success = false;
-            }
-
-
-            //return data;
-
-
-            return Json(new { success = success, status = status }, JsonRequestBehavior.AllowGet);
-        }
-
-        public JsonResult setProjectStatus(long ProjectID)
-        {
-            var objPermissionCheck = UserPermissionCheck.checkUserStatus("Project", "Edit");
-
-            if (objPermissionCheck)
-            {
-                bool s = false;
-                using (ProjectMasterDAL obj = new ProjectMasterDAL())
-                {
-                    s = obj.GetProjectStatusData(ProjectID);
-                }
-
-                return Json(new { success = true, returnMessage = "Status Changed Successfully." }, JsonRequestBehavior.AllowGet);
-            }
-            else
-            {
-                var strMessage = objPermissionCheck == false ? UserPermissionCheck.PerMessage : "";
-                return Json(new { success = objPermissionCheck, returnMessage = strMessage }, JsonRequestBehavior.AllowGet);
-            }
-
-
-        }
-
-        public ActionResult GetUploadedDatabyProjectID(long ProjectId)
-        {
-            var objPermissionCheck = UserPermissionCheck.checkUserStatus("Project", "Edit");
-
-            if (objPermissionCheck)
-            {
-
-                TempData["UploadedDataProjectID"] = ProjectId;
-                TempData.Keep("UploadedDataProjectID");
-                return Json(ProjectId, JsonRequestBehavior.AllowGet);
-            }
-            else
-            {
-                var strMessage = objPermissionCheck == false ? UserPermissionCheck.PerMessage : "";
-                return Json(new { success = objPermissionCheck, returnMessage = strMessage }, JsonRequestBehavior.AllowGet);
-            }
-
-
-        }
-
-        public ActionResult EditUploadedData()
-        {
-            if (TempData["UploadedDataProjectID"] != null)
-            {
-                // uploadedDataList = TempData["UploadedDataforEdit"] as List<tblUploadedData>;
-                TempData.Keep("UploadedDataProjectID");
-                return View();
-            }
-            else
-            {
-                return RedirectToAction("Create", "Project");
+                string obj = ex.Message.ToString();
+                log.Info("Error at File Uploading - " + DateTime.Now.ToString() + " -" + ex.Message);
             }
 
         }
+    }
+}
+}
+TempData["ExcelData"] = dt;
+TempData.Keep("ExcelData");
+}
+#endregion
+}
 
 
-        /// <summary>
-        /// Returns  excel uploaded data of the project & the project name.
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        public ActionResult GetActiveUploadedData()
-        {
-            List<ProjectEditModel> uploadedDataList = new List<ProjectEditModel>();
+return List1 = objList1;
 
-            string projectName = string.Empty;
+}
+catch (Exception ex)
+{
 
-            bool LatLongButtonShow = false;
+throw ex;
+}
+}
+#endregion
 
-            using (ProjectMasterDAL obj = new ProjectMasterDAL())
-            {
-                long ProjectId = Convert.ToInt64(TempData["UploadedDataProjectID"]);
+#region Index page Actions
+/// <summary>
+/// Index page method
+/// </summary>
+/// <param name="ProjectId">Project id</param>
+/// <param name="status">True=>Activate, False=>Deactivate</param>
+/// <returns></returns>
+public ActionResult A_Or_D_Project(long ProjectId, bool status)
+{
+var objPermissionCheck = UserPermissionCheck.checkUserStatus("Project", "Delete");
 
-                TempData.Keep("UploadedDataProjectID");
+if (objPermissionCheck)
+{
+ProjectMasterDAL obj = new ProjectMasterDAL();
+string result;
+int currentUserId = (int)new UserDetails().GetUserId(User.Identity.GetUserId());
+bool a = obj.A_Or_D_Project(ProjectId, currentUserId, status, out result);
+return Json(new { success = a, returnMessage = result }, JsonRequestBehavior.AllowGet);
+}
+else
+{
+var strMessage = objPermissionCheck == false ? UserPermissionCheck.PerMessage : "";
+return Json(new { success = objPermissionCheck, returnMessage = strMessage }, JsonRequestBehavior.AllowGet);
+}
+}
 
-                //get current project name.
-                projectName = obj.GetProjectName().Where(o => o.ProjectId == ProjectId).Select(o => o.ProjectCityState).FirstOrDefault();
+#endregion
 
-                //get all excel uploaded records.
-                uploadedDataList = obj.GetUploadedDatabyProjectID(ProjectId).OrderByDescending(o => o.Latitude).ThenByDescending(o => o.Longitude).ToList();
 
-                LatLongButtonShow = obj.GetLatLongCalculation(ProjectId);
-            }
+public JsonResult CheckLatLongCalculatedStatus(long projectId)
+{
+tblProject data = new tblProject();
+int? status = 0;
+bool success = false;
+try
+{
+CompassEntities CompassEntities = new CompassEntities();
+data = (from b in CompassEntities.tblProjects
+where b.Active == 1 && b.ProjectId == projectId
+select b).FirstOrDefault();
+if (data != null)
+{
+status = data.IsLatLongCalculated;
+success = true;
+}
+}
+catch (Exception)
+{
+success = false;
+}
 
-            var jsonResult = Json(new { projectName, uploadedDataList, LatLongButtonShow }, JsonRequestBehavior.AllowGet);
-            jsonResult.MaxJsonLength = int.MaxValue;
-            return jsonResult;
-        }
 
-        public ActionResult GetRecordsbyUploadedID(long uploadedID)
-        {
-            ProjectEditModel uploadedData = new ProjectEditModel();
-            string _result = string.Empty;
-            try
-            {
-                using (ProjectMasterDAL obj = new ProjectMasterDAL())
-                {
-                    //uploadedData = obj.GetUploadedDatabyUploadID(uploadedID);
-                    _result = obj.GetUploadedDatabyUploadID(uploadedID);
-                }
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, excelData = ex.Message }, JsonRequestBehavior.AllowGet);
-            }
+//return data;
 
-            var jsonResult = Json(new { status = true, htmlData = _result }, JsonRequestBehavior.AllowGet);
-            jsonResult.MaxJsonLength = int.MaxValue;
-            return jsonResult;
-            //return Json(uploadedData, JsonRequestBehavior.AllowGet);
-        }
 
-        // don't use this method
-        public ActionResult SaveRecord_old(ProjectEditModel uploadedData, bool StreetChanged)
-        {
-            bool success = false;
-            string returnmessege = "";
+return Json(new { success = success, status = status }, JsonRequestBehavior.AllowGet);
+}
 
-            using (ProjectMasterDAL obj = new ProjectMasterDAL())
-            {
-                success = obj.UpdateUploadData(uploadedData, StreetChanged, out returnmessege);
-                return Json(new { success = success, returnMessage = returnmessege }, JsonRequestBehavior.AllowGet);
-            }
-        }
+public JsonResult setProjectStatus(long ProjectID)
+{
+var objPermissionCheck = UserPermissionCheck.checkUserStatus("Project", "Edit");
 
-        [HttpPost]
-        public ActionResult SaveRecord(FormCollection form)
-        {
-            bool success = false;
-            bool checkLatLong = false;
-            string returnmessege = "";
+if (objPermissionCheck)
+{
+bool s = false;
+using (ProjectMasterDAL obj = new ProjectMasterDAL())
+{
+s = obj.GetProjectStatusData(ProjectID);
+}
 
-            string colName = string.Empty;
-            string colValue = string.Empty;
-            CompassEntities dbcontext = new CompassEntities();
-            SqlConnection _sqlCon = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
-            ProjectMasterDAL objClass = new ProjectMasterDAL();
-            //_sqlCon.Open();
-            try
-            {
-                string objId = form.AllKeys[0].ToString();
-                long uploadId = long.Parse(Convert.ToString(form[objId]).ToString());
-                var getData = dbcontext.UploadedExcelDatas.Where(o => o.Id == uploadId && o.Active == 1).FirstOrDefault();
-                foreach (string _formData in form)
-                {
-                    colName = _formData.ToString();
-                    colValue = form[_formData].ToString();
+return Json(new { success = true, returnMessage = "Status Changed Successfully." }, JsonRequestBehavior.AllowGet);
+}
+else
+{
+var strMessage = objPermissionCheck == false ? UserPermissionCheck.PerMessage : "";
+return Json(new { success = objPermissionCheck, returnMessage = strMessage }, JsonRequestBehavior.AllowGet);
+}
 
-                    if (_formData.Contains("STREET_"))
-                    {
-                        string[] obj = _formData.Split('_');
-                        colName = obj[1].ToString();
-                        colValue = form[_formData].ToString();
-                        string oldStreetValue = objClass.getDynamicColValue(getData.FKProjectId, uploadId, colName); // get dynamic column streeet value
-                        //if (colValue.ToString() != getData.Street12.ToString() && colValue.ToString() != street.ToString())
-                        if (colValue.ToString() != oldStreetValue.ToString())
-                        {
-                            // Update lat long and street
-                            checkLatLong = objClass.UpdateLatLong(getData, colValue.ToString());
-                        }
-                        else
-                        {
-                            SqlCommand cmd = new SqlCommand("UPDATE UploadedExcelData SET " + colName + " = @" + colName + ",Street12=@Street12 WHERE Id = @Id", _sqlCon);
-                            cmd.CommandType = CommandType.Text;
-                            cmd.Parameters.AddWithValue("@Id", uploadId);
-                            cmd.Parameters.AddWithValue("@" + colName + "", colValue);
-                            cmd.Parameters.AddWithValue("@Street12", colValue);
-                            _sqlCon.Open();
-                            cmd.ExecuteNonQuery();
-                            _sqlCon.Close();
-                        }
-                    }
-                    else
-                    {
-                        if (colName != "Id" && colName != "AddressLatitude" && colName != "AddressLongitude")
-                        {
-                            SqlCommand cmd = new SqlCommand("UPDATE UploadedExcelData SET " + colName + " = @" + colName + " WHERE Id = @Id", _sqlCon);
-                            cmd.CommandType = CommandType.Text;
-                            cmd.Parameters.AddWithValue("@Id", uploadId);
-                            cmd.Parameters.AddWithValue("@" + colName + "", colValue);
-                            _sqlCon.Open();
-                            cmd.ExecuteNonQuery();
-                            _sqlCon.Close();
-                        }
-                        if (!checkLatLong && (colName == "AddressLatitude" || colName == "AddressLongitude"))
-                        {
-                            SqlCommand cmd = new SqlCommand("UPDATE UploadedExcelData SET " + colName + " = @" + colName + " WHERE Id = @Id", _sqlCon);
-                            cmd.CommandType = CommandType.Text;
-                            cmd.Parameters.AddWithValue("@Id", uploadId);
-                            cmd.Parameters.AddWithValue("@" + colName + "", colValue);
-                            _sqlCon.Open();
-                            cmd.ExecuteNonQuery();
-                            _sqlCon.Close();
-                        }
-                    }
-                }
-                success = true;
-                returnmessege = CommonFunctions.strRecordUpdated;
-                return Json(new { success = success, returnMessage = returnmessege }, JsonRequestBehavior.AllowGet);
-            }
-            catch (Exception ex)
-            {
-                returnmessege += "<br/>" + ex.Message;
-                return Json(new { success = false, returnMessage = returnmessege }, JsonRequestBehavior.AllowGet);
-            }
-        }
 
-        public ActionResult CalculatePendingLatLon()
-        {
-            try
-            {
-                long ProjectId = Convert.ToInt64(TempData["UploadedDataProjectID"]);
-                TempData.Keep("UploadedDataProjectID");
+}
 
-                Task.Factory.StartNew(() =>
-                {
-                    //new CalculateLatLongController().CalculatPendingLatLongbyProjectID(ProjectId);
-                    /*new CalculateLatLongController().CalPendingLatLongForProject(ProjectId);
-                    new CalculateLatLongController().updateVisitIdGroupId(ProjectId);*/
-                    CalculateLatLongController ca = new CalculateLatLongController();
+public ActionResult GetUploadedDatabyProjectID(long ProjectId)
+{
+var objPermissionCheck = UserPermissionCheck.checkUserStatus("Project", "Edit");
+
+if (objPermissionCheck)
+{
+
+TempData["UploadedDataProjectID"] = ProjectId;
+TempData.Keep("UploadedDataProjectID");
+return Json(ProjectId, JsonRequestBehavior.AllowGet);
+}
+else
+{
+var strMessage = objPermissionCheck == false ? UserPermissionCheck.PerMessage : "";
+return Json(new { success = objPermissionCheck, returnMessage = strMessage }, JsonRequestBehavior.AllowGet);
+}
+
+
+}
+
+public ActionResult EditUploadedData()
+{
+if (TempData["UploadedDataProjectID"] != null)
+{
+// uploadedDataList = TempData["UploadedDataforEdit"] as List<tblUploadedData>;
+TempData.Keep("UploadedDataProjectID");
+return View();
+}
+else
+{
+return RedirectToAction("Create", "Project");
+}
+
+}
+
+
+/// <summary>
+/// Returns  excel uploaded data of the project & the project name.
+/// </summary>
+/// <returns></returns>
+[HttpGet]
+public ActionResult GetActiveUploadedData()
+{
+List<ProjectEditModel> uploadedDataList = new List<ProjectEditModel>();
+
+string projectName = string.Empty;
+
+bool LatLongButtonShow = false;
+
+using (ProjectMasterDAL obj = new ProjectMasterDAL())
+{
+long ProjectId = Convert.ToInt64(TempData["UploadedDataProjectID"]);
+
+TempData.Keep("UploadedDataProjectID");
+
+//get current project name.
+projectName = obj.GetProjectName().Where(o => o.ProjectId == ProjectId).Select(o => o.ProjectCityState).FirstOrDefault();
+
+//get all excel uploaded records.
+uploadedDataList = obj.GetUploadedDatabyProjectID(ProjectId).OrderByDescending(o => o.Latitude).ThenByDescending(o => o.Longitude).ToList();
+
+LatLongButtonShow = obj.GetLatLongCalculation(ProjectId);
+}
+
+var jsonResult = Json(new { projectName, uploadedDataList, LatLongButtonShow }, JsonRequestBehavior.AllowGet);
+jsonResult.MaxJsonLength = int.MaxValue;
+return jsonResult;
+}
+
+public ActionResult GetRecordsbyUploadedID(long uploadedID)
+{
+ProjectEditModel uploadedData = new ProjectEditModel();
+string _result = string.Empty;
+try
+{
+using (ProjectMasterDAL obj = new ProjectMasterDAL())
+{
+//uploadedData = obj.GetUploadedDatabyUploadID(uploadedID);
+_result = obj.GetUploadedDatabyUploadID(uploadedID);
+}
+}
+catch (Exception ex)
+{
+return Json(new { success = false, excelData = ex.Message }, JsonRequestBehavior.AllowGet);
+}
+
+var jsonResult = Json(new { status = true, htmlData = _result }, JsonRequestBehavior.AllowGet);
+jsonResult.MaxJsonLength = int.MaxValue;
+return jsonResult;
+//return Json(uploadedData, JsonRequestBehavior.AllowGet);
+}
+
+// don't use this method
+public ActionResult SaveRecord_old(ProjectEditModel uploadedData, bool StreetChanged)
+{
+bool success = false;
+string returnmessege = "";
+
+using (ProjectMasterDAL obj = new ProjectMasterDAL())
+{
+success = obj.UpdateUploadData(uploadedData, StreetChanged, out returnmessege);
+return Json(new { success = success, returnMessage = returnmessege }, JsonRequestBehavior.AllowGet);
+}
+}
+
+[HttpPost]
+public ActionResult SaveRecord(FormCollection form)
+{
+bool success = false;
+bool checkLatLong = false;
+string returnmessege = "";
+
+string colName = string.Empty;
+string colValue = string.Empty;
+CompassEntities dbcontext = new CompassEntities();
+SqlConnection _sqlCon = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
+ProjectMasterDAL objClass = new ProjectMasterDAL();
+//_sqlCon.Open();
+try
+{
+string objId = form.AllKeys[0].ToString();
+long uploadId = long.Parse(Convert.ToString(form[objId]).ToString());
+var getData = dbcontext.UploadedExcelDatas.Where(o => o.Id == uploadId && o.Active == 1).FirstOrDefault();
+foreach (string _formData in form)
+{
+colName = _formData.ToString();
+colValue = form[_formData].ToString();
+
+if (_formData.Contains("STREET_"))
+{
+string[] obj = _formData.Split('_');
+colName = obj[1].ToString();
+colValue = form[_formData].ToString();
+string oldStreetValue = objClass.getDynamicColValue(getData.FKProjectId, uploadId, colName); // get dynamic column streeet value
+//if (colValue.ToString() != getData.Street12.ToString() && colValue.ToString() != street.ToString())
+if (colValue.ToString() != oldStreetValue.ToString())
+{
+// Update lat long and street
+checkLatLong = objClass.UpdateLatLong(getData, colValue.ToString());
+}
+else
+{
+SqlCommand cmd = new SqlCommand("UPDATE UploadedExcelData SET " + colName + " = @" + colName + ",Street12=@Street12 WHERE Id = @Id", _sqlCon);
+cmd.CommandType = CommandType.Text;
+cmd.Parameters.AddWithValue("@Id", uploadId);
+cmd.Parameters.AddWithValue("@" + colName + "", colValue);
+cmd.Parameters.AddWithValue("@Street12", colValue);
+_sqlCon.Open();
+cmd.ExecuteNonQuery();
+_sqlCon.Close();
+}
+}
+else
+{
+if (colName != "Id" && colName != "AddressLatitude" && colName != "AddressLongitude")
+{
+SqlCommand cmd = new SqlCommand("UPDATE UploadedExcelData SET " + colName + " = @" + colName + " WHERE Id = @Id", _sqlCon);
+cmd.CommandType = CommandType.Text;
+cmd.Parameters.AddWithValue("@Id", uploadId);
+cmd.Parameters.AddWithValue("@" + colName + "", colValue);
+_sqlCon.Open();
+cmd.ExecuteNonQuery();
+_sqlCon.Close();
+}
+if (!checkLatLong && (colName == "AddressLatitude" || colName == "AddressLongitude"))
+{
+SqlCommand cmd = new SqlCommand("UPDATE UploadedExcelData SET " + colName + " = @" + colName + " WHERE Id = @Id", _sqlCon);
+cmd.CommandType = CommandType.Text;
+cmd.Parameters.AddWithValue("@Id", uploadId);
+cmd.Parameters.AddWithValue("@" + colName + "", colValue);
+_sqlCon.Open();
+cmd.ExecuteNonQuery();
+_sqlCon.Close();
+}
+}
+}
+success = true;
+returnmessege = CommonFunctions.strRecordUpdated;
+return Json(new { success = success, returnMessage = returnmessege }, JsonRequestBehavior.AllowGet);
+}
+catch (Exception ex)
+{
+returnmessege += "<br/>" + ex.Message;
+return Json(new { success = false, returnMessage = returnmessege }, JsonRequestBehavior.AllowGet);
+}
+}
+
+public ActionResult CalculatePendingLatLon()
+{
+try
+{
+long ProjectId = Convert.ToInt64(TempData["UploadedDataProjectID"]);
+TempData.Keep("UploadedDataProjectID");
+
+Task.Factory.StartNew(() =>
+{
+//new CalculateLatLongController().CalculatPendingLatLongbyProjectID(ProjectId);
+/*new CalculateLatLongController().CalPendingLatLongForProject(ProjectId);
+new CalculateLatLongController().updateVisitIdGroupId(ProjectId);*/
+        CalculateLatLongController ca = new CalculateLatLongController();
                     ca.CalPendingLatLongForProject(ProjectId);
                     ca.updateVisitIdGroupId(ProjectId);
                 });
