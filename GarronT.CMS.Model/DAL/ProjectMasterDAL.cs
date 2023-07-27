@@ -28,6 +28,7 @@ namespace GarronT.CMS.Model.DAL
     public class ProjectMasterDAL : IDisposable
     {
         bool disposed;
+        String projecttypenew = "";
         protected virtual void Dispose(bool disposing)
         {
             //if (!disposed)
@@ -349,7 +350,7 @@ namespace GarronT.CMS.Model.DAL
                         objtblProject.StateId = objProject.StateId;
                         objtblProject.CityId = objProject.CityId;
                         objtblProject.ContactId = objProject.ContactId;
-                        objtblProject.Utilitytype = objProject.Utilitytype == "1" ? "Electric" : (objProject.Utilitytype == "2" ? "Gas" :  "Water");
+                        objtblProject.Utilitytype = objProject.Utilitytype == "1" ? "Electric" : (objProject.Utilitytype == "2" ? "Gas" : "Water");
                         objtblProject.CreatedBy = objProject.CreatedBy;
                         objtblProject.Active = 1;
                         objtblProject.CreatedOn = objtblProject.CreatedOn;
@@ -360,7 +361,8 @@ namespace GarronT.CMS.Model.DAL
                         objtblProject.PartialSynch = (objProject.SyncType == 1 ? 1 : 0);
                         objtblProject.mapBy = objProject.valueMapBy;
 
-
+                        // for add zero 
+                        projecttypenew = objtblProject.Utilitytype;
                         /// added by bharat to manage the inventory on off for the project 
                         objtblProject.ManageInventory = objProject.ManageInventory;
 
@@ -1589,6 +1591,7 @@ namespace GarronT.CMS.Model.DAL
                     {
                         excelMapFields.Add(ab);
                     }
+                   
                 }
 
                 bool ExcelMappingFieldPresent = true;
@@ -2268,8 +2271,10 @@ namespace GarronT.CMS.Model.DAL
                     if (projectObject.Utilitytype == "Electric")
                     {
                         uploadStatus(ProjectID);
-                        
+
                     }
+
+
 
                     var standardFieldAccount = objCompassEntities1.VW_GETTab6DropdownData.Where(o => o.ProjectID == ProjectID && o.FieldName == "ACCOUNT" && o.FieldType == 2).FirstOrDefault();
                     var standardFieldOldMeter = objCompassEntities1.VW_GETTab6DropdownData.Where(o => o.ProjectID == ProjectID && o.FieldName == "OLD METER NUMBER" && o.FieldType == 2).FirstOrDefault();
@@ -2295,14 +2300,9 @@ namespace GarronT.CMS.Model.DAL
                             string dyReadDateColName = inDal.getDynamicColumnName("read_date", Convert.ToString(ProjectID));*/
                             //var list = objCompassEntities1.UploadedExcelDatas.Where(o => o.FKProjectId == ProjectID && o.Active == 1).ToList();
                             CompassEntities _oldObj = new CompassEntities();
-                            /*if (projectObject.Utilitytype == "Water")
-                            {
-                                SerialPort port = new SerialPort();
-                                port.Open();
-                                port.Write(dyCycleColName.ToString().PadLeft(2, '0'));
-                                port.Close();
 
-                            }*/
+
+
                             var list = _oldObj.UploadedExcelDatas.Where(o => o.FKProjectId == ProjectID && o.Active == 1).ToList();
                             foreach (DataRow dtRow in dt.Rows)
                             {
@@ -2510,6 +2510,7 @@ namespace GarronT.CMS.Model.DAL
 
                                     //if (visitDone == false)
                                     //int i = 0;
+
                                     if (flagInsert)
                                     {
                                         //updatedRecordsCount++;
@@ -2548,7 +2549,7 @@ namespace GarronT.CMS.Model.DAL
                                         //objCompassEntities1.UploadedExcelDatas.Add(objRecord);
                                         //objCompassEntities1.SaveChanges();
 
-                                        
+
                                         if (projectObject.Utilitytype == "Electric")
                                         {
                                             bool statusCycleOfficeMerge = Boolean.Parse(ConfigurationManager.AppSettings["mergeCycleOfficeColumn"]);
@@ -2557,7 +2558,7 @@ namespace GarronT.CMS.Model.DAL
                                                 //mergeColumnData(ProjectID, objRecord.Id);
                                                 if (!string.IsNullOrEmpty(dyCycleColName) && !string.IsNullOrEmpty(dyOfficeColName))
                                                 {
-                                                    
+
 
                                                     var propertyInfoCycle = objRecord.GetType().GetProperty(dyCycleColName);
                                                     var cycleValue = propertyInfoCycle.GetValue(objRecord);
@@ -2599,7 +2600,7 @@ namespace GarronT.CMS.Model.DAL
                                             var temoObj = new List<officeCollection> { new officeCollection { accountNo = Convert.ToString(dtRow[sAccount]), officeName = Convert.ToString(dtRow["OFFICE"]), type = "New" } };
                                             objofficeCollection.AddRange(temoObj);
                                         }
-                                            
+
                                     }
                                     else
                                     {
@@ -2615,7 +2616,7 @@ namespace GarronT.CMS.Model.DAL
                                 }
                                 catch (Exception ex)
                                 {
-                                    
+
                                 }
                                 #endregion
                             }
@@ -2624,13 +2625,34 @@ namespace GarronT.CMS.Model.DAL
                             if (projectObject.Utilitytype == "Electric")
                             {
                                 //updateUploadStatus(ProjectID, userId);
-                                updateUploadStatus(ProjectID, userId, out removeRecordsCount, out removeAccountsNo,objofficeCollection);
+                                updateUploadStatus(ProjectID, userId, out removeRecordsCount, out removeAccountsNo, objofficeCollection);
                             }
                         }
                     }
                     dt1 = dt;
                     #endregion
+                    if (projectObject.Utilitytype == "Water")                
+                    {
+                        InstallerDAL insDal = new InstallerDAL();
+                        string dyCycleColName = insDal.getDynamicColumnName("CYCLE", Convert.ToString(projectObject.ProjectId));
+                        DateTime currentDateTime = DateTime.Today;
+                        var curentDate = currentDateTime.Date;
+                        var uploadedRecordListObj = objCompassEntities.UploadedExcelDatas.Where(k =>  k.CreatedOn > curentDate && k.FKProjectId == projectObject.ProjectId).ToList();
+                        var uploadedRecordList = uploadedRecordListObj.Where(l => l.GetType().GetProperty(dyCycleColName).GetValue(l).ToString().Length == 1); //k.GetType().GetProperty(dyCycleColName).GetValue(k).ToString().Length == 1 &&
+
+
+
+                        foreach (var uploadedRecord in uploadedRecordList)
+                        {
+                            var cycle = uploadedRecord.GetType().GetProperty(dyCycleColName).GetValue(uploadedRecord).ToString();
+                            PropertyInfo currentProperty = uploadedRecord.GetType().GetProperties().Where(o => o.Name == dyCycleColName).FirstOrDefault();
+                            currentProperty.SetValue(uploadedRecord, "0"+ cycle, null);
+
+                        }
+                        objCompassEntities.SaveChanges();
+                    }
                 }
+
             }
             catch (Exception ex)
             {
@@ -2652,14 +2674,14 @@ namespace GarronT.CMS.Model.DAL
                 _cmd.ExecuteNonQuery();
                 _sqlCon.Close();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
             }
-            
+
         }
 
-        public void updateUploadStatus(long projectID, long userId,out int removeRecordsCount,out string removeAccountsNo, List<officeCollection> objofficeCollection)
+        public void updateUploadStatus(long projectID, long userId, out int removeRecordsCount, out string removeAccountsNo, List<officeCollection> objofficeCollection)
         {
             removeRecordsCount = 0;
             removeAccountsNo = "";
@@ -2899,9 +2921,10 @@ namespace GarronT.CMS.Model.DAL
                     cmd.Parameters.Add("@projectId", ProjectID);
                     cmd.CommandTimeout = sqlConnection1.ConnectionTimeout;
 
-                    sqlConnection1.Open(); 
-
+                    sqlConnection1.Open();
+                    
                     reader = cmd.ExecuteReader();
+                    
                     while (reader.Read())
                     {
                         uploadedDataList.Add(new ProjectEditModel
@@ -2915,7 +2938,9 @@ namespace GarronT.CMS.Model.DAL
                             Street = reader["Street"].ToString(),
                             CreatedOn = reader["CreatedOn"].ToString()
                         });
+
                     }
+                   
                     // Data is accessible through the DataReader object here.
 
                     sqlConnection1.Close();
@@ -2935,7 +2960,7 @@ namespace GarronT.CMS.Model.DAL
         }
 
 
-        public bool GetLatLongCalculation(long ProjectID)
+              public bool GetLatLongCalculation(long ProjectID)
         {
             using (CompassEntities dbcontext = new CompassEntities())
             {
@@ -2987,8 +3012,12 @@ namespace GarronT.CMS.Model.DAL
                             OldMeterSize = reader["OldMeterSize"].ToString(),
                             OldMeterRadioNumber = reader["OldMeterRadioNumber"].ToString(),
                             Customer = reader["Customer"].ToString()
+
+
                         };
                     }
+
+
                     // Data is accessible through the DataReader object here.
 
                     sqlConnection1.Close();
@@ -2998,6 +3027,7 @@ namespace GarronT.CMS.Model.DAL
                     sqlConnection1.Dispose();
                 }
             }
+          
             catch (Exception ex)
             {
                 throw ex;
@@ -3005,7 +3035,7 @@ namespace GarronT.CMS.Model.DAL
 
             return uploadedData;
         }
-
+        
         public string getDynamicColValue(long projectId, long id, string DynamicColumnName)
         {
             try
@@ -3176,9 +3206,11 @@ namespace GarronT.CMS.Model.DAL
             string _result = htmlData.ToString();
             return _result;
             //return uploadedData;
+
+            
         }
 
-        #region Insert,Update & Delete
+          #region Insert,Update & Delete
 
         // This method don't use
         public bool UpdateUploadData(ProjectEditModel ObjectToCreaetOrUpdate, bool StreetChanged, out string Message)
