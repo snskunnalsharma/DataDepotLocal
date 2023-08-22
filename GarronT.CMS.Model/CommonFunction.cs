@@ -20,7 +20,7 @@ using System.Web.Script.Serialization;
 using System.Configuration;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity;
-
+using RestSharp;
 
 namespace GarronT.CMS.Model
 {
@@ -356,6 +356,33 @@ namespace GarronT.CMS.Model
 
         #endregion
 
+        public static void LoggingX(String lineno, String levelname, String log_message, String filename = null, String module = null, String functionname = null)
+        {
+            //CommonFunctions.LoggingX("1", "exception", "" + e.ToString()+"", ""+ strWorkPath + "", "test", "Function Name Login");
+            //System.Reflection.Assembly.GetExecutingAssembly().Location;
+            //string strWorkPath = System.IO.Path.GetDirectoryName(strExeFilePath);
+            try
+            {
+                var client = new RestClient("http://192.168.1.10:8010/api/project-log");
+                client.Timeout = -1;
+                var request = new RestRequest(Method.POST);
+                request.AddHeader("Accept", "application/json");
+                request.AddHeader("Authorization", "Bearer 3QCCk9FDsbYQ5RWIgZkc5UbKKECl2Rr6V9TkexvxnOwu4k4Kw9ld9eZWnRTs");
+                request.AlwaysMultipartFormData = true;
+                request.AddParameter("project_unique_token", "uy9JNBqYdc2YRTipC0SlppCHuMCat9TDMc9efq1Nh5zUFr4rqrWfj3aq6euW");
+                request.AddParameter("lineno", lineno);
+                request.AddParameter("levelname", levelname);
+                request.AddParameter("log_message", log_message);
+                request.AddParameter("filename", filename);
+                request.AddParameter("module", module);
+                request.AddParameter("functionname", functionname);
+                IRestResponse response = client.Execute(request);
+            }
+            catch (System.Exception)
+            {
+                //    
+            }
+        }
     }
 
     public static class StringExtension

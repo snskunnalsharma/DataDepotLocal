@@ -131,7 +131,7 @@ namespace GarronT.CMS.Model.DAL
         //}
 
 
-        public List<STP_GetReportTableNew_bak_Result> GetReportsRecordsNew_bak(long ProjectId, DateTime? fromDate, DateTime? Todate,string accountNo)
+        public List<STP_GetReportTableNew_bak_Result> GetReportsRecordsNew_bak(long ProjectId, DateTime? fromDate, DateTime? Todate, string accountNo)
         {
 
             try
@@ -201,7 +201,7 @@ namespace GarronT.CMS.Model.DAL
                         Street = Convert.ToString(reader["Street"]),
                         ToDate = !string.IsNullOrEmpty(Convert.ToString(reader["ToDate"])) ? DateTime.Parse(reader["ToDate"].ToString()) : dt1,
                         AuditStaus = int.Parse(Convert.ToString(reader["AuditStaus"])),
-                        DateTimeOrdering =  long.Parse(orderingList)
+                        DateTimeOrdering = long.Parse(orderingList)
 
                     });
                 }
@@ -213,7 +213,7 @@ namespace GarronT.CMS.Model.DAL
                 sqlConnection1.Dispose();
 
                 //return list.OrderBy(o => o.Dates).ThenBy(o => o.Account).ToList();
-                return list.OrderByDescending(o=>o.DateTimeOrdering).ToList();
+                return list.OrderByDescending(o => o.DateTimeOrdering).ToList();
             }
             catch (Exception ex)
             {
@@ -223,7 +223,7 @@ namespace GarronT.CMS.Model.DAL
 
         }
 
-        public DetailsAll detailsOfProjetcs(long userId, long ProjectId, long formId,long uploadId)
+        public DetailsAll detailsOfProjetcs(long userId, long ProjectId, long formId, long uploadId)
         {
             CompassEntities cmp = new CompassEntities(); //CustomerAddress
 
@@ -238,7 +238,7 @@ namespace GarronT.CMS.Model.DAL
                 ProjectName = projectRecord.ProjectName,
                 InstallerName = (installerRecord.FirstName + " " + installerRecord.LastName),
                 CustomerAddress = customerAddress.Street12,
-                UtilityType=projectRecord.Utilitytype
+                UtilityType = projectRecord.Utilitytype
             };
             //List<DetailsAll> prodetails = (from b in cmp.tblProjects.AsNoTracking()
             //                               join d in cmp.tblFormMasters.AsNoTracking() on b.ProjectId equals d.ProjectId
@@ -667,7 +667,7 @@ namespace GarronT.CMS.Model.DAL
                     Fieldlatitude = a.FieldLatitude,
                     Fieldlongitude = a.FieldLongitude,
                     strFilePath = a.strFilePath,
-                    strCloudUrl=a.strCloudUrl,
+                    strCloudUrl = a.strCloudUrl,
                     // IsAudioVideoImage = a.IsAudioVideoImage
                     FieldOrder = a.FieldOrder,
                     SortOrderNumber = a.SortOrderNumber,
@@ -763,7 +763,7 @@ namespace GarronT.CMS.Model.DAL
                                          IsAudioVideoImage = o.IsAudioVideoImage,
                                          isServiceData = o.isServiceData,
                                          strFilePath = o.strFilePath,
-                                         strCloudUrl=o.strCloudUrl,
+                                         strCloudUrl = o.strCloudUrl,
                                          tblProjectFieldDataMaster_ID = o.tblProjectFieldDataMaster_ID,
                                          TblServicePicture_ID = o.TblServicePicture_ID
                                      }).OrderBy(a => a.IsAudioVideoImage).ToList();
@@ -1037,7 +1037,7 @@ namespace GarronT.CMS.Model.DAL
                             ObjDataTable.Columns.Add("SerialNumber", typeof(string));
                             ObjDataTable.Columns.Add("TotalQty", typeof(int));
 
-                           var objProductId= stockList.Select(o => o.FKProductId).FirstOrDefault();
+                            var objProductId = stockList.Select(o => o.FKProductId).FirstOrDefault();
 
                             DataRow DR = ObjDataTable.NewRow();
                             //DR["ProductId"] = DBNull.Value;
@@ -1339,7 +1339,7 @@ namespace GarronT.CMS.Model.DAL
             return result;
         }
 
-       
+
         #region--Createdby AniketJ on 30-5-2016--
 
         //get project by project status
@@ -1645,7 +1645,7 @@ namespace GarronT.CMS.Model.DAL
                 Obj.ModifiedBy = createdBy;
                 Obj.ModifiedOn = new CommonFunctions().ServerDate();
                 compassEntities.SaveChanges();
-                
+
 
                 TblProjectFieldDataAttachment objTblProjectFieldDataAttachment = new TblProjectFieldDataAttachment();
                 objTblProjectFieldDataAttachment.Active = 1;
@@ -2045,7 +2045,7 @@ namespace GarronT.CMS.Model.DAL
                             AttachmentID = b.ID,
                             strPath = b.strFilePath,
                             strServiceName = c.Service,
-                            strCloudUrl=b.strCloudUrl
+                            strCloudUrl = b.strCloudUrl
                         }).FirstOrDefault();
             }
             return List;
@@ -2424,7 +2424,7 @@ namespace GarronT.CMS.Model.DAL
                              id = o.ID,
                              IsAudioVideoImage = o.IsAudioVideoImage,
                              strFilePath = o.strFilePath,
-                             strCloudUrl=o.strCloudUrl
+                             strCloudUrl = o.strCloudUrl
                          }).OrderBy(o => o.IsAudioVideoImage).ToList();
             }
             return paths;
@@ -3065,6 +3065,7 @@ namespace GarronT.CMS.Model.DAL
                         CategoryType = Convert.ToString(reader["CategoryType"]),
                         MeterSize = Convert.ToString(reader["OldMeterSize"]),
                         OldMeterRadioNumber = Convert.ToString(reader["OldMeterRadioNumber"]),
+                        Cnfg = Convert.ToString(reader["Cnfg"]),
                         NewMeterName = Convert.ToString(reader["NewMeterName"]),
                         ToDate = Convert.ToString(reader["ToDate"])
                     });
@@ -3136,12 +3137,12 @@ namespace GarronT.CMS.Model.DAL
                 var moreDetail = new AccountSummaryReportList();
                 if ("Electric".Equals(utilityType))
                 {
-                    completeDetail.SummaryDetail = List.Where(a => a.CategoryType == "COMPLETED").GroupBy(o => new { o.OldMeterRadioNumber}).Select(o =>
-                        new SummaryDetail { METERSIZE = o.Key.OldMeterRadioNumber, AMP = "", TOTALCOUNT = o.Count() }).ToList();
-                    pendingDetail.SummaryDetail = List.Where(a => Convert.ToDateTime(a.ToDate) >= currentDate && a.CategoryType == "PENDING").GroupBy(o => new {  o.OldMeterRadioNumber }).Select(o =>
-                        new SummaryDetail { METERSIZE = o.Key.OldMeterRadioNumber, AMP = "", TOTALCOUNT = o.Count() }).ToList();
-                    moreDetail.SummaryDetail = List.Where(a => !string.IsNullOrEmpty(a.Dates) && Convert.ToDateTime(a.Dates).Date == fd1.Date && a.CategoryType == "COMPLETED").GroupBy(o => new {  o.OldMeterRadioNumber }).Select(o =>
-                        new SummaryDetail { METERSIZE = o.Key.OldMeterRadioNumber, AMP = "", TOTALCOUNT = o.Count() }).ToList();
+                    completeDetail.SummaryDetail = List.Where(a => a.CategoryType == "COMPLETED").GroupBy(o => new { o.OldMeterRadioNumber, o.Cnfg }).Select(o =>
+                        new SummaryDetail { METERSIZE = o.Key.OldMeterRadioNumber, AMP = o.Key.Cnfg, TOTALCOUNT = o.Count() }).ToList();
+                    pendingDetail.SummaryDetail = List.Where(a => Convert.ToDateTime(a.ToDate) >= currentDate && a.CategoryType == "PENDING").GroupBy(o => new { o.OldMeterRadioNumber, o.Cnfg }).Select(o =>
+                       new SummaryDetail { METERSIZE = o.Key.OldMeterRadioNumber, AMP = o.Key.Cnfg, TOTALCOUNT = o.Count() }).ToList();
+                    moreDetail.SummaryDetail = List.Where(a => !string.IsNullOrEmpty(a.Dates) && Convert.ToDateTime(a.Dates).Date == fd1.Date && a.CategoryType == "COMPLETED").GroupBy(o => new { o.OldMeterRadioNumber, o.Cnfg }).Select(o =>
+                       new SummaryDetail { METERSIZE = o.Key.OldMeterRadioNumber, AMP = o.Key.Cnfg, TOTALCOUNT = o.Count() }).ToList();
                 }
                 else
                 {
@@ -3158,7 +3159,7 @@ namespace GarronT.CMS.Model.DAL
                     records = completeDetail
                 });
                 objAccountSummaryReportJson.Add(new AccountSummaryReportJson
-                {   
+                {
                     summaryType = "Pending Detail",
                     records = pendingDetail
 

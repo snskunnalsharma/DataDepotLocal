@@ -242,6 +242,7 @@ namespace GarronT.CMS.Model.BO
         public string MeterSize { get; set; }
         public string NewMeterName { get; set; }
         public string OldMeterRadioNumber { get; set; } //for Electric project AMP
+        public string Cnfg { get; set; } //for Electric project Configration (Demand or Non-Demand)
         public string ToDate { get; set; }
     }
 

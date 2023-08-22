@@ -2919,7 +2919,7 @@ namespace GarronT.CMS.UI
             try
             {
                 TimeSpan interval = TimeSpan.FromMilliseconds(summaryDate);
-                DateTime dt = DateTime.Parse(selectDate);
+                DateTime dt = DateTime.ParseExact(selectDate,"MM-dd-yyyy",null);
                 DateTime currentDate = DateTime.Parse(UnixTimeStampToDateTime(summaryDate).ToString());
                 //DateTime currentDate = new DateTime(Convert.ToInt64(summaryDate));
                 JavaScriptSerializer s = new JavaScriptSerializer();

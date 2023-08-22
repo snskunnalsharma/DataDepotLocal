@@ -855,7 +855,7 @@ function SelectAll_Recods() {
                         //"sDom": '<"col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xxs-12 drp-rec"<"col-lg-6 col-md-6 col-sm-12 col-xs-12 col-xxs-12"l><"col-lg-6 col-md-6 col-sm-12 col-xs-12 col-xxs-12"f>><"col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xxs-12 rep-shw-ent"<"col-lg-6 col-md-6 col-sm-12 col-xs-12 col-xxs-12"i><"col-lg-6 col-md-6 col-sm-12 col-xs-12 col-xxs-12"p>>rt<ip><"clear">',
                         "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
                         "aaSorting": [],
-                        "iDisplayLength": -1,
+                        "iDisplayLength": 10,
                         "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                         // "sDom": 'ltipr',
                         "aaData": msg.demo1,
@@ -1084,7 +1084,7 @@ function _searchClick() {
                         },
 
                         "aaSorting": [],
-                        "iDisplayLength": -1,
+                        "iDisplayLength": 10,
                         "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                         // "sDom": 'ltipr',
 
@@ -1606,7 +1606,32 @@ function Reopen(UpId, instId, formId, taskStatus, NewMeterNumber, NewMeterRadio)
     });
 
 }
+<style>
+    /* Add your CSS styling here */
+    #ShowImages {
+        display: none;
+}
+    </style>
+$(document).ready(function () {
+    $("#ShowImages").change(function () {
+        var isChecked = $(this).is(":checked");
 
+        // Make an AJAX request to the server
+        $.ajax({
+            url: "your_server_url", // Replace with your server URL
+            method: "POST", // Change to "GET" or "POST" as needed
+            data: { includeImages: isChecked },
+            success: function (response) {
+                // Handle the server's response if needed
+                console.log("AJAX request successful!");
+            },
+            error: function (xhr, status, error) {
+                // Handle errors if needed
+                console.error("AJAX request failed:", error);
+            }
+        });
+    });
+});
 
 function PDFRecords(data) {
     debugger;
@@ -1678,7 +1703,7 @@ function bindTable() {
                     //"sAjaxSource": msg.result,
 
                     "aaSorting": [],
-                    "iDisplayLength": -1,
+                    "iDisplayLength": 10,
                     "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                     //  "sDom": 'ltipr',
 

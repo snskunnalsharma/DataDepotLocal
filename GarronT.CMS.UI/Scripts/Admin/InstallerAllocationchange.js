@@ -989,7 +989,9 @@ $('#ddlInstaller').unbind().change(function () {
                 console.log("ExcludeSkip == " + installerdata.ExcludeSkip);
                 if (installerdata.ExcludeSkip == 1) {
                     console.log("set checkbox status");
+                    
                     $("#chkIncludeSkip").prop("checked", false);
+                    alert("dfdsw");
                 } else {
                     $("#chkIncludeSkip").prop("checked", true);
                 }
@@ -3024,7 +3026,9 @@ function Edit(data) {
     var toDate = $('#datepicker2').val();
     var incSkip = "0";
     if ($("#chkIncludeSkip").is(
-        ":checked")) {
+        ":checked"))
+    {
+       
         console.log("checked");
         incSkip = "1";
     } else {
@@ -3858,7 +3862,7 @@ $('#chkIncludeSkip').change(function () {
         $('#chkUnallocatedSkip').prop('checked', false);
         $('#chkUnallocatedSkip').attr('disabled', true);
         console.log("checked");
-        incSkip = "1";
+        incSkip = "0";
     }
     else
     {
