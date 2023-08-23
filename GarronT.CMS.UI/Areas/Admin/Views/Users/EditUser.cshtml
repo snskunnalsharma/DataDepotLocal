@@ -408,7 +408,11 @@
             padding-top: 1%;
             width: 10%;
         }
+        label {
+            vertical-align: middle;
+        }
 
+        
         .edt_addr {
             margin-left: 5%;
             padding-top: 1%;
@@ -2885,14 +2889,15 @@
 
                                                     <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_pswd" style="text-align:right !important">Password<span style="color: red;">*</span></label>
                                                     <div class="col-lg-2 col-md-4 col-sm-10 psswd-div">
-                                                        <input type="password" name="Password" id="txtPassword" onpaste="return false;" maxlength="50" class="inputclass form-control pswd_txt" />
+                                                        <input type="password" name="Password" id="txtPassword" onpaste="return false;" maxlength="50" class="inputclass form-control pswd_txt" /> <br />
+                                                        <input type="checkbox" id="showPassword" style="margin-bottom:10px"><span style="white-space:nowrap; font-size:12px">Show Password </span>
 
                                                     </div>
 
                                                     <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_repswd" style="white-space:normal;text-align:right !important;">Confirm<span style="color: red;">*</span> Password    </label>
                                                     <div class="col-lg-2 col-md-4 col-sm-10 repsswd-div">
-                                                        <input type="password" name="Confirmpassword" id="txtConfirmPassword" onpaste="return false;" maxlength="50" class="inputclass form-control repswd_txt" />
-
+                                                        <input type="password" name="Confirmpassword" id="txtConfirmPassword" onpaste="return false;" maxlength="50" class="inputclass form-control repswd_txt" /><br />
+                                                        <input type="checkbox" id="showConfirmPassword"> <span style="white-space:nowrap; font-size:12px">Show Confirm Password</span>
                                                     </div>
                                                     <div class="col-lg-2 col-md-4 col-sm-12"></div>
                                                 </div>

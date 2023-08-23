@@ -3058,7 +3058,25 @@ try {
 
     })
 
+    $(document).ready(function () {
+        $('#showPassword').on('click', function () {
+            var passwordInput = $('#txtPassword');
+            if ($(this).is(':checked')) {
+                passwordInput.attr('type', 'text');
+            } else {
+                passwordInput.attr('type', 'password');
+            }
+        });
 
+        $('#showConfirmPassword').on('click', function () {
+            var confirmPasswordInput = $('#txtConfirmPassword');
+            if ($(this).is(':checked')) {
+                confirmPasswordInput.attr('type', 'text');
+            } else {
+                confirmPasswordInput.attr('type', 'password');
+            }
+        });
+    });
     $("#ManagerId").change(function () {
 
         SetFieldSupervisorDropdown();
