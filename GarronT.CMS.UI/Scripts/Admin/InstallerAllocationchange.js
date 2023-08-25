@@ -3862,7 +3862,7 @@ $('#chkIncludeSkip').change(function () {
         $('#chkUnallocatedSkip').prop('checked', false);
         $('#chkUnallocatedSkip').attr('disabled', true);
         console.log("checked");
-        incSkip = "0";
+        incSkip = "1";
     }
     else
     {

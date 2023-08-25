@@ -46,6 +46,7 @@
 
 @Html.Hidden("urlExportReportMultipleIDs", Url.Action("ExportReportMultipleIDs", "Reports"))
 @Html.Hidden("urlGeneratePDFmultipleRows", Url.Action("DownloadMultipleFile", "Reports"))
+@Html.Hidden("urlGeneratePDFmultipleRowsWithLink", Url.Action("DownloadMultipleFilesWithLink", "Reports"))
 @Html.Hidden("urlViewMultiplePDF", Url.Action("GenerateMultiplePDF", "Reports"))
 @Html.Hidden("urlGetReopenData", Url.Action("GetReopenData", "Reports"))
 @Html.Hidden("urlReopenForm", Url.Action("reOpenRecord", "Reports"))
@@ -2995,11 +2996,11 @@
                         @*<div class="col-lg-3 col-sm-6 col-xs-12">*@
                         <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6 col-xxs-12 sm-mbot1 xs-mbot2 xxs-mbot2">
                             <div>
-                                <input type="checkbox" id="chkShowMap" /> Include map on export report<br />
-                                <input type="checkbox" id="ShowImages" /> <b>Include Images in Report</b>
+                                <input type="checkbox" id="chkShowMap" /> Include map on export report
+                              
                             </div>
                         </div>
-                       
+
                         <style>
                             input::placeholder {
                                 font-size: 1.0em;
@@ -3022,18 +3023,19 @@
                             @*<div class="form-group col-lg-3 col-sm-6 col-xs-5 rep_srch ">*@
                             <button id="btnSearch" class="btn btn-success" type="button">Search</button>
                             @*</div>
-            <div class="form-group col-lg-3 col-sm-6 col-xs-5 rep_res ">*@
+                                <div class="form-group col-lg-3 col-sm-6 col-xs-5 rep_res ">*@
                             <button class="btn btn-danger" id="btnReset" type="button">Reset</button>
                             @*</div>
-            <div class="form-group col-lg-3 col-sm-6 col-xs-5 rep_srch ">*@
+                                <div class="form-group col-lg-3 col-sm-6 col-xs-5 rep_srch ">*@
                             @*<button id="btnExport" class="btn btn-success btn-exp" type="button">Export</button>*@
-                            <button id="btnExport" class="btn btn-success" type="button">Export</button>
+                            <button id="btnExport" class="btn btn-success" type="button">Export with Images</button>
+                            <button id="btnExportlink" class="btn btn-success" type="button">Export with Links</button>
                         </div>
 
                         @*</div>
 
 
-        <div class="row">*@
+                            <div class="row">*@
                         @*<div class="col-lg-3 col-sm-6 col-xs-8 dup-color-bootstrap" style="float:right;">*@
                         <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 col-xxs-12 sm-clear xs-clear xxs-clear xs-right xxs-right dup-color-bootstrap" style="float:right;">
                             @*<div class="form-group dup-text-div text-right">*@
@@ -3097,7 +3099,7 @@
                                 <th width="5%">New Radio<br>Number</th>
                                 <th width="12%">Installer</th>
                                 <th width="7%">Status</th>
-                                @* 
+                                @*
                                     <th width="8%">Reason</th>
                                     <th width="1%">C</th>*@
                                 <th width="13%">Action</th>
@@ -3113,61 +3115,62 @@
 
 <div class="modal fade modal-dialog-center" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-md rep-mod">
-    <div class="modal-dialog modal-md rep-mod">
-        <div class="modal-content-wrap">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">REOPEN</h4>
-                </div>
-                <div class="modal-body">
-                    <div class="panel-body">
-                        @*<div class="form-group rep-grp">
+        <div class="modal-dialog modal-md rep-mod">
+            <div class="modal-content-wrap">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">REOPEN</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="panel-body">
+                            @*<div class="form-group rep-grp">
 
-                                <label class="col-lg-2 col-sm-2 control-label">Start Date <span style="color:red">*</span></label>
-                                <div class="col-lg-4 col-sm-4">
-                                    <input type="text" name="FromDate" id="txtFromDate" readonly class="inputclass form-control " />
+                                    <label class="col-lg-2 col-sm-2 control-label">Start Date <span style="color:red">*</span></label>
+                                    <div class="col-lg-4 col-sm-4">
+                                        <input type="text" name="FromDate" id="txtFromDate" readonly class="inputclass form-control " />
+                                    </div>
+                                    <label class="col-lg-2 col-sm-2 control-label ">End Date <span style="color:red">*</span></label>
+                                    <div class="col-lg-4 col-sm-4">
+                                        <input type="text" name="ToDate" id="txtToDate" readonly class="inputclass form-control " />
+                                    </div>
+                                </div>*@
+                            <div class="form-group rep-grp">
+                                <input type="hidden" id="upLoadId" />
+                                <input type="hidden" id="formId" />
+                                <input type="hidden" id="meterId" />
+                                <input type="hidden" id="radioId" />
+                                <input type="hidden" id="taskStatus" />
+                                <input type="hidden" id="oldInstallerId" />
+                                <label for="name" class="col-lg-2 col-sm-2 control-label">Installer</label>
+                                <div class="col-lg-4 col-md-6 col-xs-12 col-sm-10 nopadding_header">
+                                    <select data-placeholder="Select Installer" name="ddlReopenInstaller" id="ddlReopenInstaller" class="form-control chosen-select "></select>
                                 </div>
-                                <label class="col-lg-2 col-sm-2 control-label ">End Date <span style="color:red">*</span></label>
-                                <div class="col-lg-4 col-sm-4">
-                                    <input type="text" name="ToDate" id="txtToDate" readonly class="inputclass form-control " />
+                                <div class="col-lg-12 col-md-6 col-xs-12 col-sm-10">
+
                                 </div>
-                            </div>*@
-                        <div class="form-group rep-grp">
-                            <input type="hidden" id="upLoadId" />
-                            <input type="hidden" id="formId" />
-                            <input type="hidden" id="meterId" />
-                            <input type="hidden" id="radioId" />
-                            <input type="hidden" id="taskStatus" />
-                            <input type="hidden" id="oldInstallerId" />
-                            <label for="name" class="col-lg-2 col-sm-2 control-label">Installer</label>
-                            <div class="col-lg-4 col-md-6 col-xs-12 col-sm-10 nopadding_header">
-                                <select data-placeholder="Select Installer" name="ddlReopenInstaller" id="ddlReopenInstaller" class="form-control chosen-select "></select>
-                            </div>
-                            <div class="col-lg-12 col-md-6 col-xs-12 col-sm-10">
 
                             </div>
 
-                        </div>
-
-                        <div class="form-group rep-grp2">
-                            <label for="name" class="col-lg-2 col-sm-2 control-label">Reopen reason</label>
-                            <div class="col-lg-8 col-md-8 col-xs-12 col-sm-10 nopadding_header">
-                                <select data-placeholder="Select Reason" name="ddlReasonMaster" id="ddlReasonMaster" class="form-control chosen-select "></select>
+                            <div class="form-group rep-grp2">
+                                <label for="name" class="col-lg-2 col-sm-2 control-label">Reopen reason</label>
+                                <div class="col-lg-8 col-md-8 col-xs-12 col-sm-10 nopadding_header">
+                                    <select data-placeholder="Select Reason" name="ddlReasonMaster" id="ddlReasonMaster" class="form-control chosen-select "></select>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="form-group rep-grp3">
-                            <label for="name" class="col-lg-2 col-sm-2 col-xs-2 control-label">Comment</label>
-                            <div class="col-lg-10 col-md-8 col-xs-12 col-sm-10 nopadding_header">
-                                <textarea class="form-control" style="overflow:auto;resize:none" name="reason" id="txtReopenReason" cols="61" rows="4"></textarea>
+                            <div class="form-group rep-grp3">
+                                <label for="name" class="col-lg-2 col-sm-2 col-xs-2 control-label">Comment</label>
+                                <div class="col-lg-10 col-md-8 col-xs-12 col-sm-10 nopadding_header">
+                                    <textarea class="form-control" style="overflow:auto;resize:none" name="reason" id="txtReopenReason" cols="61" rows="4"></textarea>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="form-group">
-                            <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12 btn-reopn" style="text-align:center;">
-                                <button id="btnReopen" class="btn btn-success" type="button">Reopen</button>
-                                <button class="btn btn-danger" id="btnReopenCancel" type="button">Cancel</button>
+                            <div class="form-group">
+                                <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12 btn-reopn" style="text-align:center;">
+                                    <button id="btnReopen" class="btn btn-success" type="button">Reopen</button>
+                                    <button class="btn btn-danger" id="btnReopenCancel" type="button">Cancel</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -3175,434 +3178,433 @@
             </div>
         </div>
     </div>
-</div>
 
 
-<div class="modal fade modal-dialog-center" id="ModelSKIP_RTU" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg rep-mod " style="margin-top: 0;">
-        <div class="modal-content-wrap">
-            <div class="modal-content skip-rep-modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="Status"></h4>
-                </div>
-                <div class="modal-body skip-rep-modal-body">
-                    <div class="panel-body">
-                        <form id="form3" class="cmxform form-horizontal tasi-form">
-                            @*<div class="row">
-                            *@
-                            <div class="col-md-6 col-lg-6 col-xs-12 col-sm-12 skip-data-div">
-                                <div class="form-group ">
-                                    <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label skip-acc-label" style=""><strong>Account : </strong></label>
-                                    <div id="txtAccount" class="col-lg-8  col-xs-8 col-sm-8 line-height-div" style="">
-                                        @*<label id="txtAccount" style="line-height:25px"></label>*@
+    <div class="modal fade modal-dialog-center" id="ModelSKIP_RTU" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg rep-mod " style="margin-top: 0;">
+            <div class="modal-content-wrap">
+                <div class="modal-content skip-rep-modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="Status"></h4>
+                    </div>
+                    <div class="modal-body skip-rep-modal-body">
+                        <div class="panel-body">
+                            <form id="form3" class="cmxform form-horizontal tasi-form">
+                                @*<div class="row">
+                                *@
+                                <div class="col-md-6 col-lg-6 col-xs-12 col-sm-12 skip-data-div">
+                                    <div class="form-group ">
+                                        <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label skip-acc-label" style=""><strong>Account : </strong></label>
+                                        <div id="txtAccount" class="col-lg-8  col-xs-8 col-sm-8 line-height-div" style="">
+                                            @*<label id="txtAccount" style="line-height:25px"></label>*@
+                                        </div>
+                                        @*<label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label ">Address : </label>
+                                            <div class="col-lg-4 col-xs-12 col-sm-4 ">
+                                                <label id="txtAddress" style="line-height:25px"></label>
+                                            </div>*@
                                     </div>
-                                    @*<label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label ">Address : </label>
-                                        <div class="col-lg-4 col-xs-12 col-sm-4 ">
-                                            <label id="txtAddress" style="line-height:25px"></label>
+                                    <div class="form-group ">
+                                        <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label skip-addr-label" style=""><strong>Address :</strong> </label>
+                                        <div class="col-lg-8 col-xs-8 col-sm-8 line-height-div" id="txtAddress" style="">
+                                            @*<label id="txtAddress" style="line-height:25px"></label>*@
+                                        </div>
+                                    </div>
+                                    <div class="form-group ">
+                                        <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label skip-frm-label" style=""><strong>Form Name :</strong> </label>
+                                        <div class="col-lg-8 col-xs-8 col-sm-8 line-height-div" id="txtFromName" style="">
+                                            @*<label id="txtFromName" style="line-height:25px"></label>*@
+                                        </div>
+
+                                    </div>
+                                    <div class="form-group ">
+                                        <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label skip-cycle-label" style=""><strong>Cycle :</strong>  </label>
+                                        <div class="col-lg-3 col-xs-3 col-sm-2 line-height-div" id="txtCycle" style="">
+                                            @*<label id="txtCycle" style="line-height:25px"></label>*@
+                                        </div>
+                                        <label for="name" class="col-lg-2 col-sm-3 col-xs-2 control-label skip-route-label" style=""><strong>Route :</strong> </label>
+                                        <div class="col-lg-3  col-xs-3 col-sm-3 line-height-div" id="txtRoute" style="">
+                                            @*<label id="txtRoute" style="line-height:25px"></label>*@
+                                        </div>
+                                    </div>
+                                    @*<div class="form-group ">
+                                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label ">Route : </label>
+                                            <div class="col-lg-4  col-xs-12 col-sm-4">
+                                                <label id="txtRoute" style="line-height:25px"></label>
+                                            </div>
+
                                         </div>*@
-                                </div>
-                                <div class="form-group ">
-                                    <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label skip-addr-label" style=""><strong>Address :</strong> </label>
-                                    <div class="col-lg-8 col-xs-8 col-sm-8 line-height-div" id="txtAddress" style="">
-                                        @*<label id="txtAddress" style="line-height:25px"></label>*@
-                                    </div>
-                                </div>
-                                <div class="form-group ">
-                                    <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label skip-frm-label" style=""><strong>Form Name :</strong> </label>
-                                    <div class="col-lg-8 col-xs-8 col-sm-8 line-height-div" id="txtFromName" style="">
-                                        @*<label id="txtFromName" style="line-height:25px"></label>*@
-                                    </div>
-
-                                </div>
-                                <div class="form-group ">
-                                    <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label skip-cycle-label" style=""><strong>Cycle :</strong>  </label>
-                                    <div class="col-lg-3 col-xs-3 col-sm-2 line-height-div" id="txtCycle" style="">
-                                        @*<label id="txtCycle" style="line-height:25px"></label>*@
-                                    </div>
-                                    <label for="name" class="col-lg-2 col-sm-3 col-xs-2 control-label skip-route-label" style=""><strong>Route :</strong> </label>
-                                    <div class="col-lg-3  col-xs-3 col-sm-3 line-height-div" id="txtRoute" style="">
-                                        @*<label id="txtRoute" style="line-height:25px"></label>*@
-                                    </div>
-                                </div>
-                                @*<div class="form-group ">
-                                        <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label ">Route : </label>
-                                        <div class="col-lg-4  col-xs-12 col-sm-4">
-                                            <label id="txtRoute" style="line-height:25px"></label>
+                                    <div class="form-group ">
+                                        <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label skip-inst-label" style=""><strong>Installer :</strong> </label>
+                                        <div class="col-lg-3 col-xs-3 col-sm-2 line-height-div" id="txtInstaller" style="">
+                                            @*<label id="txtInstaller" style="line-height:25px"></label>*@
                                         </div>
-
-                                    </div>*@
-                                <div class="form-group ">
-                                    <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label skip-inst-label" style=""><strong>Installer :</strong> </label>
-                                    <div class="col-lg-3 col-xs-3 col-sm-2 line-height-div" id="txtInstaller" style="">
-                                        @*<label id="txtInstaller" style="line-height:25px"></label>*@
-                                    </div>
-                                    <label for="name" class="col-lg-2 col-sm-3 col-xs-2 control-label skip-status-label" style=""><strong>Status :</strong> </label>
-                                    <div class="col-lg-3 col-xs-3 col-sm-3 line-height-div" id="txtStatus" style="">
-                                        @*<label id="txtStatus" style="line-height:25px"></label>*@
-                                    </div>
-                                </div>
-                                @*<div class="form-group ">
-                                        <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label ">Status : </label>
-                                        <div class="col-lg-4  col-xs-12 col-sm-4">
-                                            <label id="txtStatus" style="line-height:25px"></label>
+                                        <label for="name" class="col-lg-2 col-sm-3 col-xs-2 control-label skip-status-label" style=""><strong>Status :</strong> </label>
+                                        <div class="col-lg-3 col-xs-3 col-sm-3 line-height-div" id="txtStatus" style="">
+                                            @*<label id="txtStatus" style="line-height:25px"></label>*@
                                         </div>
-
-                                    </div>*@
-                                <div class="form-group ">
-                                    <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label skip-visit-label " style=""><strong>Visit Date Time :</strong> </label>
-                                    <div class="col-lg-8 col-xs-8 col-sm-8 visit-date-div" id="txtVisitDate" style="">
-                                        @*<label id="txtVisitDate" style="line-height:25px"></label>*@
                                     </div>
-                                </div>
-                                <div class="form-group ">
-                                    <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label skip-rtu-label" style=""><strong>Skip/RTU Reason: </strong></label>
-                                    <div class="col-lg-8 col-xs-8 col-sm-8 skip-reason-div " id="txtReason" style="">
-                                        @*<label class="col-lg-4" id="txtReason" style="line-height:25px"></label>*@
-                                    </div>
-                                </div>
-                                <div class="form-group ">
-                                    <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label skip-cmnt-label" style=""><strong>Comment : </strong></label>
-                                    <div class="col-lg-8 col-xs-8 col-sm-8 line-height-div" id="txtComment" style="">
-                                        @*<label id="txtComment" style="line-height:25px"></label>*@
-                                    </div>
-                                </div>
-
-                                <div class="form-group" id="divLocationGPS">
-                                    <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label skip-cmnt-label" style=""><strong>Location/GPS : </strong></label>
-                                    <div class="col-lg-8 col-xs-8 col-sm-8 line-height-div" style="">
-                                        <a href="" id="txtlocationGPS" target='_blank'>Map</a><br />
-                                        <span style='font-size:14px;' id="spnLocationGPS"></span>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12 btn-reopn" style="text-align:center;">
-                                        <button class="btn btn-danger" id="btnClose" type="button">Close</button>
-                                    </div>
-                                </div>
-
-                            </div>
-
-
-                            <div class="col-md-6 col-lg-6 col-xs-12 col-sm-12 container all-media-div">
-                                <div class="">
-                                    <ul class="nav nav-tabs report-modal-nav">
-                                        <li class="active"><a style="" data-toggle="tab" href="#tabimage">Image</a></li>
-                                        <li class=""><a data-toggle="tab" style="" href="#tabaudio">Audio</a></li>
-                                        <li class=""><a data-toggle="tab" style="" href="#tabvideo">Video</a></li>
-                                    </ul>
-                                    <div class="tab-content">
-                                        <div id="tabimage" class="tab-pane fade in active">
-                                            <h3 id="imagenotfound">Image not found</h3>
-                                            <div class="col-lg-10 col-xs-10" id="divImage" style="position:relative">
-
-                                                <a class="w3-btn-floating btn btn-success btnNextPreviousSkipRTU" style="position:absolute;top:45%;left:15px" onclick="plusDivs(-1)">❮</a>
-                                                <a class="w3-btn-floating btn btn-success btnNextPreviousSkipRTU" style="position:absolute;top:45%;right:-57px" onclick="plusDivs(1)">❯</a>
+                                    @*<div class="form-group ">
+                                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label ">Status : </label>
+                                            <div class="col-lg-4  col-xs-12 col-sm-4">
+                                                <label id="txtStatus" style="line-height:25px"></label>
                                             </div>
+
+                                        </div>*@
+                                    <div class="form-group ">
+                                        <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label skip-visit-label " style=""><strong>Visit Date Time :</strong> </label>
+                                        <div class="col-lg-8 col-xs-8 col-sm-8 visit-date-div" id="txtVisitDate" style="">
+                                            @*<label id="txtVisitDate" style="line-height:25px"></label>*@
                                         </div>
-                                        <div id="tabaudio" class="tab-pane fade">
-                                            <h3 id="audionotfound">Audio not found</h3>
-                                            <div id="divAudio" class="col-lg-10 col-xs-10" style="text-align: center;">
-                                                <audio id="aT" controls preload='auto' class="skip-audio" style="width:300px;">
-                                                    <source id="srcAudio" src="" type="audio/mp4">
-                                                    Your browser does not support the audio tag.
-                                                </audio>
-                                            </div>
+                                    </div>
+                                    <div class="form-group ">
+                                        <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label skip-rtu-label" style=""><strong>Skip/RTU Reason: </strong></label>
+                                        <div class="col-lg-8 col-xs-8 col-sm-8 skip-reason-div " id="txtReason" style="">
+                                            @*<label class="col-lg-4" id="txtReason" style="line-height:25px"></label>*@
                                         </div>
-                                        <div id="tabvideo" class="tab-pane fade">
-                                            <h3 id="videonotfound">Video not found</h3>
-                                            <div id="divVideo" class="col-lg-10 col-xs-10" style="text-align: center;">
-                                                <div class="skip-video">
-                                                    <video id="vT" width="300" height="300" controls="">
-                                                        <source id="srcVideo" type="video/mp4" src="">
-                                                        Your browser does not support the video tag.
-                                                    </video>
+                                    </div>
+                                    <div class="form-group ">
+                                        <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label skip-cmnt-label" style=""><strong>Comment : </strong></label>
+                                        <div class="col-lg-8 col-xs-8 col-sm-8 line-height-div" id="txtComment" style="">
+                                            @*<label id="txtComment" style="line-height:25px"></label>*@
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group" id="divLocationGPS">
+                                        <label for="name" class="col-lg-4 col-sm-4 col-xs-4 control-label skip-cmnt-label" style=""><strong>Location/GPS : </strong></label>
+                                        <div class="col-lg-8 col-xs-8 col-sm-8 line-height-div" style="">
+                                            <a href="" id="txtlocationGPS" target='_blank'>Map</a><br />
+                                            <span style='font-size:14px;' id="spnLocationGPS"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12 btn-reopn" style="text-align:center;">
+                                            <button class="btn btn-danger" id="btnClose" type="button">Close</button>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                                <div class="col-md-6 col-lg-6 col-xs-12 col-sm-12 container all-media-div">
+                                    <div class="">
+                                        <ul class="nav nav-tabs report-modal-nav">
+                                            <li class="active"><a style="" data-toggle="tab" href="#tabimage">Image</a></li>
+                                            <li class=""><a data-toggle="tab" style="" href="#tabaudio">Audio</a></li>
+                                            <li class=""><a data-toggle="tab" style="" href="#tabvideo">Video</a></li>
+                                        </ul>
+                                        <div class="tab-content">
+                                            <div id="tabimage" class="tab-pane fade in active">
+                                                <h3 id="imagenotfound">Image not found</h3>
+                                                <div class="col-lg-10 col-xs-10" id="divImage" style="position:relative">
+
+                                                    <a class="w3-btn-floating btn btn-success btnNextPreviousSkipRTU" style="position:absolute;top:45%;left:15px" onclick="plusDivs(-1)">❮</a>
+                                                    <a class="w3-btn-floating btn btn-success btnNextPreviousSkipRTU" style="position:absolute;top:45%;right:-57px" onclick="plusDivs(1)">❯</a>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            @*
-                                </div>*@
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-@*View  Audit*@
-<div class="modal fade modal-dialog-center" id="auditModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="overflow-y: auto; display:none">
-    <div class="modal-dialog">
-        <div class="modal-content-wrap">
-            <div class="modal-content modal-lg modal-sm clnt-mdlg">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Audit - Allocation</h4>
-                </div>
-
-                <div class="modal-body ">
-                    <form id="form3" class="cmxform form-horizontal tasi-form">
-                        <div style='background:#e6e1e1; width:100%;'>
-                        </div>
-
-
-                        <div class="form-group">
-                            <input type="hidden" id="ProjectId" />
-                            <label for="name" class="col-lg-2 col-sm-4 col-xs-4 control-label "><b>Project Name :</b> </label>
-
-                            <div class="col-lg-10 col-xs-8 col-sm-8">
-                                <span id="lblProjectName" class="reappnt-span"></span>
-                            </div>
-
-                        </div>
-                        <div class="form-group ">
-                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Account :</b></label>
-
-                            <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
-                                <span id="lblAccount" class="reappnt-span"></span>
-                            </div>
-                            <div>
-                                <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Address :</b></label>
-
-                                <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
-                                    <span id="lblAddress" class="reappnt-span"></span>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div class="form-group ">
-                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label "><b>Cycle :</b> </label>
-                            <div class="col-lg-4 col-xs-12 col-sm-4 drp-fld ">
-                                <span id="lblCycle" class="reappnt-span"></span>
-                            </div>
-
-
-                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label pncde-lab"><b>Route :</b></label>
-                            <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
-                                <span id="lblRoute" class="reappnt-span"></span>
-                            </div>
-
-                        </div>
-                        <div class="form-group ">
-                            <input type="hidden" id="UploadId" />
-                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Form Name :</b></label>
-
-                            <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
-                                <span id="lblFormName" class="reappnt-span"></span>
-                            </div>
-                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Installer Name :</b></label>
-
-                            <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
-                                <span id="lblInataller" class="reappnt-span"></span>
-                            </div>
-                        </div>
-
-                        <div class="form-group ">
-
-                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Auditor Name :</b></label>
-
-                            <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
-                                <span id="lblAuditorName" class="reappnt-span"></span>
-                            </div>
-                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Visit Date Time</b></label>
-
-                            <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
-                                <span id="lblVisitDateTime" class="reappnt-span"></span>
-                            </div>
-
-                        </div>
-
-                        <div class="form-group " style="text-align:center; margin-top:50px;">
-                            <button class="btn btn-danger" id="btnAuditCancel2" type="button">Cancel</button>
-                        </div>
-
-                    </form>
-
-
-                    @*<div class="form-group">
-                            <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12 btn-reopn" style="text-align:center;">
-
-                                <button class="btn btn-danger" id="btnAuditCancel2" type="button">Cancel</button>
-                            </div>
-                        </div>*@
-
-
-                </div>
-
-            </div>
-        </div>
-    </div>
-</div>
-
-
-@*Add to Audit*@
-<div class="modal fade modal-dialog-center" id="modalAuditorAllocation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="overflow-y: auto;">
-    <div class="modal-dialog">
-        <div class="modal-content-wrap">
-            <div class="modal-content modal-lg modal-sm  clnt-mdlg">
-                <div class="modal-header">
-                    <button type="button" class="close" id="btnClose" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Audit - Allocation </h4>
-                </div>
-                <div class="modal-body ">
-                    <form id="form4" class="cmxform form-horizontal tasi-form">
-                        <div style='background:#e6e1e1; width:100%;'>
-                        </div>
-                        <br />
-                        <div class="form-group ">
-                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Account :</b></label>
-
-                            <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
-                                <span id="lblAccount2" class="reappnt-span"></span>
-                            </div>
-                            <div id="hideLbl2">
-                                <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Address :</b></label>
-
-                                <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
-                                    <span id="lblAddress2" class="reappnt-span"></span>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div class="form-group">
-                            <input type="hidden" id="AUProjectId" />
-                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label "><b>Project Name :</b> </label>
-
-                            <div class="col-lg-4 col-xs-12 col-sm-4">
-                                <span id="lblProjectName2" class="reappnt-span"></span>
-                            </div>
-
-                        </div>
-                        <div class="form-group ">
-                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label "><b>Cycle :</b> </label>
-                            <div class="col-lg-4 col-xs-12 col-sm-4 drp-fld ">
-                                <span id="lblCycle2" class="reappnt-span"></span>
-                            </div>
-
-
-                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label pncde-lab"><b>Route :</b></label>
-                            <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
-                                <span id="lblRoute2" class="reappnt-span"></span>
-                            </div>
-
-                        </div>
-                        <div class="form-group ">
-                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Form Name :</b></label>
-
-                            <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
-                                <span id="lblFormName2" class="reappnt-span"></span>
-                            </div>
-                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Installer Name :</b></label>
-
-                            <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
-                                <span id="lblInataller2" class="reappnt-span"></span>
-                            </div>
-                        </div>
-
-                        <div class="form-group ">
-                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Visit Date Time :</b></label>
-
-                            <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
-                                <span id="lblVisitDateTime2" class="reappnt-span"></span>
-                            </div>
-                        </div>
-
-
-                        <div class="form-group ">
-                            <input type="hidden" id="FkUploadId" />
-                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label "><b>Select Auditor</b> <span style="color:red">*</span></label>
-                            <div class="col-lg-4  col-xs-12 col-sm-4 addrs-fld">
-                                <select data-placeholder="Select Auditor" name="ddlAuditor" id="ddlAuditor" class="form-control chosen-select "></select>
-                            </div>
-                        </div>
-                        <div class="form-group " style="text-align:center; margin-top:50px;">
-                            <button id="btnAuditSave" class="btn btn-success" type="button">Save</button>
-                            <button class="btn btn-danger" id="btnAuditCancel" type="button">Cancel</button>
-                        </div>
-
-                    </form>
-
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<div class="modal fade modal-dialog-center" id="allImages" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog video-dialog">
-        <div class="modal-content-wrap">
-            <div class="modal-content rep-img-modal modal-md">
-                <div class="modal-header">
-                    <button type="button" id="btnCloseallImages" aria-hidden="true"><i class="fa fa-close" aria-hidden="true"></i></button>
-                    <h4 class="modal-title" id="AllImageName">Image</h4>
-                </div>
-                <div class="modal-body viewer-modal-body">
-                    <div class="panel-body">
-                        <div class=" panel_top">
-                            <form role="form" action="" id="fromsave" method="post" class="form-horizontal">
-                                <div class="row setup-content" id="step-1">
-                                    <div class="col-xs-12 ">
-                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                            <div class="form-group" style="padding: 2px 6px 0px 0px;" id="FieldData">
-                                                <input type="hidden" id="txtCurrentImageId" />
-                                                <div id="img-grp-wrap">
-                                                    <div class="Pic">
-                                                        <div class="wrapper01">
-
-                                                            <div id="viewer2" class="viewer iviewer_cursor" style="height: 400px;">
-
-                                                            </div>
-                                                        </div>
-
+                                            <div id="tabaudio" class="tab-pane fade">
+                                                <h3 id="audionotfound">Audio not found</h3>
+                                                <div id="divAudio" class="col-lg-10 col-xs-10" style="text-align: center;">
+                                                    <audio id="aT" controls preload='auto' class="skip-audio" style="width:300px;">
+                                                        <source id="srcAudio" src="" type="audio/mp4">
+                                                        Your browser does not support the audio tag.
+                                                    </audio>
+                                                </div>
+                                            </div>
+                                            <div id="tabvideo" class="tab-pane fade">
+                                                <h3 id="videonotfound">Video not found</h3>
+                                                <div id="divVideo" class="col-lg-10 col-xs-10" style="text-align: center;">
+                                                    <div class="skip-video">
+                                                        <video id="vT" width="300" height="300" controls="">
+                                                            <source id="srcVideo" type="video/mp4" src="">
+                                                            Your browser does not support the video tag.
+                                                        </video>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-
-
                                     </div>
                                 </div>
 
+                                @*
+                                    </div>*@
                             </form>
-
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
+
+    @*View  Audit*@
+    <div class="modal fade modal-dialog-center" id="auditModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="overflow-y: auto; display:none">
+        <div class="modal-dialog">
+            <div class="modal-content-wrap">
+                <div class="modal-content modal-lg modal-sm clnt-mdlg">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Audit - Allocation</h4>
+                    </div>
+
+                    <div class="modal-body ">
+                        <form id="form3" class="cmxform form-horizontal tasi-form">
+                            <div style='background:#e6e1e1; width:100%;'>
+                            </div>
+
+
+                            <div class="form-group">
+                                <input type="hidden" id="ProjectId" />
+                                <label for="name" class="col-lg-2 col-sm-4 col-xs-4 control-label "><b>Project Name :</b> </label>
+
+                                <div class="col-lg-10 col-xs-8 col-sm-8">
+                                    <span id="lblProjectName" class="reappnt-span"></span>
+                                </div>
+
+                            </div>
+                            <div class="form-group ">
+                                <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Account :</b></label>
+
+                                <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
+                                    <span id="lblAccount" class="reappnt-span"></span>
+                                </div>
+                                <div>
+                                    <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Address :</b></label>
+
+                                    <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
+                                        <span id="lblAddress" class="reappnt-span"></span>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="form-group ">
+                                <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label "><b>Cycle :</b> </label>
+                                <div class="col-lg-4 col-xs-12 col-sm-4 drp-fld ">
+                                    <span id="lblCycle" class="reappnt-span"></span>
+                                </div>
+
+
+                                <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label pncde-lab"><b>Route :</b></label>
+                                <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
+                                    <span id="lblRoute" class="reappnt-span"></span>
+                                </div>
+
+                            </div>
+                            <div class="form-group ">
+                                <input type="hidden" id="UploadId" />
+                                <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Form Name :</b></label>
+
+                                <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
+                                    <span id="lblFormName" class="reappnt-span"></span>
+                                </div>
+                                <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Installer Name :</b></label>
+
+                                <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
+                                    <span id="lblInataller" class="reappnt-span"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-group ">
+
+                                <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Auditor Name :</b></label>
+
+                                <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
+                                    <span id="lblAuditorName" class="reappnt-span"></span>
+                                </div>
+                                <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Visit Date Time</b></label>
+
+                                <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
+                                    <span id="lblVisitDateTime" class="reappnt-span"></span>
+                                </div>
+
+                            </div>
+
+                            <div class="form-group " style="text-align:center; margin-top:50px;">
+                                <button class="btn btn-danger" id="btnAuditCancel2" type="button">Cancel</button>
+                            </div>
+
+                        </form>
+
+
+                        @*<div class="form-group">
+                                <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12 btn-reopn" style="text-align:center;">
+
+                                    <button class="btn btn-danger" id="btnAuditCancel2" type="button">Cancel</button>
+                                </div>
+                            </div>*@
+
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    @*Add to Audit*@
+    <div class="modal fade modal-dialog-center" id="modalAuditorAllocation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="overflow-y: auto;">
+        <div class="modal-dialog">
+            <div class="modal-content-wrap">
+                <div class="modal-content modal-lg modal-sm  clnt-mdlg">
+                    <div class="modal-header">
+                        <button type="button" class="close" id="btnClose" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Audit - Allocation </h4>
+                    </div>
+                    <div class="modal-body ">
+                        <form id="form4" class="cmxform form-horizontal tasi-form">
+                            <div style='background:#e6e1e1; width:100%;'>
+                            </div>
+                            <br />
+                            <div class="form-group ">
+                                <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Account :</b></label>
+
+                                <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
+                                    <span id="lblAccount2" class="reappnt-span"></span>
+                                </div>
+                                <div id="hideLbl2">
+                                    <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Address :</b></label>
+
+                                    <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
+                                        <span id="lblAddress2" class="reappnt-span"></span>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="form-group">
+                                <input type="hidden" id="AUProjectId" />
+                                <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label "><b>Project Name :</b> </label>
+
+                                <div class="col-lg-4 col-xs-12 col-sm-4">
+                                    <span id="lblProjectName2" class="reappnt-span"></span>
+                                </div>
+
+                            </div>
+                            <div class="form-group ">
+                                <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label "><b>Cycle :</b> </label>
+                                <div class="col-lg-4 col-xs-12 col-sm-4 drp-fld ">
+                                    <span id="lblCycle2" class="reappnt-span"></span>
+                                </div>
+
+
+                                <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label pncde-lab"><b>Route :</b></label>
+                                <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
+                                    <span id="lblRoute2" class="reappnt-span"></span>
+                                </div>
+
+                            </div>
+                            <div class="form-group ">
+                                <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Form Name :</b></label>
+
+                                <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
+                                    <span id="lblFormName2" class="reappnt-span"></span>
+                                </div>
+                                <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Installer Name :</b></label>
+
+                                <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
+                                    <span id="lblInataller2" class="reappnt-span"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-group ">
+                                <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Visit Date Time :</b></label>
+
+                                <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
+                                    <span id="lblVisitDateTime2" class="reappnt-span"></span>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group ">
+                                <input type="hidden" id="FkUploadId" />
+                                <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label "><b>Select Auditor</b> <span style="color:red">*</span></label>
+                                <div class="col-lg-4  col-xs-12 col-sm-4 addrs-fld">
+                                    <select data-placeholder="Select Auditor" name="ddlAuditor" id="ddlAuditor" class="form-control chosen-select "></select>
+                                </div>
+                            </div>
+                            <div class="form-group " style="text-align:center; margin-top:50px;">
+                                <button id="btnAuditSave" class="btn btn-success" type="button">Save</button>
+                                <button class="btn btn-danger" id="btnAuditCancel" type="button">Cancel</button>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade modal-dialog-center" id="allImages" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog video-dialog">
+            <div class="modal-content-wrap">
+                <div class="modal-content rep-img-modal modal-md">
+                    <div class="modal-header">
+                        <button type="button" id="btnCloseallImages" aria-hidden="true"><i class="fa fa-close" aria-hidden="true"></i></button>
+                        <h4 class="modal-title" id="AllImageName">Image</h4>
+                    </div>
+                    <div class="modal-body viewer-modal-body">
+                        <div class="panel-body">
+                            <div class=" panel_top">
+                                <form role="form" action="" id="fromsave" method="post" class="form-horizontal">
+                                    <div class="row setup-content" id="step-1">
+                                        <div class="col-xs-12 ">
+                                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                                <div class="form-group" style="padding: 2px 6px 0px 0px;" id="FieldData">
+                                                    <input type="hidden" id="txtCurrentImageId" />
+                                                    <div id="img-grp-wrap">
+                                                        <div class="Pic">
+                                                            <div class="wrapper01">
+
+                                                                <div id="viewer2" class="viewer iviewer_cursor" style="height: 400px;">
+
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 
 
-<link href="~/Content/MSTS/admin/css/style-responsive.css" rel="stylesheet" />
-<link href="~/Scripts/js/style.css" rel="stylesheet" />
-<link href="~/Scripts/js/jquery-ui.css" rel="stylesheet" />
-<script src="~/Scripts/js/jquery-ui.js"></script>
-<script src="~/Scripts/js/fieldChooser.js"></script>
+    <link href="~/Content/MSTS/admin/css/style-responsive.css" rel="stylesheet" />
+    <link href="~/Scripts/js/style.css" rel="stylesheet" />
+    <link href="~/Scripts/js/jquery-ui.css" rel="stylesheet" />
+    <script src="~/Scripts/js/jquery-ui.js"></script>
+    <script src="~/Scripts/js/fieldChooser.js"></script>
 
 
-<link href="~/Content/MSTS/admin/css/bootstrap-multiselect.css" rel="stylesheet" />
-<script src="~/Scripts/bootstrap-multiselectReport.js"></script>
-<link href="~/Scripts/js/multipleselectbox.css" rel="stylesheet" />
-<script src="~/Scripts/js/jquery.multipleselectbox.js"></script>
+    <link href="~/Content/MSTS/admin/css/bootstrap-multiselect.css" rel="stylesheet" />
+    <script src="~/Scripts/bootstrap-multiselectReport.js"></script>
+    <link href="~/Scripts/js/multipleselectbox.css" rel="stylesheet" />
+    <script src="~/Scripts/js/jquery.multipleselectbox.js"></script>
 
 
 
-<link href="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.css")" rel="stylesheet" />
+    <link href="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.css")" rel="stylesheet" />
 
-@System.Web.Optimization.Scripts.RenderFormat(GarronT.CMS.UI.SiteKeys.ScriptVersion, "~/bundles/Chosen")
+    @System.Web.Optimization.Scripts.RenderFormat(GarronT.CMS.UI.SiteKeys.ScriptVersion, "~/bundles/Chosen")
 
-@System.Web.Optimization.Scripts.RenderFormat(GarronT.CMS.UI.SiteKeys.ScriptVersion, "~/bundles/Reports")
+    @System.Web.Optimization.Scripts.RenderFormat(GarronT.CMS.UI.SiteKeys.ScriptVersion, "~/bundles/Reports")
 
-@Styles.Render("~/Content/jquery_iviewer_css")
+    @Styles.Render("~/Content/jquery_iviewer_css")
 
-@Scripts.Render("~/bundles/jquery_iviewer_js")
+    @Scripts.Render("~/bundles/jquery_iviewer_js")

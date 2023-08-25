@@ -1606,32 +1606,7 @@ function Reopen(UpId, instId, formId, taskStatus, NewMeterNumber, NewMeterRadio)
     });
 
 }
-<style>
-    /* Add your CSS styling here */
-    #ShowImages {
-        display: none;
-}
-    </style>
-$(document).ready(function () {
-    $("#ShowImages").change(function () {
-        var isChecked = $(this).is(":checked");
 
-        // Make an AJAX request to the server
-        $.ajax({
-            url: "your_server_url", // Replace with your server URL
-            method: "POST", // Change to "GET" or "POST" as needed
-            data: { includeImages: isChecked },
-            success: function (response) {
-                // Handle the server's response if needed
-                console.log("AJAX request successful!");
-            },
-            error: function (xhr, status, error) {
-                // Handle errors if needed
-                console.error("AJAX request failed:", error);
-            }
-        });
-    });
-});
 
 function PDFRecords(data) {
     debugger;
@@ -2950,6 +2925,7 @@ $('#Status_SelectAll').on('click', function () {
     //  selectProjectStatus()
 
     $("#btnExport").visible = true;
+    $("#btnExportlink").visible = true;
 });
 //#endregion
 
@@ -3581,6 +3557,61 @@ $('#btnExport').on('click', function () {
 
 
 //Created by Aniket on 1-sep-2016
+$('#btnExportlink').on('click', function () {
+    debugger;
+    var showmap = false;
+    if ($('#chkShowMap').is(":checked")) {
+        showmap = true;
+    }
+    else {
+        showmap = false;
+    }
+
+
+    var ReportRowList = [];
+    var SelectedRows = $('input[name="id[]"]:checked')
+    SelectedRows.each(function (index, item) {
+
+        var ReportRow = new Object();
+        ReportRow.UploadedID = this.id;
+        ReportRow.FormID = this.value;
+        ReportRowList.push(ReportRow)
+    });
+    if (ReportRowList.length == 0) {
+
+        var $toast = toastr["error"]("Please select records to export", "Notification");
+        return false;
+    }
+
+    var urlExportReportMultipleIDs = $('#urlExportReportMultipleIDs').val();
+    var urlGeneratePDFmultipleRowsWithLink = $('#urlGeneratePDFmultipleRowsWithLink').val();
+
+    $.ajax({
+        type: 'POST',
+        url: urlExportReportMultipleIDs,
+        data: { ReportRowList: ReportRowList, showMap: showmap },
+        beforeSend: function () {
+            waitingDialog.show('Loading Please Wait...');
+        },
+        complete: function () {
+            waitingDialog.hide();
+        },
+        success: function (msg) {
+
+            if (msg.Status == true) {
+                window.open(
+                    urlGeneratePDFmultipleRowsWithLink,
+                    '_blank' // <- This is what makes it open in a new window.
+                );
+            }
+            //else {
+            //    var $toast = toastr["error"]("Report will not genrated as no record has complete status.", "Notification");
+            //}
+        },
+        error: function (msg) {
+        }
+    });
+});
 
 
 

@@ -1,146 +1,146 @@
 ﻿@model IEnumerable<GarronT.CMS.Model.BO.sectionfiledval>
-@using System.Configuration;
-@{
-    ViewBag.Title = "Report";
-    Layout = "";
-}
-@*GarronT.CMS.Model.BO*@
-<link href="~/Content/MSTS/admin/admin/css/bootstrap.css" rel="stylesheet" />
-<link href="~/Content/MSTS/admin/css/bootstrap.min.css" rel="stylesheet" />
-<link href="~/Content/MSTS/admin/css/style.css" rel="stylesheet" />
-<script src="~/Content/MSTS/admin/js/jquery.js"></script>
-
-<style>
-    #divHeader {
-        float: right;
-        width: 21%;
+    @using System.Configuration;
+    @{
+        ViewBag.Title = "Report";
+        Layout = "";
     }
+                      @*GarronT.CMS.Model.BO*@
+    <link href="~/Content/MSTS/admin/admin/css/bootstrap.css" rel="stylesheet" />
+    <link href="~/Content/MSTS/admin/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/MSTS/admin/css/style.css" rel="stylesheet" />
+    <script src="~/Content/MSTS/admin/js/jquery.js"></script>
+
+    <style>
+        #divHeader {
+            float: right;
+            width: 21%;
+        }
 
 
-    #divFormName {
-    }
+        #divFormName {
+        }
 
-    #divsectionData {
-    }
+        #divsectionData {
+        }
 
 
-    .fieldname {
-        text-align: left;
-        width: 20%;
-        padding: 5px;
-        font-family: Arial;
-        font-size: 14px;
-    }
+        .fieldname {
+            text-align: left;
+            width: 20%;
+            padding: 5px;
+            font-family: Arial;
+            font-size: 14px;
+        }
 
-    .fieldData {
-        width: 80%;
-        padding: 5px;
-    }
+        .fieldData {
+            width: 80%;
+            padding: 5px;
+        }
 
-    .formname {
-        font-family: Arial;
-        font-size: 18px;
-        color: #0094ff;
-    }
+        .formname {
+            font-family: Arial;
+            font-size: 18px;
+            color: #0094ff;
+        }
 
-    .sectionname {
-        padding-left: 20px;
-        color: #0094ff;
-        font-size: 15px;
-    }
+        .sectionname {
+            padding-left: 20px;
+            color: #0094ff;
+            font-size: 15px;
+        }
 
-    .headerTitle {
-        font-size: 14px;
-    }
+        .headerTitle {
+            font-size: 14px;
+        }
 
-    .FieldNametd {
-        padding: 5px;
-        /*border-right: 1px solid #000;*/
-        /*background-color: #fbd3b5;*/
-        color: #000000;
-        font-size: 14px;
-        font-weight: bold;
-        vertical-align: top;
-        /*padding-bottom: 13px;*/
-    }
+        .FieldNametd {
+            padding: 5px;
+            /*border-right: 1px solid #000;*/
+            /*background-color: #fbd3b5;*/
+            color: #000000;
+            font-size: 14px;
+            font-weight: bold;
+            vertical-align: top;
+            /*padding-bottom: 13px;*/
+        }
 
-    .FieldValuestd {
-        padding: 5px;
-        border-right: 1px solid #000;
-        color: #000000;
-        font-size: 14px;
-    }
+        .FieldValuestd {
+            padding: 5px;
+            border-right: 1px solid #000;
+            color: #000000;
+            font-size: 14px;
+        }
 
-    .fieldvalue {
-        font-weight: 500;
-        font-size: 13px;
-    }
+        .fieldvalue {
+            font-weight: 500;
+            font-size: 13px;
+        }
 
-    .wrapper {
-        margin-top: 0px !important;
-        padding: 0px 15px !important;
-    }
+        .wrapper {
+            margin-top: 0px !important;
+            padding: 0px 15px !important;
+        }
 
-    .latlongspan {
-        font-size: 13px;
-        vertical-align: top;
-        padding-left: 5px;
-    }
+        .latlongspan {
+            font-size: 13px;
+            vertical-align: top;
+            padding-left: 5px;
+        }
 
-    .datetimespan {
-        font-size: 13px;
-        padding-left: 25px;
-        vertical-align: top;
-        line-height: 0px;
-    }
+        .datetimespan {
+            font-size: 13px;
+            padding-left: 25px;
+            vertical-align: top;
+            line-height: 0px;
+        }
 
-    .img-width {
-        width: 80%;
-        height: 10em;
-    }
+        .img-width {
+            width: 80%;
+            height: 10em;
+        }
 
-    .img-width-ser {
-        width: 150px;
-        height: 180px;
-    }
-</style>
-<body style='font-family:calibri;padding:0px; margin:0px auto; '>
-    <div style="margin:0 auto;   width:100%; z-index: 1;">
+        .img-width-ser {
+            width: 150px;
+            height: 180px;
+        }
+    </style>
+    <body style='font-family:calibri;padding:0px; margin:0px auto; '>
+        <div style="margin:0 auto;   width:100%; z-index: 1;">
 
-        <div id="divsectionData" style="margin: 0px 20px 0px 20px;  ">
-            @{
-                var ss = Model;
-                var listitem = ss.GroupBy(o => o.sectionName).ToList();
+            <div id="divsectionData" style="margin: 0px 20px 0px 20px;  ">
+                @{
+                    var ss = Model;
+                    var listitem = ss.GroupBy(o => o.sectionName).ToList();
 
-                var Servicecount = 0;
-                var AdditionalServicecount = 0;
-                var otherfieldcount = 0;
+                    var Servicecount = 0;
+                    var AdditionalServicecount = 0;
+                    var otherfieldcount = 0;
 
-                System.Text.StringBuilder serviceString = new System.Text.StringBuilder();
-                System.Text.StringBuilder AdditionalServiceString = new System.Text.StringBuilder();
-                System.Text.StringBuilder otherfieldString = new System.Text.StringBuilder();
+                    System.Text.StringBuilder serviceString = new System.Text.StringBuilder();
+                    System.Text.StringBuilder AdditionalServiceString = new System.Text.StringBuilder();
+                    System.Text.StringBuilder otherfieldString = new System.Text.StringBuilder();
 
-                System.Text.StringBuilder otherfieldString1 = new System.Text.StringBuilder();
-                System.Text.StringBuilder otherfieldString2 = new System.Text.StringBuilder();
+                    System.Text.StringBuilder otherfieldString1 = new System.Text.StringBuilder();
+                    System.Text.StringBuilder otherfieldString2 = new System.Text.StringBuilder();
 
-                String LatImagesrc = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + "/images/blueT.png";
+                    String LatImagesrc = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + "/images/blueT.png";
 
-                String MapPinsrc = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]);
-                List<GarronT.CMS.Model.BO.CaptureGeoLocation> mapPinsList = new GarronT.CMS.Model.DAL.MobileDAL().GetGeoCaptureFields(@ViewBag.FormID);
+                    String MapPinsrc = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]);
+                    List<GarronT.CMS.Model.BO.CaptureGeoLocation> mapPinsList = new GarronT.CMS.Model.DAL.MobileDAL().GetGeoCaptureFields(@ViewBag.FormID);
 
-                var showMap = @ViewBag.showMap;
+                    var showMap = @ViewBag.showMap;
 
-                <h3 style="text-align: center;color:#0094ff">@ViewBag.ProjectName</h3>
-                int _TotalItemCount = 0;
-                @*<div class="table-responsive pdf-table-responsive">*@
-                <div class="">
-                    <table border="0" style='font-family: calibri; border-radius: 5px; width: 96%; border-collapse: collapse; margin: 0 auto;' cellpadding="0" cellspacing="0">
-                        <tr style="page-break-inside:avoid;border:1px solid #000;">
-                            <td width='25%' class='FieldNametd'><span>Installer Name</span><br /><span class="fieldvalue">@System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@ViewBag.InstallerName.ToLower()))</span></td>
-                            <td width='25%' class='FieldNametd'><span>Service Date</span><br /><span class="fieldvalue">@DateTime.Parse(ViewBag.ProjectDate.ToString()).ToString("MMM-dd-yyyy HH:mm")</span></td>
-                            @*<td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>*@
-                            <td width='25%' class='FieldNametd'><span>Customer Address</span><br /><span class="fieldvalue">@ViewBag.customerAddress</span></td>
-                            @*@if (@ViewBag.UtilityType == "Electric")  // Only for electricty projects
+                    <h3 style="text-align: center;color:#0094ff">@ViewBag.ProjectName</h3>
+                    int _TotalItemCount = 0;
+                    @*<div class="table-responsive pdf-table-responsive">*@
+                    <div class="">
+                        <table border="0" style='font-family: calibri; border-radius: 5px; width: 96%; border-collapse: collapse; margin: 0 auto;' cellpadding="0" cellspacing="0">
+                            <tr style="page-break-inside:avoid;border:1px solid #000;">
+                                <td width='25%' class='FieldNametd'><span>Installer Name</span><br /><span class="fieldvalue">@System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@ViewBag.InstallerName.ToLower()))</span></td>
+                                <td width='25%' class='FieldNametd'><span>Service Date</span><br /><span class="fieldvalue">@DateTime.Parse(ViewBag.ProjectDate.ToString()).ToString("MMM-dd-yyyy HH:mm")</span></td>
+                                @*<td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>*@
+                                <td width='25%' class='FieldNametd'><span>Customer Address</span><br /><span class="fieldvalue">@ViewBag.customerAddress</span></td>
+                                @*@if (@ViewBag.UtilityType == "Electric")  // Only for electricty projects
                                 {
                                     <td width='25%' class='FieldNametd'><span>Customer Address</span><br /><span class="fieldvalue">@ViewBag.customerAddress</span></td>
                                 }
@@ -148,345 +148,340 @@
                                 {
                                     <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
                                 }*@
-                        </tr>
-                    </table>
-
-                    @foreach (var item11 in listitem)
-                    {
-
-                        string sectionName = @item11.Select(o => o.sectionName).FirstOrDefault();
-
-                        var Fieldsinsection = @item11.Select(o => o.FieldName).ToList();
-                        _TotalItemCount = 0;
-                        otherfieldcount = 0;
-
-
-                        <span class="sectionname">
-                            @if (sectionName.ToLower() == "Meter Box Before Photo".ToLower())
-                            {
-
-                            }
-                            else
-                            {
-                                @System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@sectionName.ToLower()));
-                            }
-                        </span>
-
-                        if (sectionName.ToLower() == "BOX and PIPE INFO".ToLower())
+                            </tr>
+                        </table>
+                        
+                        @foreach (var item11 in listitem)
                         {
-                            if (@ViewBag.ProjectId == 10075)
-                            {
-                                otherfieldString.Append("<td width='25%' class='FieldNametd'><span>Meter Box Time</span>");
 
-                                otherfieldString.Append("<br /><span class='fieldvalue'>" + @ViewBag.MeterAfterBeforeBoxDiffTime + "</span>");
-                                otherfieldString.Append("</td>");
-                                otherfieldcount++;
-                            }
-                        }
+                            string sectionName = @item11.Select(o => o.sectionName).FirstOrDefault();
+
+                            var Fieldsinsection = @item11.Select(o => o.FieldName).ToList();
+                            _TotalItemCount = 0;
+                            otherfieldcount = 0;
 
 
-                        <table border="0" style='font-family:calibri; border-radius:5px;margin:0 auto;width:96%;border-collapse:collapse;' cellpadding="0" cellspacing="0">
-
-
-                            @foreach (var item in item11)
-                            {
-                                _TotalItemCount++;
-
-                                if (item.FieldName.ToLower() == "services")
+                            <span class="sectionname">
+                                @if (sectionName.ToLower() == "Meter Box Before Photo".ToLower())
                                 {
-
-                                    List<GarronT.CMS.Model.BO.ServicesModel> listService = new List<GarronT.CMS.Model.BO.ServicesModel>();
-
-                                    listService = new GarronT.CMS.Model.DAL.ReportDAL().getServicesWithImages(item.FieldValues, item.IDS, false);
-
-                                    if (listService != null && listService.Count > 0)
-                                    {
-
-                                        int _selectedServiceCount = 0;
-                                        System.Text.StringBuilder servicefieldString = new System.Text.StringBuilder();
-                                        System.Text.StringBuilder servicefieldString1 = new System.Text.StringBuilder();
-                                        System.Text.StringBuilder tempServiceField = new System.Text.StringBuilder();
-                                        int _TotalServiceItemCount = 0;
-                                        string strServices = string.Empty;
-
-                                        foreach (GarronT.CMS.Model.BO.ServicesModel obj in listService)
-                                        {
-                                            _TotalServiceItemCount++;
-
-                                            // Chnaged some code
-                                            //strServices += "<td width='25%' class='FieldNametd' style='vertical-align:top;'> <span>" + obj.Service + " - </span><span class='fieldvalue'> Completed</span></td>";
-                                            strServices += "<td width='25%' class='FieldNametd'><span>" + obj.Service + " - </span><span class='fieldvalue'> Completed</span></td>";
-                                            //strServices += "<td width='25%' class='FieldNametd'><span>" + obj.Service + "</span><br /><span class='fieldvalue'>Completed</span></td>";
-
-                                            if (_TotalServiceItemCount == 3)
-                                            {
-                                                tempServiceField.Append(strServices);
-                                                strServices = string.Empty;
-                                                <tr style="page-break-inside:avoid;border:1px solid #000;">
-                                                    @Html.Raw(tempServiceField)
-                                                </tr>
-                                                tempServiceField.Remove(0, tempServiceField.Length);
-                                                _TotalServiceItemCount = 0;
-                                            }
-
-                                            /*if (_selectedServiceCount == 0)
-                                            {
-                                                servicefieldString.Append("<td width='25%' class='FieldNametd' style='vertical-align:top;'> <span>" + obj.Service + " - </span><span class='fieldvalue'> Completed</span></td>");
-
-                                                _selectedServiceCount++;
-
-                                                if (listService.Count == _TotalServiceItemCount)
-                                                {
-                                                    <tr style="page-break-inside:avoid;border:1px solid #000;">
-                                                        @Html.Raw(servicefieldString)
-                                                        <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
-                                                        <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
-                                                    </tr>
-
-                                                    _selectedServiceCount = 0;
-                                                    servicefieldString.Remove(0, servicefieldString.Length);
-                                                }
-                                            }
-
-                                            else if (_selectedServiceCount == 1)
-                                            {
-
-                                                servicefieldString1.Append("<td width='25%' class='FieldNametd' style='vertical-align:top;'> <span>" + obj.Service + " - </span><span class='fieldvalue'> Completed</span></td>");
-
-                                                _selectedServiceCount++;
-
-                                                if (listService.Count == _TotalServiceItemCount)
-                                                {
-                                                    <tr style="page-break-inside:avoid;border:1px solid #000;">
-
-                                                        @Html.Raw(servicefieldString)
-
-
-                                                        @Html.Raw(servicefieldString1)
-
-                                                        <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
-                                                    </tr>
-
-                                                    _selectedServiceCount = 0;
-                                                    servicefieldString.Remove(0, servicefieldString.Length);
-                                                    servicefieldString1.Remove(0, servicefieldString1.Length);
-                                                }
-
-                                            }
-                                            else if (_selectedServiceCount == 2)
-                                            {
-                                                _selectedServiceCount++;
-
-                                                <tr style="page-break-inside:avoid;border:1px solid #000;">
-                                                    @Html.Raw(servicefieldString)
-
-
-                                                    @Html.Raw(servicefieldString1)
-
-                                                    <td width='25%' class='FieldNametd' style='vertical-align:top;'> <span>@obj.Service -</span><span class='fieldvalue'>Completed</span></td>
-                                                </tr>
-
-                                                Servicecount = 0;
-                                                servicefieldString.Remove(0, servicefieldString.Length);
-                                                servicefieldString1.Remove(0, servicefieldString1.Length);
-                                            }*/
-                                        }
-                                        tempServiceField.Append(strServices);
-                                        strServices = string.Empty;
-                                        <tr style="page-break-inside:avoid;border:1px solid #000;">
-                                            @Html.Raw(tempServiceField)
-                                            @if (_TotalServiceItemCount == 1)
-                                            {
-                                                <td width='25%' class='FieldNametd'>&nbsp;&nbsp;</td>
-                                                <td width='25%' class='FieldNametd'>&nbsp;&nbsp;</td>
-                                            }
-                                            @if (_TotalServiceItemCount == 2)
-                                            {
-                                                <td width='25%' class='FieldNametd'>&nbsp;&nbsp;</td>
-                                            }
-                                        </tr>
-                                        tempServiceField.Remove(0, tempServiceField.Length);
-                                    }
-
-                                }
-                                else if (item.FieldName.ToLower() == "ADDITIONAL SERVICES".ToLower())
-                                {
-
-                                    List<GarronT.CMS.Model.BO.ServicesModel> listService = new List<GarronT.CMS.Model.BO.ServicesModel>();
-                                    listService = new GarronT.CMS.Model.DAL.ReportDAL().getServicesWithImages(item.FieldValues, item.IDS, false);
-                                    if (listService != null && listService.Count > 0)
-                                    {
-                                        int _selectedServiceCount = 0;
-                                        System.Text.StringBuilder servicefieldString = new System.Text.StringBuilder();
-                                        System.Text.StringBuilder servicefieldString1 = new System.Text.StringBuilder();
-                                        int _TotalServiceItemCount = 0;
-
-                                        foreach (GarronT.CMS.Model.BO.ServicesModel obj in listService)
-                                        {
-                                            _TotalServiceItemCount++;
-
-                                            if (_selectedServiceCount == 0)
-                                            {
-
-                                                servicefieldString.Append("<td width='25%' class='FieldNametd' style='vertical-align:top;'> <span>" + obj.Service + " - </span><span class='fieldvalue'> Completed</span></td>");
-
-                                                _selectedServiceCount++;
-
-                                                if (listService.Count == _TotalServiceItemCount)
-                                                {
-                                                    <tr style="page-break-inside:avoid;border:1px solid #000;">
-                                                        @Html.Raw(servicefieldString)
-
-                                                        <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
-
-                                                        <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
-                                                    </tr>
-
-                                                    _selectedServiceCount = 0;
-                                                    servicefieldString.Remove(0, servicefieldString.Length);
-                                                }
-                                            }
-                                            else if (_selectedServiceCount == 1)
-                                            {
-
-                                                servicefieldString1.Append("<td width='25%' class='FieldNametd' style='vertical-align:top;'> <span>" + obj.Service + " - </span><span class='fieldvalue'> Completed</span></td>");
-
-                                                _selectedServiceCount++;
-
-                                                if (listService.Count == _TotalServiceItemCount)
-                                                {
-                                                    <tr style="page-break-inside:avoid;border:1px solid #000;">
-
-                                                        @Html.Raw(servicefieldString)
-
-
-                                                        @Html.Raw(servicefieldString1)
-
-                                                        <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
-                                                    </tr>
-
-                                                    _selectedServiceCount = 0;
-                                                    servicefieldString.Remove(0, servicefieldString.Length);
-                                                    servicefieldString1.Remove(0, servicefieldString1.Length);
-                                                }
-
-                                            }
-                                            else if (_selectedServiceCount == 2)
-                                            {
-                                                _selectedServiceCount++;
-
-                                                <tr style="page-break-inside:avoid;border:1px solid #000;">
-                                                    @Html.Raw(servicefieldString)
-
-                                                    @Html.Raw(servicefieldString1)
-
-                                                    <td width='25%' class='FieldNametd' style='vertical-align:top;'> <span>@obj.Service -</span><span class='fieldvalue'> Completed</span></td>
-                                                </tr>
-
-                                                Servicecount = 0;
-                                                servicefieldString.Remove(0, servicefieldString.Length);
-                                                servicefieldString1.Remove(0, servicefieldString1.Length);
-                                            }
-                                        }
-                                    }
 
                                 }
                                 else
                                 {
-                                    if (item.FieldName.ToLower() != "Meter Box Before Photo".ToLower() && item.FieldName.ToLower() != "Meter Box After Photo".ToLower())
+                                    @System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@sectionName.ToLower()));
+                                }
+                            </span>
+
+                            if (sectionName.ToLower() == "BOX and PIPE INFO".ToLower())
+                            {
+                                if (@ViewBag.ProjectId == 10075)
+                                {
+                                    otherfieldString.Append("<td width='25%' class='FieldNametd'><span>Meter Box Time</span>");
+
+                                    otherfieldString.Append("<br /><span class='fieldvalue'>" + @ViewBag.MeterAfterBeforeBoxDiffTime + "</span>");
+                                    otherfieldString.Append("</td>");
+                                    otherfieldcount++;
+                                }
+                            }
+
+
+                            <table border="0" style='font-family:calibri; border-radius:5px;margin:0 auto;width:96%;border-collapse:collapse;' cellpadding="0" cellspacing="0">
+
+
+                        @foreach (var item in item11)
+                        {
+                            _TotalItemCount++;
+
+                            if (item.FieldName.ToLower() == "services")
+                            {
+
+                                List<GarronT.CMS.Model.BO.ServicesModel> listService = new List<GarronT.CMS.Model.BO.ServicesModel>();
+
+                                listService = new GarronT.CMS.Model.DAL.ReportDAL().getServicesWithImages(item.FieldValues, item.IDS, false);
+
+                                if (listService != null && listService.Count > 0)
+                                {
+
+                                    int _selectedServiceCount = 0;
+                                    System.Text.StringBuilder servicefieldString = new System.Text.StringBuilder();
+                                    System.Text.StringBuilder servicefieldString1 = new System.Text.StringBuilder();
+                                    System.Text.StringBuilder tempServiceField = new System.Text.StringBuilder();
+                                    int _TotalServiceItemCount = 0;
+                                    string strServices = string.Empty;
+
+                                    foreach (GarronT.CMS.Model.BO.ServicesModel obj in listService)
                                     {
-                                        if (otherfieldcount == 0)
+                                        _TotalServiceItemCount++;
+
+                                        // Chnaged some code
+                                        //strServices += "<td width='25%' class='FieldNametd' style='vertical-align:top;'> <span>" + obj.Service + " - </span><span class='fieldvalue'> Completed</span></td>";
+                                        strServices += "<td width='25%' class='FieldNametd'><span>" + obj.Service + " - </span><span class='fieldvalue'> Completed</span></td>";
+                                        //strServices += "<td width='25%' class='FieldNametd'><span>" + obj.Service + "</span><br /><span class='fieldvalue'>Completed</span></td>";
+
+                                        if (_TotalServiceItemCount == 3)
                                         {
-                                            if (item.FieldName.ToLower() == "gps location" || item.FieldName.ToLower() == "LOCATION/GPS".ToLower())
+                                            tempServiceField.Append(strServices);
+                                            strServices = string.Empty;
+                                            <tr style="page-break-inside:avoid;border:1px solid #000;">
+                                                @Html.Raw(tempServiceField)
+                                            </tr>
+                                            tempServiceField.Remove(0, tempServiceField.Length);
+                                            _TotalServiceItemCount = 0;
+                                        }
+
+                                        /*if (_selectedServiceCount == 0)
+                                        {
+                                            servicefieldString.Append("<td width='25%' class='FieldNametd' style='vertical-align:top;'> <span>" + obj.Service + " - </span><span class='fieldvalue'> Completed</span></td>");
+
+                                            _selectedServiceCount++;
+
+                                            if (listService.Count == _TotalServiceItemCount)
                                             {
-                                                if (item.Fieldlatitude != "")
-                                                {
-                                                    var center = "center=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
-                                                    var lastlist = "&markers=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
-                                                    var center1 = item.Fieldlatitude + "," + item.Fieldlongitude;
+                                                <tr style="page-break-inside:avoid;border:1px solid #000;">
+                                                    @Html.Raw(servicefieldString)
+                                                    <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
+                                                    <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
+                                                </tr>
 
-                                                    var locationPath = new GarronT.CMS.Model.DAL.ReportDAL().getLocationImage(item.IDS);
-                                                    if (!string.IsNullOrEmpty(locationPath))
-                                                    {
-                                                        locationPath = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + locationPath.Replace(@"..\", "").Replace(@"~\", "");
-                                                    }
-                                                    else
-                                                    {
-                                                        locationPath = "";
-                                                    }
-                                                    var link = "https://maps.googleapis.com/maps/api/staticmap?" + center + "&zoom=15" + lastlist + "&size=1236x493&sensor=FALSE&visual_refresh=true";
-                                                    otherfieldString.Append("<td width='25%' class='FieldNametd'><span>" + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + " - </span>");
-                                                    otherfieldString.Append("<a href=\"https://maps.google.com/maps?q=" + @center1 + "\" target='_blank'>Map</a>");
-                                                    if (@item.isLaLongCaptureRequired == true && @item.Fieldlatitude != "")
-                                                    {
-                                                        otherfieldString.Append("<br />");
-                                                        //otherfieldString.Append("<img  src='" + @LatImagesrc + "' height='25' width='20' />");
-                                                        otherfieldString.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
-                                                    }
-                                                    if (@item.isTimeStampCaptureRequired == true && !string.IsNullOrEmpty(@item.captureTimeStamp))
-                                                    {
-                                                        otherfieldString.Append("<br />");
-                                                        //otherfieldString.Append("<span style='font-size:13px; ' class='fieldvalue datetimespan'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
-                                                        otherfieldString.Append("<span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy HH:mm") + "</span>");
-                                                    }
-                                                    otherfieldString.Append("</td>");
-                                                }
-
-
+                                                _selectedServiceCount = 0;
+                                                servicefieldString.Remove(0, servicefieldString.Length);
                                             }
-                                            else
+                                        }
+
+                                        else if (_selectedServiceCount == 1)
+                                        {
+
+                                            servicefieldString1.Append("<td width='25%' class='FieldNametd' style='vertical-align:top;'> <span>" + obj.Service + " - </span><span class='fieldvalue'> Completed</span></td>");
+
+                                            _selectedServiceCount++;
+
+                                            if (listService.Count == _TotalServiceItemCount)
                                             {
-                                                if (@item.strFilePath != null || item.strCloudUrl != null)
+                                                <tr style="page-break-inside:avoid;border:1px solid #000;">
+
+                                                    @Html.Raw(servicefieldString)
+
+
+                                                    @Html.Raw(servicefieldString1)
+
+                                                    <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
+                                                </tr>
+
+                                                _selectedServiceCount = 0;
+                                                servicefieldString.Remove(0, servicefieldString.Length);
+                                                servicefieldString1.Remove(0, servicefieldString1.Length);
+                                            }
+
+                                        }
+                                        else if (_selectedServiceCount == 2)
+                                        {
+                                            _selectedServiceCount++;
+
+                                            <tr style="page-break-inside:avoid;border:1px solid #000;">
+                                                @Html.Raw(servicefieldString)
+
+
+                                                @Html.Raw(servicefieldString1)
+
+                                                <td width='25%' class='FieldNametd' style='vertical-align:top;'> <span>@obj.Service -</span><span class='fieldvalue'>Completed</span></td>
+                                            </tr>
+
+                                            Servicecount = 0;
+                                            servicefieldString.Remove(0, servicefieldString.Length);
+                                            servicefieldString1.Remove(0, servicefieldString1.Length);
+                                        }*/
+                                    }
+                                    tempServiceField.Append(strServices);
+                                    strServices = string.Empty;
+                                    <tr style="page-break-inside:avoid;border:1px solid #000;">
+                                        @Html.Raw(tempServiceField)
+                                        @if (_TotalServiceItemCount == 1)
+                                        {
+                                            <td width='25%' class='FieldNametd'>&nbsp;&nbsp;</td>
+                                            <td width='25%' class='FieldNametd'>&nbsp;&nbsp;</td>
+                                        }
+                                        @if (_TotalServiceItemCount == 2)
+                                        {
+                                            <td width='25%' class='FieldNametd'>&nbsp;&nbsp;</td>
+                                        }
+                                    </tr>
+                                    tempServiceField.Remove(0, tempServiceField.Length);
+                                }
+
+                            }
+                            else if (item.FieldName.ToLower() == "ADDITIONAL SERVICES".ToLower())
+                            {
+
+                                List<GarronT.CMS.Model.BO.ServicesModel> listService = new List<GarronT.CMS.Model.BO.ServicesModel>();
+                                listService = new GarronT.CMS.Model.DAL.ReportDAL().getServicesWithImages(item.FieldValues, item.IDS, false);
+                                if (listService != null && listService.Count > 0)
+                                {
+                                    int _selectedServiceCount = 0;
+                                    System.Text.StringBuilder servicefieldString = new System.Text.StringBuilder();
+                                    System.Text.StringBuilder servicefieldString1 = new System.Text.StringBuilder();
+                                    int _TotalServiceItemCount = 0;
+
+                                    foreach (GarronT.CMS.Model.BO.ServicesModel obj in listService)
+                                    {
+                                        _TotalServiceItemCount++;
+
+                                        if (_selectedServiceCount == 0)
+                                        {
+
+                                            servicefieldString.Append("<td width='25%' class='FieldNametd' style='vertical-align:top;'> <span>" + obj.Service + " - </span><span class='fieldvalue'> Completed</span></td>");
+
+                                            _selectedServiceCount++;
+
+                                            if (listService.Count == _TotalServiceItemCount)
+                                            {
+                                                <tr style="page-break-inside:avoid;border:1px solid #000;">
+                                                    @Html.Raw(servicefieldString)
+
+                                                    <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
+
+                                                    <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
+                                                </tr>
+
+                                                _selectedServiceCount = 0;
+                                                servicefieldString.Remove(0, servicefieldString.Length);
+                                            }
+                                        }
+                                        else if (_selectedServiceCount == 1)
+                                        {
+
+                                            servicefieldString1.Append("<td width='25%' class='FieldNametd' style='vertical-align:top;'> <span>" + obj.Service + " - </span><span class='fieldvalue'> Completed</span></td>");
+
+                                            _selectedServiceCount++;
+
+                                            if (listService.Count == _TotalServiceItemCount)
+                                            {
+                                                <tr style="page-break-inside:avoid;border:1px solid #000;">
+
+                                                    @Html.Raw(servicefieldString)
+
+
+                                                    @Html.Raw(servicefieldString1)
+
+                                                    <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
+                                                </tr>
+
+                                                _selectedServiceCount = 0;
+                                                servicefieldString.Remove(0, servicefieldString.Length);
+                                                servicefieldString1.Remove(0, servicefieldString1.Length);
+                                            }
+
+                                        }
+                                        else if (_selectedServiceCount == 2)
+                                        {
+                                            _selectedServiceCount++;
+
+                                            <tr style="page-break-inside:avoid;border:1px solid #000;">
+                                                @Html.Raw(servicefieldString)
+
+                                                @Html.Raw(servicefieldString1)
+
+                                                <td width='25%' class='FieldNametd' style='vertical-align:top;'> <span>@obj.Service -</span><span class='fieldvalue'> Completed</span></td>
+                                            </tr>
+
+                                            Servicecount = 0;
+                                            servicefieldString.Remove(0, servicefieldString.Length);
+                                            servicefieldString1.Remove(0, servicefieldString1.Length);
+                                        }
+                                    }
+                                }
+
+                            }
+                            else
+                            {
+                                if (item.FieldName.ToLower() != "Meter Box Before Photo".ToLower() && item.FieldName.ToLower() != "Meter Box After Photo".ToLower())
+                                {
+                                    if (otherfieldcount == 0)
+                                    {
+                                        if (item.FieldName.ToLower() == "gps location" || item.FieldName.ToLower() == "LOCATION/GPS".ToLower())
+                                        {
+                                            if (item.Fieldlatitude != "")
+                                            {
+                                                var center = "center=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
+                                                var lastlist = "&markers=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
+                                                var center1 = item.Fieldlatitude + "," + item.Fieldlongitude;
+
+                                                var locationPath = new GarronT.CMS.Model.DAL.ReportDAL().getLocationImage(item.IDS);
+                                                if (!string.IsNullOrEmpty(locationPath))
                                                 {
-                                                    otherfieldcount--;
+                                                    locationPath = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + locationPath.Replace(@"..\", "").Replace(@"~\", "");
                                                 }
                                                 else
                                                 {
-                                                    otherfieldString.Append("<td width='25%' class='FieldNametd'><span>" + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + "</span>");
-                                                    //if (@item.FieldName.ToLower() == "work completed")
-                                                    //{
-                                                    //    otherfieldString.Append("<span class='fieldvalue'>" + (@item.FieldValues.ToLower() == "true" ? "Yes" : "No") + "</span>");
-                                                    //}
-                                                    //else
-                                                    //{
-                                                    otherfieldString.Append("<br /><span class='fieldvalue'>" + @item.FieldValues + "</span>");
-                                                    //}
-
-
-
-                                                    if (@item.isLaLongCaptureRequired == true && @item.Fieldlatitude != "")
-                                                    {
-                                                        var mapimageurl = @MapPinsrc + @mapPinsList.Where(a => a.FieldName == item.FieldName).Select(a => a.strImagePath).FirstOrDefault().ToString();
-                                                        otherfieldString.Append("<br />");
-                                                        otherfieldString.Append("<img src='" + @mapimageurl + "' height='25' width='20' />");
-
-
-
-
-
-                                                        //otherfieldString.Append("<img src='" + @LatImagesrc + "' height='25' width='20' />");
-                                                        //otherfieldString.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
-                                                        otherfieldString.Append("<span class='fieldvalue'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
-                                                    }
-                                                    if (@item.isTimeStampCaptureRequired == true && !string.IsNullOrEmpty(@item.captureTimeStamp))
-                                                    {
-                                                        otherfieldString.Append("<br />");
-                                                        //otherfieldString.Append("<span style='font-size:13px;' class='fieldvalue datetimespan'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
-                                                        otherfieldString.Append(" <span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy HH:mm") + "</span>");
-                                                    }
-
-                                                    otherfieldString.Append("</td>");
+                                                    locationPath = "";
                                                 }
-
-
-
+                                                var link = "https://maps.googleapis.com/maps/api/staticmap?" + center + "&zoom=15" + lastlist + "&size=1236x493&sensor=FALSE&visual_refresh=true";
+                                                otherfieldString.Append("<td width='25%' class='FieldNametd'><span>" + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + " - </span>");
+                                                otherfieldString.Append("<a href=\"https://maps.google.com/maps?q=" + @center1 + "\" target='_blank'>Map</a>");
+                                                if (@item.isLaLongCaptureRequired == true && @item.Fieldlatitude != "")
+                                                {
+                                                    otherfieldString.Append("<br />");
+                                                    //otherfieldString.Append("<img  src='" + @LatImagesrc + "' height='25' width='20' />");
+                                                    otherfieldString.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
+                                                }
+                                                if (@item.isTimeStampCaptureRequired == true && !string.IsNullOrEmpty(@item.captureTimeStamp))
+                                                {
+                                                    otherfieldString.Append("<br />");
+                                                    //otherfieldString.Append("<span style='font-size:13px; ' class='fieldvalue datetimespan'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
+                                                    otherfieldString.Append("<span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy HH:mm") + "</span>");
+                                                }
+                                                otherfieldString.Append("</td>");
                                             }
 
-                                            otherfieldcount++;
-                                            if (item11.ToList().Count == _TotalItemCount)
+
+                                        }
+                                        else
+                                        {
+                                            if (@item.strFilePath != null || item.strCloudUrl != null)
                                             {
-                                                if (otherfieldString.Length > 0)
+                                                otherfieldcount--;
+                                            }
+                                            else
+                                            {
+                                                otherfieldString.Append("<td width='25%' class='FieldNametd'><span>" + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + "</span>");
+                                                //if (@item.FieldName.ToLower() == "work completed")
+                                                //{
+                                                //    otherfieldString.Append("<span class='fieldvalue'>" + (@item.FieldValues.ToLower() == "true" ? "Yes" : "No") + "</span>");
+                                                //}
+                                                //else
+                                                //{
+                                                otherfieldString.Append("<br /><span class='fieldvalue'>" + @item.FieldValues + "</span>");
+                                                //}
+
+
+
+                                                if (@item.isLaLongCaptureRequired == true && @item.Fieldlatitude != "")
                                                 {
+                                                    var mapimageurl = @MapPinsrc + @mapPinsList.Where(a => a.FieldName == item.FieldName).Select(a => a.strImagePath).FirstOrDefault().ToString();
+                                                    otherfieldString.Append("<br />");
+                                                    otherfieldString.Append("<img src='" + @mapimageurl + "' height='25' width='20' />");
+                                                    //otherfieldString.Append("<img src='" + @LatImagesrc + "' height='25' width='20' />");
+                                                    //otherfieldString.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
+                                                    otherfieldString.Append("<span class='fieldvalue'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
+                                                }
+                                                if (@item.isTimeStampCaptureRequired == true && !string.IsNullOrEmpty(@item.captureTimeStamp))
+                                                {
+                                                    otherfieldString.Append("<br />");
+                                                    //otherfieldString.Append("<span style='font-size:13px;' class='fieldvalue datetimespan'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
+                                                    otherfieldString.Append(" <span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy HH:mm") + "</span>");
+                                                }
+
+                                                otherfieldString.Append("</td>");
+                                            }
+
+
+
+                                        }
+
+                                        otherfieldcount++;
+                                        if (item11.ToList().Count == _TotalItemCount)
+                                        {
+                                            if (otherfieldString.Length > 0)
+                                            {
                                                     <tr style="page-break-inside:avoid;border:1px solid #000;">
                                                         @if (otherfieldString.ToString() != "")
                                                         {
@@ -540,10 +535,6 @@
                                                         if (!string.IsNullOrEmpty(_path))
                                                         {
                                                             otherfieldString1.Append("<img src=" + @mapimageurl + " height='25' width='20' />");
-                                                            otherfieldString1.Append("<a href='" + @mapimageurl + "' target='_blank'>house photo click here </a>");
-
-
-
 
                                                             otherfieldString1.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
                                                         }
@@ -582,9 +573,6 @@
                                                         var mapimageurl = @MapPinsrc + @mapPinsList.Where(a => a.FieldName == item.FieldName).Select(a => a.strImagePath).FirstOrDefault().ToString();
                                                         otherfieldString1.Append("<br />");
                                                         otherfieldString1.Append("<img src='" + @mapimageurl + "' height='25' width='20' />");
-                                                        otherfieldString1.Append("<a href='" + @mapimageurl + "' target='_blank'>click here </a>");
-
-
                                                         //otherfieldString1.Append("<img src='" + @LatImagesrc + "' height='25' width='20' />");
                                                         //otherfieldString1.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
                                                         otherfieldString1.Append("<span class='fieldvalue'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
@@ -677,7 +665,6 @@
 
                                                                     var mapimageurl = MapPinsrc + _path;
                                                                     <img src='@mapimageurl' height='25' width='20' />
-
                                                                     //<img src='@LatImagesrc' height='25' width='20' />
                                                                     <span style='font-size:13px;' class='fieldvalue latlongspan'> @((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) , @((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) </span>
 
@@ -722,769 +709,284 @@
 
                                                                 <td width='25%' class='FieldNametd'>&nbsp;&nbsp;</td>
                                                             </tr>
+                                                            }
+                                                            otherfieldcount = 0;
+                                                            otherfieldString.Remove(0, otherfieldString.Length);
+                                                            otherfieldString1.Remove(0, otherfieldString1.Length);
                                                         }
+                                                    }
+                                                    else
+                                                    {
+                                                        if (otherfieldString.Length > 0)
+                                                        {
+                                                            @Html.Raw(otherfieldString);
+                                                        }
+                                                        else
+                                                        {
+                                                            <td width='25%' class='FieldNametd'>&nbsp;&nbsp;</td>
+                                                        }
+                                                        if (otherfieldString1.Length > 0)
+                                                        {
+                                                            @Html.Raw(otherfieldString1);
+                                                        }
+                                                        else
+                                                        {
+                                                            <td width='25%' class='FieldNametd'>&nbsp;&nbsp;</td>
+                                                        }
+                                                        //@Html.Raw(otherfieldString);
+                                                        //@Html.Raw(otherfieldString1);
+
+                                                        otherfieldString3.Append("<td width='25%' class='FieldNametd'>");
+                                                        otherfieldString3.Append("<span>" + @System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + "</span>");
+
+                                                        //if (@item.FieldName.ToLower() == "work completed")
+                                                        //{
+                                                        //    otherfieldString3.Append("<span class='fieldvalue'>" + (@item.FieldValues.ToLower() == "true" ? "Yes" : "No") + "</span>");
+                                                        //}
+                                                        //else
+                                                        //{
+                                                        otherfieldString3.Append("<br /><span class='fieldvalue'>" + @item.FieldValues + "</span>");
+                                                        //}
+
+                                                        if (@item.isLaLongCaptureRequired == true && @item.Fieldlatitude != "")
+                                                        {
+                                                            otherfieldString3.Append("<br />");
+                                                            var mapimageurl = @MapPinsrc + @mapPinsList.Where(a => a.FieldName == item.FieldName).Select(a => a.strImagePath).FirstOrDefault().ToString();
+                                                            otherfieldString3.Append("<img src='" + @mapimageurl + "' height='25' width='20' />");
+
+                                                            //otherfieldString3.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
+                                                            otherfieldString3.Append("<span class='fieldvalue'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
+                                                        }
+
+                                                        if (@item.isTimeStampCaptureRequired == true && !string.IsNullOrEmpty(@item.captureTimeStamp))
+                                                        {
+                                                            otherfieldString3.Append("<br />");
+                                                            //otherfieldString3.Append("<span style='font-size:13px;' class='fieldvalue datetimespan'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
+                                                            otherfieldString3.Append(" <span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy HH:mm") + "</span>");
+                                                        }
+                                                        otherfieldString3.Append("</td>");
+                                                        @Html.Raw(otherfieldString3)
+
                                                         otherfieldcount = 0;
                                                         otherfieldString.Remove(0, otherfieldString.Length);
                                                         otherfieldString1.Remove(0, otherfieldString1.Length);
                                                     }
                                                 }
-                                                else
-                                                {
-                                                    if (otherfieldString.Length > 0)
-                                                    {
-                                                        @Html.Raw(otherfieldString);
-                                                    }
-                                                    else
-                                                    {
-                                                        <td width='25%' class='FieldNametd'>&nbsp;&nbsp;</td>
-                                                    }
-                                                    if (otherfieldString1.Length > 0)
-                                                    {
-                                                        @Html.Raw(otherfieldString1);
-                                                    }
-                                                    else
-                                                    {
-                                                        <td width='25%' class='FieldNametd'>&nbsp;&nbsp;</td>
-                                                    }
-                                                    //@Html.Raw(otherfieldString);
-                                                    //@Html.Raw(otherfieldString1);
 
-                                                    otherfieldString3.Append("<td width='25%' class='FieldNametd'>");
-                                                    otherfieldString3.Append("<span>" + @System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + "</span>");
-
-                                                    //if (@item.FieldName.ToLower() == "work completed")
-                                                    //{
-                                                    //    otherfieldString3.Append("<span class='fieldvalue'>" + (@item.FieldValues.ToLower() == "true" ? "Yes" : "No") + "</span>");
-                                                    //}
-                                                    //else
-                                                    //{
-                                                    otherfieldString3.Append("<br /><span class='fieldvalue'>" + @item.FieldValues + "</span>");
-                                                    //}
-
-                                                    if (@item.isLaLongCaptureRequired == true && @item.Fieldlatitude != "")
-                                                    {
-                                                        otherfieldString3.Append("<br />");
-                                                        var mapimageurl = @MapPinsrc + @mapPinsList.Where(a => a.FieldName == item.FieldName).Select(a => a.strImagePath).FirstOrDefault().ToString();
-                                                        otherfieldString3.Append("<img src='" + @mapimageurl + "' height='25' width='20' />");
-
-
-
-
-                                                        //otherfieldString3.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
-                                                        otherfieldString3.Append("<span class='fieldvalue'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
-                                                    }
-
-                                                    if (@item.isTimeStampCaptureRequired == true && !string.IsNullOrEmpty(@item.captureTimeStamp))
-                                                    {
-                                                        otherfieldString3.Append("<br />");
-                                                        //otherfieldString3.Append("<span style='font-size:13px;' class='fieldvalue datetimespan'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
-                                                        otherfieldString3.Append(" <span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy HH:mm") + "</span>");
-                                                    }
-                                                    otherfieldString3.Append("</td>");
-                                                    @Html.Raw(otherfieldString3)
-
-                                                    otherfieldcount = 0;
-                                                    otherfieldString.Remove(0, otherfieldString.Length);
-                                                    otherfieldString1.Remove(0, otherfieldString1.Length);
-                                                }
-                                            }
-
-                                                </tr>
-                                            }
+                                             </tr>
                                         }
                                     }
                                 }
+                            }
 
-                        </table>
-                    }
+                            </table>
+                        }
 
-                    <span class="sectionname">All Images</span>
-                    @{
+                        <span class="sectionname">All Images</span>
+                        @{
 
-                        var nbOfItems = listitem.SelectMany(x => x).Count();
-                        _TotalItemCount = 0;
-                    }
+                            var nbOfItems = listitem.SelectMany(x => x).Count();
+                            _TotalItemCount = 0;
+                        }
 
-                    @foreach (var item11 in listitem)
-                    {
+                        @foreach (var item11 in listitem)
+                        {
 
-                        string sectionName = @item11.Select(o => o.sectionName).FirstOrDefault();
-                        var Fieldsinsection = @item11.Select(o => o.FieldName).ToList();
+                            string sectionName = @item11.Select(o => o.sectionName).FirstOrDefault();
+                            var Fieldsinsection = @item11.Select(o => o.FieldName).ToList();
 
 
 
-                        <table border="0" style='font-family:calibri; border-radius:5px;margin:0 auto;width:96%;border-collapse:collapse;' cellpadding="0" cellspacing="0">
-                            @foreach (var item in item11)
-                            {
-                                _TotalItemCount++;
-
-                                if (item.FieldName.ToLower() == "services")
+                            <table border="0" style='font-family:calibri; border-radius:5px;margin:0 auto;width:96%;border-collapse:collapse;' cellpadding="0" cellspacing="0">
+                                @foreach (var item in item11)
                                 {
+                                    _TotalItemCount++;
 
-                                    List<GarronT.CMS.Model.BO.ServicesModel> listService = new List<GarronT.CMS.Model.BO.ServicesModel>();
-
-                                    listService = new GarronT.CMS.Model.DAL.ReportDAL().getServicesWithImages(item.FieldValues, item.IDS, false);
-
-                                    if (listService != null && listService.Count > 0)
+                                    if (item.FieldName.ToLower() == "services")
                                     {
 
-                                        int _selectedServiceCount = 0;
-                                        foreach (GarronT.CMS.Model.BO.ServicesModel obj in listService)
+                                        List<GarronT.CMS.Model.BO.ServicesModel> listService = new List<GarronT.CMS.Model.BO.ServicesModel>();
+
+                                        listService = new GarronT.CMS.Model.DAL.ReportDAL().getServicesWithImages(item.FieldValues, item.IDS, false);
+
+                                        if (listService != null && listService.Count > 0)
                                         {
-                                            _selectedServiceCount++;
 
-                                            if (obj.lisServiceAttachment != null && obj.lisServiceAttachment.Count > 0)
+                                            int _selectedServiceCount = 0;
+                                            foreach (GarronT.CMS.Model.BO.ServicesModel obj in listService)
                                             {
-                                                <tr style="page-break-inside:avoid;border:1px solid #000;">
-                                                    <td class='FieldNametd' style='vertical-align:top;' colspan="3">
-                                                        <span>@obj.Service</span>
-                                                    </td>
-                                                </tr>
-                                                <tr style="page-break-inside:avoid;border:1px solid #000;">
-                                                    <td class='FieldNametd' style='vertical-align:top;' colspan="3">
-                                                        @foreach (GarronT.CMS.Model.BO.ServiceAttachmentModel objServiceAttachment in obj.lisServiceAttachment)
-                                                        {
-                                                            if (objServiceAttachment.IsAudioVideoImage == 3)
-                                                            {
-                                                                String fileName = String.Empty;
-                                                                if (objServiceAttachment.strCloudUrl != null && objServiceAttachment.strCloudUrl != "")
-                                                                {
-                                                                    fileName = objServiceAttachment.strCloudUrl;  // Cloud file url
-                                                                }
-                                                                else
-                                                                {
-                                                                    fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
-                                                                }
-                                                                <img src='@fileName' class="img-width-ser" />
+                                                _selectedServiceCount++;
 
-                                                            }
-                                                            else if (objServiceAttachment.IsAudioVideoImage == 2)
+                                                if (obj.lisServiceAttachment != null && obj.lisServiceAttachment.Count > 0)
+                                                {
+                                                    <tr style="page-break-inside:avoid;border:1px solid #000;">
+                                                        <td class='FieldNametd' style='vertical-align:top;' colspan="3">
+                                                            <span>@obj.Service</span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr style="page-break-inside:avoid;border:1px solid #000;">
+                                                        <td class='FieldNametd' style='vertical-align:top;' colspan="3">
+                                                            @foreach (GarronT.CMS.Model.BO.ServiceAttachmentModel objServiceAttachment in obj.lisServiceAttachment)
                                                             {
-                                                                String fileName = String.Empty;
-                                                                if (objServiceAttachment.strCloudUrl != null && objServiceAttachment.strCloudUrl != "")
+                                                                if (objServiceAttachment.IsAudioVideoImage == 3)
                                                                 {
-                                                                    fileName = objServiceAttachment.strCloudUrl;
+                                                                    String fileName = String.Empty;
+                                                                    if (objServiceAttachment.strCloudUrl != null && objServiceAttachment.strCloudUrl != "")
+                                                                    {
+                                                                        fileName = objServiceAttachment.strCloudUrl;  // Cloud file url
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+                                                                    }
+                                                                    <img src='@fileName' class="img-width-ser" />
                                                                 }
-                                                                else
+                                                                else if (objServiceAttachment.IsAudioVideoImage == 2)
                                                                 {
-                                                                    fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+                                                                    String fileName = String.Empty;
+                                                                    if (objServiceAttachment.strCloudUrl != null && objServiceAttachment.strCloudUrl != "")
+                                                                    {
+                                                                        fileName = objServiceAttachment.strCloudUrl;
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+                                                                    }
+                                                                    <a target="_new" href="@fileName" class="btn btn-link">Video</a>
                                                                 }
-                                                                <a target="_new" href="@fileName" class="btn btn-link">Video</a>
+                                                                else if (objServiceAttachment.IsAudioVideoImage == 1)
+                                                                {
+                                                                    String fileName = String.Empty;
+                                                                    if (objServiceAttachment.strCloudUrl != null && objServiceAttachment.strCloudUrl != "")
+                                                                    {
+                                                                        fileName = objServiceAttachment.strCloudUrl;
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+                                                                    }
+                                                                    <audio controls style="width: 220px;">
+                                                                        <source src="@fileName" type="audio/mp4">
+                                                                        Your browser does not support the audio tag.
+                                                                    </audio>
+                                                                }
                                                             }
-                                                            else if (objServiceAttachment.IsAudioVideoImage == 1)
+                                                            @if (@item.Fieldlatitude != "")
                                                             {
-                                                                String fileName = String.Empty;
-                                                                if (objServiceAttachment.strCloudUrl != null && objServiceAttachment.strCloudUrl != "")
+                                                                <br />
+                                                                var _path = mapPinsList.Where(a => a.FieldName == item.FieldName).Select(a => a.strImagePath).FirstOrDefault();
+                                                                if (!string.IsNullOrEmpty(_path))
                                                                 {
-                                                                    fileName = objServiceAttachment.strCloudUrl;
+                                                                    var mapimageurl = MapPinsrc + _path.ToString();
+                                                                    <img src='@mapimageurl' height='25' width='20' />
+                                                                    <span style='font-size:13px;'> @item.Fieldlatitude , @item.Fieldlongitude </span>
                                                                 }
-                                                                else
-                                                                {
-                                                                    fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
-                                                                }
-                                                                <audio controls style="width: 220px;">
-                                                                    <source src="@fileName" type="audio/mp4">
-                                                                    Your browser does not support the audio tag.
-                                                                </audio>
                                                             }
-                                                        }
-                                                        @if (@item.Fieldlatitude != "")
-                                                        {
-                                                            <br />
-                                                            var _path = mapPinsList.Where(a => a.FieldName == item.FieldName).Select(a => a.strImagePath).FirstOrDefault();
-                                                            if (!string.IsNullOrEmpty(_path))
+                                                        </td>
+                                                    </tr>
+                                                }
+                                                Servicecount = 0;
+                                                serviceString.Remove(0, serviceString.Length);
+
+                                            }
+                                        }
+
+                                    }
+                                    else if (item.FieldName.ToLower() == "ADDITIONAL SERVICES".ToLower())
+                                    {
+
+                                        List<GarronT.CMS.Model.BO.ServicesModel> listService = new List<GarronT.CMS.Model.BO.ServicesModel>();
+                                        //get the list of services along with images
+                                        listService = new GarronT.CMS.Model.DAL.ReportDAL().getServicesWithImages(item.FieldValues, item.IDS, false);
+                                        if (listService != null && listService.Count > 0)
+                                        {
+                                            int _selectedServiceCount = 0;
+                                            foreach (GarronT.CMS.Model.BO.ServicesModel obj in listService)
+                                            {
+                                                _selectedServiceCount++;
+                                                if (obj.lisServiceAttachment != null && obj.lisServiceAttachment.Count > 0)
+                                                {
+                                                    <tr style="page-break-inside:avoid;border:1px solid #000;">
+                                                        <td class='FieldNametd' style='vertical-align:top;' colspan="3">
+                                                            <span>@obj.Service</span>
+                                                        </td>
+                                                    </tr>
+
+                                                    <tr style="page-break-inside:avoid;border:1px solid #000;">
+                                                        <td class='FieldNametd' style='vertical-align:top;' colspan="3">
+                                                            @foreach (GarronT.CMS.Model.BO.ServiceAttachmentModel objServiceAttachment in obj.lisServiceAttachment)
                                                             {
-                                                                var mapimageurl = MapPinsrc + _path.ToString();
+                                                                if (objServiceAttachment.IsAudioVideoImage == 3)
+                                                                {
+                                                                    String aditionalFileName = String.Empty;
+                                                                    if (objServiceAttachment.strCloudUrl != null && objServiceAttachment.strCloudUrl != "")
+                                                                    {
+                                                                        aditionalFileName = objServiceAttachment.strCloudUrl;
+                                                                    }
+                                                                    else
+                                                                    {
+
+                                                                        aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+                                                                    }
+                                                                    <img src='@aditionalFileName' class="img-width-ser" />
+                                                                }
+                                                                else if (objServiceAttachment.IsAudioVideoImage == 2)
+                                                                {
+                                                                    String fileName = String.Empty;
+                                                                    if (objServiceAttachment.strCloudUrl != null && objServiceAttachment.strCloudUrl != "")
+                                                                    {
+                                                                        fileName = objServiceAttachment.strCloudUrl;
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+                                                                    }
+                                                                    <a target="_new" href="@fileName" class="btn btn-link">Video</a>
+                                                                }
+                                                                else if (objServiceAttachment.IsAudioVideoImage == 1)
+                                                                {
+                                                                    String fileName = String.Empty;
+                                                                    if (objServiceAttachment.strCloudUrl != null && objServiceAttachment.strCloudUrl != "")
+                                                                    {
+                                                                        fileName = objServiceAttachment.strCloudUrl;
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+                                                                    }
+                                                                    <audio controls style="width: 220px;">
+                                                                        <source src="@fileName" type="audio/mp4">
+                                                                        Your browser does not support the audio tag.
+                                                                    </audio>
+                                                                }
+                                                            }
+                                                            @if (@item.Fieldlatitude != "")
+                                                            {
+                                                                <br />
+                                                                var mapimageurl = MapPinsrc + mapPinsList.Where(a => a.FieldName == item.FieldName).Select(a => a.strImagePath).FirstOrDefault().ToString();
                                                                 <img src='@mapimageurl' height='25' width='20' />
-
-
                                                                 <span style='font-size:13px;'> @item.Fieldlatitude , @item.Fieldlongitude </span>
                                                             }
-                                                        }
-                                                    </td>
-                                                </tr>
-                                            }
-                                            Servicecount = 0;
-                                            serviceString.Remove(0, serviceString.Length);
+                                                        </td>
 
-                                        }
-                                    }
-
-                                }
-                                else if (item.FieldName.ToLower() == "ADDITIONAL SERVICES".ToLower())
-                                {
-
-                                    List<GarronT.CMS.Model.BO.ServicesModel> listService = new List<GarronT.CMS.Model.BO.ServicesModel>();
-                                    //get the list of services along with images
-                                    listService = new GarronT.CMS.Model.DAL.ReportDAL().getServicesWithImages(item.FieldValues, item.IDS, false);
-                                    if (listService != null && listService.Count > 0)
-                                    {
-                                        int _selectedServiceCount = 0;
-                                        foreach (GarronT.CMS.Model.BO.ServicesModel obj in listService)
-                                        {
-                                            _selectedServiceCount++;
-                                            if (obj.lisServiceAttachment != null && obj.lisServiceAttachment.Count > 0)
-                                            {
-                                                <tr style="page-break-inside:avoid;border:1px solid #000;">
-                                                    <td class='FieldNametd' style='vertical-align:top;' colspan="3">
-                                                        <span>@obj.Service</span>
-                                                    </td>
-                                                </tr>
-
-                                                <tr style="page-break-inside:avoid;border:1px solid #000;">
-                                                    <td class='FieldNametd' style='vertical-align:top;' colspan="3">
-                                                        @foreach (GarronT.CMS.Model.BO.ServiceAttachmentModel objServiceAttachment in obj.lisServiceAttachment)
-                                                        {
-                                                            if (objServiceAttachment.IsAudioVideoImage == 3)
-                                                            {
-                                                                String aditionalFileName = String.Empty;
-                                                                if (objServiceAttachment.strCloudUrl != null && objServiceAttachment.strCloudUrl != "")
-                                                                {
-                                                                    aditionalFileName = objServiceAttachment.strCloudUrl;
-                                                                }
-                                                                else
-                                                                {
-
-                                                                    aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
-                                                                }
-                                                                <img src='@aditionalFileName' class="img-width-ser" />
-
-
-                                                            }
-                                                            else if (objServiceAttachment.IsAudioVideoImage == 2)
-                                                            {
-                                                                String fileName = String.Empty;
-                                                                if (objServiceAttachment.strCloudUrl != null && objServiceAttachment.strCloudUrl != "")
-                                                                {
-                                                                    fileName = objServiceAttachment.strCloudUrl;
-                                                                }
-                                                                else
-                                                                {
-                                                                    fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
-                                                                }
-                                                                <a target="_new" href="@fileName" class="btn btn-link">Video</a>
-                                                            }
-                                                            else if (objServiceAttachment.IsAudioVideoImage == 1)
-                                                            {
-                                                                String fileName = String.Empty;
-                                                                if (objServiceAttachment.strCloudUrl != null && objServiceAttachment.strCloudUrl != "")
-                                                                {
-                                                                    fileName = objServiceAttachment.strCloudUrl;
-                                                                }
-                                                                else
-                                                                {
-                                                                    fileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objServiceAttachment.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
-                                                                }
-                                                                <audio controls style="width: 220px;">
-                                                                    <source src="@fileName" type="audio/mp4">
-                                                                    Your browser does not support the audio tag.
-                                                                </audio>
-                                                            }
-                                                        }
-                                                        @if (@item.Fieldlatitude != "")
-                                                        {
-                                                            <br />
-                                                            var mapimageurl = MapPinsrc + mapPinsList.Where(a => a.FieldName == item.FieldName).Select(a => a.strImagePath).FirstOrDefault().ToString();
-                                                            <img src='@mapimageurl' height='25' width='20' />
-
-
-                                                            <span style='font-size:13px;'> @item.Fieldlatitude , @item.Fieldlongitude </span>
-                                                        }
-                                                    </td>
-
-                                                </tr>
-                                            }
-                                            AdditionalServicecount = 0;
-                                            AdditionalServiceString.Remove(0, AdditionalServiceString.Length);
-                                        }
-                                    }
-
-                                }
-                                else
-                                {
-                                    if (otherfieldcount == 0)
-                                    {
-                                        if (item.FieldName.ToLower() == "gps location" || item.FieldName.ToLower() == "LOCATION/GPS".ToLower())
-                                        {
-                                            if (item.Fieldlatitude != "")
-                                            {
-                                                var center = "center=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
-                                                var lastlist = "&markers=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
-                                                var center1 = item.Fieldlatitude + "," + item.Fieldlongitude;
-                                                string imgPath = string.Empty;
-                                                var locationPath = new GarronT.CMS.Model.DAL.ReportDAL().getLocationImage(item.IDS);
-                                                var locationCloudUrl = new GarronT.CMS.Model.DAL.ReportDAL().getLocationImageInCloud(item.IDS);
-                                                if (!string.IsNullOrEmpty(locationCloudUrl))
-                                                {
-                                                    imgPath = locationCloudUrl;
+                                                    </tr>
                                                 }
-                                                else if (!string.IsNullOrEmpty(locationPath))
-                                                {
-                                                    imgPath = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + locationPath.Replace(@"..\", "").Replace(@"~\", "");
-                                                }
-                                                else
-                                                {
-                                                    imgPath = "";
-                                                }
-                                                var link = "https://maps.googleapis.com/maps/api/staticmap?" + center + "&zoom=15" + lastlist + "&size=1236x493&sensor=FALSE&visual_refresh=true";
-                                                otherfieldString.Append("<td width='25%' class='FieldNametd' style='text-align:center'>");
-                                                //otherfieldString.Append("<td width='25%' class='FieldValuestd'>");
-
-                                                // otherfieldString.Append(" <img src='" + @imgPath + "' class='img-width' /><br />"); //Location/GPS
-                                                otherfieldString.Append("<a href='" + @imgPath + "' target='_blank'>Click Here</a>");// Location/GPS
-                                                otherfieldString.Append("<br>");
-
-                                                otherfieldString.Append("<span>" + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + "</span></td>");
-
+                                                AdditionalServicecount = 0;
+                                                AdditionalServiceString.Remove(0, AdditionalServiceString.Length);
                                             }
                                         }
-                                        else
-                                        {
-                                            if (@item.strFilePath != null || item.strCloudUrl != null)
-                                            {
-                                                otherfieldString.Append("<td width='25%' class='FieldNametd' style='text-align:center'>");
-                                                //otherfieldString.Append("<td width='25%' class='FieldValuestd'>");
-
-                                                otherfieldString.Append("<span>");
-                                                if (item.strCloudUrl != null && item.strCloudUrl != "")
-                                                {
-                                                    string[] strPathList = item.strCloudUrl.Split(',');
-                                                    foreach (var strPath in strPathList)
-                                                    {
-                                                        var strpatharr = strPath.Split(';');
-                                                        if (strpatharr.Length > 1 && strpatharr != null)
-                                                        {
-                                                            var isimageaudiovideo = strpatharr[0];
-
-                                                            String strFilePath = strpatharr[1].ToString();
-
-                                                            if (isimageaudiovideo == "3")
-                                                            {
-                                                                String aditionalFileName = strFilePath;
-                                                                //otherfieldString.Append("<img src='" + @aditionalFileName + "' class='img-width' />");// images of final Read Photo
-                                                                otherfieldString.Append("<br />");
-                                                                otherfieldString.Append("<a href='" + @aditionalFileName + "' target='_blank'>Click Here </a>");// final Read Photo
-
-
-                                                            }
-                                                        }
-
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    string[] strPathList = item.strFilePath.Split(',');
-                                                    foreach (var strPath in strPathList)
-                                                    {
-                                                        var strpatharr = strPath.Split(';');
-                                                        if (strpatharr.Length > 1 && strpatharr != null)
-                                                        {
-                                                            var isimageaudiovideo = strpatharr[0];
-
-                                                            var strFilePath = strpatharr[1];
-
-                                                            if (isimageaudiovideo == "3")
-                                                            {
-                                                                String aditionalFileName = String.Empty;
-                                                                aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + strFilePath.Replace(@"..\", "").Replace(@"~\", "");
-                                                                otherfieldString.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
-                                                                otherfieldString.Append("<br />");
-                                                            }
-                                                        }
-
-                                                    }
-                                                }
-                                                otherfieldString.Append("</span>");
-                                                if (@item.isLaLongCaptureRequired == true && @item.Fieldlatitude != "")
-                                                {
-                                                    var mapimageurl = @MapPinsrc + @mapPinsList.Where(a => a.FieldName == item.FieldName).Select(a => a.strImagePath).FirstOrDefault().ToString();
-                                                    otherfieldString.Append("<br />");
-                                                    otherfieldString.Append("<img src='" + @mapimageurl + "' height='25' width='20' />");
-
-                                                    //otherfieldString.Append("<img src='" + @LatImagesrc + "' height='25' width='20' />");
-                                                    otherfieldString.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
-                                                }
-
-                                                otherfieldString.Append("<br />");
-                                                otherfieldString.Append("<span>" + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + "</span>");
-
-                                                if (@item.isTimeStampCaptureRequired == true && !string.IsNullOrEmpty(@item.captureTimeStamp))
-                                                {
-                                                    otherfieldString.Append("<br />");
-                                                    //otherfieldString.Append("<span style='font-size:13px;' class='fieldvalue datetimespan'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
-                                                    otherfieldString.Append("<span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy HH:mm") + "</span>");
-                                                }
-                                                otherfieldString.Append("</td>");
-
-                                            }
-                                            else
-                                            {
-                                                otherfieldcount--;
-                                            }
-                                        }
-
-                                        otherfieldcount++;
-                                        if (nbOfItems == _TotalItemCount)
-                                        {
-                                            if (!string.IsNullOrEmpty(otherfieldString.ToString()))
-                                            {
-                                                <tr style="page-break-inside:avoid;border:1px solid #000;">
-                                                    @if (otherfieldString.ToString() != "")
-                                                    {
-                                                        @Html.Raw(otherfieldString)
-                                                    }
-                                                    else
-                                                    {
-                                                        <td width='25%' class='FieldNametd'>&nbsp;&nbsp;</td>
-                                                    }
-
-                                                    <td width='25%' class='FieldNametd'>&nbsp;&nbsp;</td>
-
-                                                    <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
-                                                </tr>
-                                            }
-                                            otherfieldcount = 0;
-                                            otherfieldString.Remove(0, otherfieldString.Length);
-                                        }
-
 
                                     }
-                                    else if (otherfieldcount == 1)
+                                    else
                                     {
-
-                                        if (item.FieldName.ToLower() == "gps location" || item.FieldName.ToLower() == "LOCATION/GPS".ToLower())
+                                        if (otherfieldcount == 0)
                                         {
-                                            if (item.Fieldlatitude != "")
+                                            if (item.FieldName.ToLower() == "gps location" || item.FieldName.ToLower() == "LOCATION/GPS".ToLower())
                                             {
-                                                var center = "center=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
-                                                var lastlist = "&markers=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
-                                                var center1 = item.Fieldlatitude + "," + item.Fieldlongitude;
-                                                string imgPath = string.Empty;
-                                                var locationPath = new GarronT.CMS.Model.DAL.ReportDAL().getLocationImage(item.IDS);
-                                                var locationCloudUrl = new GarronT.CMS.Model.DAL.ReportDAL().getLocationImageInCloud(item.IDS);
-                                                if (!string.IsNullOrEmpty(locationCloudUrl))
-                                                {
-                                                    imgPath = locationCloudUrl;
-                                                }
-                                                else if (!string.IsNullOrEmpty(locationPath))
-                                                {
-                                                    imgPath = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + locationPath.Replace(@"..\", "").Replace(@"~\", "");
-                                                }
-                                                else
-                                                {
-                                                    imgPath = "";
-                                                }
-                                                var link = "https://maps.googleapis.com/maps/api/staticmap?" + center + "&zoom=15" + lastlist + "&size=1236x493&sensor=FALSE&visual_refresh=true";
-                                                otherfieldString1.Append("<td width='25%' class='FieldNametd' style='text-align:center'>");
-                                                //otherfieldString1.Append("<td width='25%' class='FieldValuestd'>");
-
-
-                                                otherfieldString1.Append(" <img src='" + @imgPath + "' class='img-width' /><br />");
-                                                otherfieldString1.Append("<span>" + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + "</span></td>");
-
-                                            }
-
-                                        }
-                                        else
-                                        {
-                                            if (@item.strFilePath != null || item.strCloudUrl != null)
-                                            {
-                                                otherfieldString1.Append("<td width='25%' class='FieldNametd' style='text-align:center'>");
-
-                                                otherfieldString1.Append("<span>");
-
-                                                if (item.strCloudUrl != null && item.strCloudUrl != "")
-                                                {
-                                                    string[] strPathList = item.strCloudUrl.Split(',');
-                                                    foreach (var strPath in strPathList)
-                                                    {
-                                                        var strpatharr = strPath.Split(';');
-                                                        if (strpatharr.Length > 1 && strpatharr != null)
-                                                        {
-                                                            var isimageaudiovideo = strpatharr[0];
-                                                            var strFilePath = strpatharr[1];
-                                                            if (isimageaudiovideo == "3")
-                                                            {
-                                                                String aditionalFileName = strFilePath;
-                                                                //otherfieldString1.Append("<img src='" + @aditionalFileName + "' class='img-width' />"); //Old Meter And Radio Photo
-                                                                otherfieldString1.Append("<br />");
-                                                                otherfieldString1.Append("<a href='" + @aditionalFileName + "' target='_blank'>Click here</a>"); // Old Meter And Radio Photo
-
-                                                            }
-                                                        }
-
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    string[] strPathList = item.strFilePath.Split(',');
-                                                    foreach (var strPath in strPathList)
-                                                    {
-                                                        var strpatharr = strPath.Split(';');
-                                                        if (strpatharr.Length > 1 && strpatharr != null)
-                                                        {
-                                                            var isimageaudiovideo = strpatharr[0];
-                                                            var strFilePath = strpatharr[1];
-                                                            if (isimageaudiovideo == "3")
-                                                            {
-                                                                String aditionalFileName = String.Empty;
-                                                                aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + strFilePath.Replace(@"..\", "").Replace(@"~\", "");
-
-                                                                otherfieldString1.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
-                                                                otherfieldString1.Append("<br />");
-
-
-                                                            }
-                                                        }
-
-                                                    }
-                                                }
-                                                otherfieldString1.Append("</span>");
-                                                if (@item.isLaLongCaptureRequired == true && @item.Fieldlatitude != "")
-                                                {
-                                                    var mapimageurl = @MapPinsrc + @mapPinsList.Where(a => a.FieldName == item.FieldName).Select(a => a.strImagePath).FirstOrDefault().ToString();
-                                                    otherfieldString1.Append("<br />");
-                                                    otherfieldString1.Append("<img src='" + @mapimageurl + "' height='25' width='20' />");
-
-                                                    //otherfieldString.Append("<img src='" + @LatImagesrc + "' height='25' width='20' />");
-                                                    otherfieldString1.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
-                                                }
-
-                                                otherfieldString1.Append("<br />");
-                                                otherfieldString1.Append("<span>" + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + "</span>");
-
-                                                if (@item.isTimeStampCaptureRequired == true && !string.IsNullOrEmpty(@item.captureTimeStamp))
-                                                {
-                                                    otherfieldString1.Append("<br />");
-                                                    //otherfieldString1.Append("<span style='font-size:13px;' class='fieldvalue datetimespan'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
-                                                    otherfieldString1.Append("<span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy HH:mm") + "</span>");
-                                                }
-                                                otherfieldString1.Append("</td>");
-
-                                            }
-                                            else
-                                            {
-                                                otherfieldcount--;
-                                            }
-                                        }
-
-                                        otherfieldcount++;
-                                        if (nbOfItems == _TotalItemCount)
-                                        {
-                                            <tr style="page-break-inside:avoid;border:1px solid #000;">
-                                                @if (otherfieldString.ToString() != "")
-                                                {
-                                                    @Html.Raw(otherfieldString)
-                                                }
-                                                else
-                                                {
-                                                    <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
-                                                }
-
-                                                @if (otherfieldString1.ToString() != "")
-                                                {
-                                                    @Html.Raw(otherfieldString1)
-                                                }
-                                                else
-                                                {
-                                                    <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
-                                                }
-
-                                                <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
-                                            </tr>
-
-                                            otherfieldcount = 0;
-                                            otherfieldString.Remove(0, otherfieldString.Length);
-                                            otherfieldString1.Remove(0, otherfieldString1.Length);
-                                        }
-                                    }
-
-                                    else if (otherfieldcount == 2)
-                                    {
-
-                                        if (item.FieldName.ToLower() == "gps location" || item.FieldName.ToLower() == "LOCATION/GPS".ToLower())
-                                        {
-                                            if (item.Fieldlatitude != "")
-                                            {
-                                                var center = "center=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
-                                                var lastlist = "&markers=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
-                                                var center1 = item.Fieldlatitude + "," + item.Fieldlongitude;
-                                                string imgPath = string.Empty;
-                                                var locationPath = new GarronT.CMS.Model.DAL.ReportDAL().getLocationImage(item.IDS);
-                                                var locationCloudUrl = new GarronT.CMS.Model.DAL.ReportDAL().getLocationImageInCloud(item.IDS);
-                                                if (!string.IsNullOrEmpty(locationCloudUrl))
-                                                {
-                                                    imgPath = locationCloudUrl;
-                                                }
-                                                else if (!string.IsNullOrEmpty(locationPath))
-                                                {
-                                                    imgPath = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + locationPath.Replace(@"..\", "").Replace(@"~\", "");
-                                                }
-                                                else
-                                                {
-                                                    imgPath = "";
-                                                }
-                                                var link = "https://maps.googleapis.com/maps/api/staticmap?" + center + "&zoom=15" + lastlist + "&size=1236x493&sensor=FALSE&visual_refresh=true";
-                                                otherfieldString2.Append("<td width='25%' class='FieldNametd' style='text-align:center'>");
-                                                //otherfieldString2.Append("<td width='25%' class='FieldValuestd'>");
-
-                                                otherfieldString2.Append("</br>");
-                                                //otherfieldString2.Append(" <img src='" + @imgPath + "' class='img-width' /><br />"); // tnmp project map image
-                                                otherfieldString2.Append("<a href='" + @imgPath + "' target='_blank'>Click Here</a>");// tnmp project map image
-                                                otherfieldString2.Append("</br>");
-                                                otherfieldString2.Append("<span>" + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + "</span></td>");
-
-                                            }
-
-                                        }
-                                        else
-                                        {
-                                            if (@item.strFilePath != null || item.strCloudUrl != null)
-                                            {
-                                                otherfieldString2.Append("<td width='25%' class='FieldNametd' style='text-align:center'>");
-
-                                                otherfieldString2.Append("<span>");
-                                                if (item.strCloudUrl != null && item.strCloudUrl != "")
-                                                {
-                                                    string[] strPathList = item.strCloudUrl.Split(',');
-                                                    foreach (var strPath in strPathList)
-                                                    {
-                                                        var strpatharr = strPath.Split(';');
-                                                        if (strpatharr.Length > 1 && strpatharr != null)
-                                                        {
-                                                            var isimageaudiovideo = strpatharr[0];
-
-                                                            String strFilePath = strpatharr[1].ToString();
-
-                                                            if (isimageaudiovideo == "3")
-                                                            {
-                                                                // otherfieldString2.Append("<img src='" + @strFilePath + "' class='img-width' />"); // using for house photo
-                                                                otherfieldString2.Append("<br />");
-                                                                otherfieldString2.Append("<a href='" + @strFilePath + "' target='_blank'>Click Here </a>"); // using for house photo
-
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    string[] strPathList = item.strFilePath.Split(',');
-                                                    foreach (var strPath in strPathList)
-                                                    {
-                                                        var strpatharr = strPath.Split(';');
-                                                        if (strpatharr.Length > 1 && strpatharr != null)
-                                                        {
-                                                            var isimageaudiovideo = strpatharr[0];
-
-                                                            var strFilePath = strpatharr[1];
-
-                                                            if (isimageaudiovideo == "3")
-                                                            {
-                                                                String aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + strFilePath.Replace(@"..\", "").Replace(@"~\", "");
-                                                                otherfieldString2.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
-                                                                otherfieldString2.Append("<br />");
-
-
-
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                                otherfieldString2.Append("</span>");
-                                                if (@item.isLaLongCaptureRequired == true && @item.Fieldlatitude != "")
-                                                {
-                                                    var mapimageurl = @MapPinsrc + @mapPinsList.Where(a => a.FieldName == item.FieldName).Select(a => a.strImagePath).FirstOrDefault().ToString();
-                                                    otherfieldString2.Append("<br />");
-                                                    otherfieldString2.Append("<img src='" + @mapimageurl + "' height='25' width='20' />");
-
-
-
-
-                                                    //otherfieldString2.Append("<img src='" + @LatImagesrc + "' height='25' width='20' />");
-                                                    otherfieldString2.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
-
-                                                }
-
-                                                otherfieldString2.Append("<br />");
-                                                otherfieldString2.Append("<span>" + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + "</span>");
-
-                                                if (@item.isTimeStampCaptureRequired == true && !string.IsNullOrEmpty(@item.captureTimeStamp))
-                                                {
-                                                    otherfieldString2.Append("<br />");
-                                                    //otherfieldString2.Append("<span style='font-size:13px;' class='fieldvalue datetimespan'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
-                                                    otherfieldString2.Append("<span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy HH:mm") + "</span>");
-                                                }
-                                                otherfieldString2.Append("</td>");
-
-                                            }
-                                            else
-                                            {
-                                                otherfieldcount--;
-                                            }
-                                        }
-
-                                        otherfieldcount++;
-                                        if (nbOfItems == _TotalItemCount)
-                                        {
-                                            <tr style="page-break-inside:avoid;border:1px solid #000;">
-                                                @if (otherfieldString.ToString() != "")
-                                                {
-                                                    @Html.Raw(otherfieldString)
-                                                }
-                                                else
-                                                {
-                                                    <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
-                                                }
-
-                                                @if (otherfieldString1.ToString() != "")
-                                                {
-                                                    @Html.Raw(otherfieldString1)
-                                                }
-                                                else
-                                                {
-                                                    <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
-                                                }
-                                                @if (otherfieldString2.ToString() != "")
-                                                {
-                                                    @Html.Raw(otherfieldString2)
-                                                }
-                                                else
-                                                {
-                                                    <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
-                                                }
-
-
-                                                <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
-                                            </tr>
-
-                                            otherfieldcount = 0;
-                                            otherfieldString.Remove(0, otherfieldString.Length);
-                                            otherfieldString1.Remove(0, otherfieldString1.Length);
-                                            otherfieldString2.Remove(0, otherfieldString2.Length);
-                                        }
-                                    }
-
-                                    else if (otherfieldcount == 3)
-                                    {
-                                        System.Text.StringBuilder otherfieldString3 = new System.Text.StringBuilder();
-                                        <tr style="page-break-inside:avoid;border:1px solid #000;">
-
-
-                                            @if (item.FieldName.ToLower() == "gps location" || item.FieldName.ToLower() == "LOCATION/GPS".ToLower())
-                                            {
-
-                                                @Html.Raw(otherfieldString)
-
-                                                @Html.Raw(otherfieldString1)
-                                                @Html.Raw(otherfieldString2)
-
-                                                if (@item.Fieldlatitude != "")
+                                                if (item.Fieldlatitude != "")
                                                 {
                                                     var center = "center=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
                                                     var lastlist = "&markers=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
-
-                                                    var demo = "https://maps.googleapis.com/maps/api/staticmap?key=" + Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["googleapiKey"]) + center + " &zoom=13&size=200x200&maptype=roadmap" + lastlist + "&sensor=false";
-                                                    var link = "https://maps.googleapis.com/maps/api/staticmap?" + center + "&zoom=15" + lastlist + "&size=1236x493&sensor=FALSE&visual_refresh=true";
                                                     var center1 = item.Fieldlatitude + "," + item.Fieldlongitude;
                                                     string imgPath = string.Empty;
                                                     var locationPath = new GarronT.CMS.Model.DAL.ReportDAL().getLocationImage(item.IDS);
@@ -1501,40 +1003,48 @@
                                                     {
                                                         imgPath = "";
                                                     }
+                                                    var link = "https://maps.googleapis.com/maps/api/staticmap?" + center + "&zoom=15" + lastlist + "&size=1236x493&sensor=FALSE&visual_refresh=true";
+                                                    otherfieldString.Append("<td width='25%' class='FieldNametd' style='text-align:center'>");
+                                                    //otherfieldString.Append("<td width='25%' class='FieldValuestd'>");
 
-                                                    <td width='25%' class='FieldNametd' style='text-align:center'>
-
-                                                        <img src='@imgPath' style="width:80%;height:10em;" class='img-width' /><br />
-
-
-
-                                                        <span>@System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower()))</span>
-
-                                                    </td>
+                                                    otherfieldString.Append(" <img src='" + @imgPath + "' class='img-width' /><br />");
+                                                    otherfieldString.Append("<span>" + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + "</span></td>");
 
                                                 }
-                                                otherfieldcount = 0;
-                                                otherfieldString.Remove(0, otherfieldString.Length);
-                                                otherfieldString1.Remove(0, otherfieldString1.Length);
-                                                otherfieldString2.Remove(0, otherfieldString2.Length);
-                                                otherfieldString3.Remove(0, otherfieldString3.Length);
                                             }
                                             else
                                             {
-
                                                 if (@item.strFilePath != null || item.strCloudUrl != null)
                                                 {
-                                                    @Html.Raw(otherfieldString)
+                                                    otherfieldString.Append("<td width='25%' class='FieldNametd' style='text-align:center'>");
+                                                    //otherfieldString.Append("<td width='25%' class='FieldValuestd'>");
 
-                                                    @Html.Raw(otherfieldString1)
-                                                    @Html.Raw(otherfieldString2)
-
-                                                    otherfieldString3.Append("<td width='25%' class='FieldNametd' style='text-align:center'>");
-
-                                                    otherfieldString3.Append("<span>");
+                                                    otherfieldString.Append("<span>");
                                                     if (item.strCloudUrl != null && item.strCloudUrl != "")
                                                     {
                                                         string[] strPathList = item.strCloudUrl.Split(',');
+                                                        foreach (var strPath in strPathList)
+                                                        {
+                                                            var strpatharr = strPath.Split(';');
+                                                            if (strpatharr.Length > 1 && strpatharr != null)
+                                                            {
+                                                                var isimageaudiovideo = strpatharr[0];
+
+                                                                String strFilePath = strpatharr[1].ToString();
+
+                                                                if (isimageaudiovideo == "3")
+                                                                {
+                                                                    String aditionalFileName = strFilePath;
+                                                                    otherfieldString.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
+                                                                    otherfieldString.Append("<br />");
+                                                                }
+                                                            }
+
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        string[] strPathList = item.strFilePath.Split(',');
                                                         foreach (var strPath in strPathList)
                                                         {
                                                             var strpatharr = strPath.Split(';');
@@ -1546,14 +1056,273 @@
 
                                                                 if (isimageaudiovideo == "3")
                                                                 {
-                                                                    String aditionalFileName = strFilePath.ToString();
+                                                                    String aditionalFileName = String.Empty;
+                                                                    aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+                                                                    otherfieldString.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
+                                                                    otherfieldString.Append("<br />");
+                                                                }
+                                                            }
 
-                                                                    //otherfieldString3.Append("<img src='" + @aditionalFileName + "' class='img-width' />"); // final install photo
-                                                                    otherfieldString3.Append("<br />");
-                                                                    otherfieldString3.Append("<a href='" + @aditionalFileName + "' target='_blank'>Click Here </a>");// final install photo
+                                                        }
+                                                    }
+                                                    otherfieldString.Append("</span>");
+                                                    if (@item.isLaLongCaptureRequired == true && @item.Fieldlatitude != "")
+                                                    {
+                                                        var mapimageurl = @MapPinsrc + @mapPinsList.Where(a => a.FieldName == item.FieldName).Select(a => a.strImagePath).FirstOrDefault().ToString();
+                                                        otherfieldString.Append("<br />");
+                                                        otherfieldString.Append("<img src='" + @mapimageurl + "' height='25' width='20' />");
+                                                        //otherfieldString.Append("<img src='" + @LatImagesrc + "' height='25' width='20' />");
+                                                        otherfieldString.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
+                                                    }
+
+                                                    otherfieldString.Append("<br />");
+                                                    otherfieldString.Append("<span>" + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + "</span>");
+
+                                                    if (@item.isTimeStampCaptureRequired == true && !string.IsNullOrEmpty(@item.captureTimeStamp))
+                                                    {
+                                                        otherfieldString.Append("<br />");
+                                                        //otherfieldString.Append("<span style='font-size:13px;' class='fieldvalue datetimespan'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
+                                                        otherfieldString.Append("<span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy HH:mm") + "</span>");
+                                                    }
+                                                    otherfieldString.Append("</td>");
+
+                                                }
+                                                else
+                                                {
+                                                    otherfieldcount--;
+                                                }
+                                            }
+
+                                            otherfieldcount++;
+                                            if (nbOfItems == _TotalItemCount)
+                                            {
+                                                if (!string.IsNullOrEmpty(otherfieldString.ToString()))
+                                                {
+                                                    <tr style="page-break-inside:avoid;border:1px solid #000;">
+                                                        @if (otherfieldString.ToString() != "")
+                                                        {
+                                                            @Html.Raw(otherfieldString)
+                                                        }
+                                                        else
+                                                        {
+                                                            <td width='25%' class='FieldNametd'>&nbsp;&nbsp;</td>
+                                                        }
+
+                                                        <td width='25%' class='FieldNametd'>&nbsp;&nbsp;</td>
+
+                                                        <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
+                                                    </tr>
+                                                }
+                                                otherfieldcount = 0;
+                                                otherfieldString.Remove(0, otherfieldString.Length);
+                                            }
 
 
+                                        }
+                                        else if (otherfieldcount == 1)
+                                        {
 
+                                            if (item.FieldName.ToLower() == "gps location" || item.FieldName.ToLower() == "LOCATION/GPS".ToLower())
+                                            {
+                                                if (item.Fieldlatitude != "")
+                                                {
+                                                    var center = "center=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
+                                                    var lastlist = "&markers=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
+                                                    var center1 = item.Fieldlatitude + "," + item.Fieldlongitude;
+                                                    string imgPath = string.Empty;
+                                                    var locationPath = new GarronT.CMS.Model.DAL.ReportDAL().getLocationImage(item.IDS);
+                                                    var locationCloudUrl = new GarronT.CMS.Model.DAL.ReportDAL().getLocationImageInCloud(item.IDS);
+                                                    if (!string.IsNullOrEmpty(locationCloudUrl))
+                                                    {
+                                                        imgPath = locationCloudUrl;
+                                                    }
+                                                    else if (!string.IsNullOrEmpty(locationPath))
+                                                    {
+                                                        imgPath = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + locationPath.Replace(@"..\", "").Replace(@"~\", "");
+                                                    }
+                                                    else
+                                                    {
+                                                        imgPath = "";
+                                                    }
+                                                    var link = "https://maps.googleapis.com/maps/api/staticmap?" + center + "&zoom=15" + lastlist + "&size=1236x493&sensor=FALSE&visual_refresh=true";
+                                                    otherfieldString1.Append("<td width='25%' class='FieldNametd' style='text-align:center'>");
+                                                    //otherfieldString1.Append("<td width='25%' class='FieldValuestd'>");
+
+
+                                                    otherfieldString1.Append(" <img src='" + @imgPath + "' class='img-width' /><br />");
+                                                    otherfieldString1.Append("<span>" + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + "</span></td>");
+
+                                                }
+
+                                            }
+                                            else
+                                            {
+                                                if (@item.strFilePath != null || item.strCloudUrl != null)
+                                                {
+                                                    otherfieldString1.Append("<td width='25%' class='FieldNametd' style='text-align:center'>");
+
+                                                    otherfieldString1.Append("<span>");
+
+                                                    if (item.strCloudUrl != null && item.strCloudUrl != "")
+                                                    {
+                                                        string[] strPathList = item.strCloudUrl.Split(',');
+                                                        foreach (var strPath in strPathList)
+                                                        {
+                                                            var strpatharr = strPath.Split(';');
+                                                            if (strpatharr.Length > 1 && strpatharr != null)
+                                                            {
+                                                                var isimageaudiovideo = strpatharr[0];
+                                                                var strFilePath = strpatharr[1];
+                                                                if (isimageaudiovideo == "3")
+                                                                {
+                                                                    String aditionalFileName = strFilePath;
+                                                                    otherfieldString1.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
+                                                                    otherfieldString1.Append("<br />");
+                                                                }
+                                                            }
+
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        string[] strPathList = item.strFilePath.Split(',');
+                                                        foreach (var strPath in strPathList)
+                                                        {
+                                                            var strpatharr = strPath.Split(';');
+                                                            if (strpatharr.Length > 1 && strpatharr != null)
+                                                            {
+                                                                var isimageaudiovideo = strpatharr[0];
+                                                                var strFilePath = strpatharr[1];
+                                                                if (isimageaudiovideo == "3")
+                                                                {
+                                                                    String aditionalFileName = String.Empty;
+                                                                    aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+
+                                                                    otherfieldString1.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
+                                                                    otherfieldString1.Append("<br />");
+                                                                }
+                                                            }
+
+                                                        }
+                                                    }
+                                                    otherfieldString1.Append("</span>");
+                                                    if (@item.isLaLongCaptureRequired == true && @item.Fieldlatitude != "")
+                                                    {
+                                                        var mapimageurl = @MapPinsrc + @mapPinsList.Where(a => a.FieldName == item.FieldName).Select(a => a.strImagePath).FirstOrDefault().ToString();
+                                                        otherfieldString1.Append("<br />");
+                                                        otherfieldString1.Append("<img src='" + @mapimageurl + "' height='25' width='20' />");
+                                                        //otherfieldString.Append("<img src='" + @LatImagesrc + "' height='25' width='20' />");
+                                                        otherfieldString1.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
+                                                    }
+
+                                                    otherfieldString1.Append("<br />");
+                                                    otherfieldString1.Append("<span>" + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + "</span>");
+
+                                                    if (@item.isTimeStampCaptureRequired == true && !string.IsNullOrEmpty(@item.captureTimeStamp))
+                                                    {
+                                                        otherfieldString1.Append("<br />");
+                                                        //otherfieldString1.Append("<span style='font-size:13px;' class='fieldvalue datetimespan'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
+                                                        otherfieldString1.Append("<span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy HH:mm") + "</span>");
+                                                    }
+                                                    otherfieldString1.Append("</td>");
+
+                                                }
+                                                else
+                                                {
+                                                    otherfieldcount--;
+                                                }
+                                            }
+
+                                            otherfieldcount++;
+                                            if (nbOfItems == _TotalItemCount)
+                                            {
+                                                <tr style="page-break-inside:avoid;border:1px solid #000;">
+                                                    @if (otherfieldString.ToString() != "")
+                                                    {
+                                                        @Html.Raw(otherfieldString)
+                                                    }
+                                                    else
+                                                    {
+                                                        <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
+                                                    }
+
+                                                    @if (otherfieldString1.ToString() != "")
+                                                    {
+                                                        @Html.Raw(otherfieldString1)
+                                                    }
+                                                    else
+                                                    {
+                                                        <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
+                                                    }
+
+                                                    <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
+                                                </tr>
+
+                                                otherfieldcount = 0;
+                                                otherfieldString.Remove(0, otherfieldString.Length);
+                                                otherfieldString1.Remove(0, otherfieldString1.Length);
+                                            }
+                                        }
+
+                                        else if (otherfieldcount == 2)
+                                        {
+
+                                            if (item.FieldName.ToLower() == "gps location" || item.FieldName.ToLower() == "LOCATION/GPS".ToLower())
+                                            {
+                                                if (item.Fieldlatitude != "")
+                                                {
+                                                    var center = "center=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
+                                                    var lastlist = "&markers=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
+                                                    var center1 = item.Fieldlatitude + "," + item.Fieldlongitude;
+                                                    string imgPath = string.Empty;
+                                                    var locationPath = new GarronT.CMS.Model.DAL.ReportDAL().getLocationImage(item.IDS);
+                                                    var locationCloudUrl = new GarronT.CMS.Model.DAL.ReportDAL().getLocationImageInCloud(item.IDS);
+                                                    if (!string.IsNullOrEmpty(locationCloudUrl))
+                                                    {
+                                                        imgPath = locationCloudUrl;
+                                                    }
+                                                    else if (!string.IsNullOrEmpty(locationPath))
+                                                    {
+                                                        imgPath = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + locationPath.Replace(@"..\", "").Replace(@"~\", "");
+                                                    }
+                                                    else
+                                                    {
+                                                        imgPath = "";
+                                                    }
+                                                    var link = "https://maps.googleapis.com/maps/api/staticmap?" + center + "&zoom=15" + lastlist + "&size=1236x493&sensor=FALSE&visual_refresh=true";
+                                                    otherfieldString2.Append("<td width='25%' class='FieldNametd' style='text-align:center'>");
+                                                    //otherfieldString2.Append("<td width='25%' class='FieldValuestd'>");
+
+
+                                                    otherfieldString2.Append(" <img src='" + @imgPath + "' class='img-width' /><br />");
+                                                    otherfieldString2.Append("<span>" + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + "</span></td>");
+
+                                                }
+
+                                            }
+                                            else
+                                            {
+                                                if (@item.strFilePath != null || item.strCloudUrl != null)
+                                                {
+                                                    otherfieldString2.Append("<td width='25%' class='FieldNametd' style='text-align:center'>");
+
+                                                    otherfieldString2.Append("<span>");
+                                                    if (item.strCloudUrl != null && item.strCloudUrl != "")
+                                                    {
+                                                        string[] strPathList = item.strCloudUrl.Split(',');
+                                                        foreach (var strPath in strPathList)
+                                                        {
+                                                            var strpatharr = strPath.Split(';');
+                                                            if (strpatharr.Length > 1 && strpatharr != null)
+                                                            {
+                                                                var isimageaudiovideo = strpatharr[0];
+
+                                                                String strFilePath = strpatharr[1].ToString();
+
+                                                                if (isimageaudiovideo == "3")
+                                                                {
+                                                                    otherfieldString2.Append("<img src='" + @strFilePath + "' class='img-width' />");
+                                                                    otherfieldString2.Append("<br />");
                                                                 }
                                                             }
                                                         }
@@ -1573,47 +1342,127 @@
                                                                 if (isimageaudiovideo == "3")
                                                                 {
                                                                     String aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + strFilePath.Replace(@"..\", "").Replace(@"~\", "");
-
-                                                                    otherfieldString3.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
-
-                                                                    otherfieldString3.Append("<br />");
-
-
-
-
+                                                                    otherfieldString2.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
+                                                                    otherfieldString2.Append("<br />");
                                                                 }
                                                             }
-
                                                         }
                                                     }
-                                                    otherfieldString3.Append("</span>");
-
+                                                    otherfieldString2.Append("</span>");
                                                     if (@item.isLaLongCaptureRequired == true && @item.Fieldlatitude != "")
                                                     {
-                                                        otherfieldString3.Append("<br />");
                                                         var mapimageurl = @MapPinsrc + @mapPinsList.Where(a => a.FieldName == item.FieldName).Select(a => a.strImagePath).FirstOrDefault().ToString();
-                                                        otherfieldString3.Append("<img src='" + @mapimageurl + "' height='25' width='20' />");
-
-
-
-
-                                                        otherfieldString3.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
+                                                        otherfieldString2.Append("<br />");
+                                                        otherfieldString2.Append("<img src='" + @mapimageurl + "' height='25' width='20' />");
+                                                        //otherfieldString2.Append("<img src='" + @LatImagesrc + "' height='25' width='20' />");
+                                                        otherfieldString2.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
                                                     }
 
-                                                    otherfieldString3.Append("<br />");
-                                                    otherfieldString3.Append("<span>" + @System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + "</span>");
+                                                    otherfieldString2.Append("<br />");
+                                                    otherfieldString2.Append("<span>" + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + "</span>");
 
                                                     if (@item.isTimeStampCaptureRequired == true && !string.IsNullOrEmpty(@item.captureTimeStamp))
                                                     {
-                                                        otherfieldString3.Append("<br />");
-                                                        //otherfieldString3.Append("<span style='font-size:13px;' class='fieldvalue datetimespan'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
-                                                        otherfieldString3.Append("<span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy HH:mm") + "</span>");
+                                                        otherfieldString2.Append("<br />");
+                                                        //otherfieldString2.Append("<span style='font-size:13px;' class='fieldvalue datetimespan'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
+                                                        otherfieldString2.Append("<span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy HH:mm") + "</span>");
+                                                    }
+                                                    otherfieldString2.Append("</td>");
+
+                                                }
+                                                else
+                                                {
+                                                    otherfieldcount--;
+                                                }
+                                            }
+
+                                            otherfieldcount++;
+                                            if (nbOfItems == _TotalItemCount)
+                                            {
+                                                <tr style="page-break-inside:avoid;border:1px solid #000;">
+                                                    @if (otherfieldString.ToString() != "")
+                                                    {
+                                                        @Html.Raw(otherfieldString)
+                                                    }
+                                                    else
+                                                    {
+                                                        <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
                                                     }
 
-                                                    otherfieldString3.Append("</td>");
+                                                    @if (otherfieldString1.ToString() != "")
+                                                    {
+                                                        @Html.Raw(otherfieldString1)
+                                                    }
+                                                    else
+                                                    {
+                                                        <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
+                                                    }
+                                                    @if (otherfieldString2.ToString() != "")
+                                                    {
+                                                        @Html.Raw(otherfieldString2)
+                                                    }
+                                                    else
+                                                    {
+                                                        <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
+                                                    }
 
-                                                    @Html.Raw(otherfieldString3)
 
+                                                    <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
+                                                </tr>
+
+                                                    otherfieldcount = 0;
+                                                    otherfieldString.Remove(0, otherfieldString.Length);
+                                                    otherfieldString1.Remove(0, otherfieldString1.Length);
+                                                    otherfieldString2.Remove(0, otherfieldString2.Length);
+                                            }
+                                        }
+
+                                        else if (otherfieldcount == 3)
+                                        {
+                                            System.Text.StringBuilder otherfieldString3 = new System.Text.StringBuilder();
+                                            <tr style="page-break-inside:avoid;border:1px solid #000;">
+
+
+                                                @if (item.FieldName.ToLower() == "gps location" || item.FieldName.ToLower() == "LOCATION/GPS".ToLower())
+                                                {
+
+                                                    @Html.Raw(otherfieldString)
+
+                                                    @Html.Raw(otherfieldString1)
+                                                    @Html.Raw(otherfieldString2)
+
+                                                    if (@item.Fieldlatitude != "")
+                                                    {
+                                                        var center = "center=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
+                                                        var lastlist = "&markers=" + item.Fieldlatitude + "," + item.Fieldlongitude + "";
+
+                                                        var demo = "https://maps.googleapis.com/maps/api/staticmap?key=" + Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["googleapiKey"]) + center + " &zoom=13&size=200x200&maptype=roadmap" + lastlist + "&sensor=false";
+                                                        var link = "https://maps.googleapis.com/maps/api/staticmap?" + center + "&zoom=15" + lastlist + "&size=1236x493&sensor=FALSE&visual_refresh=true";
+                                                        var center1 = item.Fieldlatitude + "," + item.Fieldlongitude;
+                                                        string imgPath = string.Empty;
+                                                        var locationPath = new GarronT.CMS.Model.DAL.ReportDAL().getLocationImage(item.IDS);
+                                                        var locationCloudUrl = new GarronT.CMS.Model.DAL.ReportDAL().getLocationImageInCloud(item.IDS);
+                                                        if (!string.IsNullOrEmpty(locationCloudUrl))
+                                                        {
+                                                            imgPath = locationCloudUrl;
+                                                        }
+                                                        else if (!string.IsNullOrEmpty(locationPath))
+                                                        {
+                                                            imgPath = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + locationPath.Replace(@"..\", "").Replace(@"~\", "");
+                                                        }
+                                                        else
+                                                        {
+                                                            imgPath = "";
+                                                        }
+
+                                                        <td width='25%' class='FieldNametd' style='text-align:center'>
+
+                                                            <img src='@imgPath' style="width:80%;height:10em;" class='img-width' /><br />
+                                                            <span>@System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower()))</span>
+
+                                                        </td>
+
+                                                    }
                                                     otherfieldcount = 0;
                                                     otherfieldString.Remove(0, otherfieldString.Length);
                                                     otherfieldString1.Remove(0, otherfieldString1.Length);
@@ -1622,91 +1471,179 @@
                                                 }
                                                 else
                                                 {
-                                                    otherfieldcount--;
 
-
-                                                    otherfieldcount++;
-                                                    if (nbOfItems == _TotalItemCount)
+                                                    if (@item.strFilePath != null  || item.strCloudUrl != null)
                                                     {
+                                                        @Html.Raw(otherfieldString)
 
-                                                        if (otherfieldString.ToString() != "")
+                                                        @Html.Raw(otherfieldString1)
+                                                        @Html.Raw(otherfieldString2)
+
+                                                        otherfieldString3.Append("<td width='25%' class='FieldNametd' style='text-align:center'>");
+
+                                                        otherfieldString3.Append("<span>");
+                                                        if (item.strCloudUrl != null && item.strCloudUrl != "")
                                                         {
-                                                            @Html.Raw(otherfieldString)
+                                                            string[] strPathList = item.strCloudUrl.Split(',');
+                                                            foreach (var strPath in strPathList)
+                                                            {
+                                                                var strpatharr = strPath.Split(';');
+                                                                if (strpatharr.Length > 1 && strpatharr != null)
+                                                                {
+                                                                    var isimageaudiovideo = strpatharr[0];
+
+                                                                    var strFilePath = strpatharr[1];
+
+                                                                    if (isimageaudiovideo == "3")
+                                                                    {
+                                                                        String aditionalFileName = strFilePath.ToString();
+
+                                                                        otherfieldString3.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
+                                                                        otherfieldString3.Append("<br />");
+                                                                    }
+                                                                }
+                                                            }
                                                         }
                                                         else
                                                         {
+                                                            string[] strPathList = item.strFilePath.Split(',');
+                                                            foreach (var strPath in strPathList)
+                                                            {
+                                                                var strpatharr = strPath.Split(';');
+                                                                if (strpatharr.Length > 1 && strpatharr != null)
+                                                                {
+                                                                    var isimageaudiovideo = strpatharr[0];
+
+                                                                    var strFilePath = strpatharr[1];
+
+                                                                    if (isimageaudiovideo == "3")
+                                                                    {
+                                                                        String aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+
+                                                                        otherfieldString3.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
+                                                                        otherfieldString3.Append("<br />");
+                                                                    }
+                                                                }
+
+                                                            }
+                                                        }
+                                                        otherfieldString3.Append("</span>");
+
+                                                        if (@item.isLaLongCaptureRequired == true && @item.Fieldlatitude != "")
+                                                        {
+                                                            otherfieldString3.Append("<br />");
+                                                            var mapimageurl = @MapPinsrc + @mapPinsList.Where(a => a.FieldName == item.FieldName).Select(a => a.strImagePath).FirstOrDefault().ToString();
+                                                            otherfieldString3.Append("<img src='" + @mapimageurl + "' height='25' width='20' />");
+
+                                                            otherfieldString3.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
+                                                        }
+
+                                                        otherfieldString3.Append("<br />");
+                                                        otherfieldString3.Append("<span>" + @System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + "</span>");
+
+                                                        if (@item.isTimeStampCaptureRequired == true && !string.IsNullOrEmpty(@item.captureTimeStamp))
+                                                        {
+                                                            otherfieldString3.Append("<br />");
+                                                            //otherfieldString3.Append("<span style='font-size:13px;' class='fieldvalue datetimespan'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy hh:mm tt") + "</span>");
+                                                            otherfieldString3.Append("<span class='fieldvalue'>" + DateTime.Parse(item.captureTimeStamp.ToString()).ToString("MMM-dd-yyyy HH:mm") + "</span>");
+                                                        }
+
+                                                        otherfieldString3.Append("</td>");
+
+                                                        @Html.Raw(otherfieldString3)
+
+                                                        otherfieldcount = 0;
+                                                        otherfieldString.Remove(0, otherfieldString.Length);
+                                                        otherfieldString1.Remove(0, otherfieldString1.Length);
+                                                        otherfieldString2.Remove(0, otherfieldString2.Length);
+                                                        otherfieldString3.Remove(0, otherfieldString3.Length);
+                                                    }
+                                                    else
+                                                    {
+                                                        otherfieldcount--;
+
+
+                                                        otherfieldcount++;
+                                                        if (nbOfItems == _TotalItemCount)
+                                                        {
+
+                                                            if (otherfieldString.ToString() != "")
+                                                            {
+                                                                @Html.Raw(otherfieldString)
+                                                            }
+                                                            else
+                                                            {
+                                                                <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
+                                                            }
+
+                                                            if (otherfieldString1.ToString() != "")
+                                                            {
+                                                                @Html.Raw(otherfieldString1)
+                                                            }
+                                                            else
+                                                            {
+                                                                <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
+                                                            }
+                                                            if (otherfieldString2.ToString() != "")
+                                                            {
+                                                                @Html.Raw(otherfieldString2)
+                                                            }
+                                                            else
+                                                            {
+                                                                <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
+                                                            }
+
+
                                                             <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
-                                                        }
 
-                                                        if (otherfieldString1.ToString() != "")
-                                                        {
-                                                            @Html.Raw(otherfieldString1)
                                                         }
-                                                        else
-                                                        {
-                                                            <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
-                                                        }
-                                                        if (otherfieldString2.ToString() != "")
-                                                        {
-                                                            @Html.Raw(otherfieldString2)
-                                                        }
-                                                        else
-                                                        {
-                                                            <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
-                                                        }
-
-
-                                                        <td width='25%' class='FieldValuestd'>&nbsp;&nbsp;</td>
-
                                                     }
                                                 }
-                                            }
-                                        </tr>
+                                            </tr>
+                                        }
                                     }
                                 }
-                            }
 
-                        </table>
-                    }
-                    @{
+                            </table>
+                        }
+                        @{
 
-                        if (showMap)
-                        {
-                            var MultipleMapPinsPath = "";
-                            var allmapPin = new GarronT.CMS.Model.DAL.ReportDAL().getMultipleMapPins(@ViewBag.UploadID, @ViewBag.FormID);
-                            var allcloudmapPin = new GarronT.CMS.Model.DAL.ReportDAL().getMultipleCloudMapPins(@ViewBag.UploadID, @ViewBag.FormID);
-                            if (!string.IsNullOrEmpty(allcloudmapPin))
+                            if (showMap)
                             {
-                                MultipleMapPinsPath = allcloudmapPin;
-                            }
-                            else if (!string.IsNullOrEmpty(allmapPin))
-                            {
-                                MultipleMapPinsPath = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + allmapPin.Replace(@"..\", "").Replace(@"~\", "");
-                            }
-                            else
-                            {
-                                MultipleMapPinsPath = "";
-                            }
-                            if (!string.IsNullOrEmpty(allmapPin))
-                            {
-                                <span class="sectionname">Map</span>
-                                <table border="0" style='font-family:calibri; border-radius:5px;margin-left:34px;width:90%;border-collapse:collapse;' cellpadding="0" cellspacing="0">
-                                    <tr style="page-break-inside:avoid;border:1px solid #000;">
+                                var MultipleMapPinsPath = "";
+                                var allmapPin = new GarronT.CMS.Model.DAL.ReportDAL().getMultipleMapPins(@ViewBag.UploadID, @ViewBag.FormID);
+                                var allcloudmapPin = new GarronT.CMS.Model.DAL.ReportDAL().getMultipleCloudMapPins(@ViewBag.UploadID, @ViewBag.FormID);
+                                if (!string.IsNullOrEmpty(allcloudmapPin))
+                                {
+                                    MultipleMapPinsPath = allcloudmapPin;
+                                }
+                                else if (!string.IsNullOrEmpty(allmapPin))
+                                {
+                                    MultipleMapPinsPath = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + allmapPin.Replace(@"..\", "").Replace(@"~\", "");
+                                }
+                                else
+                                {
+                                    MultipleMapPinsPath = "";
+                                }
+                                if (!string.IsNullOrEmpty(allmapPin))
+                                {
+                                    <span class="sectionname">Map</span>
+                                    <table border="0" style='font-family:calibri; border-radius:5px;margin-left:34px;width:90%;border-collapse:collapse;' cellpadding="0" cellspacing="0">
+                                        <tr style="page-break-inside:avoid;border:1px solid #000;">
 
-                                        <td width='25%' class='FieldNametd' style='vertical-align:top;'> <span>Map</span></td>
-                                        <td colspan="3" style="padding:5px;border-right: 1px solid #000 !important;">
-                                            <img src="@MultipleMapPinsPath" height="400" width="600">
-
-                                        </td>
-                                    </tr>
-                                </table>
+                                            <td width='25%' class='FieldNametd' style='vertical-align:top;'> <span>Map</span></td>
+                                            <td colspan="3" style="padding:5px;border-right: 1px solid #000 !important;">
+                                                <img src="@MultipleMapPinsPath" height="400" width="600">
+                                            </td>
+                                        </tr>
+                                    </table>
+                                }
                             }
                         }
-                    }
-                </div>
-            }
+                    </div>
+                }
+            </div>
         </div>
-    </div>
 
-</body>
+    </body>
 

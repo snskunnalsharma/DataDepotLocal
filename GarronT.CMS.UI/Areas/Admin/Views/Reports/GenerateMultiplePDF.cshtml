@@ -468,11 +468,6 @@
                                                                             var mapimageurl = @MapPinsrc + @mapPinsList.Where(a => a.FieldName == item.FieldName).Select(a => a.strImagePath).FirstOrDefault().ToString();
                                                                             otherfieldString.Append("<br />");
                                                                             otherfieldString.Append("<img src='" + @mapimageurl + "' height='25' width='20' />");
-                                                                           // otherfieldString.Append("<a href='" + @mapimageurl + "' target='_blank'>Click here </a>");
-                                                                            
-
-
-
                                                                             //otherfieldString.Append("<img src='" + @LatImagesrc + "' height='25' width='20' />");
                                                                             //otherfieldString.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
                                                                             otherfieldString.Append("<span class='fieldvalue'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
@@ -548,9 +543,7 @@
                                                                             var mapimageurl = MapPinsrc + _path;
                                                                             if (!string.IsNullOrEmpty(_path))
                                                                             {
-                                                                                //otherfieldString1.Append("<img src=" + @mapimageurl + " height='25' width='20' />");
-                                                                                otherfieldString1.Append("<a href='" + @mapimageurl + "' target='_blank'>Click here </a>");
-
+                                                                                otherfieldString1.Append("<img src=" + @mapimageurl + " height='25' width='20' />");
 
                                                                                 otherfieldString1.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
                                                                             }
@@ -590,8 +583,6 @@
                                                                             var mapimageurl = @MapPinsrc + @mapPinsList.Where(a => a.FieldName == item.FieldName).Select(a => a.strImagePath).FirstOrDefault().ToString();
                                                                             otherfieldString1.Append("<br />");
                                                                             otherfieldString1.Append("<img src='" + @mapimageurl + "' height='25' width='20' />");
-                                                                            //otherfieldString1.Append("<a href='" + @mapimageurl + "' target='_blank'>Click here </a>");
-
                                                                             //otherfieldString1.Append("<img src='" + @LatImagesrc + "' height='25' width='20' />");
                                                                             //otherfieldString1.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
                                                                             otherfieldString1.Append("<span class='fieldvalue'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
@@ -772,9 +763,7 @@
                                                                         {
                                                                             otherfieldString3.Append("<br />");
                                                                             var mapimageurl = @MapPinsrc + @mapPinsList.Where(a => a.FieldName == item.FieldName).Select(a => a.strImagePath).FirstOrDefault().ToString();
-                                                                           otherfieldString3.Append("<img src='" + @mapimageurl + "' height='25' width='20' />");
-                                                                            //otherfieldString3.Append("<a href='" + @mapimageurl + "' target='_blank'>Click here 8</a>");
-
+                                                                            otherfieldString3.Append("<img src='" + @mapimageurl + "' height='25' width='20' />");
 
                                                                             //otherfieldString3.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
                                                                             otherfieldString3.Append("<span class='fieldvalue'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
@@ -1028,10 +1017,7 @@
                                                                                 otherfieldString.Append("<td width='25%' class='FieldNametd' style='text-align:center'>");
                                                                                 //otherfieldString.Append("<td width='25%' class='FieldValuestd'>");
 
-                                                                                //  otherfieldString.Append(" <img src='" + @imgPath + "' class='img-width' /><br />");
-                                                                                otherfieldString.Append("<a href='" + @imgPath + "' target='_blank'>Click here </a>");
-                                                                                otherfieldString.Append("<br/>");
-
+                                                                                otherfieldString.Append(" <img src='" + @imgPath + "' class='img-width' /><br />");
                                                                                 otherfieldString.Append("<span>" + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + "</span></td>");
 
                                                                             }
@@ -1059,9 +1045,7 @@
                                                                                             if (isimageaudiovideo == "3")
                                                                                             {
                                                                                                 String aditionalFileName = strFilePath;
-                                                                                                //otherfieldString.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
-                                                                                                otherfieldString.Append("<a href='" + @aditionalFileName + "' target='_blank'>Click here </a>");
-
+                                                                                                otherfieldString.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
                                                                                                 otherfieldString.Append("<br />");
                                                                                             }
                                                                                         }
@@ -1083,8 +1067,7 @@
                                                                                             if (isimageaudiovideo == "3")
                                                                                             {
                                                                                                 String aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + strFilePath.Replace(@"..\", "").Replace(@"~\", "");
-                                                                                                // otherfieldString.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
-                                                                                                otherfieldString.Append("<a href='" + @aditionalFileName + "' target='_blank'>Click here</a>");
+                                                                                                otherfieldString.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
                                                                                                 otherfieldString.Append("<br />");
                                                                                             }
                                                                                         }
@@ -1097,7 +1080,6 @@
                                                                                     var mapimageurl = @MapPinsrc + @mapPinsList.Where(a => a.FieldName == item.FieldName).Select(a => a.strImagePath).FirstOrDefault().ToString();
                                                                                     otherfieldString.Append("<br />");
                                                                                     otherfieldString.Append("<img src='" + @mapimageurl + "' height='25' width='20' />");
-                                                                                    //otherfieldString.Append("<a href='" + @mapimageurl + "' target='_blank'>Click here </a>");
                                                                                     //otherfieldString.Append("<img src='" + @LatImagesrc + "' height='25' width='20' />");
                                                                                     otherfieldString.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
                                                                                 }
@@ -1176,9 +1158,7 @@
                                                                                 //otherfieldString1.Append("<td width='25%' class='FieldValuestd'>");
 
 
-                                                                                //otherfieldString1.Append(" <img src='" + @imgPath + "' class='img-width' /><br />");
-                                                                                otherfieldString1.Append("<a href='" + @imgPath + "' target='_blank'>Click here </a>");
-
+                                                                                otherfieldString1.Append(" <img src='" + @imgPath + "' class='img-width' /><br />");
                                                                                 otherfieldString1.Append("<span>" + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + "</span></td>");
 
                                                                             }
@@ -1205,9 +1185,7 @@
                                                                                             if (isimageaudiovideo == "3")
                                                                                             {
                                                                                                 String aditionalFileName = strFilePath;
-                                                                                                //otherfieldString1.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
-                                                                                                otherfieldString1.Append("<a href='" + @aditionalFileName + "' target='_blank'>Click here </a>");
-
+                                                                                                otherfieldString1.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
                                                                                                 otherfieldString1.Append("<br />");
                                                                                             }
                                                                                         }
@@ -1230,9 +1208,7 @@
                                                                                                 String aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + strFilePath.Replace(@"..\", "").Replace(@"~\", "");
                                                                                                 //<img src='@aditionalFileName' height="150" width='180' />
 
-                                                                                                // otherfieldString1.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
-                                                                                                otherfieldString1.Append("<a href='" + @aditionalFileName + "' target='_blank'>Click here </a>");
-
+                                                                                                otherfieldString1.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
                                                                                                 otherfieldString1.Append("<br />");
                                                                                             }
                                                                                         }
@@ -1244,8 +1220,6 @@
                                                                                     var mapimageurl = @MapPinsrc + @mapPinsList.Where(a => a.FieldName == item.FieldName).Select(a => a.strImagePath).FirstOrDefault().ToString();
                                                                                     otherfieldString1.Append("<br />");
                                                                                     otherfieldString1.Append("<img src='" + @mapimageurl + "' height='25' width='20' />");
-                                                                                   // otherfieldString1.Append("<a href='" + @mapimageurl + "' target='_blank'>Click here </a>");
-
                                                                                     //otherfieldString.Append("<img src='" + @LatImagesrc + "' height='25' width='20' />");
                                                                                     otherfieldString1.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
                                                                                 }
@@ -1329,11 +1303,7 @@
                                                                                 //otherfieldString2.Append("<td width='25%' class='FieldValuestd'>");
 
 
-                                                                                // otherfieldString2.Append(" <img src='" + @imgPath + "' class='img-width' /><br />");
-                                                                                //otherfieldString2.Append("<a href='" + @imgPath + "' target='_blank'>Click here </a>");
-                                                                                otherfieldString2.Append("<a href='" + @imgPath + "' target='_blank'>Click here </a>");
-
-
+                                                                                otherfieldString2.Append(" <img src='" + @imgPath + "' class='img-width' /><br />");
                                                                                 otherfieldString2.Append("<span>" + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase((@item.FieldName.ToLower())) + "</span></td>");
 
                                                                             }
@@ -1361,9 +1331,7 @@
 
                                                                                             if (isimageaudiovideo == "3")
                                                                                             {
-                                                                                                //  otherfieldString2.Append("<img src='" + @strFilePath + "' class='img-width' />");
-                                                                                                otherfieldString2.Append("<a href='" + @strFilePath + "' target='_blank'>Click here</a>");
-
+                                                                                                otherfieldString2.Append("<img src='" + @strFilePath + "' class='img-width' />");
                                                                                                 otherfieldString2.Append("<br />");
                                                                                             }
                                                                                         }
@@ -1386,9 +1354,7 @@
                                                                                                 String aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + strFilePath.Replace(@"..\", "").Replace(@"~\", "");
                                                                                                 //<img src='@aditionalFileName' height="150" width='180' />
 
-                                                                                               // otherfieldString2.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
-                                                                                               otherfieldString2.Append("<a href='" + @aditionalFileName + "' target='_blank'>Click here </a>");
-
+                                                                                                otherfieldString2.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
                                                                                                 otherfieldString2.Append("<br />");
                                                                                             }
                                                                                         }
@@ -1401,8 +1367,6 @@
                                                                                     var mapimageurl = @MapPinsrc + @mapPinsList.Where(a => a.FieldName == item.FieldName).Select(a => a.strImagePath).FirstOrDefault().ToString();
                                                                                     otherfieldString2.Append("<br />");
                                                                                     otherfieldString2.Append("<img src='" + @mapimageurl + "' height='25' width='20' />");
-                                                                                    //otherfieldString2.Append("<a href='" + @mapimageurl + "' target='_blank'>Click here </a>");
-
                                                                                     //otherfieldString2.Append("<img src='" + @LatImagesrc + "' height='25' width='20' />");
                                                                                     otherfieldString2.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
                                                                                 }
@@ -1548,9 +1512,7 @@
                                                                                                 {
                                                                                                     String aditionalFileName = strFilePath.ToString();
 
-                                                                                                    //otherfieldString3.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
-                                                                                                    otherfieldString3.Append("<a href='" + @aditionalFileName + "' target='_blank'>Click here </a>");
-
+                                                                                                    otherfieldString3.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
                                                                                                     otherfieldString3.Append("<br />");
                                                                                                 }
                                                                                             }
@@ -1572,9 +1534,7 @@
                                                                                                 {
                                                                                                     String aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + strFilePath.Replace(@"..\", "").Replace(@"~\", "");
 
-                                                                                                    //otherfieldString3.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
-                                                                                                    otherfieldString3.Append("<a href='" + @aditionalFileName + "' target='_blank'>Click here </a>");
-
+                                                                                                    otherfieldString3.Append("<img src='" + @aditionalFileName + "' class='img-width' />");
                                                                                                     otherfieldString3.Append("<br />");
                                                                                                 }
                                                                                             }
@@ -1588,8 +1548,6 @@
                                                                                         otherfieldString3.Append("<br />");
                                                                                         var mapimageurl = @MapPinsrc + @mapPinsList.Where(a => a.FieldName == item.FieldName).Select(a => a.strImagePath).FirstOrDefault().ToString();
                                                                                         otherfieldString3.Append("<img src='" + @mapimageurl + "' height='25' width='20' />");
-                                                                                        //otherfieldString3.Append("<a href='" + @mapimageurl + "' target='_blank'>Click here</a>");
-
 
                                                                                         otherfieldString3.Append("<span style='font-size:13px;' class='fieldvalue latlongspan'>" + ((item.Fieldlatitude.Length > 14) ? (item.Fieldlatitude.Substring(0, 13)) : item.Fieldlatitude) + ", " + ((item.Fieldlongitude.Length > 14) ? (item.Fieldlongitude.Substring(0, 13)) : item.Fieldlongitude) + "</span>");
                                                                                     }
