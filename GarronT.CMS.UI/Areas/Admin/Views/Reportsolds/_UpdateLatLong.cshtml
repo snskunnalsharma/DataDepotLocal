@@ -1,0 +1,51 @@
+﻿
+<style>
+    /* Always set the map height explicitly to define the size of the div
+        * element that contains the map. */
+    /*#map {
+        height: 100%;
+    }*/
+    /* Optional: Makes the sample page fill the window. */
+    /*html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }*/
+
+
+    #map {
+        position: absolute;
+        overflow: hidden;
+        height: 400px;
+        width: 586px;
+    }
+
+        #map div:nth-of-type(1) {
+            position: relative !important;
+        }
+</style>
+
+<div class="col-xs-12 aud-cntrl">
+
+</div>
+<div id="map">
+   
+</div>
+
+<div class="col-xs-12 aud-cntrl" style="bottom:-70px; position:absolute;">
+    <div class="form-group ">
+        <span id="CLatLongId" style="display:none"></span>
+        <span id="COldLat" style="display:none"></span>
+        <span id="COldLong" style="display:none"></span>
+        <span class="col-lg-2 col-sm-2 col-xs-2 control-label">Latitude -</span>
+        <span id="NewLatitude" class="col-lg-3 col-sm-3 col-xs-3 control-label"></span>
+        <span class="col-lg-2 col-sm-2 col-xs-2 control-label">Longitude - </span>
+        <span id="NewLongitude" class="col-lg-2 col-sm-2 col-xs-2 control-label"></span>
+    </div>
+
+    <div class="form-group" style="text-align:center">
+        <input type="button" class="btn btn-success" id="btnUpdateLatLong" value="Update" />
+        <input type="button" class="btn btn-danger" id="btnLatLongCancel" value="Cancel" />
+
+    </div>
+</div>

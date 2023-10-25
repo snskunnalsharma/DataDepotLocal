@@ -1,0 +1,526 @@
+﻿@{
+    ViewBag.Title = "ReportPDF";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutReport.cshtml";
+}
+
+@Html.Hidden("btnpdfPrev", Url.Action("DownloadFile", "Reports"), new { target = "_blank" })
+
+@Html.Hidden("urlstoredPDFIDs", Url.Action("GetPDFDownloadID", "Reports"))
+@Html.Hidden("urlGeneratePDFbyID", Url.Action("DownloadFile", "Reports"))
+
+
+
+
+<style>
+    .pdfdiv {
+        /*margin-right: -11px;
+        margin-left: -13px;*/
+        margin: 0 auto;
+    }
+
+    iframe {
+        /*overflow:visible;*/
+    }
+
+    .wrapper {
+        overflow: hidden;
+    }
+
+    @@media (max-width:320px) {
+        .wrapper {
+            margin-bottom: -1% !important;
+            overflow: hidden;
+            height: 46em !important;
+            margin-top: -8%;
+        }
+
+        iframe {
+            height: 40em;
+        }
+    }
+
+    @@media only screen and (min-width:321px)and (max-width:410px) {
+        .wrapper {
+            overflow: auto;
+            height: 46.4em !important;
+        }
+    }
+
+    @@media only screen and (min-width:321px)and (max-width:410px) {
+        .wrapper {
+            overflow: auto;
+            height: 46.4em !important;
+        }
+    }
+
+    @@media only screen and (min-width:768px) and (max-width:1023px) {
+        .pdf-table-responsive {
+            height: 30em !important;
+            overflow-y: scroll !important;
+        }
+    }
+    /*@@media only screen and (min-width:321px)and (max-width:767px) {
+        .wrapper {
+
+            overflow: hidden;
+            height: 46.4em !important;
+        }
+    }*/
+</style>
+
+@*<section id="main-content">*@
+<section class="wrapper" style="margin-top: 0px; padding: 0px;">
+    <!-- page start-->
+    <div class="row">
+        <div class="col-lg-12">
+            <section class="panel">
+
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="form-group" style="text-align:center;margin-top: 8px;">
+                            @if (@ViewBag.Prevbutton == true)
+                            {
+                                <input type="button" class="btn btn-info" id="btnpdfPrev" onclick="GetPreviousRecord();" value="Previous" />
+                            }
+
+                            @if (@ViewBag.Nextbutton == true)
+                            {
+                                <input type="button" class="btn btn-info" id="btnpdfNext" onclick="GetNextRecord();" value="Next" />
+                            }
+
+                        </div>
+
+                        <div class="form-group" style="text-align:right;margin-top: -20px;margin-top: -18px;margin-right: 97px;margin-bottom: 10px;">
+                            @if (@ViewBag.CategoryType == "COMPLETED")
+                            {
+                                <input type="button" value="Download" class="btn btn-success" onclick="location.href='@Url.Action("DownloadSinglePDF", "Reports", new { FormID = @ViewBag.FormID, UploadID = @ViewBag.UploadID })'" />
+
+
+                                <input type="button" id="PrintReport" value="Print" class="btn btn-success" />
+                            }
+                            else if (@ViewBag.CategoryType == "RTU" || @ViewBag.CategoryType == "SKIP")
+                            {
+
+                                <input type="button" value="Download" class="btn btn-success" onclick="location.href='@Url.Action("DownloadSinglePDF_SkipRTU", "Reports", new { UploadID = @ViewBag.UploadID })'" />
+                                <input type="button" id="PrintReportSkipRTU" value="Print" class="btn btn-success" />
+                            }
+                        </div>
+
+                    </div>
+
+                    @if (@ViewBag.CategoryType == "COMPLETED")
+                    {
+                        <div class="row pdfdiv" style="width:1150px">
+                            <iframe name="ifr" width="100%" id="pdfIframe" scrolling="auto" src="@Url.Action("GeneratePDF")" onload="resizeIframe(this)"></iframe>
+
+                        </div>
+                    }
+                    else if (@ViewBag.CategoryType == "RTU" || @ViewBag.CategoryType == "SKIP")
+                    {
+                        <div class="row pdfdiv" style="width:1150px">
+                            <iframe name="ifr" width="100%" id="pdfIframe" scrolling="auto" src="@Url.Action("GeneratePDF_SkipRTU")" onload="resizeIframe(this)"></iframe>
+                        </div>
+                    }
+
+                </div>
+            </section>
+        </div>
+    </div>
+</section>
+@*</section>*@
+
+<script language="javascript" type="text/javascript">
+
+                function resizeIframe(obj) {
+                    debugger;
+                    var contentheight = (obj.contentWindow.document.body.scrollHeight + 5) + 'px';
+                    obj.style.height = contentheight
+
+                }
+
+                $("#PrintReport").click((function () {
+                    debugger;
+                    PrintReport()
+                }))
+                function PrintReport() {
+                    debugger;
+
+                    var html = "<html>";
+                    html += "<head>";
+
+                    html += "<style>";
+                    html += "#divHeader {";
+                    html += "float:right;";
+                    html += "width:21%;";
+                    html += "}";
+
+
+                    html += ".fieldname {";
+                    html += "text-align: left;";
+                    html += "width:20%;";
+                    html += "padding:5px;";
+                    html += "font-family:Arial;";
+                    html += "font-size:14px;";
+                    html += "}";
+
+                    html += ".fieldData {";
+                    html += "width:80%;";
+                    html += "padding:5px;";
+                    html += "}";
+
+                    html += ".formname {";
+                    html += "font-family: Arial;";
+                    html += "font-size:18px;";
+                    html += "color:#0094ff;";
+                    html += "}";
+
+                    html += ".sectionname {";
+                    html += " padding-left: 20px;";
+                    html += "color:#0094ff;";
+                    html += "font-size:15px;";
+                    html += "}";
+
+                    html += ".headerTitle {";
+                    html += " font-size: 14px;";
+                    html += "}";
+
+                    html += ".FieldNametd {";
+                    html += " padding:5px; ";
+
+                    html += " color:#000000; ";
+                    html += "font-size: 14px; ";
+                    html += " font-weight:bold; ";
+                    html += " vertical-align:top; ";
+                    html += " padding-bottom:13px; ";
+                    html += " } ";
+
+                    html += ".FieldValuestd {";
+                    html += " padding:5px; ";
+                    html += " border-right:1px solid #000; ";
+                    html += "color:#000000; ";
+                    html += "font-size:14px; ";
+                    html += " } ";
+
+                    html += ".fieldvalue {";
+                    html += " font-weight:500;";
+                    html += "font-size:13px;";
+                    html += "}";
+
+                    html += ".wrapper {";
+                    html += "margin-top:0px !important;";
+                    html += "padding:0px 15px !important;";
+                    html += "}";
+
+                    html += ".latlongspan {";
+                    html += " font-size:13px;";
+                    html += "vertical-align:top;";
+                    html += "padding-left:5px;";
+                    html += " }";
+
+                    html += ".datetimespan {";
+                    html += " font-size:13px;";
+                    html += "padding-left:25px;";
+                    html += " vertical-align:top;";
+                    html += "line-height:0px;";
+                    html += "}";
+                    html += ".img-width {";
+                    html += " width:100 %;";
+                    html += " height:9.8em;";
+                    html += "}";
+                    html += ".img-width-ser {";
+                    html += " width:150px;";
+                    html += " height:180px;";
+                    html += "}";
+
+                    html += "</style>";
+
+
+                    //html += "<link rel='Stylesheet' type='text/css' href='css/print.css' media='print' />";
+
+                    html += "<style type='text/css' media='print'>";
+                    html += "body {";
+                    // html += " margin: 0;";
+                      //html += "transform: scale(.7);";
+                    //html += "page-break-before:avoid;";
+                   // html += "width:100%;";
+                   // html += "height:100%;";
+                   // html += "-webkit-transform:scale(.68,.68);";
+                   // html += "-moz-transform:scale(.58,.58);";
+                    html += "}";
+
+                    html += "</style>";
+
+
+                    html += "</head>";
+                    html += "<body>";
+                    html += $("#pdfIframe").contents().find('div').html();
+                    html += "</body>";
+                    html += "</html>";
+
+                    console.log(html)
+                    var printWin = window.open('', '', 'left=0,top=0,width=800,height=550,toolbar=0,scrollbars=0,status  =0');
+
+
+
+                    printWin.document.write(html);
+                    printWin.document.close();
+                    printWin.focus();
+                    printWin.print();
+                    printWin.close();
+
+
+
+
+
+                }
+
+
+
+                $("#PrintReportSkipRTU").click((function () {
+                    debugger;
+                    PrintReportSkipRTU()
+                }))
+                function PrintReportSkipRTU() {
+                    debugger;
+
+                    var html = "<html>";
+                    html += "<head>";
+
+                    html += "<style>";
+                    html += "#divHeader {";
+                    html += "float:right;";
+                    html += "width:21%;";
+                    html += "}";
+
+
+                    html += ".fieldname {";
+                    html += "text-align: left;";
+                    html += "width:20%;";
+                    html += "padding:5px;";
+                    html += "font-family:Arial;";
+                    html += "font-size:14px;";
+                    html += "}";
+
+                    html += ".fieldData {";
+                    html += "width:80%;";
+                    html += "padding:5px;";
+                    html += "}";
+
+                    html += ".formname {";
+                    html += "font-family: Arial;";
+                    html += "font-size:18px;";
+                    html += "color:#0094ff;";
+                    html += "}";
+
+                    html += ".sectionname {";
+                    html += " padding-left: 20px;";
+                    html += "color:#0094ff;";
+                    html += "font-size:15px;";
+                    html += "}";
+
+                    html += ".headerTitle {";
+                    html += " font-size: 14px;";
+                    html += "}";
+
+                    html += ".FieldNametd {";
+                    html += "padding:5px;";
+                    html += "border-right:1px solid #000;";
+                    //html += "background:#fbd3b5;";
+                    html += "color:#000000;";
+                    html += "font-size: 14px;";
+                    html += " font-weight:bold;";
+                    html += " vertical-align:top;";
+                    html += " padding-bottom:13px;";
+                    html += " } ";
+
+                    html += ".FieldValuestd {";
+                    html += " padding:5px; ";
+                    html += " border-right:1px solid #000; ";
+                    html += "color:#000000; ";
+                    html += "font-size:14px; ";
+                    html += " } ";
+
+                    html += ".fieldvalue {";
+                    html += " font-weight:500;";
+                    html += "font-size:13px;";
+                    html += "}";
+
+                    html += ".wrapper {";
+                    html += "margin-top:0px !important;";
+                    html += "padding:0px 15px !important;";
+                    html += "}";
+
+                    html += ".latlongspan {";
+                    html += " font-size:13px;";
+                    html += "vertical-align:top;";
+                    html += "padding-left:5px;";
+                    html += " }";
+
+                    html += ".datetimespan {";
+                    html += " font-size:13px;";
+                    html += "padding-left:25px;";
+                    html += " vertical-align:top;";
+                    html += "line-height:0px;";
+                    html += "}";
+
+                    html += "</style>";
+
+
+                    html += "<link rel='Stylesheet' type='text/css' href='css/print.css' media='print' />";
+                    html += "</head>";
+                    html += $("#pdfIframe").contents().find('div').html();
+
+                    html += "</html>";
+
+                    console.log(html)
+                    var printWin = window.open('', '', 'left=0,top=0,width=800,height=550,toolbar=0,scrollbars=0,status  =0');
+
+
+
+                    printWin.document.write(html);
+                    printWin.document.close();
+                    printWin.focus();
+                    printWin.print();
+                    printWin.close();
+
+
+
+
+
+                }
+
+</script>
+<script>
+
+                function GetNextRecord() {
+                    var urlGetNextPreviousrecord = $("#btnpdfPrev").val();
+                    var urlGeneratePDFbyID = $('#urlGeneratePDFbyID').val();
+                    var urlstoredPDFIDs = $('#urlstoredPDFIDs').val();
+                    $.ajax({
+                        type: 'GET',
+                        url: urlstoredPDFIDs,
+                        async: false,
+                        //  data: { buttonclicked: "Next" },
+                        data: { id: null, frmID: null, buttonclicked: "Next" },
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+                            location.href = urlGeneratePDFbyID;
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            waitingDialog.hide();
+                            var $toast = toastr["error"](textStatus + "</br>" + errorThrown, "Error Notification");
+                            console.log('jqXHR:');
+                            console.log(jqXHR);
+                            console.log('textStatus:');
+                            console.log(textStatus);
+                            console.log('errorThrown:');
+                            console.log(errorThrown);
+                        }
+
+                    });
+                }
+
+                $("#btnpdfNext1").click(function () {
+                    var urlGetNextPreviousrecord = $("#btnpdfPrev").val();
+                    var urlGeneratePDFbyID = $('#urlGeneratePDFbyID').val();
+                    var urlstoredPDFIDs = $('#urlstoredPDFIDs').val();
+                    $.ajax({
+                        type: 'GET',
+                        url: urlstoredPDFIDs,
+                        async: false,
+                        //  data: { buttonclicked: "Next" },
+                        data: { id: null, frmID: null, buttonclicked: "Next" },
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+                            location.href = urlGeneratePDFbyID;
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            waitingDialog.hide();
+                            var $toast = toastr["error"](textStatus + "</br>" + errorThrown, "Error Notification");
+                            console.log('jqXHR:');
+                            console.log(jqXHR);
+                            console.log('textStatus:');
+                            console.log(textStatus);
+                            console.log('errorThrown:');
+                            console.log(errorThrown);
+                        }
+
+                    });
+
+                })
+
+
+
+</script>
+
+<script>
+
+                function GetPreviousRecord() {
+                    debugger;
+                    var urlstoredPDFIDs = $('#urlstoredPDFIDs').val();
+
+                    var urlGeneratePDFbyID = $('#urlGeneratePDFbyID').val();
+                    $.ajax({
+                        type: 'GET',
+                        data: { id: null, frmID: null, buttonclicked: "Prev" },
+                        url: urlstoredPDFIDs,
+                        success: function (data1) {
+                            debugger;
+                            //window.open(
+                            //         urlGeneratePDFbyID,
+                            //         '_blank' // <- This is what makes it open in a new window.
+                            //        );
+                            location.href = urlGeneratePDFbyID;
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            waitingDialog.hide();
+                            var $toast = toastr["error"](textStatus + "</br>" + errorThrown, "Error Notification");
+                            console.log('jqXHR:');
+                            console.log(jqXHR);
+                            console.log('textStatus:');
+                            console.log(textStatus);
+                            console.log('errorThrown:');
+                            console.log(errorThrown);
+                        }
+                    });
+                }
+                $("#btnpdfPrev1").click(function () {
+
+                    var urlstoredPDFIDs = $('#urlstoredPDFIDs').val();
+
+                    var urlGeneratePDFbyID = $('#urlGeneratePDFbyID').val();
+                    $.ajax({
+                        type: 'GET',
+                        data: { id: null, frmID: null, buttonclicked: "Prev" },
+                        url: urlstoredPDFIDs,
+                        success: function (data1) {
+                            debugger;
+                            //window.open(
+                            //         urlGeneratePDFbyID,
+                            //         '_blank' // <- This is what makes it open in a new window.
+                            //        );
+                            location.href = urlGeneratePDFbyID;
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            waitingDialog.hide();
+                            var $toast = toastr["error"](textStatus + "</br>" + errorThrown, "Error Notification");
+                            console.log('jqXHR:');
+                            console.log(jqXHR);
+                            console.log('textStatus:');
+                            console.log(textStatus);
+                            console.log('errorThrown:');
+                            console.log(errorThrown);
+                        }
+                    });
+
+
+                })
+
+</script>
+
+
+
+
+

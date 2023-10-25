@@ -1,0 +1,270 @@
+﻿@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Edit</h2>
+
+@Html.Hidden("urlGetId", Url.Action("GetPoject", "Reports"))
+
+@Html.Hidden("ClientListUrl", Url.Action("GetClientList", "Reports"))
+@Html.Hidden("urlGetAddress", Url.Action("GetAddress", "Reports"))
+@Html.Hidden("urlGetProject", Url.Action("GetPoject", "Reports"))
+@Html.Hidden("getRowPartial", Url.Action("getRowPartial", "Reports"))
+@Html.Hidden("GetAddressUrl", Url.Action("GetAddressByProjectID", "Reports"))
+@Html.Hidden("GetCycle", Url.Action("GetExcelRootData", "Reports"))
+@Html.Hidden("GetRootByCycle", Url.Action("GetRootByCycle", "Reports"))
+@Html.Hidden("GetAddress", Url.Action("GetAddressByCycle_Root", "Reports"))
+@Html.Hidden("GetLatLag", Url.Action("GetLat_by_Root", "Reports"))
+@Html.Hidden("GetRoot", Url.Action("GetRootByCycle", "Reports"))
+@Html.Hidden("urlGetInstallerList", Url.Action("getCurrentInstallerList", "Reports"))
+@Html.Hidden("urlSaveInstallerMap", Url.Action("SaveInstallerMap", "Reports"))
+@Html.Hidden("urlGetInstallerMap", Url.Action("GetInstallerMap", "Reports"))
+@Html.Hidden("GetLatLagby_ProjectInstaller", Url.Action("GetLat_by_ProjectInstaller", "Reports"))
+@Html.Hidden("UrlDashboard", Url.Action("Index", "Reports"))
+
+<style type="text/css">
+    .stepwizard-step p {
+        margin-top: 10px;
+        color: #fff;
+        width: 128px;
+        margin-left: -45px;
+    }
+
+    .stepwizard-row {
+        display: table-row;
+    }
+
+    .stepwizard {
+        display: table;
+        width: 100%;
+        position: relative;
+        background: #80B2DF;
+    }
+
+    .stepwizard-step button[disabled] {
+        opacity: 1 !important;
+        filter: alpha(opacity=100) !important;
+    }
+
+    .stepwizard-row:before {
+        top: 41px;
+        bottom: 0;
+        position: relative;
+        content: " ";
+        width: 100%;
+        height: 1px;
+        background-color: #f5f5f5;
+        z-index: 0;
+        position: absolute;
+        height: 6px;
+        border-right: none;
+        border-radius: 0;
+        border: 1px solid #d5d5da;
+        left: 0;
+    }
+
+    .stepwizard-step {
+        display: table-cell;
+        text-align: center;
+        position: relative;
+        /*width: 20%;*/
+        white-space: nowrap;
+        padding-bottom: 20px;
+    }
+
+    .stepwizard-step-circle {
+        display: block;
+        background: #eee;
+        width: 40px;
+        height: 40px;
+        border-radius: 40px;
+        border: 1px solid #d5d5da;
+        margin: 2% 5% 4% 7%;
+        float: left;
+    }
+
+
+
+    .btn-circle {
+        width: 30px;
+        height: 30px;
+        text-align: center;
+        padding: 6px 0;
+        font-size: 12px;
+        line-height: 1.428571429;
+        border-radius: 15px;
+        /*margin-top: 4px;*/
+        margin-top: -20px;
+        color: #fff !important;
+    }
+
+    .multiselect {
+        width: 230px;
+        padding: 3px;
+    }
+
+    .labelcolor {
+        color: #fff;
+    }
+
+    .next, .prev {
+        background: #2196F3;
+    }
+</style>
+<div id="loading">
+    <div id="loadingcontent">
+        <p id="loadingspinner"> Searching things... </p>
+    </div>
+</div>
+
+
+
+<style>
+    .toast-top-center {
+        margin-top: -50px;
+    }
+</style>
+
+
+<section id="main-content">
+    <section class="wrapper">
+        <!-- page start-->
+        <div class="row">
+            <div class="col-sm-12">
+                <section class="panel">
+                    <header class="panel-heading">
+                        <b> Reports </b>
+
+                    </header>
+
+                    <div class="panel-body panel_top">
+                        <div class="stepwizard ">
+                            <div class="stepwizard-row setup-panel">
+
+                                <div class="stepwizard-step stepwizard-step-circle">
+                                    <select id="ss" name="ss"></select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </section>
+
+
+            </div>
+        </div>
+        <form role="form" action="" id="fromsave" method="post" style=" background: rgb(190, 210, 230);" class="form-horizontal">
+            <div class="row setup-content" id="step-1">
+                <div class="col-xs-12 ">
+                    <div class="col-md-12">
+                        <button class="btn btn-primary nextBtn btn-lg pull-right" type="button">Next</button>
+                    </div>
+                </div>
+            </div>
+            <div class="setup-content" id="stepS-2" style="display:none">
+                <div class="row">
+
+                    <button class="btn btn-primary previous btn-lg pull-left" style="margin-left:2.3%;" type="button">Previous</button>
+                    <button class="btn btn-primary nextBtn btn-lg pull-right" type="button">Next</button>
+                </div>
+
+            </div>
+            <div class="row setup-content" id="step-3" style="padding-top: 1%; display: none">
+
+                <div class="col-xs-12 ">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <div class="task-content col-md-offset-2">
+                                <ul class="task-list" id="ulServicePrice"></ul>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary previous btn-lg pull-left" type="button">Previous</button>
+                        <button class="btn btn-primary nextBtn btn-lg pull-right" type="button">Next</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row setup-content" id="step-4" style="display: none">
+                <div class="col-xs-12 ">
+                    <div class="col-md-12">
+                        <div class="row" style="margin-left:00px; margin-top:5px; margin-bottom:5px;">
+
+                            <div class="col-md-2" style="padding-left: 0px; padding-top: 5px;">
+                                Select Standard Fields
+                            </div>
+                            <div class=" add-task-row col-md-5">
+                                @*<a class="btn btn-success btn-sm pull-left" href="#"></a>*@
+                                <button class="btn btn-success btn-sm pull-left" type="button" id="btnMoveAll">Move All Standard Fields</button>
+                            </div>
+
+
+                        </div>
+                        <div class="form-group">
+                            <div id="fieldChooser" tabindex="1">
+                                <div id="sourceFields"> </div>
+                                <div class="row" style="margin-left:00px; margin-top:5px; margin-bottom:5px;">
+                                    <div class="col-md-4" style="padding-left: 17px; padding-top: 0px; padding-bottom:10px;">
+                                        Drop Standard Fields Here
+                                    </div>
+                                    <div id="destinationFields"> </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <button class="btn btn-primary previous btn-lg pull-left" type="button">Previous</button>
+                        <button class="btn btn-primary nextBtn btn-lg pull-right" type="button">Next</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row setup-content" id="step-5" style="display: none">
+                <div class="col-xs-12 ">
+                    <div class="col-md-12">
+                        <div class="form-group" style="margin-top:10px;">
+                            <div class="panel-body">
+                                <div class="adv-table">
+                                    <div class="row">
+                                        <div class="col-sm-8">
+                                            <a class="btn btn-success" id="btnAddCustField" data-toggle="modal" data-backdrop="static" href="#myModalCustomField">
+                                                Add New Custom Field <i class="fa fa-plus"></i>
+                                            </a>
+                                        </div>
+                                        <div class="col-sm-4 show_deactive">
+                                            <input type="checkbox" name="showDeactivate" id="chkShowDeactivate" />Show Deactivated Records
+                                        </div>
+                                    </div>
+                                    <table id="dynamic-table" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                                        <thead>
+                                            <tr>
+                                                <th width="25%">Custom Field Name</th>
+                                                <th width="5%">Action</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                            @*<div id="dynamicdiv" class="col-lg-7" style="min-height: 342px; border: 1px dotted #000; padding-left: 0px; padding-right: 0px; margin-left: 10px; margin-top: 6px; "> </div>*@
+                        </div>
+
+                        <button class="btn btn-primary previous btn-lg pull-left" type="button">Previous</button>
+                        <button class="btn btn-primary nextBtn btn-lg pull-right" type="button">Next</button>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+
+
+
+
+
+    </section>
+
+</section>
+
+<link href="~/Scripts/js/style.css" rel="stylesheet" />
+<link href="~/Scripts/js/jquery-ui.css" rel="stylesheet" />
+<script src="~/Scripts/js/jquery-ui.js"></script>
+<script src="~/Scripts/js/fieldChooser.js"></script>
+<link href="~/Content/MSTS/admin/css/bootstrap-multiselect.css" rel="stylesheet" />
+<script src="~/Content/MSTS/admin/js/bootstrap-multiselect.js"></script>
+<script src="~/Scripts/Admin/Reports.js"></script>
