@@ -81,6 +81,9 @@
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Magick.NET-Q16-AnyCPU, Version=7.9.2.0, Culture=neutral, PublicKeyToken=2004825badfa91ec, processorArchitecture=MSIL">
+      <HintPath>..\packages\Magick.NET-Q16-AnyCPU.7.9.2\lib\net40\Magick.NET-Q16-AnyCPU.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.5.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
@@ -397,7 +400,6 @@
     <Content Include="Angular\views\Form\field\Acknowledgement.html" />
     <Content Include="Angular\views\Form\field\Statictext.html" />
     <Content Include="Angular\views\Form\field\Numeric.html" />
-    <Content Include="Angular\views\Form\field\SinglePhoto.html" />
     <Content Include="Angular\views\Form\field\Text.html" />
     <Content Include="Angular\views\Form\Index.html" />
     <Content Include="Angular\views\Form\PageNotFound.html" />
@@ -4405,8 +4407,7 @@
     <Content Include="Areas\Admin\Views\ClockTimeReport\Index.cshtml" />
     <Content Include="Areas\Admin\Views\InventoryTransfer\InventoryTransferReport.cshtml" />
     <Content Include="Areas\Admin\Views\InventoryBulkTransfer\Index.cshtml" />
-    <Content Include="Areas\Admin\Views\Reports\DownloadMultipleFilesWithLink.cshtml" />
-    <Content Include="Areas\Admin\Views\Reports\GeneratePDFWithLink.cshtml" />
+    <Content Include="Angular\views\Form\field\SinglePhoto.html" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile1.pubxml" />
     <None Include="Properties\PublishProfiles\publish.pubxml" />

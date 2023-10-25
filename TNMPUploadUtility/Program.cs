@@ -22,7 +22,7 @@ namespace TNMPUploadUtility
             /*Console.WriteLine("Test Succeed or not - " + DateTime.Now.ToShortTimeString());
             Console.ReadLine();*/
             //Note==> Emails comment for a testsing time  ==> UploadFile.cs
-            long ProjectID = 0;
+            long ProjectID = 10108;
             if (args.Length > 0)
             {
                 ProjectID = Convert.ToInt64(args[0]);  // Get project id in Task Schedular Argumnet
@@ -102,14 +102,14 @@ namespace TNMPUploadUtility
                 var lastDateTime = objCE.TblTNMPExportReportUtilityHistories.Where(o => o.FK_ProjectId == projectId && o.Active == 1).OrderByDescending(q => q.Id).Select(o => o.ToDateTime).FirstOrDefault();
                 if (lastDateTime.HasValue)
                 {
-                    if (projectId == 10085) // TNMP CMS
+                    if (projectId == 10108) // TNMP CMS
                     {
                         //date = date.AddDays(-2);
                         DateTime tempTime = (DateTime)lastDateTime;
-                        fromDate = (tempTime.AddMinutes(1)).ToString("yyyy-MM-dd HH:mm");
-                        //fromDate =Convert.ToDateTime(lastDateTime).ToString("MMM-dd-yyyy");
-                        toDate = date.ToString("yyyy-MM-dd HH:mm");
-                        //toDate = "2022-04-26 19:50";
+                       fromDate = (tempTime.AddMinutes(1)).ToString("yyyy-MM-dd HH:mm");
+                        fromDate =Convert.ToDateTime(lastDateTime).ToString("MMM-dd-yyyy");
+                     //toDate = date.ToString("yyyy-MM-dd HH:mm");
+                        toDate = "2023-09-18 19:50";
                     }
                     if (projectId == 10087) // TNMP HQ
                     {
@@ -206,22 +206,79 @@ namespace TNMPUploadUtility
 
             // Start code => Upload old files s3 bucket
             #region Upload old files s3 bucket
-            ErrorLogFile.writeStatus("\n\nThread Started at Upload old files s3 bucket - " + DateTime.Now.ToShortTimeString());
-            Console.WriteLine("Thread Started at Upload old files s3 bucket - " + DateTime.Now.ToShortTimeString());
-            try
-            {
-                UploadFilesS3Bucekt uploadFilesS3Bucekt = new UploadFilesS3Bucekt();
-                uploadFilesS3Bucekt.getFilesPath();
-            }
-            catch (Exception ex)
-            {
-                ErrorLogFile.writeStatus("Error for Upload old files s3 bucket:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
-                Console.WriteLine("Error for Upload old files s3 bucket:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
-            }
-            ErrorLogFile.writeStatus("Thread Ended at Uploaded old files s3 bucket - " + DateTime.Now.ToShortTimeString());
-            Console.WriteLine("Thread Ended at Uploaded old files s3 bucket - " + DateTime.Now.ToShortTimeString());
+            /* ErrorLogFile.writeStatus("\n\nThread Started at Upload old files s3 bucket - " + DateTime.Now.ToShortTimeString());
+             Console.WriteLine("Thread Started at Upload old files s3 bucket - " + DateTime.Now.ToShortTimeString());
+             try
+             {
+                 UploadFilesS3Bucekt s3bucket = new UploadFilesS3Bucekt();
+                 s3bucket.getFilesPath();
+             }
+             catch (Exception ex)
+             {
+                 ErrorLogFile.writeStatus("Error for Upload old files s3 bucket:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
+                 Console.WriteLine("Error for Upload old files s3 bucket:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
+             }
+             ErrorLogFile.writeStatus("Thread Ended at Uploaded old files s3 bucket - " + DateTime.Now.ToShortTimeString());
+             Console.WriteLine("Thread Ended at Uploaded old files s3 bucket - " + DateTime.Now.ToShortTimeString());
+             #endregion
+             //ends hare
+             #region Upload old files s3 bucket
+             DateTime twoDaysAgo = DateTime.Now.AddDays(-6);
+             ErrorLogFile.writeStatus("\n\nThread Started at Upload old files s3 bucket - " + twoDaysAgo.ToShortTimeString());
+
+             Console.WriteLine("Thread Started at Upload old files s3 bucket - " + DateTime.Now.ToShortTimeString());
+             try
+             {
+                 thumbnail newtmb = new thumbnail();
+                 newtmb.getFilesPath();
+             }
+             catch (Exception ex)
+             {
+                 ErrorLogFile.writeStatus("Error for Upload old files s3 bucket:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
+                 Console.WriteLine("Error for Upload old files s3 bucket:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
+             }
+             ErrorLogFile.writeStatus("Thread Ended at Uploaded old files s3 bucket - " + DateTime.Now.ToShortTimeString());
+             Console.WriteLine("Thread Ended at Uploaded old files s3 bucket - " + DateTime.Now.ToShortTimeString());*/
             #endregion
             //ends hare
+           
+            //#region Upload tumbnail files 
+            //    ErrorLogFile.writeStatus("\n\nThread Started at Upload old files - " + DateTime.Now.ToShortTimeString());
+            //     Console.WriteLine("Thread Started at Upload old files- " + DateTime.Now.ToShortTimeString());
+            //     try
+            //     {
+            //         thumbnail tmb = new thumbnail();
+            //         tmb.getFilesPath();
+            //     }
+            //     catch (Exception ex)
+            //     {
+            //         ErrorLogFile.writeStatus("Error for Upload old files:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
+            //         Console.WriteLine("Error for Upload old files:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
+            //     }
+            //     ErrorLogFile.writeStatus("Thread Ended at Uploaded old files - " + DateTime.Now.ToShortTimeString());
+            //     Console.WriteLine("Thread Ended at Uploaded old files - " + DateTime.Now.ToShortTimeString());
+            //     #endregion
+            //     //ends hare
+            //     #region Upload old files s3 bucket
+            //     DateTime twoDaysAgo = DateTime.Now.AddDays(-6);
+            //     ErrorLogFile.writeStatus("\n\nThread Started at Upload old files - " + twoDaysAgo.ToShortTimeString());
+
+            //     Console.WriteLine("Thread Started at Upload old files - " + DateTime.Now.ToShortTimeString());
+            //     try
+            //     {
+            //         thumbnail newtmb = new thumbnail();
+            //         newtmb.getFilesPath();
+            //     }
+            //     catch (Exception ex)
+            //     {
+            //         ErrorLogFile.writeStatus("Error for Upload old files:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
+            //         Console.WriteLine("Error for Upload old files:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
+            //     }
+            //     ErrorLogFile.writeStatus("Thread Ended at Uploaded old files - " + DateTime.Now.ToShortTimeString());
+            //     Console.WriteLine("Thread Ended at Uploaded old files - " + DateTime.Now.ToShortTimeString());
+            //    #endregion
+            //    //ends hare
+
         }
     }
 }

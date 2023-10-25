@@ -177,6 +177,7 @@ namespace GarronT.CMS.Model.BO
         public long? tblservices_Id { get; set; }
         public long? tblservicePic_Id { get; set; }
         public int Active { get; set; }
+        public string ThumbnailPath { get; set; }
     }
 
     public class sectionfiledval

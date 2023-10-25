@@ -3057,25 +3057,29 @@ try {
 
 
     })
-
     $(document).ready(function () {
-        $('#showPassword').on('click', function () {
-            var passwordInput = $('#txtPassword');
-            if ($(this).is(':checked')) {
-                passwordInput.attr('type', 'text');
+        $('#showPassword').on('hover', function () {
+            var passwordInput = $('#txtPassword').attr('type');;
+
+            if (passwordInput === 'password') {
+                $('#txtPassword').attr('type', 'text');
             } else {
-                passwordInput.attr('type', 'password');
+                $('#txtPassword').attr('type', 'password');
             }
         });
 
-        $('#showConfirmPassword').on('click', function () {
-            var confirmPasswordInput = $('#txtConfirmPassword');
-            if ($(this).is(':checked')) {
-                confirmPasswordInput.attr('type', 'text');
+        $('#showConfirmPassword').on('hover', function () {
+            var passwordInput = $('#txtConfirmPassword').attr('type');
+
+            if (passwordInput === 'password') {
+                $('#txtConfirmPassword').attr('type', 'text');
             } else {
-                confirmPasswordInput.attr('type', 'password');
+                $('#txtConfirmPassword').attr('type', 'password');
             }
         });
+
+        //$('#showPassword').hide();
+        // $('#showConfirmPassword').hide();
     });
     $("#ManagerId").change(function () {
 

@@ -148,6 +148,7 @@ namespace GarronT.CMS.Model.BO
         public bool isServiceData { get; set; }
         public string ServiceName { get; set; }
         public string strFilePath { get; set; }
+        public string thumbnailPath { get; set; }
     }
 }
 

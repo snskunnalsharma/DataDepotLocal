@@ -1844,6 +1844,7 @@ namespace GarronT.CMS.Model.DAL
                 long BatchNumber = 0;
                 bool sendAlreadySentRecord = false;
                 bool checkRecordAvilableForNextTrip = false;
+                bool checkRecordTotal = false;
                 CompassEntities objCompassEntities = new CompassEntities();
 
                 DataTable dt = new DataTable();
@@ -1969,7 +1970,7 @@ namespace GarronT.CMS.Model.DAL
                     }
 
                     checkRecordAvilableForNextTrip = (ProjectVisitDataChunk == null || ProjectVisitDataChunk.Rows.Count == 0) ? false : ((totalCount - 50) > 0 ? true : false);
-
+                    checkRecordTotal = (ProjectVisitDataChunk == null || ProjectVisitDataChunk.Rows.Count == 0) ? false : ((totalCount) > 0 ? true : false);
                     var FormDataList = GetDynamicFormDataList(userId, strCurrentDate);
 
                     if (dt != null)
@@ -2988,7 +2989,7 @@ namespace GarronT.CMS.Model.DAL
                     #endregion
                     //get last complete position of user project's
                     var timeElapsed = sw.Elapsed;
-                    if (!checkRecordAvilableForNextTrip)
+                    if (!checkRecordTotal)
                     {
                         var projectLastLocation = getLastCompleteLocation(userId);
                         if (projectLastLocation.Count > 0)

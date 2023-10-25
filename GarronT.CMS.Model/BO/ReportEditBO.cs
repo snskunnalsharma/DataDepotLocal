@@ -110,6 +110,11 @@ namespace GarronT.CMS.Model
     public partial class TblProjectFieldDataAttachment
     {
         public string ImageName { get; set; }
+
+        public static implicit operator int(TblProjectFieldDataAttachment v)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public partial class ProjectAuditFieldDataAttachment

@@ -227,3 +227,252 @@
 2023-08-22 15:16:54,691 [27 - garront] INFO  GarronT.CMS.Model.clsMail [<SaveInstallerMap>b__3] - Calling Mail send method at-22-08-2023 15:16:54
 2023-08-22 15:16:54,716 [27 - garront] INFO  GarronT.CMS.Model.DAL.InstallerDAL [SendMalil] - Entry to SendMalil in  Mail send method at-22-08-2023 15:16:54
 2023-08-22 15:17:00,445 [27 - garront] INFO  GarronT.CMS.Model.clsMail [<SaveInstallerMap>b__3] - end of Mail send method at-22-08-2023 15:17:00
+2023-08-22 20:05:43,686 [33 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-08-22 20:05:43,768 [33 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-08-22 20:16:00,483 [15 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-08-22 20:16:00,484 [15 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-08-22 20:16:43,642 [12 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-08-22 20:16:43,642 [12 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-08-22 20:17:38,875 [59 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-08-22 20:17:38,876 [59 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-08-22 20:20:13,144 [54 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-08-22 20:20:13,145 [54 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-08-22 20:20:52,912 [54 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-08-22 20:20:52,912 [54 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-08-22 20:23:28,359 [56 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-08-22 20:23:28,359 [56 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-08-22 20:26:45,091 [17 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-08-22 20:26:45,092 [17 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-08-22 20:28:15,660 [8 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-08-22 20:28:15,661 [8 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-08-22 20:42:50,323 [12 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-08-22 20:42:50,402 [12 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-08-22 21:05:44,523 [51 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-08-22 21:05:44,524 [51 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-08-22 21:41:57,423 [8 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-08-22 21:41:57,480 [8 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-08-22 21:43:09,859 [32 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-08-22 21:43:09,860 [32 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-08-22 21:43:54,433 [36 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-08-22 21:43:54,434 [36 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-08-23 16:47:56,507 [20 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/Admin/urlGeneratePDFmultipleRowsWithLink' was not found or does not implement IController.
+2023-08-23 16:47:56,559 [20 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-08-23 16:47:57,355 [13 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/Admin/urlGeneratePDFmultipleRowsWithLink' was not found or does not implement IController.
+2023-08-23 16:47:57,355 [13 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-08-23 16:47:57,877 [14 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/Admin/urlGeneratePDFmultipleRowsWithLink' was not found or does not implement IController.
+2023-08-23 16:47:57,877 [14 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-08-23 16:47:58,362 [14 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/Admin/urlGeneratePDFmultipleRowsWithLink' was not found or does not implement IController.
+2023-08-23 16:47:58,362 [14 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-08-23 16:56:55,143 [24 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/Admin/urlGeneratePDFmultipleRowsWithLink' was not found or does not implement IController.
+2023-08-23 16:56:55,143 [24 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-08-23 17:18:02,558 [69 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/Admin/urlGeneratePDFmultipleRowsWithLink' was not found or does not implement IController.
+2023-08-23 17:18:02,560 [69 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-08-23 17:18:03,231 [61 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/Admin/urlGeneratePDFmultipleRowsWithLink' was not found or does not implement IController.
+2023-08-23 17:18:03,231 [61 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-08-23 17:18:04,424 [68 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/Admin/urlGeneratePDFmultipleRowsWithLink' was not found or does not implement IController.
+2023-08-23 17:18:04,425 [68 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-08-23 17:18:04,887 [66 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/Admin/urlGeneratePDFmultipleRowsWithLink' was not found or does not implement IController.
+2023-08-23 17:18:04,887 [66 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-08-24 13:50:37,150 [17 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - A public action method 'DownloadMultipleFileWithLink' was not found on controller 'GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController'.
+2023-08-24 13:50:37,234 [17 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-08-24 18:40:16,525 [11 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [GetPDFDownloadID] - in GetPDFDownloadID
+2023-08-24 18:40:16,752 [15 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadFile] - in DownloadFile
+2023-08-24 18:45:26,909 [23 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadFile] - in DownloadFile
+2023-08-24 18:50:23,634 [14 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadFile] - in DownloadFile
+2023-08-24 18:54:01,310 [17 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [GetPDFDownloadID] - in GetPDFDownloadID
+2023-08-24 18:54:01,492 [8 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadFile] - in DownloadFile
+2023-08-24 19:15:44,737 [20 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [GetPDFDownloadID] - in GetPDFDownloadID
+2023-08-24 19:15:45,461 [13 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadFile] - in DownloadFile
+2023-08-24 19:15:50,181 [20 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [GetPDFDownloadID] - in GetPDFDownloadID
+2023-08-24 19:15:50,672 [29 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadFile] - in DownloadFile
+2023-08-24 19:15:51,157 [23 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [GetPDFDownloadID] - in GetPDFDownloadID
+2023-08-24 19:15:51,461 [13 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadFile] - in DownloadFile
+2023-08-24 19:15:51,744 [23 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [GetPDFDownloadID] - in GetPDFDownloadID
+2023-08-24 19:16:02,132 [29 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadFile] - in DownloadFile
+2023-08-24 19:18:37,802 [13 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [GetPDFDownloadID] - in GetPDFDownloadID
+2023-08-24 19:18:38,026 [27 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadFile] - in DownloadFile
+2023-08-24 19:26:33,091 [15 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [GetPDFDownloadID] - in GetPDFDownloadID
+2023-08-24 19:26:33,283 [22 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadFile] - in DownloadFile
+2023-08-24 19:29:52,566 [13 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadFile] - in DownloadFile
+2023-08-25 14:34:53,299 [37 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [GetPDFDownloadID] - in GetPDFDownloadID
+2023-08-25 14:34:53,556 [26 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadFile] - in DownloadFile
+2023-08-26 15:30:52,431 [48 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-08-26 15:30:52,507 [48 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-08-26 15:32:21,038 [62 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-08-26 15:32:21,039 [62 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-08-26 15:33:26,694 [70 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-08-26 15:33:26,695 [70 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-08-28 15:36:43,217 [17 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The code block is missing a closing "}" character.  Make sure you have a matching "}" character for all the "{" characters within this block, and that none of the "}" characters are being interpreted as markup.
+
+2023-08-28 15:36:43,271 [17 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-08-28 15:37:06,203 [15 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The code block is missing a closing "}" character.  Make sure you have a matching "}" character for all the "{" characters within this block, and that none of the "}" characters are being interpreted as markup.
+
+2023-08-28 15:37:06,203 [15 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-08-28 16:09:18,141 [42 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [GetPDFDownloadID] - in GetPDFDownloadID
+2023-08-28 16:09:18,272 [52 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadFile] - in DownloadFile
+2023-09-07 11:16:38,385 [13 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 11:16:38,401 [13 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 12:21:41,261 [45 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 12:21:41,262 [45 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 12:21:55,861 [45 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 12:21:55,861 [45 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 13:10:00,990 [10 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 13:10:01,039 [10 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 13:10:46,832 [10 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 13:10:46,832 [10 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 13:11:08,272 [8 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 13:11:08,273 [8 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 13:25:46,616 [20 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 13:25:46,617 [20 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 13:31:53,829 [32 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 13:31:53,830 [32 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 13:34:38,441 [35 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 13:34:38,442 [35 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 13:34:55,779 [34 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 13:34:55,780 [34 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 13:58:03,139 [57 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 13:58:03,140 [57 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 14:01:32,041 [71 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 14:01:32,042 [71 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 14:02:19,177 [70 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 14:02:19,178 [70 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 14:03:23,648 [45 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 14:03:23,649 [45 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 14:03:48,905 [67 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 14:03:48,906 [67 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 14:10:38,838 [69 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 14:10:38,839 [69 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 14:11:31,456 [69 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 14:11:31,457 [69 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 14:12:47,005 [47 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 14:12:47,006 [47 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 14:14:33,087 [51 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 14:14:33,088 [51 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 14:18:03,966 [60 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 14:18:03,967 [60 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 14:18:34,748 [54 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 14:18:34,749 [54 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 14:20:23,275 [61 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 14:20:23,276 [61 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 14:20:42,858 [52 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 14:20:42,859 [52 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 14:21:01,671 [73 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 14:21:01,671 [73 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 14:21:16,387 [77 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 14:21:16,388 [77 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 14:23:21,154 [52 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 14:23:21,154 [52 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 14:26:35,953 [79 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 14:26:35,954 [79 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 14:27:12,983 [80 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 14:27:12,984 [80 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 14:28:27,368 [82 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 14:28:27,368 [82 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 14:30:04,175 [93 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 14:30:04,176 [93 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 14:34:36,683 [94 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 14:34:36,683 [94 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 14:36:04,543 [96 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 14:36:04,543 [96 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 14:36:50,484 [96 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 14:36:50,484 [96 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 15:04:15,362 [45 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 15:04:15,363 [45 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 15:14:32,687 [44 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 15:14:32,687 [44 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 15:18:14,613 [71 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 15:18:14,613 [71 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 15:23:42,922 [91 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 15:23:42,923 [91 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 15:28:37,909 [58 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 15:28:37,909 [58 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 15:30:24,734 [97 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 15:30:24,734 [97 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 15:45:28,111 [64 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 15:45:28,112 [64 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 15:49:35,153 [97 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 15:49:35,154 [97 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 15:51:44,809 [85 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 15:51:44,809 [85 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 15:59:02,302 [44 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 15:59:02,303 [44 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 16:01:04,357 [88 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 16:01:04,358 [88 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 16:03:02,879 [71 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 16:03:02,880 [71 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 16:03:48,522 [52 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 16:03:48,523 [52 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 16:04:35,026 [52 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 16:04:35,026 [52 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 16:15:10,158 [41 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 16:15:10,159 [41 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 16:15:44,168 [43 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 16:15:44,169 [43 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 16:17:19,000 [15 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 16:17:19,000 [15 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 16:18:49,927 [79 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 16:18:49,928 [79 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 16:24:05,740 [38 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 16:24:05,741 [38 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 16:25:43,263 [76 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 16:25:43,263 [76 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 16:26:21,687 [76 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 16:26:21,688 [76 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 16:29:24,985 [47 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 16:29:24,985 [47 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 16:30:15,819 [47 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 16:30:15,819 [47 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 16:31:12,870 [42 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 16:31:12,871 [42 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 16:31:57,316 [40 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 16:31:57,316 [40 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 16:32:41,865 [42 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 16:32:41,865 [42 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 17:43:21,861 [26 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 17:43:21,938 [26 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-07 17:43:34,923 [26 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-07 17:43:34,923 [26 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-09-09 19:17:07,368 [7 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The specified path, file name, or both are too long. The fully qualified file name must be less than 260 characters, and the directory name must be less than 248 characters.
+2023-09-09 19:17:39,511 [20 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The specified path, file name, or both are too long. The fully qualified file name must be less than 260 characters, and the directory name must be less than 248 characters.
+2023-09-09 19:27:43,938 [5 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The specified path, file name, or both are too long. The fully qualified file name must be less than 260 characters, and the directory name must be less than 248 characters.
+2023-09-12 13:26:20,031 [20 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - D:\DataDepot\GarronT.CMS.UI\MobileUploadData\10075\10134\1250\142893\CommonMAP\
+2023-09-12 14:54:11,346 [7 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.
+2023-09-12 15:29:43,710 [18 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.
+2023-09-12 15:33:38,861 [6 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.
+2023-09-12 15:40:16,862 [16 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.
+2023-09-12 15:48:34,155 [16 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.
+2023-09-12 15:53:43,618 [9 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.
+2023-09-12 15:54:30,512 [29 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.
+2023-09-12 15:59:37,447 [10 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.
+2023-09-12 16:05:26,505 [17 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.
+2023-09-12 16:38:56,065 [5 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.
+2023-09-12 16:44:12,849 [8 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - 3;~\MobileUploadData\10075\10179\41670\411346\CITY SIDE PIPE PHOTO\2023-08-14-09-36-44.jpeg
+2023-09-12 16:45:10,849 [12 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - 3;~\MobileUploadData\10075\10179\41670\411346\CITY SIDE PIPE PHOTO\2023-08-14-09-36-44.jpeg
+2023-09-12 16:49:47,238 [6 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.
+2023-09-12 16:52:08,540 [13 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [GetPDFDownloadID] - in GetPDFDownloadID
+2023-09-12 16:52:08,660 [14 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadFile] - in DownloadFile
+2023-09-12 17:11:14,523 [7 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - 3;~\MobileUploadData\10075\10179\41670\411346\CITY SIDE PIPE PHOTO\2023-08-14-09-36-44.jpeg
+2023-09-12 17:12:27,533 [19 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - 3;~\MobileUploadData\10075\10179\41670\411346\CITY SIDE PIPE PHOTO\2023-08-14-09-36-44.jpeg
+2023-09-12 20:24:32,336 [9 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - Access to the path '2023-08-14-09-36-44' is denied.
+2023-09-12 20:33:06,586 [8 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.
+2023-09-12 20:35:25,828 [5 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.
+2023-09-12 20:35:42,905 [8 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.
+2023-09-12 20:36:15,795 [6 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.
+2023-09-14 15:19:09,623 [6 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.
+2023-09-14 15:32:04,739 [11 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.
+2023-09-14 15:37:30,404 [14 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.
+2023-09-14 15:45:12,830 [7 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.
+2023-09-14 16:09:57,247 [7 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.
+2023-09-14 16:37:12,238 [63 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.
+2023-09-14 16:38:16,497 [43 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.
+2023-09-14 16:42:06,878 [7 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.
+2023-09-14 16:42:32,426 [16 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.
+2023-09-14 16:45:41,402 [16 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.
+2023-09-14 16:46:28,817 [12 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.
+2023-09-14 16:49:17,047 [12 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.
+2023-09-14 16:57:03,389 [8 - garront] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.
+2023-09-14 17:06:10,109 [7 - garront] INFO  GarronT.CMS.UI.CMS_MobileService [getFileUploadPartial] - getFileUploadPartial Started at - 14-09-2023 17:06:10
+2023-09-27 19:33:51,905 [21 - snstest] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/undefined' was not found or does not implement IController.
+2023-09-27 19:33:52,345 [21 - snstest] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2023-10-25 15:43:41,324 [13 - snstest] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.
+2023-10-25 16:24:42,856 [14 - snstest] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.

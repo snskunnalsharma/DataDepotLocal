@@ -2994,8 +2994,12 @@ angularApp
 
                         var htmlfilename = selectedData.selectedData.text.replace(/ /g, '').replace("/", '').replace("/", '');
                         console.log('htmlfilename == ' + htmlfilename);
+                        debugger;
                         $scope.$apply(function () {
                             $scope.FieldTemplateName = $rootScope.projectPath + "Angular/views/Form/field/" + htmlfilename + ".html";
+                            //$scope.FieldTemplateName = $rootScope.projectPath + "Angular/views/Form/field/SinglePhoto_old.html";
+                            console.log("Render file");
+                            //$scope.reload();
                         });
 
 
@@ -3031,7 +3035,7 @@ angularApp
                         }
 
                         $scope.finishLoading = function () {
-
+                            debugger;
                             var isoptionsexist = false;
                             //if (ismappedtoexcel == "0") {
                             if (ismappedtoexcel == "0" || ismappedtoexcel == "1") {
@@ -3120,7 +3124,7 @@ angularApp
                             getNumericFields()
                         }
 
-
+                        debugger;
                         for (var i = $scope.ProjectForms.length - 1; i >= 0; i--) {
                             if ($scope.ProjectForms[i].SectionID == selectedsection) {
                                 for (var j = $scope.ProjectForms[i].SectionFields.length - 1; j >= 0; j--) {
@@ -3135,7 +3139,7 @@ angularApp
                                             }
                                             else {
 
-
+                                                console.log("selectedFieldText ==== " + selectedFieldText);
                                                 $scope.ProjectForms[i].SectionFields[j].field_DatatypeName = $.trim(selectedData.selectedData.text);
                                                 $scope.ProjectForms[i].SectionFields[j].field_DatatypeID = selectedData.selectedData.value;
                                                 $scope.ProjectForms[i].SectionFields[j].field_MappedtoExcel = ismappedtoexcel,
@@ -3233,7 +3237,7 @@ angularApp
 
                                     "field_PhotoLibraryEnabled": false,
                                     "field_AllowAnnotation": false,
-                                    "field_CameraEnabled": false,
+                                    "field_CameraEnabled": true,
                                     "field_GPSTagging": false,
                                     "field_ExcludeonSync": false,
                                     "field_PhotoQuality": "",

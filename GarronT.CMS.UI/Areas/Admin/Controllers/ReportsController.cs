@@ -3036,60 +3036,60 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 return View("Index");
             }
         }
-        public ActionResult DownloadMultipleFilesWithLink()
-        {
-            try
-            {
-                var showMap = Convert.ToBoolean(TempData["showMap"]);
-                TempData.Keep("showMap");
-                @ViewBag.showMap = showMap;
+        //public ActionResult DownloadMultipleFilesWithLink()
+        //{
+        //    try
+        //    {
+        //        var showMap = Convert.ToBoolean(TempData["showMap"]);
+        //        TempData.Keep("showMap");
+        //        @ViewBag.showMap = showMap;
 
-                List<ReportRow> ReportRowList = TempData["ReportRowList"] as List<ReportRow>;
-                TempData.Keep("ReportRowList");
+        //        List<ReportRow> ReportRowList = TempData["ReportRowList"] as List<ReportRow>;
+        //        TempData.Keep("ReportRowList");
 
-                List<ReportPDFVM> Recordlist = new List<ReportPDFVM>();
+        //        List<ReportPDFVM> Recordlist = new List<ReportPDFVM>();
 
-                foreach (var ReportRow in ReportRowList)
-                {
-                    ReportPDFVM reportPDFVM = new ReportPDFVM();
-                    ReportHeaderModel reportheader = new ReportDAL().GetReportHeaderModel(ReportRow.UploadedID);
-                    reportPDFVM.FormName = reportheader.FormName;
-                    reportPDFVM.ProjectName = reportheader.ProjectName;
-                    reportPDFVM.VisitedDate = reportheader.ProjectDate;
-                    reportPDFVM.InstallerName = reportheader.InstallerName;
-                    reportPDFVM.CategoryType = ReportRow.CategoryType;
+        //        foreach (var ReportRow in ReportRowList)
+        //        {
+        //            ReportPDFVM reportPDFVM = new ReportPDFVM();
+        //            ReportHeaderModel reportheader = new ReportDAL().GetReportHeaderModel(ReportRow.UploadedID);
+        //            reportPDFVM.FormName = reportheader.FormName;
+        //            reportPDFVM.ProjectName = reportheader.ProjectName;
+        //            reportPDFVM.VisitedDate = reportheader.ProjectDate;
+        //            reportPDFVM.InstallerName = reportheader.InstallerName;
+        //            reportPDFVM.CategoryType = ReportRow.CategoryType;
 
-                    //Modified by AniketJ on 2-sep-2016 added RTU/SKIP records in ReportPDFVM to export
-                    if (ReportRow.CategoryType == "COMPLETED")
-                    {
-                        var list = new ReportDAL().GetReportsRecordsID(ReportRow.UploadedID, ReportRow.FormID);
-                        reportPDFVM.sectionfiledval = list;
-                        reportPDFVM.FormID = ReportRow.FormID;
-                        reportPDFVM.UploadID = ReportRow.UploadedID;
-                        long projectId;
-                        reportPDFVM.MeterAfterBeforeBoxDiffTime = meterBox(ReportRow.UploadedID, list, out projectId, out string customerAddress, out string utilityType);
-                        reportPDFVM.ProjectId = projectId;
-                        reportPDFVM.CustomerAddress = customerAddress;
-                        reportPDFVM.UtilityType = utilityType;
-                    }
-                    else if (ReportRow.CategoryType == "RTU" || ReportRow.CategoryType == "SKIP")
-                    {
-                        List<STP_GetReportTableNew_bak_Result> reportList = (List<STP_GetReportTableNew_bak_Result>)TempData["List"];
-                        TempData.Keep("List");
-                        var reportSkipRTUModel = new ReportDAL().SKIP_RTU_Records(reportList, ReportRow.UploadedID, ReportRow.FormID);
-                        reportPDFVM.skipRtuRecordModel = reportSkipRTUModel;
-                    }
-                    Recordlist.Add(reportPDFVM);
-                }
-                string footer = "--footer-center \"Printed on: " + DateTime.Now.Date.ToString("MM/dd/yyyy") + "  Page: [page]/[toPage]\"" + " --footer-line --footer-font-size \"9\" --footer-spacing 6 --footer-font-name \"calibri light\"";
-                return View("DownloadMultipleFilesWithLink", Recordlist);
-            }
-            catch (Exception ex)
-            {
-                log.Error(ex.Message);
-                return View("Index");
-            }
-        }
+        //            //Modified by AniketJ on 2-sep-2016 added RTU/SKIP records in ReportPDFVM to export
+        //            if (ReportRow.CategoryType == "COMPLETED")
+        //            {
+        //                var list = new ReportDAL().GetReportsRecordsID(ReportRow.UploadedID, ReportRow.FormID);
+        //                reportPDFVM.sectionfiledval = list;
+        //                reportPDFVM.FormID = ReportRow.FormID;
+        //                reportPDFVM.UploadID = ReportRow.UploadedID;
+        //                long projectId;
+        //                reportPDFVM.MeterAfterBeforeBoxDiffTime = meterBox(ReportRow.UploadedID, list, out projectId, out string customerAddress, out string utilityType);
+        //                reportPDFVM.ProjectId = projectId;
+        //                reportPDFVM.CustomerAddress = customerAddress;
+        //                reportPDFVM.UtilityType = utilityType;
+        //            }
+        //            else if (ReportRow.CategoryType == "RTU" || ReportRow.CategoryType == "SKIP")
+        //            {
+        //                List<STP_GetReportTableNew_bak_Result> reportList = (List<STP_GetReportTableNew_bak_Result>)TempData["List"];
+        //                TempData.Keep("List");
+        //                var reportSkipRTUModel = new ReportDAL().SKIP_RTU_Records(reportList, ReportRow.UploadedID, ReportRow.FormID);
+        //                reportPDFVM.skipRtuRecordModel = reportSkipRTUModel;
+        //            }
+        //            Recordlist.Add(reportPDFVM);
+        //        }
+        //        string footer = "--footer-center \"Printed on: " + DateTime.Now.Date.ToString("MM/dd/yyyy") + "  Page: [page]/[toPage]\"" + " --footer-line --footer-font-size \"9\" --footer-spacing 6 --footer-font-name \"calibri light\"";
+        //        return View("DownloadMultipleFilesWithLink", Recordlist);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        log.Error(ex.Message);
+        //        return View("Index");
+        //    }
+        //}
 
 
 
@@ -3328,83 +3328,83 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             }
 
         }
-        public ActionResult GenerateMultiplePDFlink()
-        {
-            try
-            {
-                var showMap = Convert.ToBoolean(TempData["showMap"]);
-                TempData.Keep("showMap");
-                @ViewBag.showMap = showMap;
+        //public ActionResult GenerateMultiplePDFlink()
+        //{
+        //    try
+        //    {
+        //        var showMap = Convert.ToBoolean(TempData["showMap"]);
+        //        TempData.Keep("showMap");
+        //        @ViewBag.showMap = showMap;
 
-                List<ReportRow> ReportRowList = TempData["ReportRowList"] as List<ReportRow>;
-                CompassEntities CompassEntities = new CompassEntities();
+        //        List<ReportRow> ReportRowList = TempData["ReportRowList"] as List<ReportRow>;
+        //        CompassEntities CompassEntities = new CompassEntities();
 
-                TempData.Keep("ReportRowList");
+        //        TempData.Keep("ReportRowList");
 
-                List<ReportPDFVM> Recordlist = new List<ReportPDFVM>();
+        //        List<ReportPDFVM> Recordlist = new List<ReportPDFVM>();
 
-                string ProjectName = "ProjectReport";
-                foreach (var ReportRow in ReportRowList)
-                {
+        //        string ProjectName = "ProjectReport";
+        //        foreach (var ReportRow in ReportRowList)
+        //        {
 
-                    ReportPDFVM reportPDFVM = new ReportPDFVM();
-                    ReportHeaderModel reportheader = new ReportDAL().GetReportHeaderModel(ReportRow.UploadedID);
-                    reportPDFVM.FormName = reportheader.FormName;
-                    reportPDFVM.ProjectName = reportheader.ProjectName;
-                    reportPDFVM.VisitedDate = reportheader.ProjectDate;
-                    reportPDFVM.InstallerName = reportheader.InstallerName;
-                    reportPDFVM.CategoryType = ReportRow.CategoryType;
+        //            ReportPDFVM reportPDFVM = new ReportPDFVM();
+        //            ReportHeaderModel reportheader = new ReportDAL().GetReportHeaderModel(ReportRow.UploadedID);
+        //            reportPDFVM.FormName = reportheader.FormName;
+        //            reportPDFVM.ProjectName = reportheader.ProjectName;
+        //            reportPDFVM.VisitedDate = reportheader.ProjectDate;
+        //            reportPDFVM.InstallerName = reportheader.InstallerName;
+        //            reportPDFVM.CategoryType = ReportRow.CategoryType;
 
-                    ProjectName = reportPDFVM.ProjectName;
+        //            ProjectName = reportPDFVM.ProjectName;
 
-                    //Modified by AniketJ on 2-sep-2016 added RTU/SKIP records in ReportPDFVM to export
-                    if (ReportRow.CategoryType == "COMPLETED")
-                    {
-                        var list = new ReportDAL().GetReportsRecordsID(ReportRow.UploadedID, ReportRow.FormID);
-                        reportPDFVM.FormID = ReportRow.FormID;
-                        reportPDFVM.UploadID = ReportRow.UploadedID;
-                        reportPDFVM.sectionfiledval = list;
-                        long projectId;
-                        reportPDFVM.MeterAfterBeforeBoxDiffTime = meterBox(ReportRow.UploadedID, list, out projectId, out string customerAddress, out string utilityType);
-                        reportPDFVM.ProjectId = projectId;
-                        reportPDFVM.CustomerAddress = customerAddress;
-                        reportPDFVM.UtilityType = utilityType;
-                    }
-                    else if (ReportRow.CategoryType == "RTU" || ReportRow.CategoryType == "SKIP")
-                    {
-                        List<STP_GetReportTableNew_bak_Result> reportList = (List<STP_GetReportTableNew_bak_Result>)TempData["List"];
-                        TempData.Keep("List");
-                        var reportSkipRTUModel = new ReportDAL().SKIP_RTU_Records(reportList, ReportRow.UploadedID, ReportRow.FormID);
-                        reportPDFVM.skipRtuRecordModel = reportSkipRTUModel;
-                    }
-                    Recordlist.Add(reportPDFVM);
-                }
-                string footer = "--footer-center \"Printed on: " + DateTime.Now.Date.ToString("MM/dd/yyyy") + "  Page: [page]/[toPage]\"" + " --footer-line --footer-font-size \"9\" --footer-spacing 6 --footer-font-name \"calibri light\"";
+        //            //Modified by AniketJ on 2-sep-2016 added RTU/SKIP records in ReportPDFVM to export
+        //            if (ReportRow.CategoryType == "COMPLETED")
+        //            {
+        //                var list = new ReportDAL().GetReportsRecordsID(ReportRow.UploadedID, ReportRow.FormID);
+        //                reportPDFVM.FormID = ReportRow.FormID;
+        //                reportPDFVM.UploadID = ReportRow.UploadedID;
+        //                reportPDFVM.sectionfiledval = list;
+        //                long projectId;
+        //                reportPDFVM.MeterAfterBeforeBoxDiffTime = meterBox(ReportRow.UploadedID, list, out projectId, out string customerAddress, out string utilityType);
+        //                reportPDFVM.ProjectId = projectId;
+        //                reportPDFVM.CustomerAddress = customerAddress;
+        //                reportPDFVM.UtilityType = utilityType;
+        //            }
+        //            else if (ReportRow.CategoryType == "RTU" || ReportRow.CategoryType == "SKIP")
+        //            {
+        //                List<STP_GetReportTableNew_bak_Result> reportList = (List<STP_GetReportTableNew_bak_Result>)TempData["List"];
+        //                TempData.Keep("List");
+        //                var reportSkipRTUModel = new ReportDAL().SKIP_RTU_Records(reportList, ReportRow.UploadedID, ReportRow.FormID);
+        //                reportPDFVM.skipRtuRecordModel = reportSkipRTUModel;
+        //            }
+        //            Recordlist.Add(reportPDFVM);
+        //        }
+        //        string footer = "--footer-center \"Printed on: " + DateTime.Now.Date.ToString("MM/dd/yyyy") + "  Page: [page]/[toPage]\"" + " --footer-line --footer-font-size \"9\" --footer-spacing 6 --footer-font-name \"calibri light\"";
 
 
-                //return View(Recordlist);
-                return new Rotativa.ViewAsPdf("GenerateMultiplePDFlink", Recordlist)
-                {
-                    FileName = ProjectName + ".pdf",
-                    CustomSwitches = footer,
-                    PageOrientation = Orientation.Portrait,
-                    PageSize = Size.A4,
-                    PageMargins = new Margins(2, 0, 10, 0),
-                    PageWidth = 210,
-                    PageHeight = 297
-                };
-            }
-            catch (Exception ex)
-            {
+        //        //return View(Recordlist);
+        //        return new Rotativa.ViewAsPdf("GenerateMultiplePDFlink", Recordlist)
+        //        {
+        //            FileName = ProjectName + ".pdf",
+        //            CustomSwitches = footer,
+        //            PageOrientation = Orientation.Portrait,
+        //            PageSize = Size.A4,
+        //            PageMargins = new Margins(2, 0, 10, 0),
+        //            PageWidth = 210,
+        //            PageHeight = 297
+        //        };
+        //    }
+        //    catch (Exception ex)
+        //    {
 
-                log.Error(ex.Message);
-                return View("Index");
-            }
+        //        log.Error(ex.Message);
+        //        return View("Index");
+        //    }
 
-            // return View("GeneratePDF", list);
+        //    // return View("GeneratePDF", list);
 
-            // return View("GeneratePDF", ReportPDFVM);
-        }
+        //    // return View("GeneratePDF", ReportPDFVM);
+        //}
 
         #region reopen
 
