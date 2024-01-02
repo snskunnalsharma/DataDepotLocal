@@ -476,3 +476,35 @@
 2023-09-27 19:33:52,345 [21 - snstest] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
 2023-10-25 15:43:41,324 [13 - snstest] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.
 2023-10-25 16:24:42,856 [14 - snstest] ERROR GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadMultipleFile] - The given path's format is not supported.
+2023-11-09 13:11:44,149 [7 - garront] ERROR GarronT.CMS.Model.DAL.ReportDAL [GetReportsRecordsID] - An error occurred while executing the command definition. See the inner exception for details.
+2023-11-09 13:18:45,386 [41 - garront] ERROR GarronT.CMS.Model.DAL.ReportDAL [GetReportsRecordsID] - An error occurred while executing the command definition. See the inner exception for details.
+2023-11-21 13:25:36,955 [38 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [GetPDFDownloadID] - in GetPDFDownloadID
+2023-11-21 13:25:37,496 [31 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadFile] - in DownloadFile
+2023-11-21 13:26:11,845 [31 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [GetPDFDownloadID] - in GetPDFDownloadID
+2023-11-21 13:26:11,971 [25 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadFile] - in DownloadFile
+2023-11-21 16:23:33,231 [7 - garront] ERROR GarronT.CMS.Model.DAL.ReportDAL [GetReportsRecordsID] - An error occurred while executing the command definition. See the inner exception for details.
+2023-11-21 16:24:03,687 [7 - garront] ERROR GarronT.CMS.Model.DAL.ReportDAL [GetReportsRecordsID] - An error occurred while executing the command definition. See the inner exception for details.
+2023-11-21 16:24:33,840 [7 - garront] ERROR GarronT.CMS.Model.DAL.ReportDAL [GetReportsRecordsID] - An error occurred while executing the command definition. See the inner exception for details.
+2023-11-21 16:25:03,991 [7 - garront] ERROR GarronT.CMS.Model.DAL.ReportDAL [GetReportsRecordsID] - An error occurred while executing the command definition. See the inner exception for details.
+2023-11-21 16:25:34,129 [7 - garront] ERROR GarronT.CMS.Model.DAL.ReportDAL [GetReportsRecordsID] - An error occurred while executing the command definition. See the inner exception for details.
+2023-11-21 16:26:04,271 [7 - garront] ERROR GarronT.CMS.Model.DAL.ReportDAL [GetReportsRecordsID] - An error occurred while executing the command definition. See the inner exception for details.
+2023-11-21 16:26:34,392 [7 - garront] ERROR GarronT.CMS.Model.DAL.ReportDAL [GetReportsRecordsID] - An error occurred while executing the command definition. See the inner exception for details.
+2023-11-21 16:27:04,496 [7 - garront] ERROR GarronT.CMS.Model.DAL.ReportDAL [GetReportsRecordsID] - An error occurred while executing the command definition. See the inner exception for details.
+2023-11-21 16:27:34,591 [7 - garront] ERROR GarronT.CMS.Model.DAL.ReportDAL [GetReportsRecordsID] - An error occurred while executing the command definition. See the inner exception for details.
+2023-11-21 16:28:04,719 [7 - garront] ERROR GarronT.CMS.Model.DAL.ReportDAL [GetReportsRecordsID] - An error occurred while executing the command definition. See the inner exception for details.
+2023-11-21 16:28:34,882 [7 - garront] ERROR GarronT.CMS.Model.DAL.ReportDAL [GetReportsRecordsID] - An error occurred while executing the command definition. See the inner exception for details.
+2023-12-04 13:26:01,499 [17 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [GetPDFDownloadID] - in GetPDFDownloadID
+2023-12-04 13:26:01,771 [18 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadFile] - in DownloadFile
+2023-12-04 13:26:39,792 [19 - garront] ERROR GarronT.CMS.Model.DAL.ReportDAL [GetReportsRecordsID] - An error occurred while executing the command definition. See the inner exception for details.
+2023-12-04 13:27:30,205 [14 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadFile] - in DownloadFile
+2023-12-04 13:34:49,568 [36 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadFile] - in DownloadFile
+2023-12-04 13:39:06,989 [15 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [GetPDFDownloadID] - in GetPDFDownloadID
+2023-12-04 13:39:07,085 [38 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadFile] - in DownloadFile
+2023-12-04 13:48:11,908 [36 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadFile] - in DownloadFile
+2023-12-04 13:48:43,315 [52 - garront] ERROR GarronT.CMS.Model.DAL.ReportDAL [GetReportsRecordsID] - An error occurred while executing the command definition. See the inner exception for details.
+2023-12-04 13:49:36,807 [48 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadFile] - in DownloadFile
+2023-12-04 13:49:42,845 [48 - garront] INFO  GarronT.CMS.UI.Areas.Admin.Controllers.ReportsController [DownloadFile] - in DownloadFile
+2023-12-12 19:30:22,159 [23 - garront] INFO  GarronT.CMS.Model.clsMail [SaveInstallerMap] - Installer Allocation success-12/12/2023 7:30:22 PM
+2023-12-12 19:30:22,217 [30 - garront] INFO  GarronT.CMS.Model.clsMail [<SaveInstallerMap>b__3] - Calling Mail send method at-12/12/2023 7:30:22 PM
+2023-12-12 19:30:22,239 [30 - garront] INFO  GarronT.CMS.Model.DAL.InstallerDAL [SendMalil] - Entry to SendMalil in  Mail send method at-12/12/2023 7:30:22 PM
+2023-12-12 19:30:29,929 [30 - garront] INFO  GarronT.CMS.Model.clsMail [<SaveInstallerMap>b__3] - end of Mail send method at-12/12/2023 7:30:29 PM

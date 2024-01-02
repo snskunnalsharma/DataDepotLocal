@@ -2810,7 +2810,7 @@ namespace GarronT.CMS.Model.DAL
                                         objMapVisits.skipInstallerName = item1["InstallerName"].ToString();
                                         objMapVisits.skippedReason = item1["SkippedReason"].ToString();
                                         string skipComments = item1["SkipComment"].ToString();
-                                        skipComments = skipComments.Replace("Optional(\"", "").Replace("\")", "").Replace("\"\"","");
+                                        skipComments = skipComments.Replace("Optional(\"", "").Replace("\")", "").Replace("\"\"", "");
                                         objMapVisits.skipComments = skipComments;
                                         objListMapVisits.Add(objMapVisits);
 
@@ -2989,7 +2989,7 @@ namespace GarronT.CMS.Model.DAL
                     #endregion
                     //get last complete position of user project's
                     var timeElapsed = sw.Elapsed;
-                    if (!checkRecordTotal)
+                    if (chunkRecordCount > 0)
                     {
                         var projectLastLocation = getLastCompleteLocation(userId);
                         if (projectLastLocation.Count > 0)
@@ -3228,7 +3228,7 @@ namespace GarronT.CMS.Model.DAL
             BatchNumber = 0;
 
             //first check any batch number present for the user
-            var checkB = objCompassEntities.tblInstallerMapDatas.Where(o => o.InstallerId == userId && o.BatchNumber != null && o.Active ==1).Select(o => o.BatchNumber).FirstOrDefault();
+            var checkB = objCompassEntities.tblInstallerMapDatas.Where(o => o.InstallerId == userId && o.BatchNumber != null && o.Active == 1).Select(o => o.BatchNumber).FirstOrDefault();
 
 
             if (checkB == null)
@@ -3262,7 +3262,7 @@ namespace GarronT.CMS.Model.DAL
                 else
                 {
 
-                    checkB = objCompassEntities.tblInstallerMapDatas.Where(o => o.InstallerId == userId && o.Active==1).Select(o => o.BatchNumber).Max();
+                    checkB = objCompassEntities.tblInstallerMapDatas.Where(o => o.InstallerId == userId && o.Active == 1).Select(o => o.BatchNumber).Max();
                     BatchNumber = long.Parse(checkB.ToString()) + 1;
                 }
             }
@@ -4534,7 +4534,7 @@ namespace GarronT.CMS.Model.DAL
                             lastCompleteLong = o.Field<string>("AddressLongitude")
                         }).Distinct().ToList();
 
-                        
+
                     }
                     cmd.Clone();
                 }

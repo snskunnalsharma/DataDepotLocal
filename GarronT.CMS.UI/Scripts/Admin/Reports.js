@@ -3472,8 +3472,14 @@ $('#Address_SelectAll').on('click', function () {
 
 // Handle click on "Select all" control
 $('#example-select-all').on('click', function () {
-
     $('input[name="id[]"]').prop('checked', this.checked);
+
+    // Check the count of selected checkboxes
+    var selectedCount = $('input[name="id[]"]:checked').length;
+
+    if (selectedCount > 10) {
+        alert("If you export more than 100 reports the report scheducle on your mail id");
+    }
 });
 
 // Handle click on checkbox to set state of "Select all" control
@@ -3503,23 +3509,27 @@ $('#btnExport').on('click', function () {
     var showmap = false;
     if ($('#chkShowMap').is(":checked")) {
         showmap = true;
-    }
-    else {
+    } else {
         showmap = false;
     }
-
 
     var ReportRowList = [];
     var SelectedRows = $('input[name="id[]"]:checked')
     SelectedRows.each(function (index, item) {
-
         var ReportRow = new Object();
         ReportRow.UploadedID = this.id;
         ReportRow.FormID = this.value;
         ReportRowList.push(ReportRow)
     });
-    if (ReportRowList.length == 0) {
 
+    var selectedReportsCount = ReportRowList.length;
+
+    if (selectedReportsCount > 10) {
+        alert("More than 100 reports selected. ");
+      
+    }
+
+    else if (selectedReportsCount === 0) {
         var $toast = toastr["error"]("Please select records to export", "Notification");
         return false;
     }
@@ -3538,21 +3548,19 @@ $('#btnExport').on('click', function () {
             waitingDialog.hide();
         },
         success: function (msg) {
-
             if (msg.Status == true) {
                 window.open(
                     urlGeneratePDFmultipleRows,
                     '_blank' // <- This is what makes it open in a new window.
                 );
             }
-            //else {
-            //    var $toast = toastr["error"]("Report will not genrated as no record has complete status.", "Notification");
-            //}
         },
         error: function (msg) {
+            // Handle error if needed
         }
     });
 });
+
 
 
 

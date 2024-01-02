@@ -166,7 +166,7 @@
                 </application>
                 <bindings>
                     <binding protocol="http" bindingInformation="*:6070:localhost" />
-					<binding protocol="http" bindingInformation="*:8083:192.168.1.98" />
+					<binding protocol="http" bindingInformation="*:8083:192.168.1.23" />
                 </bindings>
             </site>
             <siteDefaults>

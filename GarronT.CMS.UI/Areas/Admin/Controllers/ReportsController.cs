@@ -24,8 +24,8 @@ using System.Web.Script.Serialization;
 using KSPL.Indus.MSTS.UI.Filters;
 using AutoMapper;
 using System.Configuration;
-
 using System.Threading;
+
 
 using iTextSharp.tool.xml;
 using Rotativa.Options;
@@ -35,7 +35,8 @@ using System.Net.Http;
 using System.Web.Hosting;
 using GarronT.CMS.UI.CustomHelpers;
 using System.Web;
-
+using System.Net.Mail;
+using System.Net;
 
 namespace GarronT.CMS.UI.Areas.Admin.Controllers
 {
@@ -2948,36 +2949,112 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             TempData["showMap"] = showMap;
             TempData.Keep("showMap");
 
-
-            List<STP_GetReportTableNew_bak_Result> demo1 = new List<STP_GetReportTableNew_bak_Result>();
-
-            demo1 = (List<STP_GetReportTableNew_bak_Result>)TempData["List"];
+            List<STP_GetReportTableNew_bak_Result> demo1 = (List<STP_GetReportTableNew_bak_Result>)TempData["List"];
             TempData.Keep("List");
 
             List<ReportRow> obj = new List<ReportRow>();
             bool status = false;
+
             foreach (var item in ReportRowList)
             {
-                //Modified by AniketJ on 2-Sep-2016 to add categoryType= Skip & RTU
-                // var a = demo1.Where(o => o.FormId == item.FormID && o.ID == item.UploadedID && o.CategoryType == "COMPLETED").FirstOrDefault();
-                var a = demo1.Where(o => o.FormId == item.FormID && o.ID == item.UploadedID && (o.CategoryType == "COMPLETED" || o.CategoryType == "SKIP" || o.CategoryType == "RTU")).FirstOrDefault();
+                var a = demo1.FirstOrDefault(o => o.FormId == item.FormID && o.ID == item.UploadedID &&
+                    (o.CategoryType == "COMPLETED" || o.CategoryType == "SKIP" || o.CategoryType == "RTU"));
+
                 if (a != null)
                 {
-                    ReportRow reportRow = new ReportRow();
-                    reportRow.FormID = item.FormID;
-                    reportRow.UploadedID = item.UploadedID;
-                    reportRow.CategoryType = a.CategoryType;
+                    ReportRow reportRow = new ReportRow
+                    {
+                        FormID = item.FormID,
+                        UploadedID = item.UploadedID,
+                        CategoryType = a.CategoryType
+                    };
+
                     obj.Add(reportRow);
                     status = true;
                 }
             }
 
             TempData["ReportRowList"] = obj;
-
             TempData.Keep("ReportRowList");
 
-            return base.Json(new { Status = status }, JsonRequestBehavior.AllowGet);
+            // Schedule the Hangfire job to generate and email the PDF report
+            if (obj.Count > 10)
+            {
+                //Hangfire.BackgroundJob.Enqueue(() => GenerateAndEmailReport(obj, showMap));
+            }
+
+            return Json(new { Status = status }, JsonRequestBehavior.AllowGet);
         }
+
+        public void GenerateAndEmailReport(List<ReportRow> reportRows, bool showMap)
+        {
+            try
+            {
+                // Generate PDF report logic here
+                string pdfFilePath = GeneratePdfReport(reportRows, showMap);
+
+                // Send email logic here
+                SendEmail("kunal.sharma@snssystem.com", "Report PDF", "Attached is the generated report PDF.", pdfFilePath);
+
+                // Cleanup or additional logic after report generation and email sending
+            }
+            catch (Exception ex)
+            {
+                // Log or handle the exception
+                Console.WriteLine($"Error generating and sending report: {ex.Message}");
+            }
+        }
+
+        public void SendEmail(string toAddress, string subject, string body, string attachmentFilePath)
+        {
+            try
+            {
+                // Update these variables with your actual email settings
+                string host = "smtp.gmail.com";
+                string username = "datadepotonline@gmail.com";
+                string password = "vwjvarziznkprtnk";
+
+                using (MailMessage mail = new MailMessage())
+                {
+                    mail.From = new MailAddress("kunal.sharma@snssystem.com");
+                    mail.To.Add(toAddress);
+                    mail.Subject = subject;
+                    mail.Body = body;
+                    mail.IsBodyHtml = true;
+
+                    // Attach the PDF report
+                    if (!string.IsNullOrEmpty(attachmentFilePath))
+                    {
+                        Attachment attachment = new Attachment(attachmentFilePath);
+                        mail.Attachments.Add(attachment);
+                    }
+
+                    using (SmtpClient smtp = new SmtpClient(host))
+                    {
+                        smtp.Credentials = new NetworkCredential(username, password);
+                        smtp.EnableSsl = true;
+
+                        smtp.Send(mail);
+                        Console.WriteLine("Email sent successfully.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log or handle the exception
+                Console.WriteLine($"Error sending email: {ex.Message}");
+            }
+        }
+
+        public string GeneratePdfReport(List<ReportRow> reportRows, bool showMap)
+        {
+            // Implement your PDF generation logic here and return the file path
+            // Replace the following line with your actual logic
+            return "Replace/Path/To/Generated/PDF/File.pdf";
+        }
+
+
+
 
 
         public ActionResult DownloadMultipleFile()
