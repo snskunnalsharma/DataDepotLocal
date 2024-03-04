@@ -3477,9 +3477,9 @@ $('#example-select-all').on('click', function () {
     // Check the count of selected checkboxes
     var selectedCount = $('input[name="id[]"]:checked').length;
 
-    if (selectedCount > 10) {
-        alert("If you export more than 100 reports the report scheducle on your mail id");
-    }
+    //if (selectedCount > 10) {
+     //   alert("If you export more than 100 reports the report scheducle on your mail id");
+   // }
 });
 
 // Handle click on checkbox to set state of "Select all" control
@@ -3505,34 +3505,36 @@ $('#btnCloseallImages').on('click', function () {
 });
 // Handle form submission event
 $('#btnExport').on('click', function () {
-    debugger;
-    var showmap = false;
-    if ($('#chkShowMap').is(":checked")) {
-        showmap = true;
-    } else {
-        showmap = false;
-    }
-
     var ReportRowList = [];
-    var SelectedRows = $('input[name="id[]"]:checked')
-    SelectedRows.each(function (index, item) {
-        var ReportRow = new Object();
-        ReportRow.UploadedID = this.id;
-        ReportRow.FormID = this.value;
-        ReportRowList.push(ReportRow)
-    });
 
-    var selectedReportsCount = ReportRowList.length;
+    var selectedReportsCount = $('input[name="id[]"]:checked').length;
 
-    if (selectedReportsCount > 10) {
-        alert("More than 100 reports selected. ");
-      
+    if (selectedReportsCount > 100) {
+        alert("More than 100 reports selected. The report will schedule in your mail when it is generated.");
+        return SendEmail;
     }
 
     else if (selectedReportsCount === 0) {
         var $toast = toastr["error"]("Please select records to export", "Notification");
         return false;
     }
+
+    var showmap = $('#chkShowMap').is(":checked");
+
+    var SelectedRows = $('input[name="id[]"]:checked');
+    SelectedRows.each(function (index, item) {
+        var ReportRow = new Object();
+        ReportRow.UploadedID = this.id;
+        ReportRow.FormID = this.value;
+        ReportRowList.push(ReportRow);
+    });
+
+    // Now you can use ReportRowList and its length property as needed.
+
+
+
+
+   
 
     var urlExportReportMultipleIDs = $('#urlExportReportMultipleIDs').val();
     var urlGeneratePDFmultipleRows = $('#urlGeneratePDFmultipleRows').val();

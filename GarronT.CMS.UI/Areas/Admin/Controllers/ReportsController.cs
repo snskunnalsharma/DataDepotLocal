@@ -25,8 +25,6 @@ using KSPL.Indus.MSTS.UI.Filters;
 using AutoMapper;
 using System.Configuration;
 using System.Threading;
-
-
 using iTextSharp.tool.xml;
 using Rotativa.Options;
 using log4net;
@@ -37,6 +35,12 @@ using GarronT.CMS.UI.CustomHelpers;
 using System.Web;
 using System.Net.Mail;
 using System.Net;
+using System;
+using System.Net;
+using System.Net.Mail;
+using System.Net.Mime;
+
+
 
 namespace GarronT.CMS.UI.Areas.Admin.Controllers
 {
@@ -1171,7 +1175,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                             htmlData.Append("</div>");
                             #endregion
                         }
-                        else if (item2.FielddatatypeNames == "SinglePhoto" || item2.FielddatatypeNames == "MultiPhoto")
+                        else if (item2.FielddatatypeNames == "SinglePhotoAndGallery" || item2.FielddatatypeNames == "MultiPhotoAndGallery")
                         {
                             #region
                             //gets id for the current field from field data master table.
@@ -2944,6 +2948,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
         #region Generate pdf MultipleIDs
 
+        [HttpPost]
         public ActionResult ExportReportMultipleIDs(List<ReportRow> ReportRowList, bool showMap = false)
         {
             TempData["showMap"] = showMap;
@@ -2978,14 +2983,17 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             TempData.Keep("ReportRowList");
 
             // Schedule the Hangfire job to generate and email the PDF report
-            if (obj.Count > 10)
+            if (obj.Count > 100)
             {
-                //Hangfire.BackgroundJob.Enqueue(() => GenerateAndEmailReport(obj, showMap));
+                // Instead of using Hangfire.BackgroundJob.Enqueue, you can directly call the method
+                GenerateAndEmailReport(obj, showMap);
+
+                // You may also want to provide a response indicating that the email is scheduled
+                return Json(new { Status = true, Message = "Email will be sent when the report is generated." });
             }
 
-            return Json(new { Status = status }, JsonRequestBehavior.AllowGet);
+            return Json(new { Status = status, Message = "Report generated successfully." });
         }
-
         public void GenerateAndEmailReport(List<ReportRow> reportRows, bool showMap)
         {
             try
@@ -3004,6 +3012,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 Console.WriteLine($"Error generating and sending report: {ex.Message}");
             }
         }
+
 
         public void SendEmail(string toAddress, string subject, string body, string attachmentFilePath)
         {

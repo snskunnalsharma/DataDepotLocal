@@ -44,18 +44,34 @@ namespace GarronT.CMS.Model
         //get server date
         public DateTime ServerDate()
         {
+            try
+            {
+                var dbdate = db.Database.SqlQuery<DateTime>("SELECT GETDATE()").FirstOrDefault();
 
-            DateTime CurrentTime = new DateTime();
+                // Log the value obtained from the database
+                Console.WriteLine("Value obtained from the database: " + dbdate);
 
-
-            var dbdate = db.Database.SqlQuery<DateTime>("select getdate()").FirstOrDefault<DateTime>();
-
-
-            CurrentTime = Convert.ToDateTime(dbdate);
-
-            return CurrentTime;
-
+                if (dbdate != DateTime.MinValue)
+                {
+                    // Log the final result before returning
+                    Console.WriteLine("Final result to be returned: " + dbdate);
+                    return dbdate;
+                }
+                else
+                {
+                    // Handle the case where the database query did not return a valid date
+                    throw new InvalidOperationException("Failed to get the current date from the database.");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception for further analysis
+                Console.WriteLine("Exception: " + ex.Message);
+                throw;
+            }
         }
+
+
 
 
         public static string strActiveRecordExists = "Record already exists in active record.";

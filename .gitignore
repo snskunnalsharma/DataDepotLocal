@@ -9,6 +9,8 @@ build/
 bld/
 [Bb]in/
 [Oo]bj/
+GarronT.CMS.UI/InventoryUpload/
+GarronT.CMS.UI/ClockTimeReport/
 GarronT.CMS.UI/UploadData/
 GarronT.CMS.UI/InventoryUpload/
 GarronT.CMS.UI/MobileUploadData/

@@ -1349,8 +1349,7 @@ namespace GarronT.CMS.Model.DAL
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3;
                 var client = new RestClient("https://cashfreeapi.snssystem.com/api/v1/");
                 var request = new RestRequest("file-upload", Method.POST);
-                //request.AddParameter("token", "RcAxZ2ncVHmT5m9y4wClek");
-                request.AddParameter("token", "RcAxZ2ncVHmT5m9y4wClek");
+                request.AddParameter("token", "wLZfNogqzMB0tlbACpqceL");
                 request.AddParameter("type", "public");
                 request.AddFile("attachments", path);
                 IRestResponse response = client.Execute(request);
@@ -1732,9 +1731,9 @@ namespace GarronT.CMS.Model.DAL
                                 {
 
                                     long objInstallerId = long.Parse(objForm.userId.ToString());
-                                    var oldTblProjectFieldData = objCompassEntities.TblProjectFieldDatas.Where(o => o.FK_UploadedExcelData_Id == objForm.currentAccountData.initialFieldId 
+                                    var oldTblProjectFieldData = objCompassEntities.TblProjectFieldDatas.Where(o => o.FK_UploadedExcelData_Id == objForm.currentAccountData.initialFieldId
                                                                  && o.InstallerId == objInstallerId
-                                                                 && o.SkipId!=null && o.Active == 1).OrderByDescending(o => o.ID).FirstOrDefault();
+                                                                 && o.SkipId != null && o.Active == 1).OrderByDescending(o => o.ID).FirstOrDefault();
                                     if (oldTblProjectFieldData != null && objForm.currentAccountData.isAccountSkipped == true)
                                     {
                                         //Already data present in Projectfielddata table only for update do not insert again
@@ -1802,9 +1801,9 @@ namespace GarronT.CMS.Model.DAL
                                             //Bytes Saved to Specified File
                                             WriteBytesToFile(mapFilePath, bytes);
 
-                                            
+
                                             string s3BucketFileUploadedPath = UploadFileS3Bucket(mapFilePath);
-                                            
+
                                             TblProjectFieldDataAttachment obj = new TblProjectFieldDataAttachment();
                                             obj.Active = 1;
                                             obj.CreatedOn = new CommonFunctions().ServerDate();
@@ -2169,7 +2168,7 @@ namespace GarronT.CMS.Model.DAL
 
                                                                 objCompassEntities.tblProjectFieldDataInventoryDetails.Add(objInvent);
                                                                 objCompassEntities.SaveChanges();
-                                                                
+
                                                                 var OutWardRow = objCompassEntities.OutwardDetails.Where(o => o.AllocatedTo == userId
                                                                  && o.AllStockUtilized == false && o.Active == 1 && o.StockDetail.FKProductId == itemProduct.Id
                                                                  && o.StockDetail.SerialNumber == serialNumber && o.StockDetail.FKProjectId == objForm.projectId).FirstOrDefault();
@@ -2216,9 +2215,9 @@ namespace GarronT.CMS.Model.DAL
 
                                                             #region
 
-                                                            /*var productQty=objCompassEntities.StockDetails.Where(o=>o.Active==1 
-                                                                           && o.FKProductId== itemProduct.Id && o.FKProjectId== objForm.projectId 
-                                                                           && o.IsSerialNumber==0 && o.SerialNumber==null).FirstOrDefault();
+                                                            var productQty = objCompassEntities.StockDetails.Where(o => o.Active == 1
+                                                                             && o.FKProductId == itemProduct.Id && o.FKProjectId == objForm.projectId
+                                                                             && o.IsSerialNumber == 0 && o.SerialNumber == null).FirstOrDefault();
                                                             if (productQty != null && productQty.BalanceQty > 0 && itemProduct.Quantity != null)
                                                             {
                                                                 if (productQty.BalanceQty >= int.Parse(itemProduct.Quantity.ToString()))
@@ -2226,7 +2225,7 @@ namespace GarronT.CMS.Model.DAL
                                                                     productQty.BalanceQty = productQty.BalanceQty - (itemProduct.Quantity == null ? 0 : int.Parse(itemProduct.Quantity.ToString()));
                                                                     objCompassEntities.SaveChanges();
                                                                 }
-                                                            }*/
+                                                            }
 
                                                             tblProjectFieldDataInventoryDetail objInvent = new tblProjectFieldDataInventoryDetail();
                                                             objInvent.Active = 1;
@@ -2629,7 +2628,7 @@ namespace GarronT.CMS.Model.DAL
 
 
                                     if (masterFieldId != 0 && !string.IsNullOrEmpty(mapFilePath))
-                                    { 
+                                    {
                                         string s3BucketFileUploadedPath = UploadFileS3Bucket(mapFilePath);
                                         TblProjectFieldDataAttachment obj = new TblProjectFieldDataAttachment();
                                         obj.Active = 1;
@@ -2698,12 +2697,12 @@ namespace GarronT.CMS.Model.DAL
                             scope.Complete();
 
                             Task.Factory.StartNew(() =>
+                            {
+                                if (isRecrodSaved == true && (!string.IsNullOrEmpty(newMeterNo) || !string.IsNullOrEmpty(newMeterRadioNo)))
                                 {
-                                    if (isRecrodSaved == true && (!string.IsNullOrEmpty(newMeterNo) || !string.IsNullOrEmpty(newMeterRadioNo)))
-                                    {
-                                        CheckDuplicateMeterOrRadio(objFormDetails.ProjectId, projectFieldDataId, newMeterNo, newMeterRadioNo);
-                                    }
-                                });
+                                    CheckDuplicateMeterOrRadio(objFormDetails.ProjectId, projectFieldDataId, newMeterNo, newMeterRadioNo);
+                                }
+                            });
 
 
 
@@ -3392,6 +3391,7 @@ namespace GarronT.CMS.Model.DAL
                                     sb.Append("<td  width='60%' style=\"padding-left:-5px;border-bottom: 1px solid gray !important;\">:&nbsp;" + Service + "</td>");
                                     sb.Append("</tr>");
                                 }
+
                             }
                             else
                             {
@@ -3679,7 +3679,8 @@ namespace GarronT.CMS.Model.DAL
 
                 CompassEntities objCompassEntities = new CompassEntities();
                 var objAccountDetails = objCompassEntities.tblInstallerMapDatas.Where(o => o.InstallerId == userId && o.FK_UploadedExcelData_Id == uploadExcelId && o.Active == 1).FirstOrDefault();
-                if (objAccountDetails != null)
+                var objAuditAccountDetails = objCompassEntities.ProjectAuditAllocations.Where(o => o.FK_AuditorId == userId && o.FK_UploadedExcelData_Id == uploadExcelId && o.Active == 1).FirstOrDefault();
+                if (objAccountDetails != null || objAuditAccountDetails != null)
                 {
                     a = true;
                 }

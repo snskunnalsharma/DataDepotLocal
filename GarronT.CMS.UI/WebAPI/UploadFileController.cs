@@ -2952,7 +2952,7 @@ namespace GarronT.CMS.UI.WebAPI
 
                     var ImageType = objCompassEntities.PROC_CheckImageSingleMultiple(_formId, fieldName).FirstOrDefault();
 
-                    if (ImageType == "SinglePhoto" && _currentFieldDataMasterId > 0)
+                    if (ImageType == "SinglePhotoAndGallery" && _currentFieldDataMasterId > 0)
                     {
                         var currentActiveRecord = objCompassEntities.TblProjectFieldDataAttachments.Where(o =>
                             o.tblProjectFieldDataMaster_ID == _currentFieldDataMasterId
@@ -3656,7 +3656,7 @@ namespace GarronT.CMS.UI.WebAPI
 
                     var ImageType = objCompassEntities.PROC_CheckImageSingleMultiple(_formId, fieldName).FirstOrDefault();
 
-                    if (ImageType == "SinglePhoto" && _currentFieldDataMasterId > 0)
+                    if (ImageType == "SinglePhotoAndGallery" && _currentFieldDataMasterId > 0)
                     {
                         var currentActiveRecord = objCompassEntities.ProjectAuditFieldDataAttachments.Where(o =>
                             o.FK_ProjectAuditFieldDataMaster_ID == _currentFieldDataMasterId && o.IsAudioVideoImage == 3 && o.Active == 1).FirstOrDefault();

@@ -508,3 +508,11 @@
 2023-12-12 19:30:22,217 [30 - garront] INFO  GarronT.CMS.Model.clsMail [<SaveInstallerMap>b__3] - Calling Mail send method at-12/12/2023 7:30:22 PM
 2023-12-12 19:30:22,239 [30 - garront] INFO  GarronT.CMS.Model.DAL.InstallerDAL [SendMalil] - Entry to SendMalil in  Mail send method at-12/12/2023 7:30:22 PM
 2023-12-12 19:30:29,929 [30 - garront] INFO  GarronT.CMS.Model.clsMail [<SaveInstallerMap>b__3] - end of Mail send method at-12/12/2023 7:30:29 PM
+2024-01-10 18:09:44,008 [23 - garront] ERROR GarronT.CMS.Model.DAL.ReportDAL [GetReportsRecordsID] - An error occurred while executing the command definition. See the inner exception for details.
+2024-01-10 18:40:23,512 [12 - garront] ERROR GarronT.CMS.Model.DAL.ReportDAL [GetReportsRecordsID] - An error occurred while executing the command definition. See the inner exception for details.
+2024-01-10 18:40:53,907 [12 - garront] ERROR GarronT.CMS.Model.DAL.ReportDAL [GetReportsRecordsID] - An error occurred while executing the command definition. See the inner exception for details.
+2024-01-10 18:41:24,059 [12 - garront] ERROR GarronT.CMS.Model.DAL.ReportDAL [GetReportsRecordsID] - An error occurred while executing the command definition. See the inner exception for details.
+2024-03-04 16:11:07,020 [65 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/{{AddFormUrl}}' was not found or does not implement IController.
+2024-03-04 16:11:07,055 [65 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2024-03-04 16:48:00,254 [16 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/{{AddFormUrl}}' was not found or does not implement IController.
+2024-03-04 16:48:00,337 [16 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
