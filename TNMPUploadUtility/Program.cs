@@ -102,7 +102,7 @@ namespace TNMPUploadUtility
                 var lastDateTime = objCE.TblTNMPExportReportUtilityHistories.Where(o => o.FK_ProjectId == projectId && o.Active == 1).OrderByDescending(q => q.Id).Select(o => o.ToDateTime).FirstOrDefault();
                 if (lastDateTime.HasValue)
                 {
-                    if (projectId == 10108) // TNMP CMS
+                    if (projectId == 10117) // TNMP CMS
                     {
                         //date = date.AddDays(-2);
                         DateTime tempTime = (DateTime)lastDateTime;

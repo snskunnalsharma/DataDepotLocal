@@ -23,6 +23,8 @@ namespace GarronT.CMS.Model
         #region Create Object ILog for Logger write
         private static readonly ILog log = LogManager.GetLogger(typeof(clsMail));
 
+        public static object bcc { get; set; }
+
 
         #endregion
         /// <summary>

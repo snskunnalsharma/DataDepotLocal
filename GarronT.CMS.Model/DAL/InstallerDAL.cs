@@ -2475,7 +2475,7 @@ namespace GarronT.CMS.Model.DAL
                             //Send mail to old installer
                             mailtoNewInstaller.Add(newInstallerDetails.EmailId);
                             CCEmailTo.AddRange(mailSubjectNote.UserModel.Select(a => a.Email).ToList());
-                            new GarronT.CMS.Model.clsMail().SendMail(mailtoNewInstaller, CCEmailTo, MessageNewInstaller, Subject);
+                            new GarronT.CMS.Model.clsMail().SendMail(mailtoNewInstaller, CCEmailTo,MessageNewInstaller, Subject);
                         });
 
                         installer = "Old";

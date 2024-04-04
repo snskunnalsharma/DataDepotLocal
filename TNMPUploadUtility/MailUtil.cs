@@ -102,10 +102,10 @@ namespace TNMPUploadUtility
 
                 mail.IsBodyHtml = true;
                 MailAddress bcc = new MailAddress("yogendra.rajpoot@snssystem.com");
-                mail.Bcc.Add(bcc);
+               mail.Bcc.Add(bcc);
 
-                //MailAddress bcc1 = new MailAddress("garron@garront.com");
-                //mail.Bcc.Add(bcc1);
+                MailAddress bcc1 = new MailAddress("garron@garront.com");
+                mail.Bcc.Add(bcc1);
 
                 /*string Host = ConfigurationManager.AppSettings["WebMasterSMTPServer"].ToString();
                 int HostPort = int.Parse(ConfigurationManager.AppSettings["WebMasterPort"].ToString());

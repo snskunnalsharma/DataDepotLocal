@@ -4190,7 +4190,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             {
                 Response.Clear();
                 Response.Buffer = true;
-                if (projectId == 10085 || projectId == 10108)
+                if (projectId == 10117)
                 {
                     Response.AddHeader("content-disposition", "attachment;filename=meter_exchange_CMS_" + DateTime.Now.ToString("yyyyMMdd") + ".csv");
                 }

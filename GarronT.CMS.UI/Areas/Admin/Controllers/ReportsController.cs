@@ -2982,89 +2982,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             TempData["ReportRowList"] = obj;
             TempData.Keep("ReportRowList");
 
-            // Schedule the Hangfire job to generate and email the PDF report
-            if (obj.Count > 100)
-            {
-                // Instead of using Hangfire.BackgroundJob.Enqueue, you can directly call the method
-                GenerateAndEmailReport(obj, showMap);
-
-                // You may also want to provide a response indicating that the email is scheduled
-                return Json(new { Status = true, Message = "Email will be sent when the report is generated." });
-            }
-
             return Json(new { Status = status, Message = "Report generated successfully." });
         }
-        public void GenerateAndEmailReport(List<ReportRow> reportRows, bool showMap)
-        {
-            try
-            {
-                // Generate PDF report logic here
-                string pdfFilePath = GeneratePdfReport(reportRows, showMap);
-
-                // Send email logic here
-                SendEmail("kunal.sharma@snssystem.com", "Report PDF", "Attached is the generated report PDF.", pdfFilePath);
-
-                // Cleanup or additional logic after report generation and email sending
-            }
-            catch (Exception ex)
-            {
-                // Log or handle the exception
-                Console.WriteLine($"Error generating and sending report: {ex.Message}");
-            }
-        }
-
-
-        public void SendEmail(string toAddress, string subject, string body, string attachmentFilePath)
-        {
-            try
-            {
-                // Update these variables with your actual email settings
-                string host = "smtp.gmail.com";
-                string username = "datadepotonline@gmail.com";
-                string password = "vwjvarziznkprtnk";
-
-                using (MailMessage mail = new MailMessage())
-                {
-                    mail.From = new MailAddress("kunal.sharma@snssystem.com");
-                    mail.To.Add(toAddress);
-                    mail.Subject = subject;
-                    mail.Body = body;
-                    mail.IsBodyHtml = true;
-
-                    // Attach the PDF report
-                    if (!string.IsNullOrEmpty(attachmentFilePath))
-                    {
-                        Attachment attachment = new Attachment(attachmentFilePath);
-                        mail.Attachments.Add(attachment);
-                    }
-
-                    using (SmtpClient smtp = new SmtpClient(host))
-                    {
-                        smtp.Credentials = new NetworkCredential(username, password);
-                        smtp.EnableSsl = true;
-
-                        smtp.Send(mail);
-                        Console.WriteLine("Email sent successfully.");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                // Log or handle the exception
-                Console.WriteLine($"Error sending email: {ex.Message}");
-            }
-        }
-
-        public string GeneratePdfReport(List<ReportRow> reportRows, bool showMap)
-        {
-            // Implement your PDF generation logic here and return the file path
-            // Replace the following line with your actual logic
-            return "Replace/Path/To/Generated/PDF/File.pdf";
-        }
-
-
-
-
 
         public ActionResult DownloadMultipleFile()
         {

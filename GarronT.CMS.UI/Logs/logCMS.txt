@@ -516,3 +516,7 @@
 2024-03-04 16:11:07,055 [65 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
 2024-03-04 16:48:00,254 [16 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - The controller for path '/{{AddFormUrl}}' was not found or does not implement IController.
 2024-03-04 16:48:00,337 [16 - garront] INFO  GarronT.CMS.UI.MvcApplication [Application_Error] - ERROR  ex.Message - 
+2024-03-05 20:15:20,112 [11 - garront] INFO  GarronT.CMS.UI.CMS_MobileService [getFileUploadPartial] - getFileUploadPartial Started at - 24/03/05 8:15:20 PM
+2024-03-11 19:49:33,830 [41 - garront] ERROR GarronT.CMS.Model.DAL.ReportDAL [GetReportsRecordsID] - An error occurred while executing the command definition. See the inner exception for details.
+2024-03-11 19:50:04,772 [41 - garront] ERROR GarronT.CMS.Model.DAL.ReportDAL [GetReportsRecordsID] - An error occurred while executing the command definition. See the inner exception for details.
+2024-03-11 19:50:35,011 [41 - garront] ERROR GarronT.CMS.Model.DAL.ReportDAL [GetReportsRecordsID] - An error occurred while executing the command definition. See the inner exception for details.

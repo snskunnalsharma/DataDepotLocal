@@ -855,7 +855,7 @@ function SelectAll_Recods() {
                         //"sDom": '<"col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xxs-12 drp-rec"<"col-lg-6 col-md-6 col-sm-12 col-xs-12 col-xxs-12"l><"col-lg-6 col-md-6 col-sm-12 col-xs-12 col-xxs-12"f>><"col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xxs-12 rep-shw-ent"<"col-lg-6 col-md-6 col-sm-12 col-xs-12 col-xxs-12"i><"col-lg-6 col-md-6 col-sm-12 col-xs-12 col-xxs-12"p>>rt<ip><"clear">',
                         "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
                         "aaSorting": [],
-                        "iDisplayLength": 10,
+                        "iDisplayLength": -1,
                         "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                         // "sDom": 'ltipr',
                         "aaData": msg.demo1,
@@ -1084,7 +1084,7 @@ function _searchClick() {
                         },
 
                         "aaSorting": [],
-                        "iDisplayLength": 10,
+                        "iDisplayLength": -1,
                         "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                         // "sDom": 'ltipr',
 
@@ -1678,7 +1678,7 @@ function bindTable() {
                     //"sAjaxSource": msg.result,
 
                     "aaSorting": [],
-                    "iDisplayLength": 10,
+                    "iDisplayLength": -1,
                     "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                     //  "sDom": 'ltipr',
 
@@ -2925,7 +2925,6 @@ $('#Status_SelectAll').on('click', function () {
     //  selectProjectStatus()
 
     $("#btnExport").visible = true;
-    $("#btnExportlink").visible = true;
 });
 //#endregion
 
@@ -3472,14 +3471,8 @@ $('#Address_SelectAll').on('click', function () {
 
 // Handle click on "Select all" control
 $('#example-select-all').on('click', function () {
+
     $('input[name="id[]"]').prop('checked', this.checked);
-
-    // Check the count of selected checkboxes
-    var selectedCount = $('input[name="id[]"]:checked').length;
-
-    //if (selectedCount > 10) {
-     //   alert("If you export more than 100 reports the report scheducle on your mail id");
-   // }
 });
 
 // Handle click on checkbox to set state of "Select all" control
@@ -3505,69 +3498,6 @@ $('#btnCloseallImages').on('click', function () {
 });
 // Handle form submission event
 $('#btnExport').on('click', function () {
-    var ReportRowList = [];
-
-    var selectedReportsCount = $('input[name="id[]"]:checked').length;
-
-    if (selectedReportsCount > 100) {
-        alert("More than 100 reports selected. The report will schedule in your mail when it is generated.");
-        return SendEmail;
-    }
-
-    else if (selectedReportsCount === 0) {
-        var $toast = toastr["error"]("Please select records to export", "Notification");
-        return false;
-    }
-
-    var showmap = $('#chkShowMap').is(":checked");
-
-    var SelectedRows = $('input[name="id[]"]:checked');
-    SelectedRows.each(function (index, item) {
-        var ReportRow = new Object();
-        ReportRow.UploadedID = this.id;
-        ReportRow.FormID = this.value;
-        ReportRowList.push(ReportRow);
-    });
-
-    // Now you can use ReportRowList and its length property as needed.
-
-
-
-
-   
-
-    var urlExportReportMultipleIDs = $('#urlExportReportMultipleIDs').val();
-    var urlGeneratePDFmultipleRows = $('#urlGeneratePDFmultipleRows').val();
-
-    $.ajax({
-        type: 'POST',
-        url: urlExportReportMultipleIDs,
-        data: { ReportRowList: ReportRowList, showMap: showmap },
-        beforeSend: function () {
-            waitingDialog.show('Loading Please Wait...');
-        },
-        complete: function () {
-            waitingDialog.hide();
-        },
-        success: function (msg) {
-            if (msg.Status == true) {
-                window.open(
-                    urlGeneratePDFmultipleRows,
-                    '_blank' // <- This is what makes it open in a new window.
-                );
-            }
-        },
-        error: function (msg) {
-            // Handle error if needed
-        }
-    });
-});
-
-
-
-
-//Created by Aniket on 1-sep-2016
-$('#btnExportlink').on('click', function () {
     debugger;
     var showmap = false;
     if ($('#chkShowMap').is(":checked")) {
@@ -3594,7 +3524,7 @@ $('#btnExportlink').on('click', function () {
     }
 
     var urlExportReportMultipleIDs = $('#urlExportReportMultipleIDs').val();
-    var urlGeneratePDFmultipleRowsWithLink = $('#urlGeneratePDFmultipleRowsWithLink').val();
+    var urlGeneratePDFmultipleRows = $('#urlGeneratePDFmultipleRows').val();
 
     $.ajax({
         type: 'POST',
@@ -3610,7 +3540,7 @@ $('#btnExportlink').on('click', function () {
 
             if (msg.Status == true) {
                 window.open(
-                    urlGeneratePDFmultipleRowsWithLink,
+                    urlGeneratePDFmultipleRows,
                     '_blank' // <- This is what makes it open in a new window.
                 );
             }
@@ -3622,6 +3552,10 @@ $('#btnExportlink').on('click', function () {
         }
     });
 });
+
+
+
+//Created by Aniket on 1-sep-2016
 
 
 

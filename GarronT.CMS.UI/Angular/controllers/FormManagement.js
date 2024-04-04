@@ -3256,7 +3256,7 @@ angularApp
                                     "field_AllowNotApplicable": false,
                                     "field_ShowMultiselect": false,
                                     "field_ShowRatingLabels": false,
-SinglePhoto
+
                                     //AddedBy AniketJ on 03-Mar-2016
                                     "field_FieldCalculation": "",
                                     "field_AllowRepeat": false,
