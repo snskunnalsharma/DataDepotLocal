@@ -22,62 +22,62 @@ namespace TNMPUploadUtility
             /*Console.WriteLine("Test Succeed or not - " + DateTime.Now.ToShortTimeString());
             Console.ReadLine();*/
             //Note==> Emails comment for a testsing time  ==> UploadFile.cs
-            long ProjectID = 10108;
+            long ProjectID = 10117;
             if (args.Length > 0)
             {
                 ProjectID = Convert.ToInt64(args[0]);  // Get project id in Task Schedular Argumnet
             }
             //long ProjectID = 10085; // Static project id
             #region Upload file class
-            ErrorLogFile.writeStatus("\n\nThread Started at Uploading file - " + DateTime.Now.ToShortTimeString());
-            Console.WriteLine("Thread Started at - " + DateTime.Now.ToShortTimeString());
-            ErrorLogFile.writeStatus("Get Project Id ==> Project Id:-" + ProjectID + " -" + DateTime.Now.ToShortTimeString());
-            Console.WriteLine("Get Project Id ==> Project Id:-" + ProjectID + "");
-            try
-            {
-                UploadFile up = new UploadFile();
-                string pathLocalFile = up.getandSaveFile(ProjectID);
-                if (!string.IsNullOrEmpty(pathLocalFile))
-                {
-                    // Validate excel execk columns and row data
-                    var result = up.ValidateExcel(pathLocalFile);
-                    List<string> ExcelField = result.Item1;
-                    DataTable dtExcelData = result.Item2;
+            /* ErrorLogFile.writeStatus("\n\nThread Started at Uploading file - " + DateTime.Now.ToShortTimeString());
+             Console.WriteLine("Thread Started at - " + DateTime.Now.ToShortTimeString());
+             ErrorLogFile.writeStatus("Get Project Id ==> Project Id:-" + ProjectID + " -" + DateTime.Now.ToShortTimeString());
+             Console.WriteLine("Get Project Id ==> Project Id:-" + ProjectID + "");
+             try
+             {
+                 UploadFile up = new UploadFile();
+                 string pathLocalFile = up.getandSaveFile(ProjectID);
+                 if (!string.IsNullOrEmpty(pathLocalFile))
+                 {
+                     // Validate excel execk columns and row data
+                     var result = up.ValidateExcel(pathLocalFile);
+                     List<string> ExcelField = result.Item1;
+                     DataTable dtExcelData = result.Item2;
 
-                    // Get Excel Mapping Field ids
-                    ErrorLogFile.writeStatus("Get Excel Mapping Field ids - " + DateTime.Now.ToShortTimeString());
-                    Console.WriteLine("Get Excel Mapping Field ids - " + DateTime.Now.ToShortTimeString());
-                    List<string> FieldID = up.excelmMappingFieldIds(ProjectID, result.Item1);
+                     // Get Excel Mapping Field ids
+                     ErrorLogFile.writeStatus("Get Excel Mapping Field ids - " + DateTime.Now.ToShortTimeString());
+                     Console.WriteLine("Get Excel Mapping Field ids - " + DateTime.Now.ToShortTimeString());
+                     List<string> FieldID = up.excelmMappingFieldIds(ProjectID, result.Item1);
 
-                    // Save Excel datas
-                    ErrorLogFile.writeStatus("Saving Excel Data in Database - " + DateTime.Now.ToShortTimeString());
-                    Console.WriteLine("Saving Excel Data in Database - " + DateTime.Now.ToShortTimeString());
-                    bool sratus = up.SaveTab6Data(ProjectID, ExcelField, FieldID, dtExcelData);
-                    if (sratus)
-                    {
-                        ErrorLogFile.writeStatus("Data Successfully Saved in Database - " + DateTime.Now.ToShortTimeString());
-                        Console.WriteLine("Data Successfully Saved in Database - " + DateTime.Now.ToShortTimeString());
-                        File.Delete(@"" + pathLocalFile + "");
-                    }
-                }
-                else
-                {
-                    ErrorLogFile.writeStatus("File does not exist in SFTP server. - " + DateTime.Now.ToShortTimeString());
-                    Console.WriteLine("File does not exist in SFTP server. - " + DateTime.Now.ToShortTimeString());
-                }
-            }
-            catch (Exception ex)
-            {
-                ErrorLogFile.writeStatus("Error:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
-                Console.WriteLine("Error:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
-            }
-            ErrorLogFile.writeStatus("Thread Ended at Upload file - " + DateTime.Now.ToShortTimeString());
-            Console.WriteLine("Thread Ended at - " + DateTime.Now.ToShortTimeString());
+                     // Save Excel datas
+                     ErrorLogFile.writeStatus("Saving Excel Data in Database - " + DateTime.Now.ToShortTimeString());
+                     Console.WriteLine("Saving Excel Data in Database - " + DateTime.Now.ToShortTimeString());
+                     bool sratus = up.SaveTab6Data(ProjectID, ExcelField, FieldID, dtExcelData);
+                     if (sratus)
+                     {
+                         ErrorLogFile.writeStatus("Data Successfully Saved in Database - " + DateTime.Now.ToShortTimeString());
+                         Console.WriteLine("Data Successfully Saved in Database - " + DateTime.Now.ToShortTimeString());
+                         File.Delete(@"" + pathLocalFile + "");
+                     }
+                 }
+                 else
+                 {
+                     ErrorLogFile.writeStatus("File does not exist in SFTP server. - " + DateTime.Now.ToShortTimeString());
+                     Console.WriteLine("File does not exist in SFTP server. - " + DateTime.Now.ToShortTimeString());
+                 }
+             }
+             catch (Exception ex)
+             {
+                 ErrorLogFile.writeStatus("Error:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
+                 Console.WriteLine("Error:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
+             }
+             ErrorLogFile.writeStatus("Thread Ended at Upload file - " + DateTime.Now.ToShortTimeString());
+             Console.WriteLine("Thread Ended at - " + DateTime.Now.ToShortTimeString());*/
             #endregion
             //Ends uploading file code
 
             #region Download Export Report
-            /*ErrorLogFile.writeStatus("\n\nThread Started at Download Export Report - " + DateTime.Now.ToShortTimeString());
+            ErrorLogFile.writeStatus("\n\nThread Started at Download Export Report - " + DateTime.Now.ToShortTimeString());
             Console.WriteLine("Thread Started at Download Export Report - " + DateTime.Now.ToShortTimeString());
             ErrorLogFile.writeStatus("Get Project Id ==> Project Id:-" + ProjectID + " -" + DateTime.Now.ToShortTimeString());
             Console.WriteLine("Get Project Id ==> Project Id:-" + ProjectID + "");
@@ -108,8 +108,8 @@ namespace TNMPUploadUtility
                         DateTime tempTime = (DateTime)lastDateTime;
                        fromDate = (tempTime.AddMinutes(1)).ToString("yyyy-MM-dd HH:mm");
                         fromDate =Convert.ToDateTime(lastDateTime).ToString("MMM-dd-yyyy");
-                     //toDate = date.ToString("yyyy-MM-dd HH:mm");
-                        toDate = "2023-09-18 19:50";
+                     toDate = date.ToString("yyyy-MM-dd HH:mm");
+                       // toDate = "2024-03-24 19:50";
                     }
                     if (projectId == 10087) // TNMP HQ
                     {
@@ -168,7 +168,7 @@ namespace TNMPUploadUtility
                 Console.WriteLine("Error:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
             }
             ErrorLogFile.writeStatus("Thread Ended at Download Export Report - " + DateTime.Now.ToShortTimeString());
-            Console.WriteLine("Thread Ended at Download Export Report - " + DateTime.Now.ToShortTimeString());*/
+            Console.WriteLine("Thread Ended at Download Export Report - " + DateTime.Now.ToShortTimeString());
             #endregion
             // Ends ecport report code
 
@@ -241,7 +241,7 @@ namespace TNMPUploadUtility
              Console.WriteLine("Thread Ended at Uploaded old files s3 bucket - " + DateTime.Now.ToShortTimeString());*/
             #endregion
             //ends hare
-           
+
             //#region Upload tumbnail files 
             //    ErrorLogFile.writeStatus("\n\nThread Started at Upload old files - " + DateTime.Now.ToShortTimeString());
             //     Console.WriteLine("Thread Started at Upload old files- " + DateTime.Now.ToShortTimeString());

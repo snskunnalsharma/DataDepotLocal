@@ -543,6 +543,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             Response.Clear();
             Response.Charset = "";
             Response.ContentEncoding = System.Text.Encoding.UTF8;
+
             Response.Cache.SetCacheability(HttpCacheability.NoCache);
             Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
             Response.AddHeader("content-disposition", "attachment;filename=InstallerAllocationReport.xlsx");

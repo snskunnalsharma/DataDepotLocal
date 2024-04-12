@@ -19,8 +19,10 @@ namespace TNMPUploadUtility
         public DataTable createExcelNew(string fromDate, string toDate, long formTypeId, long projectId, string[] visitStatus, int latlongRequired, int mediaRequired)
         {
             DataTable dt = new DataTable();
+
             try
             {
+                
                 ExportReportDAL exportReportDAL = new ExportReportDAL();
                 //long currentUserId = new UserDetails().GetUserId(User.Identity.GetUserId());
                 long currentUserId = 14;  // Defualt pass user id
@@ -31,7 +33,6 @@ namespace TNMPUploadUtility
                     Console.WriteLine("Please save the report fields first & then try...! - " + DateTime.Now.ToShortTimeString());
                     return dt = new DataTable();
                 }
-
                 DateTime _fromDate = Convert.ToDateTime(fromDate);
                 DateTime _toDate = Convert.ToDateTime(toDate);
                 List<string> columnNameList1;
@@ -91,7 +92,7 @@ namespace TNMPUploadUtility
             {
                 ExportReportController objERC = new ExportReportController();
                 string fileName = string.Empty;
-                if (projectId == 10117)
+                if (projectId == 10085 || projectId == 10117)
                 {
                     fileName = "meter_exchange_CMS_" + DateTime.Now.ToString("yyyyMMdd") + ".csv";
                 }

@@ -1,4 +1,5 @@
-﻿var oTable;
+﻿let map;
+var oTable;
 var navListItems;
 var count = 1;
 var CycleID;
@@ -8,6 +9,9 @@ var Address = [];
 var AddressID = [];
 var Installer, validator;
 var Bindproject, BindCycle, BindRoot, BindAddress;
+
+
+
 $(document).ready(function () {
 
     $("#Operations").addClass('active');
@@ -389,7 +393,7 @@ $(document).ready(function () {
     });
     $("#pIdHideShow").css("display", "none");
     //#endregion
-
+    initMap();
 
 });
 
@@ -402,7 +406,26 @@ function multiSelectReset(controlName) {
     $("#" + controlName).multiselect("rebuild");
 }
 
+async function initMap() {
+    // Request needed libraries.
+    const { Map } = await google.maps.importLibrary("maps");
+    const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary(
+        "marker",
+    );
+    var myLatlng = new google.maps.LatLng(39.86911500000000, -100.891880000000); // Add missing closing parenthesis
+    var mapOptions = {
+        center: myLatlng,
+        zoom: 5,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        marker: false
+    };
 
+    map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+    map.setOptions({ minZoom: 3, mapId: "DEMO_MAP_ID", });
+    var marker = new google.maps.AdvancedMarkerElement({ // Correct reference to AdvancedMarkerElement
+        position: myLatlng
+    });
+}
 var _ProjectList;
 
 function getProjectList() {
@@ -412,7 +435,7 @@ function getProjectList() {
     $.ajax({
         type: 'GET',
         url: GetProject,
-        async: false,
+        async: true,
         // data: { frmDate: fromDate, toDate: toDate },
         success: function (data) {
             _ProjectList = data;
@@ -481,7 +504,7 @@ $('#ddlProject').unbind().change(function () {
         var projectid = Project.val();
 
         // This condition Applied for TNMP Project
-        if (projectid === "10085" || projectid === "10108" )
+        if (projectid === "10085")
         {
             $("#pIdHideShow").css("display", "block");
         }
@@ -491,7 +514,7 @@ $('#ddlProject').unbind().change(function () {
             type: 'GET',
             url: urlCheckLatLongCalculated,
             data: { projectId: projectid },
-            async: false,
+            async: true,
             beforeSend: function () {
                 //  waitingDialog.show('Loading Please Wait...');
             },
@@ -711,7 +734,7 @@ $('#ddlProject').unbind().change(function () {
                         waitingDialog.hide();
                     },
                     success: function (data) {
-
+                        console.log("get installer list success")
                         $('#ddlInstaller').empty();
 
                         var count = data.length;
@@ -752,10 +775,10 @@ $('#ddlProject').unbind().change(function () {
                 var i = 0;
                 $.ajax({
                     url: urlCycleData,
-                    async: false,
+                    async: true,
                     data: { ProjectID: Project.val() },
                     success: function (Cycle) {
-
+                        console.log("get urlCycleData success")
                         $('#ulCycle').empty();
                         var count = Cycle.length;
                         for (i = 0; i < count; i++) {
@@ -786,7 +809,7 @@ $('#ddlProject').unbind().change(function () {
             multiSelectReset('ddlAddress');
 
         }
-
+        //console.log('call initialize map');
         initialize();
 
         waitingDialog.hide();
@@ -847,7 +870,7 @@ function BindDates() {
             $spandiv2.children("span").text("Select Route")
             $spandiv2.attr("title", "Select Route")
 
-            initialize()
+            //initialize()
         },
         dateFormat: 'M-dd-yy',
     }).datepicker("setDate", actualDate);
@@ -892,7 +915,7 @@ function BindDates() {
             $spandiv2.children("span").text("Select Route")
             $spandiv2.attr("title", "Select Route")
 
-            initialize()
+            //initialize()
         },
         dateFormat: 'M-dd-yy',
     }).datepicker("setDate", modifiedDate);
@@ -914,11 +937,17 @@ function AddRowPartial() {
     $.get(urlgetRowPartial,
         function (data) {
             $("#LoadRow").append(data)
-            initialize();
+            //initialize();
         });
 }
 
-function initialize() {
+async function initialize() {
+
+    // Request needed libraries.
+    const { Map } = await google.maps.importLibrary("maps");
+    const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary(
+        "marker",
+    );
 
     //var lat = document.getElementById('txtlat').value;
     //var lon = document.getElementById('txtlon').value;
@@ -932,8 +961,8 @@ function initialize() {
     };
 
     var map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
-    map.setOptions({ minZoom: 3 });
-    var marker = new google.maps.Marker({
+    map.setOptions({ minZoom: 3, mapId: "DEMO_MAP_ID", });
+    var marker = new google.maps.marker.AdvancedMarkerElement({
         position: myLatlng
     });
     //  marker.setMap(map);
@@ -981,7 +1010,7 @@ $('#ddlInstaller').unbind().change(function () {
         $.ajax({
             type: "Post",
             url: GetCheckAddressExistby_ProjectInstallerDate,
-            async: false,
+            async: true,
             data: JSON.stringify({ ProjectID: ProjectID, InstallerID: InstallerID, fromDate: fromDate, toDate: toDate }),
             contentType: "application/json; charset=utf-8",
             dataType: "json",
@@ -989,9 +1018,7 @@ $('#ddlInstaller').unbind().change(function () {
                 console.log("ExcludeSkip == " + installerdata.ExcludeSkip);
                 if (installerdata.ExcludeSkip == 1) {
                     console.log("set checkbox status");
-                    
                     $("#chkIncludeSkip").prop("checked", false);
-                    alert("dfdsw");
                 } else {
                     $("#chkIncludeSkip").prop("checked", true);
                 }
@@ -1105,7 +1132,7 @@ $('#ddlInstaller').unbind().change(function () {
                     var i = 0;
                     $.ajax({
                         url: urlCycleData,
-                        async: false,
+                        async: true,
                         data: { "ProjectID": ProjectID },
                         success: function (Cycle) {
 
@@ -1276,8 +1303,12 @@ function GetLog_Lat_by_Address(AddressList) {
 
 
 var latlongList;
-var bound = new google.maps.LatLngBounds();
-function ShowMap(objectMap) {
+//var bound = new google.maps.LatLngBounds();
+async function ShowMap(objectMap) {
+    const { Map } = await google.maps.importLibrary("maps");
+    const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary(
+        "marker",
+    );
 
     // waitingDialog.show('Loading Please Wait...');
     if (objectMap.length > 0) {
@@ -1286,13 +1317,14 @@ function ShowMap(objectMap) {
         $('#btnExport').prop("disabled", false);
         latlongList = objectMap;
 
-        var latlngbounds = new google.maps.LatLngBounds();
+        //var latlngbounds = new google.maps.LatLngBounds();
         var infoWindow = new google.maps.InfoWindow();
 
         var mapOptions = {
             center: new google.maps.LatLng(objectMap[0].Latitude, objectMap[0].Longitude),
-            zoom: 10,
-            mapTypeId: google.maps.MapTypeId.ROADMAP
+            zoom: 15,
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            mapId: "DEMO_MAP_ID",
         };
 
         var map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
@@ -1304,23 +1336,28 @@ function ShowMap(objectMap) {
 
         var addresscount = 0;
         var icon = {
-            url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png', // url
+            url: 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png', // url
             scaledSize: new google.maps.Size(80, 80), // scaled size
             origin: new google.maps.Point(0, 0), // origin
             anchor: new google.maps.Point(0, 0) // anchor
         };
+        // A marker with a with a URL pointing to a PNG.
+        
 
         for (i = 0; i < objectMap.length; i++) {
             addresscount = addresscount + 1;
             var data = objectMap[i];
+            var beachFlagImg = document.createElement("img");
 
+            beachFlagImg.src = "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
             var myLatlng = new google.maps.LatLng(data.Latitude, data.Longitude);
-            var marker = new google.maps.Marker({
+            var marker = new google.maps.marker.AdvancedMarkerElement({
                 position: myLatlng,
                 map: map,
-                icon: 'https://chart.googleapis.com/chart?chst=d_map_spin&chld=0.8|0|FFFF42|13||' + addresscount + '',
+                content: beachFlagImg,
+                //content: 'https://chart.googleapis.com/chart?chst=d_map_spin&chld=0.8|0|FFFF42|13||' + addresscount + '',
                 //  title: data.Street,
-                animation: google.maps.Animation.DROP,
+                //animation: google.maps.Animation.DROP,
 
                 //label: {
                 //    text: addresscount.toString(),
@@ -1330,9 +1367,11 @@ function ShowMap(objectMap) {
 
             }
             );
+            //marker.setIcon(icon);
 
 
-            latlngbounds.extend(myLatlng);
+
+            //latlngbounds.extend(myLatlng);
             var name = installername;
             //extend the bounds to include each marker's position
             //bounds.extend(marker.position);
@@ -1355,6 +1394,7 @@ function ShowMap(objectMap) {
 
                 google.maps.event.addListener(marker, 'click', function () {
                     //when the infowindow is open, close it an clear the contents
+                    /*var contentStringCal = '';
                     if (contentStringCal == infoWindow.getContent()) {
                         infoWindow.close(map, marker);
                         infoWindow.setContent('');
@@ -1362,7 +1402,8 @@ function ShowMap(objectMap) {
                     //otherwise trigger mouseover to open the infowindow
                     else {
                         google.maps.event.trigger(marker, 'mouseover');
-                    }
+                    }*/
+                    google.maps.event.trigger(marker, 'mouseover');
                 });
 
                 //clear the contents of the infwindow on closeclick
@@ -1378,14 +1419,14 @@ function ShowMap(objectMap) {
 
 
 
-        map.fitBounds(latlngbounds);
+        /*map.fitBounds(latlngbounds);
         new google.maps.Rectangle({
             bounds: latlngbounds,
             map: map,
             fillColor: "#000000",
             fillOpacity: 0.0,
             strokeWeight: 0
-        });
+        });*/
 
 
     }
@@ -1611,7 +1652,7 @@ function CheckAddressExistby_ProjectInstallerDate() {
         $.ajax({
             type: "Post",
             url: GetCheckAddressExistby_ProjectInstallerDate,
-            async: false,
+            async: true,
             data: JSON.stringify({ ProjectID: ProjectID, InstallerID: InstallerID, fromDate: fromDate, toDate: toDate }),
             contentType: "application/json; charset=utf-8",
             dataType: "json",
@@ -1715,7 +1756,7 @@ $('#btnviewAllInstallers').click(function () {
     $.ajax({
         type: "Post",
         url: GetCheckAddressExistby_ProjectInstallerDate,
-        async: false,
+        async: true,
         data: JSON.stringify({ ProjectID: ProjectID, InstallerID: InstallerID, fromDate: fromDate, toDate: toDate }),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
@@ -2075,7 +2116,7 @@ $('#Address_SelectAll').on('click', function () {
 //#region New code for Route multiselect dropdown
 function getRouteList() {
     // set map location to current city
-    initialize();
+    //initialize();
 
     var ProjectID = $('#ddlProject').val();
     var InstallerID = $('#ddlInstaller').val();
@@ -2580,7 +2621,7 @@ function convertasbinaryimage1() {
         var lastlist = latlongarry.join("");
 
 
-        var link = 'https://maps.googleapis.com/maps/api/staticmap?' + center + '&zoom=15' + lastlist + '&size=1236x493&sensor=TRUE_OR_FALSE';
+        var link = 'https://maps.googleapis.com/maps/api/staticmap?' + center + '&zoom=20' + lastlist + '&size=1236x493&sensor=TRUE_OR_FALSE';
 
         $('#btnExport').attr("href", link)
     }
@@ -3026,9 +3067,7 @@ function Edit(data) {
     var toDate = $('#datepicker2').val();
     var incSkip = "0";
     if ($("#chkIncludeSkip").is(
-        ":checked"))
-    {
-       
+        ":checked")) {
         console.log("checked");
         incSkip = "1";
     } else {
@@ -3052,7 +3091,7 @@ function Edit(data) {
     $.ajax({
         type: "Post",
         url: GetExistingCycleList,
-        //async: false,
+        //async: true,
         async: true,
         data: JSON.stringify({ ProjectID: ProjectID, InstallerID: InstallerID, fromDate: fromDate, toDate: toDate }),
         contentType: "application/json; charset=utf-8",
@@ -3112,7 +3151,7 @@ function Edit(data) {
 
 
             // getRouteList()
-            initialize();
+            //initialize();
 
 
 
@@ -3406,7 +3445,7 @@ function EditAllocation(data, cycle, routes) {
             $('#Cycle_SelectAll').prop('checked', false);
         }
         //#endregion
-        initialize();
+        //initialize();
 
         var cyclevalue = [];
         var value = $('#ulCycle li.highlighted')
@@ -3591,7 +3630,6 @@ function EditAllocation(data, cycle, routes) {
     $.ajax({
         type: "Post",
         url: GetExistingCycleList,
-        //async: false,
         async: true,
         data: JSON.stringify({ ProjectID: ProjectID, InstallerID: InstallerID, fromDate: fromDate, toDate: toDate }),
         contentType: "application/json; charset=utf-8",
@@ -3651,7 +3689,7 @@ function EditAllocation(data, cycle, routes) {
 
 
             // getRouteList()
-            initialize();
+            //initialize();
 
 
 
@@ -4171,7 +4209,7 @@ $("#btnCycleFilter").click(function () {
     }
 
     // set map location to current city
-    initialize();
+    //initialize();
 
     var ProjectID = $('#ddlProject').val();
     var InstallerID = $('#ddlInstaller').val();
@@ -4464,7 +4502,7 @@ $("#btnCycleFilter1").click(function () {
     }
 
     // set map location to current city
-    initialize();
+    //initialize();
 
     var ProjectID = $('#ddlProject').val();
     var InstallerID = $('#ddlInstaller').val();

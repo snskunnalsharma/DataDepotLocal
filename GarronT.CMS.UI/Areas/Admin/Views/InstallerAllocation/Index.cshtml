@@ -1722,7 +1722,12 @@
 @{
     var href = "https://maps.googleapis.com/maps/api/js?key=" + System.Configuration.ConfigurationManager.AppSettings["googleapiKey"].ToString() + "&sensor=false";
 }
-<script type="text/javascript" src="@href"></script>
+<!--<script type="text/javascript" src="@href"></script>-->
+<script>
+    (g => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]); e.set("callback", c + ".maps." + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + " could not load.")); a.nonce = m.querySelector("script[nonce]") ?.nonce || ""; m.head.append(a) })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })
+        ({ key: "AIzaSyBuy8PkXAoVQWsNpBl7Wt-mlYJNde4sals", v: "weekly" });
+</script>
+
 <div id="loading"> <div id="loadingcontent"> <p id="loadingspinner"> Searching things... </p> </div> </div>
 <section id="main-content">
     <section class="wrapper instal-wrap">
@@ -1873,29 +1878,29 @@
                                                     <input type="checkbox" name="unallocatedSkip" id="chkUnallocatedSkip" style="margin-left:15px;">Unallocated Skip
                                                 </div>
                                                 @*<button id="btnExport" class="btn btn-info cancel_btn " type="button">Export</button>
-                                                
-                                                <button id="btnSave" class="btn btn-success save_btn " type="button" style="color:#ffffff; width:auto;">Save</button>
-                                                <button id="btnExport" class="btn btn-primary dropdown-toggle cancel_btn dropdown" type="button" data-toggle="dropdown">
-                                                    Export
-                                                    <span class="caret"></span>
-                                                </button>
-                                                <ul class="dropdown-menu1">
-                                                    <li><a id="lnkExportImage" href="#">Image</a></li>
-                                                    <li><a id="lnkExportExcel" href="#">Excel</a></li>
-                                                </ul>
+
+                                                    <button id="btnSave" class="btn btn-success save_btn " type="button" style="color:#ffffff; width:auto;">Save</button>
+                                                    <button id="btnExport" class="btn btn-primary dropdown-toggle cancel_btn dropdown" type="button" data-toggle="dropdown">
+                                                        Export
+                                                        <span class="caret"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu1">
+                                                        <li><a id="lnkExportImage" href="#">Image</a></li>
+                                                        <li><a id="lnkExportExcel" href="#">Excel</a></li>
+                                                    </ul>
 
 
-                                                <button class="btn btn-default  res_btn " id="btnReset" type="button">Reset</button>
+                                                    <button class="btn btn-default  res_btn " id="btnReset" type="button">Reset</button>
 
 
-                                                @*<button class="btn btn-default  " id="btnAssignAddress" type="button">Change Installer</button>*@
+                                                    @*<button class="btn btn-default  " id="btnAssignAddress" type="button">Change Installer</button>*@
 
 
                                             </div>
 
-                                           
+
                                             <br />
-                                            <br/>
+                                            <br />
                                             <div class="col-lg-12 col-sm-12 col-xs-12 nopadding box1" style="padding-top:15px; text-align:center;">
                                                 <button id="btnSave" class="btn btn-success save_btn " type="button" style="color:#ffffff; width:10%;">Save</button>
                                                 <button id="btnExport" class="btn btn-primary dropdown-toggle cancel_btn dropdown" type="button" data-toggle="dropdown" style="width:10%;">
