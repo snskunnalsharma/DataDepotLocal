@@ -96,7 +96,7 @@
     //#endregion
     
     var currentUserId = document.querySelector('.classUserId').id;
-    if (currentUserId == 14) {             // 14 for Garron id only show Report column only for garron as clent requirement
+    if (currentUserId == 14 || currentUserId == 245) {             // 14 for Garron id only show Report column only for garron as clent requirement
         $('#' + currentUserId + '').show();
     }
     else {

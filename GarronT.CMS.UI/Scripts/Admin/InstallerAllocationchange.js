@@ -10,7 +10,27 @@ var AddressID = [];
 var Installer, validator;
 var Bindproject, BindCycle, BindRoot, BindAddress;
 
+async function initMap() {
+    // Request needed libraries.
+    const { Map } = await google.maps.importLibrary("maps");
+    const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary(
+        "marker",
+    );
+    var myLatlng = new google.maps.LatLng(39.86911500000000, -100.891880000000) // This is used to center the map to show our markers
+    var mapOptions = {
+        center: myLatlng,
+        zoom: 5,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        marker: false
+    };
 
+    map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+    map.setOptions({ minZoom: 3, mapId: "DEMO_MAP_ID", });
+    var marker = new google.maps.marker.AdvancedMarkerElement({
+        position: myLatlng
+    });
+
+}
 
 $(document).ready(function () {
 
@@ -406,26 +426,7 @@ function multiSelectReset(controlName) {
     $("#" + controlName).multiselect("rebuild");
 }
 
-async function initMap() {
-    // Request needed libraries.
-    const { Map } = await google.maps.importLibrary("maps");
-    const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary(
-        "marker",
-    );
-    var myLatlng = new google.maps.LatLng(39.86911500000000, -100.891880000000); // Add missing closing parenthesis
-    var mapOptions = {
-        center: myLatlng,
-        zoom: 5,
-        mapTypeId: google.maps.MapTypeId.ROADMAP,
-        marker: false
-    };
 
-    map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
-    map.setOptions({ minZoom: 3, mapId: "DEMO_MAP_ID", });
-    var marker = new google.maps.AdvancedMarkerElement({ // Correct reference to AdvancedMarkerElement
-        position: myLatlng
-    });
-}
 var _ProjectList;
 
 function getProjectList() {

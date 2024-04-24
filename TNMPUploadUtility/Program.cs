@@ -106,8 +106,8 @@ namespace TNMPUploadUtility
                     {
                         //date = date.AddDays(-2);
                         DateTime tempTime = (DateTime)lastDateTime;
-                       fromDate = (tempTime.AddMinutes(1)).ToString("yyyy-MM-dd HH:mm");
-                        fromDate =Convert.ToDateTime(lastDateTime).ToString("MMM-dd-yyyy");
+                       fromDate = (tempTime.AddMinutes(1)).ToString("yyyy-MM-dd 23:59");
+                        fromDate =Convert.ToDateTime(lastDateTime).ToString("MMM-dd-yyyy 23:59");
                      toDate = date.ToString("yyyy-MM-dd HH:mm");
                        // toDate = "2024-03-24 19:50";
                     }
