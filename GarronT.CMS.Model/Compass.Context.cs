@@ -1098,7 +1098,7 @@ namespace GarronT.CMS.Model
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<PROC_ReportPDF_GetReportPDFFields_Result>("PROC_ReportPDF_GetReportPDFFields", uploadedDataIDParameter, formIDParameter);
         }
     
-        public virtual ObjectResult<PROC_ProjectStatus_AllData_Result> PROC_ProjectStatus_AllData(Nullable<long> projectId, Nullable<long> formTypeId)
+        public virtual ObjectResult<PROC_ProjectStatus_AllData_Result> PROC_ProjectStatus_AllData(Nullable<long> projectId, Nullable<long> formTypeId, string Cycle, string Route, Nullable<long> InstallerId)
         {
             var projectIdParameter = projectId.HasValue ?
                 new ObjectParameter("ProjectId", projectId) :
@@ -1107,11 +1107,23 @@ namespace GarronT.CMS.Model
             var formTypeIdParameter = formTypeId.HasValue ?
                 new ObjectParameter("FormTypeId", formTypeId) :
                 new ObjectParameter("FormTypeId", typeof(long));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<PROC_ProjectStatus_AllData_Result>("PROC_ProjectStatus_AllData", projectIdParameter, formTypeIdParameter);
+
+            var CycleParameter = Cycle != null ?
+             new ObjectParameter("Cycle", Cycle) :
+             new ObjectParameter("Cycle", typeof(string));
+
+            var RouteParameter = Route != null ?
+                 new ObjectParameter("Route", Route) :
+                 new ObjectParameter("Route", typeof(string));
+
+            var installerIDParameter = InstallerId.HasValue ?
+                 new ObjectParameter("InstallerID", InstallerId) :
+                 new ObjectParameter("InstallerID", typeof(long));
+
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<PROC_ProjectStatus_AllData_Result>("PROC_ProjectStatus_AllData", projectIdParameter, formTypeIdParameter, CycleParameter, RouteParameter, installerIDParameter);
         }
     
-        public virtual ObjectResult<PROC_ProjectStatus_InstallerData_Result> PROC_ProjectStatus_InstallerData(Nullable<long> projectId, Nullable<long> installerID, Nullable<long> formTypeID, string locationId)
+        public virtual ObjectResult<PROC_ProjectStatus_InstallerData_Result> PROC_ProjectStatus_InstallerData(Nullable<long> projectId, Nullable<long> installerID, Nullable<long> formTypeID, string locationId, string Cycle, string Route)
         {
             var projectIdParameter = projectId.HasValue ?
                 new ObjectParameter("ProjectId", projectId) :
@@ -1129,7 +1141,15 @@ namespace GarronT.CMS.Model
                 new ObjectParameter("Location", locationId) :
                 new ObjectParameter("Location", typeof(string));
 
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<PROC_ProjectStatus_InstallerData_Result>("PROC_ProjectStatus_InstallerData", projectIdParameter, installerIDParameter, formTypeIDParameter, locationIdParameter);
+            var CycleParameter = Cycle != null ?
+             new ObjectParameter("Cycle", Cycle) :
+             new ObjectParameter("Cycle", typeof(string));
+
+            var RouteParameter = Route != null ?
+                 new ObjectParameter  ("Route", Route) :
+                 new ObjectParameter("Route", typeof(string));
+
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<PROC_ProjectStatus_InstallerData_Result>("PROC_ProjectStatus_InstallerData", projectIdParameter, installerIDParameter, formTypeIDParameter, locationIdParameter, CycleParameter, RouteParameter);
         }
     
         public virtual ObjectResult<Nullable<long>> PROC_WebService_CheckRecordStatus_SkipOrRtu(Nullable<long> uploadId, Nullable<long> formId)
@@ -1404,7 +1424,8 @@ namespace GarronT.CMS.Model
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<PROC_ProjectStatus_AllData_Auditor_Result>("PROC_ProjectStatus_AllData_Auditor", projectIdParameter, formTypeIdParameter);
         }
-    
+
+      
         public virtual ObjectResult<Nullable<long>> PROC_Appointment_CheckRecordStatus_WorkCompleted(Nullable<long> uploadId)
         {
             var uploadIdParameter = uploadId.HasValue ?

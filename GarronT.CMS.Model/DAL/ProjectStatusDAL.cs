@@ -38,7 +38,7 @@ namespace GarronT.CMS.Model.DAL
         /// <param name="projectID"></param>
         /// <param name="InstallerID"></param>
         /// <returns></returns>
-        public List<addressVisitInfo> GetProjectStaus(long projectID, long InstallerID, long formTypeId, string locationId)
+        public List<addressVisitInfo> GetProjectStaus(long projectID, long InstallerID, long formTypeId, string locationId, List<string> Cycle, List<string> Route)
         {
 
 
@@ -47,7 +47,40 @@ namespace GarronT.CMS.Model.DAL
             CompassEntities objCompassEntities = new CompassEntities();
 
             #region
+            string routeVal = "";
+            string cycleVal = "";
+            foreach (var item in Cycle)
+            {
+                if (cycleVal.Length == 0)
+                {
+                    cycleVal = item.Trim();
+                }
+                else
+                {
+                    cycleVal += "," + item.Trim() + "";
+                }
+            }
 
+            foreach (var item in Route)
+            {
+                if (routeVal.Length == 0)
+                {
+                    routeVal = item.Trim();
+                }
+                else
+                {
+                    routeVal += "," + item.Trim();
+                }
+            }
+
+            /*if (string.IsNullOrEmpty(Cycle) )
+            {
+                Cycle = "";
+            }
+            if(string.IsNullOrEmpty(Route))
+            {
+                Route = "";
+            }*/
             if (InstallerID > 0)
             {
 
@@ -92,7 +125,7 @@ namespace GarronT.CMS.Model.DAL
                 //}
                 #endregion
                 objCompassEntities.Database.CommandTimeout = 0;
-                var resultData = objCompassEntities.PROC_ProjectStatus_InstallerData(projectID, InstallerID, formTypeId,locationId).Where(o => !string.IsNullOrEmpty(o.Latitude) && !string.IsNullOrEmpty(o.Longitude)).ToList();
+                var resultData = objCompassEntities.PROC_ProjectStatus_InstallerData(projectID, InstallerID, formTypeId,locationId, cycleVal, routeVal).Where(o => !string.IsNullOrEmpty(o.Latitude) && !string.IsNullOrEmpty(o.Longitude)).ToList();
 
 
                 foreach (var item in resultData)
@@ -213,6 +246,9 @@ namespace GarronT.CMS.Model.DAL
                         cmd.Parameters.Add("@ProjectId", projectID);
                         cmd.Parameters.Add("@FormTypeId", formTypeId);
                         cmd.Parameters.Add("@Location", locationId);
+                        cmd.Parameters.Add("@Cycle", cycleVal);
+                        cmd.Parameters.Add("@Route", routeVal);
+                        cmd.Parameters.Add("@InstallerId", InstallerID);
                         cmd.CommandTimeout = 0;
                         using (SqlDataAdapter da = new SqlDataAdapter(cmd))
                         {
@@ -338,6 +374,7 @@ namespace GarronT.CMS.Model.DAL
             return objVisitList;
         }
 
+        
 
 
 
@@ -551,10 +588,176 @@ namespace GarronT.CMS.Model.DAL
         }
 
         #endregion
+    // Start new cycle addition method
+        public List<string> GetDynamicFreshCycleByProjectIDs(long projectID)
+        {
+            CompassEntities dbcontext = new CompassEntities();
+
+            var Param = new SqlParameter { ParameterName = "@ProjectId", Value = projectID };
+
+            //var GetCycle1 = dbcontext.Database.SqlQuery<DataTable>("exec  PROC_DynamicPendingCycle @ProjectId", Param);
+
+
+            List<string> GetCycle = new List<string>();
 
 
 
+            SqlConnection sqlConnection1 = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
+            SqlCommand cmd = new SqlCommand();
+            SqlDataReader reader;
 
+            cmd.CommandText = "PROC_DynamicPendingCycle";
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Connection = sqlConnection1;
+            cmd.Parameters.Add(Param);
+            cmd.CommandTimeout = sqlConnection1.ConnectionTimeout;
+            sqlConnection1.Open();
+
+            reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                GetCycle.Add(reader["Cycle"].ToString());
+            }
+            // Data is accessible through the DataReader object here.
+
+            sqlConnection1.Close();
+            reader.Close();
+            reader.Dispose();
+            cmd.Dispose();
+            sqlConnection1.Dispose();
+            return GetCycle;
+        }
+        public List<string> GetRoute_Cycle_By_Installer(long projectID, long InstallerId)
+        {
+            CompassEntities dbcontext = new CompassEntities();
+
+            var Param = new SqlParameter { ParameterName = "@ProjectId", Value = projectID };
+            var Param1 = new SqlParameter { ParameterName = "@InstallerId", Value = InstallerId };
+            //var GetCycle1 = dbcontext.Database.SqlQuery<DataTable>("exec  PROC_DynamicPendingCycle @ProjectId", Param);
+
+
+            List<string> GetCycles = new List<string>();
+
+
+
+            SqlConnection sqlConnection1 = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
+            SqlCommand cmd = new SqlCommand();
+            SqlDataReader reader;
+
+            cmd.CommandText = "PROC_ProjectStatus_Cycle_by_InstallerId";
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Connection = sqlConnection1;
+            cmd.Parameters.Add(Param);
+            cmd.Parameters.Add(Param1);
+            cmd.CommandTimeout = sqlConnection1.ConnectionTimeout;
+            sqlConnection1.Open();
+
+            reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                GetCycles.Add(reader["Cycle"].ToString());
+            }
+            // Data is accessible through the DataReader object here.
+
+            sqlConnection1.Close();
+            reader.Close();
+            reader.Dispose();
+            cmd.Dispose();
+            sqlConnection1.Dispose();
+            return GetCycles;
+        }
+
+
+        public List<string> GetDynamicFreshRootByCycles(string[] Cycle, long ProjectId, long InstallerId)
+        {
+            CompassEntities dbcontext = new CompassEntities();
+            List<PROC_ExistingRoute_Result> objListPROC_ExistingRoute_Result = new List<PROC_ExistingRoute_Result>();
+            List<string> GetRoot = new List<string>();
+            SqlConnection sqlConnection1 = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
+            SqlCommand cmd = new SqlCommand();
+            SqlDataReader reader;
+
+            string cycleVal = "";
+            foreach (var item in Cycle)
+            {
+                if (cycleVal.Length == 0)
+                {
+                    cycleVal = item;
+                }
+                else
+                {
+                    cycleVal += "," + item + "";
+                }
+            }
+
+            cmd.CommandText = "PROC_Route_ByCycle";
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Connection = sqlConnection1;
+            cmd.Parameters.Add("@ProjectId", ProjectId);
+            cmd.Parameters.Add("@InstallerId", InstallerId);
+            cmd.Parameters.Add("@Cycle", cycleVal);
+            sqlConnection1.Open();
+
+            reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                objListPROC_ExistingRoute_Result.Add(new PROC_ExistingRoute_Result { Route = reader["Route"].ToString(), Cycle = reader["Cycle"].ToString() });
+            }
+
+            sqlConnection1.Close();
+            reader.Close();
+            reader.Dispose();
+            cmd.Dispose();
+            sqlConnection1.Dispose();
+            GetRoot = objListPROC_ExistingRoute_Result.Where(x => Cycle.Contains(x.Cycle)).Select(a => a.Route).Distinct().OrderBy(a => a).ToList();
+
+            return GetRoot;
+        }
+        
+        public List<PROC_ExistingRoute_Result> GetDynamicExistingRootByCycles(string[] Cycle, long ProjectId, long InstallerId)
+        {
+            CompassEntities dbcontext = new CompassEntities();
+            string cycleVal = "";
+            foreach (var item in Cycle)
+            {
+                if (cycleVal.Length == 0)
+                {
+                    cycleVal = item;
+                }
+                else
+                {
+                    cycleVal += "," + item + "";
+                }
+            }
+
+            List<PROC_ExistingRoute_Result> objListPROC_ExistingRoute_Result = new List<PROC_ExistingRoute_Result>();
+            SqlConnection sqlConnection1 = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
+            SqlCommand cmd = new SqlCommand();
+            SqlDataReader reader;
+
+            cmd.CommandText = "PROC_Route_ByCycle";
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Connection = sqlConnection1;
+            cmd.Parameters.Add("@ProjectId", ProjectId);
+            cmd.Parameters.Add("@InstallerId", InstallerId);
+            cmd.Parameters.Add("@Cycle", cycleVal);
+            sqlConnection1.Open();
+
+            reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                objListPROC_ExistingRoute_Result.Add(new PROC_ExistingRoute_Result { Route = reader["Route"].ToString(), Cycle = reader["Cycle"].ToString(), Disabled = int.Parse(reader["Disabled"].ToString()) });
+
+            }
+            sqlConnection1.Close();
+            reader.Close();
+            reader.Dispose();
+            cmd.Dispose();
+            sqlConnection1.Dispose();
+            var GetRoot = objListPROC_ExistingRoute_Result.
+                Where(x => Cycle.Contains(x.Cycle)).Select(a => a).Distinct().ToList();
+            return GetRoot;
+        }
 
 
         public List<addressVisitInfo> GetAuditProjectStaus(long projectID, long InstallerID, long formTypeId)
@@ -770,5 +973,202 @@ namespace GarronT.CMS.Model.DAL
 
             return objVisitList;
         }
+
+        public string GetDynamicColumnName(string temColName, long projectId)
+        {
+            try
+            {
+                string dynamicColumnName = "";
+                using (CompassEntities dbContext = new CompassEntities())
+                {
+                    using (SqlConnection sqlConnection = new SqlConnection(dbContext.Database.Connection.ConnectionString))
+                    {
+                        sqlConnection.Open();
+                        using (SqlCommand sqlCommand = new SqlCommand("SELECT DynamicColumnName = [dbo].[FN_GetColumnName](@TemColName, @ProjectID)", sqlConnection))
+                        {
+                            sqlCommand.Parameters.AddWithValue("@TemColName", temColName);
+                            sqlCommand.Parameters.AddWithValue("@ProjectID", projectId);
+
+                            using (SqlDataReader reader = sqlCommand.ExecuteReader())
+                            {
+                                if (reader.Read())
+                                {
+                                    dynamicColumnName = reader["DynamicColumnName"].ToString();
+                                }
+                            }
+                        }
+                    }
+                }
+                return dynamicColumnName;
+            }
+            catch (Exception ex)
+            {
+                // Log or handle the exception appropriately
+                return null;
+            }
+        }
+
+       //public List<STP_GetExistedUserInstallationbyDate_Result> CheckAddressExistby_ProjectInstallerDates(long projectId, long installerId)
+       // {
+       //     using (CompassEntities dbContext = new CompassEntities())
+       //     {
+       //         var ExcludeSkip = dbContext.tblUsers.FirstOrDefault(n => n.UserID == installerId)?.ExcludeSkip ?? 0;
+       //         string procName = ExcludeSkip == 1 ? "PROC_ProjectStatus_Cycle_by_InstallerId" : "PROC_InstallerAllocation_CurrentDataInstaller_WithSkipped_ByDate";
+
+       //         List<STP_GetExistedUserInstallationbyDate_Result> objList = new List<STP_GetExistedUserInstallationbyDate_Result>();
+
+       //         using (SqlConnection sqlConnection = new SqlConnection(dbContext.Database.Connection.ConnectionString))
+       //         {
+       //             sqlConnection.Open();
+
+       //             using (SqlCommand sqlCommand = new SqlCommand(procName, sqlConnection))
+       //             {
+       //                 sqlCommand.CommandType = CommandType.StoredProcedure;
+       //                 sqlCommand.Parameters.AddWithValue("@projectId", projectId);
+       //                 sqlCommand.Parameters.AddWithValue("@installerId", installerId);
+       //                 sqlCommand.CommandTimeout = sqlConnection.ConnectionTimeout;
+
+       //                 using (SqlDataReader reader = sqlCommand.ExecuteReader())
+       //                 {
+       //                     while (reader.Read())
+       //                     {
+       //                         string dynamicRouteColumnName = GetDynamicColumnName("Route", projectId);
+       //                         string dynamicCycleColumnName = GetDynamicColumnName("Cycle", projectId);
+
+       //                         long tempInstallerId = installerId;
+       //                         long tempProjectId = projectId;
+       //                         string Cycle = reader["Cycle"].ToString();
+
+       //                         // Using PROC_ProjectStatus_Route_by_InstallerId for route information
+       //                         SqlCommand cmdRoute = new SqlCommand("PROC_ProjectStatus_Route_by_InstallerId", sqlConnection);
+       //                         cmdRoute.CommandType = CommandType.StoredProcedure;
+       //                         cmdRoute.Parameters.AddWithValue("@projectId", projectId);
+       //                         cmdRoute.Parameters.AddWithValue("@installerId", installerId);
+       //                         cmdRoute.Parameters.AddWithValue("@Cycle", Cycle);
+
+       //                         SqlDataAdapter sdaRoute = new SqlDataAdapter(cmdRoute);
+       //                         DataTable dtRoute = new DataTable();
+       //                         sdaRoute.Fill(dtRoute);
+
+       //                         string finalRoute = string.Empty;
+       //                         if (dtRoute.Rows.Count > 0)
+       //                         {
+       //                             foreach (DataRow row in dtRoute.Rows)
+       //                             {
+       //                                 finalRoute += row["Route"].ToString() + ",";
+       //                             }
+       //                         }
+
+       //                         if (!string.IsNullOrEmpty(finalRoute))
+       //                         {
+       //                             finalRoute = finalRoute.Remove(finalRoute.Length - 1, 1);
+       //                         }
+
+       //                         objList.Add(new STP_GetExistedUserInstallationbyDate_Result
+       //                         {
+       //                             installerid = installerId,
+       //                             ProjectId = projectId,
+                                   
+       //                             Cycle = reader["Cycle"].ToString(),
+       //                             Route = finalRoute,
+       //                         });
+       //                     }
+       //                 }
+       //             }
+       //         }
+       //         return objList;
+       //     }
+       // }
+
+        //public List<string> GetDynamicRoutebyCycle(long ProjectId, long InstallerId, string[] Cycle)
+        //{
+        //    CompassEntities dbcontext = new CompassEntities();
+        //    List<PROC_ExistingRoute_Result> objListPROC_ExistingRoute_Result = new List<PROC_ExistingRoute_Result>();
+        //    List<string> GetRoot = new List<string>();
+        //    SqlConnection sqlConnection1 = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
+        //    SqlCommand cmd = new SqlCommand();
+        //    SqlDataReader reader;
+
+        //    string cycleVal = "";
+        //    foreach (var item in Cycle)
+        //    {
+        //        if (cycleVal.Length == 0)
+        //        {
+        //            cycleVal = item;
+        //        }
+        //        else
+        //        {
+        //            cycleVal += "," + item + "";
+        //        }
+        //    }
+
+        //    cmd.CommandText = "PROC_ProjectStatus_Route_by_InstallerId";
+        //    cmd.CommandType = CommandType.StoredProcedure;
+        //    cmd.Connection = sqlConnection1;
+        //    cmd.Parameters.Add("@ProjectId", ProjectId);
+        //    cmd.Parameters.Add("@InstallerId", InstallerId);
+        //    cmd.Parameters.Add("@Cycle", cycleVal);
+        //    sqlConnection1.Open();
+
+        //    reader = cmd.ExecuteReader();
+        //    while (reader.Read())
+        //    {
+        //        objListPROC_ExistingRoute_Result.Add(new PROC_ExistingRoute_Result { Route = reader["Route"].ToString(), Cycle = reader["Cycle"].ToString() });
+        //    }
+
+        //    sqlConnection1.Close();
+        //    reader.Close();
+        //    reader.Dispose();
+        //    cmd.Dispose();
+        //    sqlConnection1.Dispose();
+        //    GetRoot = objListPROC_ExistingRoute_Result.Where(x => Cycle.Contains(x.Cycle)).Select(a => a.Route).Distinct().OrderBy(a => a).ToList();
+
+        //    return GetRoot;
+        //}
+
+        //public List<PROC_ExistingRoute_Result> GetDynamicRoutebyCycle1(long ProjectId, long InstallerId, string[] Cycle)
+        //{
+        //    CompassEntities dbcontext = new CompassEntities();
+        //    string cycleVal = "";
+        //    foreach (var item in Cycle)
+        //    {
+        //        if (cycleVal.Length == 0)
+        //        {
+        //            cycleVal = item;
+        //        }
+        //        else
+        //        {
+        //            cycleVal += "," + item + "";
+        //        }
+        //    }
+
+        //    List<PROC_ExistingRoute_Result> objListPROC_ExistingRoute_Result = new List<PROC_ExistingRoute_Result>();
+        //    SqlConnection sqlConnection1 = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
+        //    SqlCommand cmd = new SqlCommand();
+        //    SqlDataReader reader;
+
+        //    cmd.CommandText = "PROC_ProjectStatus_Route_by_InstallerId";
+        //    cmd.CommandType = CommandType.StoredProcedure;
+        //    cmd.Connection = sqlConnection1;
+        //    cmd.Parameters.Add("@ProjectId", ProjectId);
+        //    cmd.Parameters.Add("@InstallerId", InstallerId);
+        //    cmd.Parameters.Add("@Cycle", cycleVal);
+        //    sqlConnection1.Open();
+
+        //    reader = cmd.ExecuteReader();
+        //    while (reader.Read())
+        //    {
+        //        objListPROC_ExistingRoute_Result.Add(new PROC_ExistingRoute_Result { Route = reader["Route"].ToString(), Cycle = reader["Cycle"].ToString(), Disabled = int.Parse(reader["Disabled"].ToString()) });
+
+        //    }
+        //    sqlConnection1.Close();
+        //    reader.Close();
+        //    reader.Dispose();
+        //    cmd.Dispose();
+        //    sqlConnection1.Dispose();
+        //    var GetRoot = objListPROC_ExistingRoute_Result.
+        //        Where(x => Cycle.Contains(x.Cycle)).Select(a => a).Distinct().ToList();
+        //    return GetRoot;
+        //}
     }
 }

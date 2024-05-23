@@ -13,6 +13,15 @@
 @Html.Hidden("urlGetInstallerList", Url.Action("getCurrentInstallerList", "ProjectStatus"))
 @Html.Hidden("urlGetFormType", Url.Action("GetFormType", "ProjectStatus"))
 @Html.Hidden("urlGetLocationList", Url.Action("GetLocationList", "ProjectStatus"))
+@Html.Hidden("GetCycles", Url.Action("GetFreshCycle", "ProjectStatus"))
+@Html.Hidden("GetRootByCycles", Url.Action("GetRootByCycles", "ProjectStatus"))
+@Html.Hidden("GetAddressUrl", Url.Action("GetAddresses", "ProjectStatus"))
+@Html.Hidden("GetLatLagin", Url.Action("GetLat_by_Roots", "ProjectStatus"))
+@Html.Hidden("GetExistingCycleList", Url.Action("GetExistingCycleses", "ProjectStatus"))
+@Html.Hidden("GetCycledatabyInstaller", Url.Action("GetCycledatabyInstaller", "ProjectStatus"))
+@Html.Hidden("GetCheckAddressExistby_ProjectInstallerDates", Url.Action("CheckAddressExistby_ProjectInstallerDat", "ProjectStatus"))
+@Html.Hidden("GetRouteDataByCycle", Url.Action("GetRouteDataByCycle", "ProjectStatus"))
+
 
 <div id="loading">
     <div id="loadingcontent">
@@ -24,6 +33,7 @@
 <style>
     .map_align {
     }
+
 
     .projectmap_flow {
         width: 102%;
@@ -1198,9 +1208,17 @@
     }
 </style>
 @{
-    var href = "https://maps.googleapis.com/maps/api/js?key=" + System.Configuration.ConfigurationManager.AppSettings["googleapiKey"].ToString() + "&sensor=false&callback=Function.prototype";
+    var href = "https://maps.googleapis.com/maps/api/js?key=" + System.Configuration.ConfigurationManager.AppSettings["googleapiKey"].ToString() + "&sensor=false";
 }
-<script type="text/javascript" src="@href"></script>
+<!--<script type="text/javascript" src="@href"></script>-->
+<script>
+
+    (g => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]); e.set("callback", c + ".maps." + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + " could not load.")); a.nonce = m.querySelector("script[nonce]") ?.nonce || ""; m.head.append(a) })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })
+
+        ({ key: "AIzaSyBuy8PkXAoVQWsNpBl7Wt-mlYJNde4sals", v: "weekly" });
+
+</script>
+
 <div id="loading"> <div id="loadingcontent"> <p id="loadingspinner"> Searching things... </p> </div> </div>
 
 
@@ -1224,37 +1242,101 @@
                             <div class="container-fluid con_fluid_new">
                                 <div class="panel-body">
                                     <div class="form-group ">
-                                        <div class="col-lg-4 col-md-3 col-sm-6 col-xs-12 ">
+                                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 ">
                                             <select id="ddlUtilityType" data-placeholder="Select Utility" class="form-control chosen-select">
                                                 <option value="0"></option>
                                                 <option value="1">Electric</option>
                                                 <option value="2">Gas</option>
                                                 <option value="3">Water</option>
-                                                <!-- <option value="4">Electric and Water</option>-->
+                                                @*<option value="4">Electric and Water</option>*@
                                             </select>
                                         </div>
-                                        <div class="col-lg-4 col-md-3 col-sm-6 col-xs-12 prj-btn ">
+                                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 prj-btn ">
                                             <select id="ddlProjectStatus" data-placeholder="Select Project Status" class="form-control chosen-select ">
                                                 <option value="0"></option>
                                                 <option value="1">Active</option>
                                                 <option value="2">Completed</option>
                                             </select>
                                         </div>
-                                        <div class="col-lg-4 col-md-3 col-sm-6 col-xs-12 prj-btn ">
+                                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 prj-btn ">
                                             <select id="ddlProject" data-placeholder="Select Project" class="form-control chosen-select "></select>
                                         </div>
                                         @*</div>
                                             <div class="form-group prostat-formgrp">*@
-                                        <div class="col-lg-4 col-md-3 col-sm-6 col-xs-12 proj-stat-drp3">
+                                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12  ">
                                             <select id="ddlformtype" data-placeholder="Select Form Type" class="form-control chosen-select"></select>
                                         </div>
-                                        <div class="col-lg-4 col-md-3 col-sm-6 col-xs-12 prj-btn proj-stat-drp4">
+                                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 prj-btn proj-stat-drp4">
                                             <select id="ddlLocation" data-placeholder="Select Location" class="form-control chosen-select"></select>
                                         </div>
-                                        <div class="col-lg-4 col-md-3 col-sm-6 col-xs-12 prj-btn proj-stat-drp4">
+                                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 prj-btn proj-stat-drp4">
                                             <select id="ddlInstaller" data-placeholder="Select" class="form-control chosen-select"></select>
                                         </div>
+
+
+
+
+
+                                        <!---//add makhan-->
+
+
+
+                                        <div id="divCycle" class="col-lg-3 col-md-3 col-sm-6 col-xs-12 prj-btn proj-stat-drp4 ">
+                                            <div class="chosen-container chosen-container-single " style="width: 100% !important;" title="" id="ddlCycle_chosen">
+                                                <a class="chosen-single chosen-default" id="ancCycle_chosen" tabindex="-1"><span class="" id="CycleHeader">Select Cycle</span><div><b></b></div></a>
+                                                <div class="chosen-drop">
+                                                    <div class="chosen-search"><input type="text" name="ddCy" class="txtfilterall" onkeyup="filterCycle(this)" autocomplete="off"></div>
+
+                                                    <div class="CycleFilter row">
+                                                        <div class="col-lg-12">
+                                                            <div class="">
+                                                                <label style="margin-left: 7px;"><input type="checkbox" style="zoom:1.2;" class="chbSelectAll" id="Cycle_SelectAll" autocomplete="off" value=" " name="chbCy"><span style="padding-top: -31px;">Select All</span></label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <ul id="ulCycle1" class="chosen-results " style="max-height: 118px;"></ul>
+                                                    <div style="text-align:center; margin:5px 0px;">
+                                                        <button id="btnCycleFilter" class="btn btn-success save_btn " type="button" style="color:#ffffff;">Ok</button>
+                                                        @*<button id="btnSave" class="btn btn-warning save_btn " type="button" style="color:#ffffff;">Cancel</button>*@
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+
+
+
+                                        <div class=" col-lg-3 col-md-3 col-sm-6 col-xs-12  sel_route_btn proj-stat-drp4 " id="divroute">
+
+                                            <div class="chosen-container chosen-container-single " style="width: 100% !important;" title="" id="ddlroute_chosen">
+                                                <a class="chosen-single chosen-default" id="ancroute_chosen" tabindex="-1"><span class="" id="routeHeader">Select Route</span><div><b></b></div></a>
+                                                <div class="chosen-drop">
+                                                    <DIV class="chosen-search"><input type="text" name="ddRou" id="txtfilterRoute" class="txtfilterall" onkeyup="filterRoute(this)" autocomplete="off"></DIV>
+                                                    <div class="routeFilter row">
+                                                        <div class="col-lg-12">
+                                                            <div class="">
+                                                                <label style="margin-left: 7px;"><input type="checkbox" style="zoom:1.2;" class="chbSelectAll" id="Route_SelectAll" autocomplete="off" value=" " name="chbRou"><span style="padding-top: -31px;">Select All</span></label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <ul id="ulroute" class="chosen-results " style="max-height: 118px;"></ul>
+                                                    <div style="text-align:center; margin:5px 0px;">
+                                                        <button id="btnRouteFilter" class="btn btn-success save_btn " type="button" style="color:#ffffff;">Ok</button>
+                                                        @*<button id="btnSave" class="btn btn-warning save_btn " type="button" style="color:#ffffff;">Cancel</button>*@
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!--  //end makhan   -->
+
                                     </div>
+
+
+
+
+
                                 </div>
                             </div>
                         </section>
@@ -1266,96 +1348,96 @@
                                     <!-- Remove class dot-img1 to dot-img5-->
                                     @*<div class="col-lg-2 col-md-3 col-sm-2 col-xs-5 dot-img1" style="display:inline-flex;width: -moz-fit-content;">
                                         <div class="form-group frm-grp-dotimg" style="float:right;">*@
-                                        <div class="form-group frm-grp-dotimg" style="margin:0 auto; width:850px;">
-                                            <p style="text-align: center;">
-                                                <span style="margin-right: 10px;">
-                                                    <img src="https://maps.google.com/mapfiles/ms/icons/yellow-dot.png" class="" alt="skip" width="22" height="20" style="" />
-                                                    Skip
-                                                </span>
-                                                <span style="margin-right: 10px;">
-                                                    <img src="https://maps.google.com/mapfiles/ms/icons/orange-dot.png" class="" alt="Partially Done" width="20" height="20" style="" />
-                                                    Partially Done
-                                                </span>
-                                                <span style="margin-right: 10px;">
-                                                    <img src="https://maps.google.com/mapfiles/ms/icons/blue-dot.png" class="" alt="pending" width="20" height="20" style="" />
-                                                    Pending
-                                                </span>
-                                                <span style="margin-right: 10px;">
-                                                    <img src="https://maps.google.com/mapfiles/ms/icons/red-dot.png" class="" alt="RTU" width="20" height="20" style="" />
-                                                    RTU
-                                                </span>
-                                                <span style="margin-right: 10px;">
-                                                    <img src="https://maps.google.com/mapfiles/ms/icons/green-dot.png" class="" alt="Completed" width="20" height="20" style="" />
-                                                    Completed
-                                                </span>
-                                                <span style="margin-right: 10px;">
-                                                    <img src="https://maps.google.com/mapfiles/kml/paddle/wht-circle.png" class="" alt="UnAssigned" width="20" height="20" style="" />
-                                                    UnAssigned
-                                                </span>
-                                                <span style="margin-right: 10px;">
-                                                    <img src="https://maps.google.com/mapfiles/ms/icons/purple-dot.png" class="" alt="UnAllocated Skip" width="20" height="20" style="" />
-                                                    UnAllocated Skip
-                                                </span>
-                                                <span style="margin-right: 10px;">
-                                                    <button id="btnShowMap" class="btn btn-warning proj_shw_map " type="button">Show Map</button>
-                                                </span>
-                                            </p>
-                                            <!--<div class="col-lg-1 col-md-2 col-sm-2 col-xs-5" style="display:inline-flex;width: -moz-fit-content;">
+                                    <div class="form-group frm-grp-dotimg" style="margin:0 auto; width:850px;">
+                                        <p style="text-align: center;">
+                                            <span style="margin-right: 10px;">
                                                 <img src="https://maps.google.com/mapfiles/ms/icons/yellow-dot.png" class="" alt="skip" width="22" height="20" style="" />
                                                 Skip
-                                            </div>
-                                            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-5" style="display:inline-flex;width: -moz-fit-content;">
+                                            </span>
+                                            <span style="margin-right: 10px;">
                                                 <img src="https://maps.google.com/mapfiles/ms/icons/orange-dot.png" class="" alt="Partially Done" width="20" height="20" style="" />
                                                 Partially Done
-                                            </div>
-                                            <div class="col-lg-1 col-md-3 col-sm-2 col-xs-5" style="display:inline-flex;width: -moz-fit-content;">
+                                            </span>
+                                            <span style="margin-right: 10px;">
                                                 <img src="https://maps.google.com/mapfiles/ms/icons/blue-dot.png" class="" alt="pending" width="20" height="20" style="" />
                                                 Pending
-                                            </div>
-                                            <div class="col-lg-1 col-md-3 col-sm-2 col-xs-5" style="display:inline-flex;width: -moz-fit-content;">
+                                            </span>
+                                            <span style="margin-right: 10px;">
                                                 <img src="https://maps.google.com/mapfiles/ms/icons/red-dot.png" class="" alt="RTU" width="20" height="20" style="" />
                                                 RTU
-                                            </div>
-
-                                            <div class="col-lg-2 col-md-3 col-sm-2 col-xs-5" style="display:inline-flex;width: -moz-fit-content;">
-
+                                            </span>
+                                            <span style="margin-right: 10px;">
                                                 <img src="https://maps.google.com/mapfiles/ms/icons/green-dot.png" class="" alt="Completed" width="20" height="20" style="" />
                                                 Completed
-                                            </div>
-
-                                            <div class="col-lg-1 col-md-3 col-sm-2 col-xs-5" style="width:-moz-fit-content;white-space:nowrap;">-->
-                                                @*display:inline-flex;*@
-                                                <!--<img src="https://maps.google.com/mapfiles/kml/paddle/wht-circle.png" class="" alt="UnAssigned" width="20" height="20" style="" />
+                                            </span>
+                                            <span style="margin-right: 10px;">
+                                                <img src="https://maps.google.com/mapfiles/kml/paddle/wht-circle.png" class="" alt="UnAssigned" width="20" height="20" style="" />
                                                 UnAssigned
-                                            </div>
-                                            <div class="col-lg-4 col-md-3 col-sm-2 col-xs-5" style="display:inline-flex;width: -moz-fit-content;justify-content:right">
+                                            </span>
+                                            <span style="margin-right: 10px;">
+                                                <img src="https://maps.google.com/mapfiles/ms/icons/purple-dot.png" class="" alt="UnAllocated Skip" width="20" height="20" style="" />
+                                                UnAllocated Skip
+                                            </span>
+                                            <span style="margin-right: 10px;">
                                                 <button id="btnShowMap" class="btn btn-warning proj_shw_map " type="button">Show Map</button>
-                                            </div>-->
+                                            </span>
+                                        </p>
+                                        <!--<div class="col-lg-1 col-md-2 col-sm-2 col-xs-5" style="display:inline-flex;width: -moz-fit-content;">
+                                            <img src="https://maps.google.com/mapfiles/ms/icons/yellow-dot.png" class="" alt="skip" width="22" height="20" style="" />
+                                            Skip
                                         </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-5" style="display:inline-flex;width: -moz-fit-content;">
+                                            <img src="https://maps.google.com/mapfiles/ms/icons/orange-dot.png" class="" alt="Partially Done" width="20" height="20" style="" />
+                                            Partially Done
+                                        </div>
+                                        <div class="col-lg-1 col-md-3 col-sm-2 col-xs-5" style="display:inline-flex;width: -moz-fit-content;">
+                                            <img src="https://maps.google.com/mapfiles/ms/icons/blue-dot.png" class="" alt="pending" width="20" height="20" style="" />
+                                            Pending
+                                        </div>
+                                        <div class="col-lg-1 col-md-3 col-sm-2 col-xs-5" style="display:inline-flex;width: -moz-fit-content;">
+                                            <img src="https://maps.google.com/mapfiles/ms/icons/red-dot.png" class="" alt="RTU" width="20" height="20" style="" />
+                                            RTU
+                                        </div>
+
+                                        <div class="col-lg-2 col-md-3 col-sm-2 col-xs-5" style="display:inline-flex;width: -moz-fit-content;">
+
+                                            <img src="https://maps.google.com/mapfiles/ms/icons/green-dot.png" class="" alt="Completed" width="20" height="20" style="" />
+                                            Completed
+                                        </div>
+
+                                        <div class="col-lg-1 col-md-3 col-sm-2 col-xs-5" style="width:-moz-fit-content;white-space:nowrap;">-->
+                                        @*display:inline-flex;*@
+                                        <!--<img src="https://maps.google.com/mapfiles/kml/paddle/wht-circle.png" class="" alt="UnAssigned" width="20" height="20" style="" />
+                                            UnAssigned
+                                        </div>
+                                        <div class="col-lg-4 col-md-3 col-sm-2 col-xs-5" style="display:inline-flex;width: -moz-fit-content;justify-content:right">
+                                            <button id="btnShowMap" class="btn btn-warning proj_shw_map " type="button">Show Map</button>
+                                        </div>-->
                                     </div>
                                 </div>
-                    </section>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="clearfix"></div>
                 </div>
-                <div class="clearfix"></div>
-            </div>
 
-            <section class="map_align">
-                <div class="container-fluid">
-                    <div class="row">
+                <section class="map_align">
+                    <div class="container-fluid">
+                        <div class="row">
 
 
-                        <div class="col-lg-12 map_flow" id="LoadRow">
+                            <div class="col-lg-12 map_flow" id="LoadRow">
 
+                            </div>
                         </div>
                     </div>
-                </div>
+                </section>
+
             </section>
+        </div>
 
-        </section>
-    </div>
-
-    @*</div>*@
-</section>
+        @*</div>*@
+    </section>
 
 
 </section>

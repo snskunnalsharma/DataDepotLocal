@@ -32,7 +32,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             return base.PartialView("Partial_ProjectStatus");
         }
 
-        public ActionResult GetAddressMap(long projectID, long InstallerID, long formTypeId,string locationId)
+        public ActionResult GetAddressMap(long projectID, long InstallerID, long formTypeId,string locationId, List<string> Cycle, List<string> Route)
         {
             List<addressVisitInfo> list = new List<addressVisitInfo>();
 
@@ -41,7 +41,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             {
                 if (formTypeId == 2)
                 {
-                    list = new ProjectStatusDAL().GetProjectStaus(projectID, InstallerID, formTypeId, locationId);
+                    list = new ProjectStatusDAL().GetProjectStaus(projectID, InstallerID, formTypeId, locationId, Cycle, Route);
                 }
                 else if (formTypeId == 1)
                 {
@@ -57,8 +57,49 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             return jsonResult;
 
         }
+        // cycle method start
+        public ActionResult GetFreshCycle(long projectID)
+        {
+            List<string> cyclelist = new List<string>();
 
+            //cyclelist = new InstallerDAL().GetFreshCycleByProjectID(projectID);
+            cyclelist = new ProjectStatusDAL().GetDynamicFreshCycleByProjectIDs(projectID);
 
+            return base.Json(cyclelist, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult GetCycledatabyInstaller (long projectID, long InstallerId)
+        {
+            List<string> cyclelist = new List<string>();
+
+            cyclelist = new ProjectStatusDAL().GetRoute_Cycle_By_Installer(projectID, InstallerId);
+            return base.Json(cyclelist, JsonRequestBehavior.AllowGet);
+        }
+        // root method start
+        public ActionResult GetRootByCycles(long ProjectId, string[] Cycle, long InstallerId)
+        {
+
+            List<string> routeList = new ProjectStatusDAL().GetDynamicFreshRootByCycles(Cycle, ProjectId, InstallerId);
+            List<PROC_ExistingRoute_Result> ObjExistingList = new ProjectStatusDAL().GetDynamicExistingRootByCycles(Cycle, ProjectId, InstallerId);
+            if (routeList == null)
+            {
+                routeList = new List<string>();
+            }
+            foreach (var item in ObjExistingList)
+            {
+                var checkRoutePresent = routeList.Where(o => o == item.Route).FirstOrDefault();
+                if (checkRoutePresent == null)
+                {
+                    routeList.Add(item.Route);
+                }
+            }
+            var InstallerRouteList = new List<RouteMaster>();
+            foreach (var item in ObjExistingList)
+            {
+                InstallerRouteList.Add(new RouteMaster { RouteId = item.Route, RouteDisabled = item.Disabled == 1 ? true : false });
+            }
+            return base.Json(new { Route = routeList, selectedRoute = InstallerRouteList }, JsonRequestBehavior.AllowGet);
+        }
 
 
         public ActionResult GetPoject(string utilityType, string ProjectStatus)
@@ -96,6 +137,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             return base.Json(data, JsonRequestBehavior.AllowGet);
         }
 
+   
         /// <summary>
         /// 
         /// </summary>
@@ -116,6 +158,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             return Json(obj1, JsonRequestBehavior.AllowGet);
         }
 
+
+        
 
         /// <summary>
         /// AddedBy AniketJ on 15-Oct-2016
@@ -141,6 +185,47 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             }
         }
         #endregion
+        //public ActionResult CheckAddressExistby_ProjectInstallerDat(long ProjectID, long InstallerID)
+        //{
 
+        //    using (ProjectStatusDAL objDAL = new ProjectStatusDAL())
+        //    {
+                
+        //        var lat_by_ProjectInstaller = objDAL.CheckAddressExistby_ProjectInstallerDates(ProjectID, InstallerID);
+        //        CompassEntities db = new CompassEntities();
+        //        var ExcludeSkip = db.tblUsers.Where(n => n.UserID == InstallerID).FirstOrDefault().ExcludeSkip;
+        //        //foreach (var item in lat_by_ProjectInstaller)
+        //        //{
+        //        //    item.strFormDate = item.FromDate.Value.ToString("MMM-dd-yyyy");
+        //        //    item.strToDate = item.ToDate.Value.ToString("MMM-dd-yyyy");
+        //        //}
+
+        //        return base.Json(new { lat_by_ProjectInstaller, ExcludeSkip }, JsonRequestBehavior.AllowGet);
+        //    }
+        //}
+
+        //public ActionResult GetRouteDatabyCycle(long ProjectId,long InstallerId, string[] Cycle)
+        //{
+        //    List<string> routeList = new ProjectStatusDAL().GetDynamicRoutebyCycle(ProjectId, InstallerId, Cycle);
+        //    List<PROC_ExistingRoute_Result> ObjExistingList = new ProjectStatusDAL().GetDynamicRoutebyCycle1(ProjectId, InstallerId, Cycle);
+        //    if (routeList == null)
+        //    {
+        //        routeList = new List<string>();
+        //    }
+        //    foreach (var item in ObjExistingList)
+        //    {
+        //        var checkRoutePresent = routeList.Where(o => o == item.Route).FirstOrDefault();
+        //        if (checkRoutePresent == null)
+        //        {
+        //            routeList.Add(item.Route);
+        //        }
+        //    }
+        //    var InstallerRouteList = new List<RouteMaster>();
+        //    foreach (var item in ObjExistingList)
+        //    {
+        //        InstallerRouteList.Add(new RouteMaster { RouteId = item.Route, RouteDisabled = item.Disabled == 1 ? true : false });
+        //    }
+        //    return base.Json(new { Route = routeList, selectedRoute = InstallerRouteList }, JsonRequestBehavior.AllowGet);
+        //}
     }
 }

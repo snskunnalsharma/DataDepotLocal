@@ -4159,7 +4159,6 @@ $('#chkUnallocatedSkip').change(function () {
 
 $("#btnCycleFilter").click(function () {
     debugger;
-
     waitingDialog.show('Loading Please Wait...');
 
     //$("#datepicker1").prop("disabled", false);
