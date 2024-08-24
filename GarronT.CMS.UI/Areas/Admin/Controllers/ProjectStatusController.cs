@@ -68,6 +68,17 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             return base.Json(cyclelist, JsonRequestBehavior.AllowGet);
         }
 
+        public ActionResult GetFreshCycleByOffice(long projectID, string locationID)
+        {
+            List<string> cyclelist = new List<string>();
+
+            //cyclelist = new InstallerDAL().GetFreshCycleByProjectID(projectID);
+            //cyclelist = new ProjectStatusDAL().GetDynamicFreshCycleByProjectIDs(projectID);
+            cyclelist = new ProjectStatusDAL().GetDynamicFreshCycleByOffice(projectID, locationID);
+
+            return base.Json(cyclelist, JsonRequestBehavior.AllowGet);
+        }
+
         public ActionResult GetCycledatabyInstaller (long projectID, long InstallerId)
         {
             List<string> cyclelist = new List<string>();

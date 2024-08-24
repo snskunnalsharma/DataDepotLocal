@@ -3429,7 +3429,7 @@ function EditAllocation(data, cycle, routes) {
         $('#Address_SelectAll').prop('checked', false);
 
 
-        var selectedlivalue = $('#ulCycle li.highlighted').map(function (i, el) { return $(el).val(); });
+        var selectedlivalue = $('#ulCycle li.highlighted').map(function (i, el) { return $(el).html(); });
 
 
         var selectedlilength = selectedlivalue.length;
@@ -3450,7 +3450,7 @@ function EditAllocation(data, cycle, routes) {
 
         var cyclevalue = [];
         var value = $('#ulCycle li.highlighted')
-        value.each(function (index, item) { cyclevalue.push($(this).text()) });
+        value.each(function (index, item) { cyclevalue.push($(this).html()) });
         var routeValue = routes.split(',');
         if (cyclevalue != null && cyclevalue.length > 0) {
 
@@ -3468,6 +3468,7 @@ function EditAllocation(data, cycle, routes) {
 
                     if (InstallerID != null) {
                         $.each(data.selectedRoute, function (index, item) {
+
                             if (item.RouteDisabled == false) {
                                 $("#ulroute").find("li[value='" + item.RouteId + "']").addClass("ui-selected click-selected highlighted")
                             }
@@ -3511,12 +3512,12 @@ function EditAllocation(data, cycle, routes) {
 
                     var ddlRootvalues = [];
                     var value = $('#ulroute li.highlighted')
-                    value.each(function (index, item) { ddlRootvalues.push($(this).val()) });
+                    value.each(function (index, item) { ddlRootvalues.push($(this).html()) });
 
 
                     var ddlCyclevalues = [];
                     var cyclevalue = $('#ulCycle li.highlighted')
-                    cyclevalue.each(function (index, item) { ddlCyclevalues.push($(this).text()) });
+                    cyclevalue.each(function (index, item) { ddlCyclevalues.push($(this).html()) });
 
 
                     var urlStateData = $('#GetAddressUrl').val();
@@ -3529,9 +3530,9 @@ function EditAllocation(data, cycle, routes) {
                     //for stop purpose
                     //waitingDialog.hide();
                     //return;
-
+                    debugger;
                     if (ddlRootvalues != null && ddlRootvalues.length > 0) {
-
+                        
                         $.ajax({
                             url: urlStateData,
                             async: true,
@@ -3539,6 +3540,7 @@ function EditAllocation(data, cycle, routes) {
                             dataType: "json",
                             data: { Root: ddlRootvalues, Cycle: ddlCyclevalues, Address: null, ProjectID: projectId, installerId: installerid, fromDate: fromDate, toDate: toDate, includeSkip: incSkip, unAllocatedSkip: unAlloSkip },
                             success: function (jsonResult) {
+                                debugger;
                                 if (jsonResult.success === undefined) {
 
                                     // here
@@ -3546,7 +3548,7 @@ function EditAllocation(data, cycle, routes) {
                                     $.each(jsonResult.AllAddress, function (index, item) { $('#ulAddress').append($('<li></li>').val(item.ID).addClass("liAddress active-result").html(item.Street)); });
 
                                     $.each(jsonResult.InstallerAddress, function (index, item) {
-
+                                        console.log("ul address value = " + item.ID);
                                         if (item.StreetDisabled == true) {
 
                                             $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted disabledli")
@@ -4644,12 +4646,12 @@ $("#btnRouteFilter").click(function () {
 
     var ddlRootvalues = [];
     var value = $('#ulroute li.highlighted')
-    value.each(function (index, item) { ddlRootvalues.push($(this).val()) });
+    value.each(function (index, item) { ddlRootvalues.push($(this).html()) });
     console.log("root" + ddlRootvalues);
 
     var ddlCyclevalues = [];
     var cyclevalue = $('#ulCycle li.highlighted')
-    cyclevalue.each(function (index, item) { ddlCyclevalues.push($(this).text()) });
+    cyclevalue.each(function (index, item) { ddlCyclevalues.push($(this).html()) });
 
 
     var urlStateData = $('#GetAddressUrl').val();

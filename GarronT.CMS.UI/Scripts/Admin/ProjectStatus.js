@@ -244,6 +244,48 @@ $('#ddlProject').change(function () {
 
 });
 
+$('#ddlLocation').change(function () {
+    console.log("Location changes")
+    var Project = $("#ddlProject option:selected");
+    var Location = $('#ddlLocation option:selected');
+
+    console.log("Project ID = " + Project)
+    console.log("Location ID = " + Location)
+    /*$('#ddlInstaller').empty();
+
+    $('#ddlInstaller').trigger("chosen:updated");
+
+    $('#ddlformtype').empty();
+    $('#ddlformtype').trigger("chosen:updated");
+
+    $('#ulCycle1').empty();
+    $("#CycleHeader").removeClass("ddlHeader").text("Select Cycle")
+
+    $('#ulRoute').empty();
+    $("#routeHeader").removeClass("ddlHeader").text("Select Route")
+
+    initialize();
+
+    //$('#ddlInstaller').empty();
+    //$("#ddlInstaller").removeClass("ddlHeader").text("Select Installer")
+
+    //  $('.txtfilterall').val("");
+    //  $('.chbSelectAll').prop('checked', false);
+
+*/
+
+    if (Project.length > 0 && Location.length > 0) {
+        /*BindFormType();
+        LocationList();
+        CycleList();
+        //filterCycle(element);
+        filterCycle1();
+        getRouteList();*/
+        CycleListByOffice();
+    }
+
+});
+
 
 
 $('#ddlformtype').change(function () {
@@ -340,12 +382,12 @@ $('#btnShowMap').click(function () {
 
     var ddlRoutevalues = [];
     var value = $('#ulroute li.highlighted')
-    value.each(function (index, item) { ddlRoutevalues.push($(this).val()) });
+    value.each(function (index, item) { ddlRoutevalues.push($(this).html()) });
     //console.log("root" + ddlRoutevalues);
 
     var ddlCyclevalues = [];
     var cyclevalue = $('#ulCycle1 li.highlighted')
-    cyclevalue.each(function (index, item) { ddlCyclevalues.push($(this).text()) });
+    cyclevalue.each(function (index, item) { ddlCyclevalues.push($(this).html()) });
     //console.log("cycle = " + ddlCyclevalues);
 
     /*var Cycle = $("#ulCycle1 li.ui-selected").text();
@@ -1100,8 +1142,9 @@ function CycleList() {
             $('#ulCycle1').empty();
             var count = Cycle.length;
             for (i = 0; i < count; i++) {
-
-                $('#ulCycle1').append($('<li></li>').val(Cycle[i]).addClass("liCycle active-result").html(Cycle[i]));
+                var cycleVal = Cycle[i];
+                console.log("cycle1 = " + cycleVal);
+                $('#ulCycle1').append($('<li></li>').val(''+ cycleVal +'').addClass("liCycle active-result").html(Cycle[i]));
             }
             //selectCycle()
         },
@@ -1136,6 +1179,69 @@ function CycleList() {
     } else {
         $('#Cycle_SelectAll').prop('checked', false);
     }
+    //#endregion
+}
+
+function CycleListByOffice() {
+    var ProjectId = $('#ddlProject').val();
+    var OfficeId = $('#ddlLocation').val();
+    var urlCycleDataByOffice = $('#GetCyclesByOffice').val();
+    /*var selectedlivalue = $('#ulCycle1 li.highlighted').map(function (i, el) { return $(el).val(); });
+    var selectedlilength = selectedlivalue.length;
+    if (selectedlilength == 0) {
+        $("#CycleHeader").removeClass("ddlHeader").text("Select Cycle")
+    } else {
+        $("#CycleHeader").addClass("ddlHeader").text(selectedlilength + " Cycle selected")
+    }*/
+    $("#CycleHeader").addClass("ddlHeader").text("Select Cycle")
+
+    var i = 0;
+    $.ajax({
+        url: urlCycleDataByOffice,
+        async: true,
+        data: { ProjectID: ProjectId, LocationID: OfficeId },
+        success: function (Cycle) {
+            // console.log("get urlCycleData success")
+            $('#ulCycle1').empty();
+            var count = Cycle.length;
+            for (i = 0; i < count; i++) {
+
+                $('#ulCycle1').append($('<li></li>').val(Cycle[i]).addClass("liCycle active-result").html(Cycle[i]));
+            }
+            //selectCycle()
+            $('#Cycle_SelectAll').prop('checked', false);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            waitingDialog.hide();
+            var $toast = toastr["error"](textStatus + "</br>" + errorThrown, "Error Notification");
+            console.log('jqXHR:');
+            console.log(jqXHR);
+            console.log('textStatus:');
+            console.log(textStatus);
+            console.log('errorThrown:');
+            console.log(errorThrown);
+        }
+
+
+    });
+
+    /*var value = $(element).val().toLowerCase();
+
+    $("#ulCycle > li").each(function () {
+        if ($(this).text().toLowerCase().search(value) > -1) {
+            $(this).show();
+        }
+        else {
+            $(this).hide();
+        }
+    });*/
+
+    //#region SelectAll checked/unchecked
+   /* if ($('#ulCycle1 .liCycle:visible').length > 0 && $('#ulCycle1 .highlighted:visible').length == $('#ulCycle1 .liCycle:visible').length) {
+        $('#Cycle_SelectAll').prop('checked', true);
+    } else {
+        $('#Cycle_SelectAll').prop('checked', false);
+    }*/
     //#endregion
 }
 

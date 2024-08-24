@@ -1092,6 +1092,7 @@ function checkTab2Status() {
 function getTab3Data() {
     //debugger;;
     var projId = $("#txtProjectId").val();
+    console.log("projId = " + projId);
     var urlGetTab3Data = $('#GetTab3Url').val();
     var mastDiv = $('#ulServicePrice');
     mastDiv.empty();
@@ -1113,6 +1114,10 @@ function getTab3Data() {
 
     var result2 = '<li class="row" style="margin-top: -12px; margin-bottom: -10px;" > <div class="task-title"> <span class="task-title-sp col-lg-2 col-sm-3 col-xs-3 show_deactive" style="font-weight:700">Meter Size</span>' +
         '<span class="task-title-sp col-lg-2 col-sm-3 col-xs-2" style="font-weight:700">Meter Pay Rate ($)</span></div></li><br>';
+    if (projId == 10122) {
+        result2 = '<li class="row" style="margin-top: -12px; margin-bottom: -10px;" > <div class="task-title"> <span class="task-title-sp col-lg-2 col-sm-3 col-xs-3 show_deactive" style="font-weight:700">Service Name</span>' +
+            '<span class="task-title-sp col-lg-2 col-sm-3 col-xs-2" style="font-weight:700">Rate For Service ($)</span></div></li><br>';
+    }
     $.ajax({
         cache: false,
         type: "GET",
@@ -1125,67 +1130,69 @@ function getTab3Data() {
             var Servicelist = [];
 
             //style="width: 100%; margin-top: 0%; margin-bottom: 1%;"
-            $.each(data.objList1, function (id, ServiceSmallModel) {
-                result = result + ' <li class="row" style="margin-bottom: 5px;"> <div class="task-content">';
+            if (projId != 10122) {
+                $.each(data.objList1, function (id, ServiceSmallModel) {
+                    result = result + ' <li class="row" style="margin-bottom: 5px;"> <div class="task-content">';
 
-                result = result + ' <div class="col-lg-2 col-sm-3 col-xs-3 show_deactive"><span>'
-                    + ServiceSmallModel.ServiceName + '</span></div>';
+                    result = result + ' <div class="col-lg-2 col-sm-3 col-xs-3 show_deactive"><span>'
+                        + ServiceSmallModel.ServiceName + '</span></div>';
 
-                result = result + '<div class="col-lg-2 col-sm-3 col-xs-3">' +
-                    '<input maxlength="20" id="' + ServiceSmallModel.ServiceId + '" type="text" placeholder="Enter rate for service" value="' +
-                    ServiceSmallModel.ServiceBasePrice + '"' +
-                    'style="width:100%; text-align:right; padding-right:10px;" class="tab3txt allownumericwithdecimal"  />' +
-                    '</div>';
+                    result = result + '<div class="col-lg-2 col-sm-3 col-xs-3">' +
+                        '<input maxlength="20" id="' + ServiceSmallModel.ServiceId + '" type="text" placeholder="Enter rate for service" value="' +
+                        ServiceSmallModel.ServiceBasePrice + '"' +
+                        'style="width:100%; text-align:right; padding-right:10px;" class="tab3txt allownumericwithdecimal"  />' +
+                        '</div>';
 
-                result = result + '<div class="col-lg-2 col-sm-3 col-xs-3" style="text-align:center">';
-                if (ServiceSmallModel.isImageMapped == true) {
-                    result = result + '<a id="btnservice' + ServiceSmallModel.ServiceId + '" class="btn btn-primary getPicture" data-backdrop="static" href="#"><i class="fa fa-eye"></i></a>';
-                }
-                else {
-                    result = result + '<div class="row" style=""> <div class="col-sm-3 text-center"></div></div>'
-                }
+                    result = result + '<div class="col-lg-2 col-sm-3 col-xs-3" style="text-align:center">';
+                    if (ServiceSmallModel.isImageMapped == true) {
+                        result = result + '<a id="btnservice' + ServiceSmallModel.ServiceId + '" class="btn btn-primary getPicture" data-backdrop="static" href="#"><i class="fa fa-eye"></i></a>';
+                    }
+                    else {
+                        result = result + '<div class="row" style=""> <div class="col-sm-3 text-center"></div></div>'
+                    }
 
-                result = result + '</div>';
-
-
-                var _imageFlag = ServiceSmallModel.ImageFlag == false ? false : true;
-                result = result + '<div class="col-lg-2 col-sm-3 col-xs-3 sel-serv" style="">';
-                if (ServiceSmallModel.isImageMapped == true) {
-                    result = result + '<div class="row m-bot15" style=""> <div class="col-sm-3 text-center">' +
-                        '<input class="serviceImage" id="chk' + ServiceSmallModel.ServiceId + '" type="checkbox" ' +
-                        (_imageFlag == true ? ' checked ' : '') + ' data-toggle="switch"></div></div>';
-                }
-                else {
-                    result = result + '<div class="row " style="margin-bottom:29%;"> <div class="col-sm-3 text-center"></div></div>'
-                }
-                result = result + ' </div>';
+                    result = result + '</div>';
 
 
-
-                result = result + ' <div class="col-lg-3 col-sm-3 col-xs-3 regProduct" style="">';
-
-                // if (data.objList3 != undefined && data.objList3 != null) {
-                //modifiedby AniketJ on 05-Aug-2017
-                //Added button to add product
-
-                //result = result + '<select id="ddlService' + ServiceSmallModel.ServiceId + '" name="Service" style="display:none;" multiple="multiple">';
-                //$.each(data.objList3, function (index, item) {
-                //    result = result + '<option value=' + item.productId + '>' + item.productName + '</option>';
-
-                //})
-
-                //result = result + '</select>';
-                //Servicelist.push('ddlService' + ServiceSmallModel.ServiceId);
+                    var _imageFlag = ServiceSmallModel.ImageFlag == false ? false : true;
+                    result = result + '<div class="col-lg-2 col-sm-3 col-xs-3 sel-serv" style="">';
+                    if (ServiceSmallModel.isImageMapped == true) {
+                        result = result + '<div class="row m-bot15" style=""> <div class="col-sm-3 text-center">' +
+                            '<input class="serviceImage" id="chk' + ServiceSmallModel.ServiceId + '" type="checkbox" ' +
+                            (_imageFlag == true ? ' checked ' : '') + ' data-toggle="switch"></div></div>';
+                    }
+                    else {
+                        result = result + '<div class="row " style="margin-bottom:29%;"> <div class="col-sm-3 text-center"></div></div>'
+                    }
+                    result = result + ' </div>';
 
 
-                result = result + '<input type="button" class="btn btn-success btnAddProduct" name="' + ServiceSmallModel.ServiceId + '" id="btnAddServiceProduct" value="Add Product" >';
 
-                // }
+                    result = result + ' <div class="col-lg-3 col-sm-3 col-xs-3 regProduct" style="">';
 
-                result = result + '</div></div>  </li>';
+                    // if (data.objList3 != undefined && data.objList3 != null) {
+                    //modifiedby AniketJ on 05-Aug-2017
+                    //Added button to add product
+
+                    //result = result + '<select id="ddlService' + ServiceSmallModel.ServiceId + '" name="Service" style="display:none;" multiple="multiple">';
+                    //$.each(data.objList3, function (index, item) {
+                    //    result = result + '<option value=' + item.productId + '>' + item.productName + '</option>';
+
+                    //})
+
+                    //result = result + '</select>';
+                    //Servicelist.push('ddlService' + ServiceSmallModel.ServiceId);
 
 
-            });
+                    result = result + '<input type="button" class="btn btn-success btnAddProduct" name="' + ServiceSmallModel.ServiceId + '" id="btnAddServiceProduct" value="Add Product" >';
+
+                    // }
+
+                    result = result + '</div></div>  </li>';
+
+
+                });
+            }
 
             //style="width: 100%; margin-top: 0%; margin-bottom: 1%;"
             $.each(data.objList2, function (id, ServiceNotSelectedModel) {
@@ -1244,22 +1251,40 @@ function getTab3Data() {
                 result1 = result1 + '</div> </div> </li>';
 
             });
+            if (projId == 10122) {
+                $.each(data.objList1, function (id, ServiceSmallModel) {
+                    result2 = result2 + ' <li class="row" style="margin-bottom: 5px;"> <div class="task-content">';
+                    result2 = result2 + ' <div class="col-lg-2 col-sm-3 col-xs-3 show_deactive"><span>' + ServiceSmallModel.ServiceName + '</span></div>';
+                    result2 = result2 + '<div class="col-lg-2 col-sm-3 col-xs-3">' +
+                        '<input maxlength="20" id="' + ServiceSmallModel.ServiceId + '" type="text" placeholder="Enter Meter Pay Rate" value="' +
+                        ServiceSmallModel.ServiceBasePrice + '"' +
+                        'style="width:100%; text-align:right; padding-right:10px;" class="tab4txt allownumericwithdecimal"  />' +
+                        '</div>';
 
-            $.each(data.objList4, function (id, ServiceSmallModel) {
-                result2 = result2 + ' <li class="row" style="margin-bottom: 5px;"> <div class="task-content">';
-                result2 = result2 + ' <div class="col-lg-2 col-sm-3 col-xs-3 show_deactive"><span>' + ServiceSmallModel.MeterSize + '</span></div>';
-                result2 = result2 + '<div class="col-lg-2 col-sm-3 col-xs-3">' +
-                    '<input maxlength="20" id="' + ServiceSmallModel.Id + '" type="text" placeholder="Enter Meter Pay Rate" value="' +
-                    ServiceSmallModel.Pay + '"' +
-                    'style="width:100%; text-align:right; padding-right:10px;" class="tab4txt allownumericwithdecimal"  />' +
-                    '</div>';
-                
-                result2 = result2 + ' </div>';
-                result2 = result2 + ' <div class="col-lg-3 col-sm-3 col-xs-3 regProduct" style="">';
-                //result2 = result2 + '<input type="button" class="btn btn-success btnAddMeterPayRate" name="' + ServiceSmallModel.Id + '" id="btnAddMeterPayRates" value="Save" >';
-                result2 = result2 + '</div></div>  </li>';
-            });
+                    result2 = result2 + ' </div>';
+                    result2 = result2 + ' <div class="col-lg-3 col-sm-3 col-xs-3 regProduct" style="">';
+                    //result2 = result2 + '<input type="button" class="btn btn-success btnAddMeterPayRate" name="' + ServiceSmallModel.Id + '" id="btnAddMeterPayRates" value="Save" >';
+                    result2 = result2 + '</div></div>  </li>';
+                });
 
+            }
+            else {
+                $.each(data.objList4, function (id, ServiceSmallModel) {
+                    result2 = result2 + ' <li class="row" style="margin-bottom: 5px;"> <div class="task-content">';
+                    result2 = result2 + ' <div class="col-lg-2 col-sm-3 col-xs-3 show_deactive"><span>' + ServiceSmallModel.MeterSize + '</span></div>';
+                    result2 = result2 + '<div class="col-lg-2 col-sm-3 col-xs-3">' +
+                        '<input maxlength="20" id="' + ServiceSmallModel.Id + '" type="text" placeholder="Enter Meter Pay Rate" value="' +
+                        ServiceSmallModel.Pay + '"' +
+                        'style="width:100%; text-align:right; padding-right:10px;" class="tab4txt allownumericwithdecimal"  />' +
+                        '</div>';
+
+                    result2 = result2 + ' </div>';
+                    result2 = result2 + ' <div class="col-lg-3 col-sm-3 col-xs-3 regProduct" style="">';
+                    //result2 = result2 + '<input type="button" class="btn btn-success btnAddMeterPayRate" name="' + ServiceSmallModel.Id + '" id="btnAddMeterPayRates" value="Save" >';
+                    result2 = result2 + '</div></div>  </li>';
+                });
+            }
+            
             mastDiv.append(result);
             mastAdditionalDiv.append(result1);
             mastMeterPayRateDiv.append(result2);

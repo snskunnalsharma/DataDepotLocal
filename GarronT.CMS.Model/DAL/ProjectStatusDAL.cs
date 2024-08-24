@@ -627,6 +627,48 @@ namespace GarronT.CMS.Model.DAL
             sqlConnection1.Dispose();
             return GetCycle;
         }
+
+        public List<string> GetDynamicFreshCycleByOffice(long projectID, string locationID)
+        {
+            CompassEntities dbcontext = new CompassEntities();
+
+            var Param = new SqlParameter { ParameterName = "@ProjectId", Value = projectID };
+            var ParamLocationId = new SqlParameter { ParameterName = "@Office", Value = locationID };
+
+            //var GetCycle1 = dbcontext.Database.SqlQuery<DataTable>("exec  PROC_DynamicPendingCycle @ProjectId", Param);
+
+
+            List<string> GetCycle = new List<string>();
+
+
+
+            SqlConnection sqlConnection1 = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
+            SqlCommand cmd = new SqlCommand();
+            SqlDataReader reader;
+
+            cmd.CommandText = "PROC_ProjectStatus_Cycle_by_Office";
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Connection = sqlConnection1;
+            cmd.Parameters.Add(Param);
+            cmd.Parameters.Add(ParamLocationId);
+            cmd.CommandTimeout = sqlConnection1.ConnectionTimeout;
+            sqlConnection1.Open();
+
+            reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                GetCycle.Add(reader["Cycle"].ToString());
+            }
+            // Data is accessible through the DataReader object here.
+
+            sqlConnection1.Close();
+            reader.Close();
+            reader.Dispose();
+            cmd.Dispose();
+            sqlConnection1.Dispose();
+            return GetCycle;
+        }
+
         public List<string> GetRoute_Cycle_By_Installer(long projectID, long InstallerId)
         {
             CompassEntities dbcontext = new CompassEntities();
