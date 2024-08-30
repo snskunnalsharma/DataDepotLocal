@@ -153,46 +153,107 @@ namespace GarronT.CMS.Model.DAL
             // Tbl name -> tblProjectFieldDataMaster == dm.CreatedOn
             // Tbl name -> TblProjectFieldData       == pf.visitdatetime
             //SqlDataAdapter sdaMeterSizeData = new SqlDataAdapter("select ROW_NUMBER() OVER(ORDER BY (SELECT 1 as bigint)) AS SerianNo,(dm.FieldValue)as MeterSize,CONVERT(varchar, dm.CreatedOn, 101)as CreatedOn,Datename(weekday,dm.CreatedOn) as DayName,FORMAT(dm.CreatedOn,'HH:mm')as Time from uploadedexceldata as up join TblProjectFieldData as pf on up.id = pf.fk_uploadedexceldata_id join tblProjectFieldDataMaster as dm on pf.id = dm.TblProjectFieldData_Id join TblMeterSize as ms on dm.FieldValue = ms.MeterSize WHERE up.FKProjectId = " + _ProjectID + " and(CONVERT(DATE, dm.CreatedOn) between CONVERT(DATE, '" + WeekRangefromDate + "') and CONVERT(DATE, '" + WeekRangetoDate + "')) and dm.InitialFieldName = 'NEW METER SIZE' and dm.CreatedBy = '" + installerid + "' and dm.Active = 1 order by dm.id", con);
-            SqlDataAdapter sdaMeterSizeData = new SqlDataAdapter("select ROW_NUMBER() OVER(ORDER BY (SELECT 1 as bigint)) AS SerianNo,(dm.FieldValue)as MeterSize,CONVERT(varchar, pf.visitdatetime, 101)as CreatedOn,Datename(weekday,pf.visitdatetime) as DayName,FORMAT(pf.visitdatetime,'HH:mm')as Time from uploadedexceldata as up join TblProjectFieldData as pf on up.id = pf.fk_uploadedexceldata_id join tblProjectFieldDataMaster as dm on pf.id = dm.TblProjectFieldData_Id join TblMeterSize as ms on dm.FieldValue = ms.MeterSize WHERE up.FKProjectId = " + _ProjectID + " and(CONVERT(DATE, pf.visitdatetime) between CONVERT(DATE, '" + WeekRangefromDate + "') and CONVERT(DATE, '" + WeekRangetoDate + "')) and dm.InitialFieldName = 'NEW METER SIZE' and dm.CreatedBy = '" + installerid + "' and pf.CreatedBy = '" + installerid + "' and dm.Active = 1 and pf.Active=1 order by dm.id", con);
-            DataTable dtMeterSizesData = new DataTable();
-            sdaMeterSizeData.Fill(dtMeterSizesData);
-            
-            //SqlDataAdapter sdaMeterTypeData = new SqlDataAdapter("select ROW_NUMBER() OVER(ORDER BY (SELECT 1 as bigint)) AS SerianNo,(dm.FieldValue)as MeterType,CONVERT(varchar, dm.CreatedOn, 101)as CreatedOn,Datename(weekday,dm.CreatedOn) as DayName,FORMAT(dm.CreatedOn,'HH:mm')as Time from uploadedexceldata as up join TblProjectFieldData as pf on up.id = pf.fk_uploadedexceldata_id join tblProjectFieldDataMaster as dm on pf.id = dm.TblProjectFieldData_Id join tblMeterType as mt on dm.FieldValue = mt.MeterType WHERE up.FKProjectId = " + _ProjectID + " and(CONVERT(DATE, dm.CreatedOn) between CONVERT(DATE, '" + WeekRangefromDate + "') and CONVERT(DATE, '" + WeekRangetoDate + "')) and dm.InitialFieldName = 'NEW METER TYPE' and dm.CreatedBy = '" + installerid + "' and dm.Active = 1 order by dm.id", con);
-            SqlDataAdapter sdaMeterTypeData = new SqlDataAdapter("select ROW_NUMBER() OVER(ORDER BY (SELECT 1 as bigint)) AS SerianNo,(dm.FieldValue)as MeterType,CONVERT(varchar, pf.visitdatetime, 101)as CreatedOn,Datename(weekday,pf.visitdatetime) as DayName,FORMAT(pf.visitdatetime,'HH:mm')as Time from uploadedexceldata as up join TblProjectFieldData as pf on up.id = pf.fk_uploadedexceldata_id join tblProjectFieldDataMaster as dm on pf.id = dm.TblProjectFieldData_Id join tblMeterType as mt on dm.FieldValue = mt.MeterType WHERE up.FKProjectId = " + _ProjectID + " and(CONVERT(DATE, pf.visitdatetime) between CONVERT(DATE, '" + WeekRangefromDate + "') and CONVERT(DATE, '" + WeekRangetoDate + "')) and dm.InitialFieldName = 'NEW METER TYPE' and dm.CreatedBy = '" + installerid + "' and pf.CreatedBy = '" + installerid + "' and dm.Active = 1 and pf.Active=1 order by dm.id", con);
-            DataTable dtMeterTypeData = new DataTable();
-            sdaMeterTypeData.Fill(dtMeterTypeData);
             List<Model_InstalledMeterDetailPayRate> objIMDPR = new List<Model_InstalledMeterDetailPayRate>();
-            if (dtMeterSizesData.Rows.Count > 0 && dtMeterTypeData.Rows.Count > 0 && dtMeterSizesData.Rows.Count == dtMeterTypeData.Rows.Count)
+            if (_ProjectID == 10122)
             {
-                var combineData = (from ms in dtMeterSizesData.AsEnumerable()
-                                   join mt in dtMeterTypeData.AsEnumerable()
-                                   on ms.Field<long>("SerianNo") equals mt.Field<long>("SerianNo")
-                                   select new Model_InstalledMeterDetail
-                                   {
-                                       ProjectId = _ProjectID,
-                                       MeterSize = ms.Field<string>("MeterSize"),
-                                       MeterType = mt.Field<string>("MeterType"),
-                                       CreatedOn = ms.Field<string>("CreatedOn"),
-                                       DayName = ms.Field<string>("DayName"),
-                                       Time = ms.Field<string>("Time")
-                                   }).ToList();
-                // Getting meter pay rates
-                CompassEntities objCompassEntities = new CompassEntities();
-                objIMDPR = new List<Model_InstalledMeterDetailPayRate>();
-                foreach (var item in combineData)
+                string sqlQuery = "select ROW_NUMBER() OVER(ORDER BY (SELECT 1 as bigint)) AS SerianNo,(dm.FieldValue)as MeterSize,CONVERT(varchar, pf.visitdatetime, 101)as CreatedOn,Datename(weekday,pf.visitdatetime) as DayName,FORMAT(pf.visitdatetime,'HH:mm')as Time from uploadedexceldata as up join TblProjectFieldData as pf on up.id = pf.fk_uploadedexceldata_id join tblProjectFieldDataMaster as dm on pf.id = dm.TblProjectFieldData_Id  WHERE up.FKProjectId = " + _ProjectID + " and(CONVERT(DATE, pf.visitdatetime) between CONVERT(DATE, '" + WeekRangefromDate + "') and CONVERT(DATE, '" + WeekRangetoDate + "')) and dm.InitialFieldName = 'NEW METER RADIO' and dm.CreatedBy = '" + installerid + "' and pf.CreatedBy = '" + installerid + "' and dm.Active = 1 and pf.Active=1 order by dm.id";
+                SqlDataAdapter sdaMeterSizeData = new SqlDataAdapter("select ROW_NUMBER() OVER(ORDER BY (SELECT 1 as bigint)) AS SerianNo,(dm.FieldValue)as MeterSize,CONVERT(varchar, pf.visitdatetime, 101)as CreatedOn,Datename(weekday,pf.visitdatetime) as DayName,FORMAT(pf.visitdatetime,'HH:mm')as Time from uploadedexceldata as up join TblProjectFieldData as pf on up.id = pf.fk_uploadedexceldata_id join tblProjectFieldDataMaster as dm on pf.id = dm.TblProjectFieldData_Id  WHERE up.FKProjectId = " + _ProjectID + " and(CONVERT(DATE, pf.visitdatetime) between CONVERT(DATE, '" + WeekRangefromDate + "') and CONVERT(DATE, '" + WeekRangetoDate + "')) and dm.InitialFieldName = 'NEW METER RADIO' and dm.CreatedBy = '" + installerid + "' and pf.CreatedBy = '" + installerid + "' and dm.Active = 1 and pf.Active=1 order by dm.id", con);
+                DataTable dtMeterSizesData = new DataTable();
+                sdaMeterSizeData.Fill(dtMeterSizesData);
+
+                if (dtMeterSizesData.Rows.Count > 0 )
                 {
-                    var obj = objCompassEntities.tblMeterPays.Where(o => o.FK_Project_Id == item.ProjectId && o.MeterSize == item.MeterSize && o.MeterType == item.MeterType).FirstOrDefault();
-                    objIMDPR.Add(new Model_InstalledMeterDetailPayRate
+                    var combineData = (from ms in dtMeterSizesData.AsEnumerable()
+                                     
+                                       select new Model_InstalledMeterDetail
+                                       {
+                                           ProjectId = _ProjectID,
+                                           MeterSize = "",
+                                           MeterType = "",
+                                           CreatedOn = ms.Field<string>("CreatedOn"),
+                                           DayName = ms.Field<string>("DayName"),
+                                           Time = ms.Field<string>("Time")
+                                       }).ToList();
+                    // Getting meter pay rates
+                    CompassEntities objCompassEntities = new CompassEntities();
+                    objIMDPR = new List<Model_InstalledMeterDetailPayRate>();
+                    foreach (var item in combineData)
                     {
-                        ProjectId = _ProjectID,
-                        MeterSize = item.MeterSize,
-                        MeterType = item.MeterType,
-                        MeterDisplayName=obj.MeterDisplayName,
-                        CreatedOn = item.CreatedOn,
-                        DayName = item.DayName,
-                        Time = item.Time,
-                        Pay =Convert.ToString(obj.Pay)
-                    });
+                        var objList = objCompassEntities.tblMeterPays.Where(o => o.FK_Project_Id == item.ProjectId && o.Active == 1).ToList();
+                        foreach(var obj in objList)
+                        {
+                            objIMDPR.Add(new Model_InstalledMeterDetailPayRate
+                            {
+                                ProjectId = _ProjectID,
+                                MeterSize = obj.MeterSize,
+                                MeterType = obj.MeterType,
+                                MeterDisplayName = obj.MeterDisplayName,
+                                CreatedOn = item.CreatedOn,
+                                DayName = item.DayName,
+                                Time = item.Time,
+                                Pay = Convert.ToString(obj.Pay)
+                            });
+                        }
+                        /*var obj = objCompassEntities.tblMeterPays.Where(o => o.FK_Project_Id == item.ProjectId && o.MeterSize == item.MeterSize && o.MeterType == item.MeterType).FirstOrDefault();
+                        objIMDPR.Add(new Model_InstalledMeterDetailPayRate
+                        {
+                            ProjectId = _ProjectID,
+                            MeterSize = item.MeterSize,
+                            MeterType = item.MeterType,
+                            MeterDisplayName = obj.MeterDisplayName,
+                            CreatedOn = item.CreatedOn,
+                            DayName = item.DayName,
+                            Time = item.Time,
+                            Pay = Convert.ToString(obj.Pay)
+                        });*/
+                    }
+                }
+            }
+            else
+            {
+                string sqlQuery = "select ROW_NUMBER() OVER(ORDER BY (SELECT 1 as bigint)) AS SerianNo,(dm.FieldValue)as MeterSize,CONVERT(varchar, pf.visitdatetime, 101)as CreatedOn,Datename(weekday,pf.visitdatetime) as DayName,FORMAT(pf.visitdatetime,'HH:mm')as Time from uploadedexceldata as up join TblProjectFieldData as pf on up.id = pf.fk_uploadedexceldata_id join tblProjectFieldDataMaster as dm on pf.id = dm.TblProjectFieldData_Id join TblMeterSize as ms on dm.FieldValue = ms.MeterSize WHERE up.FKProjectId = " + _ProjectID + " and(CONVERT(DATE, pf.visitdatetime) between CONVERT(DATE, '" + WeekRangefromDate + "') and CONVERT(DATE, '" + WeekRangetoDate + "')) and dm.InitialFieldName = 'NEW METER SIZE' and dm.CreatedBy = '" + installerid + "' and pf.CreatedBy = '" + installerid + "' and dm.Active = 1 and pf.Active=1 order by dm.id";
+                SqlDataAdapter sdaMeterSizeData = new SqlDataAdapter("select ROW_NUMBER() OVER(ORDER BY (SELECT 1 as bigint)) AS SerianNo,(dm.FieldValue)as MeterSize,CONVERT(varchar, pf.visitdatetime, 101)as CreatedOn,Datename(weekday,pf.visitdatetime) as DayName,FORMAT(pf.visitdatetime,'HH:mm')as Time from uploadedexceldata as up join TblProjectFieldData as pf on up.id = pf.fk_uploadedexceldata_id join tblProjectFieldDataMaster as dm on pf.id = dm.TblProjectFieldData_Id join TblMeterSize as ms on dm.FieldValue = ms.MeterSize WHERE up.FKProjectId = " + _ProjectID + " and(CONVERT(DATE, pf.visitdatetime) between CONVERT(DATE, '" + WeekRangefromDate + "') and CONVERT(DATE, '" + WeekRangetoDate + "')) and dm.InitialFieldName = 'NEW METER SIZE' and dm.CreatedBy = '" + installerid + "' and pf.CreatedBy = '" + installerid + "' and dm.Active = 1 and pf.Active=1 order by dm.id", con);
+                DataTable dtMeterSizesData = new DataTable();
+                sdaMeterSizeData.Fill(dtMeterSizesData);
+
+                string sqlQuery1 = "select ROW_NUMBER() OVER(ORDER BY (SELECT 1 as bigint)) AS SerianNo,(dm.FieldValue)as MeterType,CONVERT(varchar, pf.visitdatetime, 101)as CreatedOn,Datename(weekday,pf.visitdatetime) as DayName,FORMAT(pf.visitdatetime,'HH:mm')as Time from uploadedexceldata as up join TblProjectFieldData as pf on up.id = pf.fk_uploadedexceldata_id join tblProjectFieldDataMaster as dm on pf.id = dm.TblProjectFieldData_Id join tblMeterType as mt on dm.FieldValue = mt.MeterType WHERE up.FKProjectId = " + _ProjectID + " and(CONVERT(DATE, pf.visitdatetime) between CONVERT(DATE, '" + WeekRangefromDate + "') and CONVERT(DATE, '" + WeekRangetoDate + "')) and dm.InitialFieldName = 'NEW METER TYPE' and dm.CreatedBy = '" + installerid + "' and pf.CreatedBy = '" + installerid + "' and dm.Active = 1 and pf.Active=1 order by dm.id";
+                //SqlDataAdapter sdaMeterTypeData = new SqlDataAdapter("select ROW_NUMBER() OVER(ORDER BY (SELECT 1 as bigint)) AS SerianNo,(dm.FieldValue)as MeterType,CONVERT(varchar, dm.CreatedOn, 101)as CreatedOn,Datename(weekday,dm.CreatedOn) as DayName,FORMAT(dm.CreatedOn,'HH:mm')as Time from uploadedexceldata as up join TblProjectFieldData as pf on up.id = pf.fk_uploadedexceldata_id join tblProjectFieldDataMaster as dm on pf.id = dm.TblProjectFieldData_Id join tblMeterType as mt on dm.FieldValue = mt.MeterType WHERE up.FKProjectId = " + _ProjectID + " and(CONVERT(DATE, dm.CreatedOn) between CONVERT(DATE, '" + WeekRangefromDate + "') and CONVERT(DATE, '" + WeekRangetoDate + "')) and dm.InitialFieldName = 'NEW METER TYPE' and dm.CreatedBy = '" + installerid + "' and dm.Active = 1 order by dm.id", con);
+                SqlDataAdapter sdaMeterTypeData = new SqlDataAdapter("select ROW_NUMBER() OVER(ORDER BY (SELECT 1 as bigint)) AS SerianNo,(dm.FieldValue)as MeterType,CONVERT(varchar, pf.visitdatetime, 101)as CreatedOn,Datename(weekday,pf.visitdatetime) as DayName,FORMAT(pf.visitdatetime,'HH:mm')as Time from uploadedexceldata as up join TblProjectFieldData as pf on up.id = pf.fk_uploadedexceldata_id join tblProjectFieldDataMaster as dm on pf.id = dm.TblProjectFieldData_Id join tblMeterType as mt on dm.FieldValue = mt.MeterType WHERE up.FKProjectId = " + _ProjectID + " and(CONVERT(DATE, pf.visitdatetime) between CONVERT(DATE, '" + WeekRangefromDate + "') and CONVERT(DATE, '" + WeekRangetoDate + "')) and dm.InitialFieldName = 'NEW METER TYPE' and dm.CreatedBy = '" + installerid + "' and pf.CreatedBy = '" + installerid + "' and dm.Active = 1 and pf.Active=1 order by dm.id", con);
+                DataTable dtMeterTypeData = new DataTable();
+                sdaMeterTypeData.Fill(dtMeterTypeData);
+
+                if (dtMeterSizesData.Rows.Count > 0 && dtMeterTypeData.Rows.Count > 0 && dtMeterSizesData.Rows.Count == dtMeterTypeData.Rows.Count)
+                {
+                    var combineData = (from ms in dtMeterSizesData.AsEnumerable()
+                                       join mt in dtMeterTypeData.AsEnumerable()
+                                       on ms.Field<long>("SerianNo") equals mt.Field<long>("SerianNo")
+                                       select new Model_InstalledMeterDetail
+                                       {
+                                           ProjectId = _ProjectID,
+                                           MeterSize = ms.Field<string>("MeterSize"),
+                                           MeterType = mt.Field<string>("MeterType"),
+                                           CreatedOn = ms.Field<string>("CreatedOn"),
+                                           DayName = ms.Field<string>("DayName"),
+                                           Time = ms.Field<string>("Time")
+                                       }).ToList();
+                    // Getting meter pay rates
+                    CompassEntities objCompassEntities = new CompassEntities();
+                    objIMDPR = new List<Model_InstalledMeterDetailPayRate>();
+                    foreach (var item in combineData)
+                    {
+                        var obj = objCompassEntities.tblMeterPays.Where(o => o.FK_Project_Id == item.ProjectId && o.MeterSize == item.MeterSize && o.MeterType == item.MeterType).FirstOrDefault();
+                        objIMDPR.Add(new Model_InstalledMeterDetailPayRate
+                        {
+                            ProjectId = _ProjectID,
+                            MeterSize = item.MeterSize,
+                            MeterType = item.MeterType,
+                            MeterDisplayName = obj.MeterDisplayName,
+                            CreatedOn = item.CreatedOn,
+                            DayName = item.DayName,
+                            Time = item.Time,
+                            Pay = Convert.ToString(obj.Pay)
+                        });
+                    }
                 }
             }
             return objIMDPR;
