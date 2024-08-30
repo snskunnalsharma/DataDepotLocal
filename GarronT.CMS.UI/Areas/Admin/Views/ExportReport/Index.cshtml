@@ -58,6 +58,40 @@
         width: 100%;
     }
 
+    #sourceFields1 {
+        height: 80%;
+        max-height: 300px;
+        overflow-y: scroll;
+        overflow-y: auto; /* Enable vertical scroll */
+        overflow-x: hidden; /* Hide horizontal scroll if not needed */
+        scrollbar-width: 50px; /* For Firefox */
+        -ms-overflow-style: none; /* For Internet Explorer and Edge */
+    }
+
+    #destinationFields1 {
+        height: 80%;
+        max-height: 300px;
+        overflow-y: scroll;
+        scrollbar-width: none; /* For Firefox */
+        -ms-overflow-style: none; /* For Internet Explorer and Edge */
+    }
+    #lableFields {
+        height: 80%;
+        max-height: 300px;
+        overflow-y: scroll;
+        scrollbar-width: none; /* For Firefox */
+        -ms-overflow-style: none; /* For Internet Explorer and Edge */
+    }
+    #sourceFields1::-webkit-scrollbar {
+        display: none; /* For Chrome, Safari, and Opera */
+    }
+    #destinationFields1::-webkit-scrollbar {
+        display: none; /* For Chrome, Safari, and Opera */
+    }
+    #lableFields::-webkit-scrollbar {
+        display: none; /* For Chrome, Safari, and Opera */
+    }
+
         .chosen-results li {
             margin-bottom: 1px;
             padding: 5px;
@@ -74,7 +108,7 @@
 
 
     ul.source, ul.target, ul.colName {
-        min-height: 500px;
+        min-height: 800px;
         margin: 0px 25px 10px 0px;
         padding: 2px;
         border-width: 1px;

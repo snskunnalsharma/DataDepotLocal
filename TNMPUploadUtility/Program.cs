@@ -22,14 +22,14 @@ namespace TNMPUploadUtility
             /*Console.WriteLine("Test Succeed or not - " + DateTime.Now.ToShortTimeString());
             Console.ReadLine();*/
             //Note==> Emails comment for a testsing time  ==> UploadFile.cs
-            long ProjectID = 10117;
+            long ProjectID = 10118;
             if (args.Length > 0)
             {
                 ProjectID = Convert.ToInt64(args[0]);  // Get project id in Task Schedular Argumnet
             }
             //long ProjectID = 10085; // Static project id
             #region Upload file class
-            /* ErrorLogFile.writeStatus("\n\nThread Started at Uploading file - " + DateTime.Now.ToShortTimeString());
+             ErrorLogFile.writeStatus("\n\nThread Started at Uploading file - " + DateTime.Now.ToShortTimeString());
              Console.WriteLine("Thread Started at - " + DateTime.Now.ToShortTimeString());
              ErrorLogFile.writeStatus("Get Project Id ==> Project Id:-" + ProjectID + " -" + DateTime.Now.ToShortTimeString());
              Console.WriteLine("Get Project Id ==> Project Id:-" + ProjectID + "");
@@ -72,12 +72,12 @@ namespace TNMPUploadUtility
                  Console.WriteLine("Error:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
              }
              ErrorLogFile.writeStatus("Thread Ended at Upload file - " + DateTime.Now.ToShortTimeString());
-             Console.WriteLine("Thread Ended at - " + DateTime.Now.ToShortTimeString());*/
+             Console.WriteLine("Thread Ended at - " + DateTime.Now.ToShortTimeString());
             #endregion
             //Ends uploading file code
 
             #region Download Export Report
-            ErrorLogFile.writeStatus("\n\nThread Started at Download Export Report - " + DateTime.Now.ToShortTimeString());
+           /*ErrorLogFile.writeStatus("\n\nThread Started at Download Export Report - " + DateTime.Now.ToShortTimeString());
             Console.WriteLine("Thread Started at Download Export Report - " + DateTime.Now.ToShortTimeString());
             ErrorLogFile.writeStatus("Get Project Id ==> Project Id:-" + ProjectID + " -" + DateTime.Now.ToShortTimeString());
             Console.WriteLine("Get Project Id ==> Project Id:-" + ProjectID + "");
@@ -102,7 +102,7 @@ namespace TNMPUploadUtility
                 var lastDateTime = objCE.TblTNMPExportReportUtilityHistories.Where(o => o.FK_ProjectId == projectId && o.Active == 1).OrderByDescending(q => q.Id).Select(o => o.ToDateTime).FirstOrDefault();
                 if (lastDateTime.HasValue)
                 {
-                    if (projectId == 10117) // TNMP CMS
+                    if (projectId == 10118) // TNMP CMS
                     {
                         //date = date.AddDays(-2);
                         DateTime tempTime = (DateTime)lastDateTime;
@@ -168,7 +168,7 @@ namespace TNMPUploadUtility
                 Console.WriteLine("Error:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
             }
             ErrorLogFile.writeStatus("Thread Ended at Download Export Report - " + DateTime.Now.ToShortTimeString());
-            Console.WriteLine("Thread Ended at Download Export Report - " + DateTime.Now.ToShortTimeString());
+            Console.WriteLine("Thread Ended at Download Export Report - " + DateTime.Now.ToShortTimeString());*/
             #endregion
             // Ends ecport report code
 

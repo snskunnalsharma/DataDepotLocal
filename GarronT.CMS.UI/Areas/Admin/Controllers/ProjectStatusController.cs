@@ -160,9 +160,9 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             List<UsersSmallModel> obj1 = new List<UsersSmallModel>();
             if (projectId > 0)
             {
-                using (ProjectStatusDAL obj = new ProjectStatusDAL())
+                using (UserRoleDAL obj = new UserRoleDAL())
                 {
-                    obj1 = obj.GeInstallerListCurrentProject(projectId, formType).OrderBy(a => a.UserName).ToList();
+                    obj1 = obj.GeInstallerListCurrentProject(projectId).OrderBy(a => a.UserName).ToList();
                 }
             }
 
