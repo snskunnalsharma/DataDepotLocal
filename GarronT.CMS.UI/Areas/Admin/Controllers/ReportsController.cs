@@ -123,13 +123,16 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         [HttpGet]
         public JsonResult GetInstallerByProjectID(long projectId)
         {
-            List<UsersSmallModel> InstallerList = new List<UsersSmallModel>();
+            List<UsersSmallModel> obj1 = new List<UsersSmallModel>();
             if (projectId > 0)
             {
-                InstallerList = new ReportDAL().GeInstallerListbyProjectID(projectId);
+                using (UserRoleDAL obj = new UserRoleDAL())
+                {
+                    obj1 = obj.GeInstallerListCurrentProject(projectId).OrderBy(a => a.UserName).ToList();
+                }
             }
 
-            return Json(InstallerList, JsonRequestBehavior.AllowGet);
+            return Json(obj1, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]

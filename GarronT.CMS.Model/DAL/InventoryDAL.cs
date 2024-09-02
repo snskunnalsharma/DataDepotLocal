@@ -86,39 +86,47 @@ namespace GarronT.CMS.Model.DAL
 
         public List<UsersSmallModel> GetProjectInstallers(long projectId)
         {
-
-            CompassEntities objCompassEntities = new CompassEntities();
-
-            WebServiceUserRoleDAL objWebServiceUserRoleDAL = new WebServiceUserRoleDAL();
-
-            var result = objWebServiceUserRoleDAL.GetAllUsersBasedOnRoleWithSelf("Installer");
-
-            var a = new List<UsersSmallModel>();
-            if (result != null && result.Count > 0)
+            using (CompassEntities objCompassEntities = new CompassEntities())
             {
-                a = result.Select(o => new UsersSmallModel { UserId = o.ChildId, UserName = o.ChildName }).ToList();
+                WebServiceUserRoleDAL objWebServiceUserRoleDAL = new WebServiceUserRoleDAL();
+
+                // Get all users with the "Installer" role
+                var result = objWebServiceUserRoleDAL.GetAllUsersBasedOnRoleWithSelf("Installer");
+
+                var installersList = new List<UsersSmallModel>();
+                if (result != null && result.Count > 0)
+                {
+                    installersList = result.Select(o => new UsersSmallModel { UserId = o.ChildId, UserName = o.ChildName }).ToList();
+                }
+
+                // Get the list of installers associated with the current project
+                var currentProjectUserIds = objCompassEntities.TblProjectInstallers
+                    .Where(o => o.ProjectID == projectId)
+                    .Select(o => o.tblUsers_UserID)
+                    .ToList();
+
+                // Filter the installers based on the current project
+                installersList = installersList
+                    .Where(o => currentProjectUserIds.Contains(o.UserId))
+                    .ToList();
+
+                // Additional filtering based on projectId using UserRoleDAL
+                List<UsersSmallModel> filteredInstallers = new List<UsersSmallModel>();
+                if (projectId > 0)
+                {
+                    using (UserRoleDAL obj = new UserRoleDAL())
+                    {
+                        filteredInstallers = obj.GeInstallerListCurrentProject(projectId).OrderBy(a => a.UserName).ToList();
+                    }
+                }
+
+                // Further filter installersList based on the filteredInstallers
+                installersList = installersList
+                    .Where(o => filteredInstallers.Any(f => f.UserId == o.UserId))
+                    .ToList();
+
+                return installersList;
             }
-
-            var a1 = new List<UsersSmallModel>();
-
-            a1.AddRange(a);
-
-            //if (a1.Count > 1)
-            //{
-            //    a1.Insert(0, new InventorySourceChildBO { ChildId = 0, ChildName = "All" });
-
-            //}
-
-            var CurrentProjectUsers = objCompassEntities.TblProjectInstallers.
-                              Where(o => o.ProjectID == projectId).Select(o => o.tblUsers_UserID).ToList();
-
-
-            /*Filter current project users*/
-            a1 = a1.Where(o => CurrentProjectUsers.Contains(o.UserId)).Select(o => o).ToList();
-
-            var data = new WebServiceUserRoleDAL().GetAllUsersBasedOnRoleWithSelf("Installer").Select(o => o.ChildId).ToList();
-            a1 = a1.Where(o => data.Contains(o.UserId)).ToList();
-            return a1;
         }
 
 

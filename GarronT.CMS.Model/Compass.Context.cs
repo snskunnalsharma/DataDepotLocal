@@ -14,7 +14,8 @@ namespace GarronT.CMS.Model
     using System.Data.Entity.Infrastructure;
     using System.Data.Entity.Core.Objects;
     using System.Linq;
-    
+    using System.Collections.Generic;
+
     public partial class CompassEntities : DbContext
     {
         public CompassEntities()
@@ -147,6 +148,7 @@ namespace GarronT.CMS.Model
         public virtual DbSet<tblMeterPay> tblMeterPays { get; set; }
         public virtual DbSet<TblTNMPExportReportUtilityHistory> TblTNMPExportReportUtilityHistories { get; set; }
         public virtual DbSet<TblUnAllocatedSkipHistory> TblUnAllocatedSkipHistories { get; set; }
+        public IEnumerable<object> Users { get; internal set; }
 
         public virtual int SP_DeleteFormSectionRelations(Nullable<long> formId)
         {
