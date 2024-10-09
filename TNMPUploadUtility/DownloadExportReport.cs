@@ -92,7 +92,11 @@ namespace TNMPUploadUtility
             {
                 ExportReportController objERC = new ExportReportController();
                 string fileName = string.Empty;
-                if (projectId == 10085 || projectId == 10117)
+                if (projectId == 10085 || projectId == 10118)
+                {
+                    fileName = "meters_exchange_CMS_" + DateTime.Now.ToString("yyyyMMdd") + ".csv";
+                }
+                else if (projectId == 10117)
                 {
                     fileName = "meter_exchange_CMS_" + DateTime.Now.ToString("yyyyMMdd") + ".csv";
                 }
@@ -106,7 +110,7 @@ namespace TNMPUploadUtility
                 }
 
                 StringBuilder sb = new StringBuilder();
-                dt = objERC.datatableColumnChnages(dt);     // Remove column not requied for TNMP project ==> Electric project
+                dt = objERC.datatableColumnChnages(dt, projectId);     // Remove column not requied for TNMP project ==> Electric project
                 int totalCount = dt.Columns.Count;
                 for (int k = 0; k < dt.Columns.Count; k++)
                 {

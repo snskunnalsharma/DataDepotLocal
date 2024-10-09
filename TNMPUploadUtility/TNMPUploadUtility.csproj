@@ -115,6 +115,7 @@
   <ItemGroup>
     <Compile Include="AccountStatus.cs" />
     <Compile Include="DownloadExportReport.cs" />
+    <Compile Include="DownloadExportReportSendbyEmail.cs" />
     <Compile Include="ErrorLogFile.cs" />
     <Compile Include="MailUtil.cs" />
     <Compile Include="Program.cs" />

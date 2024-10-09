@@ -29,7 +29,7 @@ namespace TNMPUploadUtility
             }
             //long ProjectID = 10085; // Static project id
             #region Upload file class
-             ErrorLogFile.writeStatus("\n\nThread Started at Uploading file - " + DateTime.Now.ToShortTimeString());
+             /*ErrorLogFile.writeStatus("\n\nThread Started at Uploading file - " + DateTime.Now.ToShortTimeString());
              Console.WriteLine("Thread Started at - " + DateTime.Now.ToShortTimeString());
              ErrorLogFile.writeStatus("Get Project Id ==> Project Id:-" + ProjectID + " -" + DateTime.Now.ToShortTimeString());
              Console.WriteLine("Get Project Id ==> Project Id:-" + ProjectID + "");
@@ -72,103 +72,103 @@ namespace TNMPUploadUtility
                  Console.WriteLine("Error:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
              }
              ErrorLogFile.writeStatus("Thread Ended at Upload file - " + DateTime.Now.ToShortTimeString());
-             Console.WriteLine("Thread Ended at - " + DateTime.Now.ToShortTimeString());
+             Console.WriteLine("Thread Ended at - " + DateTime.Now.ToShortTimeString());*/
             #endregion
             //Ends uploading file code
 
             #region Download Export Report
-           /*ErrorLogFile.writeStatus("\n\nThread Started at Download Export Report - " + DateTime.Now.ToShortTimeString());
-            Console.WriteLine("Thread Started at Download Export Report - " + DateTime.Now.ToShortTimeString());
-            ErrorLogFile.writeStatus("Get Project Id ==> Project Id:-" + ProjectID + " -" + DateTime.Now.ToShortTimeString());
-            Console.WriteLine("Get Project Id ==> Project Id:-" + ProjectID + "");
-            // All Parameter Set defualt
-            try
-            {
-                DateTime date = new CommonFunctions().ServerDate(); // Get current date
-                string fromDate = string.Empty;
-                string toDate = string.Empty;
-                DateTime objUtilityExecutionStartDateTime = date;
-                //string fromDate = date.ToString("MMM-dd-yyyy");   //"Apr-25-2022";
-                //string toDate = date.ToString("MMM-dd-yyyy");    //"Apr-25-2022";
-                //fromDate = "Apr-26-2022";
-                //toDate = "Apr-26-2022";
-                long formTypeId = 2;   // Form type 2 set because project data, 1 for Audit data
-                long projectId = ProjectID; // Project id ==> 10085
-                string[] visitStatus = new string[] { "Completed" };  // Only export report ==> Completed
-                int latlongRequired = 1;  // latlongRequired set=1 because 1 for not requied, Pass 2 requied
-                int mediaRequired = 1;    // mediaRequired set=1 because 1 for not requied, Pass 2 requied
+            /*ErrorLogFile.writeStatus("\n\nThread Started at Download Export Report - " + DateTime.Now.ToShortTimeString());
+             Console.WriteLine("Thread Started at Download Export Report - " + DateTime.Now.ToShortTimeString());
+             ErrorLogFile.writeStatus("Get Project Id ==> Project Id:-" + ProjectID + " -" + DateTime.Now.ToShortTimeString());
+             Console.WriteLine("Get Project Id ==> Project Id:-" + ProjectID + "");
+             // All Parameter Set defualt
+             try
+             {
+                 DateTime date = new CommonFunctions().ServerDate(); // Get current date
+                 string fromDate = string.Empty;
+                 string toDate = string.Empty;
+                 DateTime objUtilityExecutionStartDateTime = date;
+                 //string fromDate = date.ToString("MMM-dd-yyyy");   //"Apr-25-2022";
+                 //string toDate = date.ToString("MMM-dd-yyyy");    //"Apr-25-2022";
+                 //fromDate = "Apr-26-2022";
+                 //toDate = "Apr-26-2022";
+                 long formTypeId = 2;   // Form type 2 set because project data, 1 for Audit data
+                 long projectId = ProjectID; // Project id ==> 10085
+                 string[] visitStatus = new string[] { "Completed" };  // Only export report ==> Completed
+                 int latlongRequired = 1;  // latlongRequired set=1 because 1 for not requied, Pass 2 requied
+                 int mediaRequired = 1;    // mediaRequired set=1 because 1 for not requied, Pass 2 requied
 
-                CompassEntities objCE = new CompassEntities();
-                var lastDateTime = objCE.TblTNMPExportReportUtilityHistories.Where(o => o.FK_ProjectId == projectId && o.Active == 1).OrderByDescending(q => q.Id).Select(o => o.ToDateTime).FirstOrDefault();
-                if (lastDateTime.HasValue)
-                {
-                    if (projectId == 10118) // TNMP CMS
-                    {
-                        //date = date.AddDays(-2);
-                        DateTime tempTime = (DateTime)lastDateTime;
-                       fromDate = (tempTime.AddMinutes(1)).ToString("yyyy-MM-dd 23:59");
-                        fromDate =Convert.ToDateTime(lastDateTime).ToString("MMM-dd-yyyy 23:59");
-                     toDate = date.ToString("yyyy-MM-dd HH:mm");
-                       // toDate = "2024-03-24 19:50";
-                    }
-                    if (projectId == 10087) // TNMP HQ
-                    {
-                        date = date.AddDays(-1);
-                        DateTime tempTime = (DateTime)lastDateTime;
-                        fromDate = (tempTime.AddMinutes(1)).ToString("yyyy-MM-dd HH:mm");
-                        //fromDate = (tempTime).ToString("yyyy-MM-dd 00:00");   // becasue priviou day whole day cover 00:00 to 23:59
-                        toDate = date.ToString("yyyy-MM-dd 23:59");
-                        //toDate = date.ToString("yyyy-MM-dd HH:mm");
-                    }
+                 CompassEntities objCE = new CompassEntities();
+                 var lastDateTime = objCE.TblTNMPExportReportUtilityHistories.Where(o => o.FK_ProjectId == projectId && o.Active == 1).OrderByDescending(q => q.Id).Select(o => o.ToDateTime).FirstOrDefault();
+                 if (lastDateTime.HasValue)
+                 {
+                     if (projectId == 10118) // TNMP CMS
+                     {
+                         //date = date.AddDays(-2);
+                         DateTime tempTime = (DateTime)lastDateTime;
+                        fromDate = (tempTime.AddMinutes(1)).ToString("yyyy-MM-dd 23:59");
+                         fromDate =Convert.ToDateTime(lastDateTime).ToString("MMM-dd-yyyy 23:59");
+                      toDate = date.ToString("yyyy-MM-dd HH:mm");
+                        // toDate = "2024-03-24 19:50";
+                     }
+                     if (projectId == 10087) // TNMP HQ
+                     {
+                         date = date.AddDays(-1);
+                         DateTime tempTime = (DateTime)lastDateTime;
+                         fromDate = (tempTime.AddMinutes(1)).ToString("yyyy-MM-dd HH:mm");
+                         //fromDate = (tempTime).ToString("yyyy-MM-dd 00:00");   // becasue priviou day whole day cover 00:00 to 23:59
+                         toDate = date.ToString("yyyy-MM-dd 23:59");
+                         //toDate = date.ToString("yyyy-MM-dd HH:mm");
+                     }
 
-                    ErrorLogFile.writeStatus("Pass FromDateTime:- " + fromDate + " and ToDateTime:- " + toDate + " to Method  ==>" + DateTime.Now.ToShortTimeString());
-                    Console.WriteLine("Pass FromDate:- " + fromDate + " and ToDate :- " + toDate + " to Method");
-                }
-                // Get data in dt from Databse
-                DownloadExportReport objDER = new DownloadExportReport();
-                DataTable dt = objDER.createExcelNew(fromDate, toDate, formTypeId, projectId, visitStatus, latlongRequired, mediaRequired);
-                if (dt.Rows.Count > 0)
-                {
-                    string filePath = objDER.DownloadCSVExport(dt, projectId);  // Generate CSV file
-                    if (!string.IsNullOrEmpty(filePath))
-                    {
-                        bool status = objDER.UploadFileSFTPServer(filePath); // Upload file in SFTP server.
-                        if (status)
-                        {
-                            ErrorLogFile.writeStatus("Export File uploaded successfully in SFTP server -" + DateTime.Now.ToShortTimeString());
-                            Console.WriteLine("Export File uploaded successfully in SFTP server" + DateTime.Now.ToShortTimeString());
+                     ErrorLogFile.writeStatus("Pass FromDateTime:- " + fromDate + " and ToDateTime:- " + toDate + " to Method  ==>" + DateTime.Now.ToShortTimeString());
+                     Console.WriteLine("Pass FromDate:- " + fromDate + " and ToDate :- " + toDate + " to Method");
+                 }
+                 // Get data in dt from Databse
+                 DownloadExportReport objDER = new DownloadExportReport();
+                 DataTable dt = objDER.createExcelNew(fromDate, toDate, formTypeId, projectId, visitStatus, latlongRequired, mediaRequired);
+                 if (dt.Rows.Count > 0)
+                 {
+                     string filePath = objDER.DownloadCSVExport(dt, projectId);  // Generate CSV file
+                     if (!string.IsNullOrEmpty(filePath))
+                     {
+                         bool status = objDER.UploadFileSFTPServer(filePath); // Upload file in SFTP server.
+                         if (status)
+                         {
+                             ErrorLogFile.writeStatus("Export File uploaded successfully in SFTP server -" + DateTime.Now.ToShortTimeString());
+                             Console.WriteLine("Export File uploaded successfully in SFTP server" + DateTime.Now.ToShortTimeString());
 
-                            // Save TNMP Utility Export Report history
-                            TblTNMPExportReportUtilityHistory obj = new TblTNMPExportReportUtilityHistory();
-                            obj.FK_ProjectId = projectId;
-                            obj.FromDateTime = Convert.ToDateTime(fromDate);
-                            obj.ToDateTime = Convert.ToDateTime(toDate);
-                            obj.UtilityExecutionStartDateTime = objUtilityExecutionStartDateTime;
-                            obj.UtilityExecutionLastDateTime = new CommonFunctions().ServerDate();
-                            obj.Active = 1;
-                            obj.CreatedBy = 14; // Set defualt user id
-                            obj.CreatedOn = new CommonFunctions().ServerDate();
-                            objCE.TblTNMPExportReportUtilityHistories.Add(obj);
-                            objCE.SaveChanges();
-                            // end here
-                            ErrorLogFile.writeStatus("Save export report history in database -" + DateTime.Now.ToShortTimeString());
-                            Console.WriteLine("Save export report history in database" + DateTime.Now.ToShortTimeString());
-                        }
-                        else
-                        {
-                            ErrorLogFile.writeStatus("Export File don't uploaded -" + DateTime.Now.ToShortTimeString());
-                            Console.WriteLine("Export File don't uploaded");
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                ErrorLogFile.writeStatus("Error:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
-                Console.WriteLine("Error:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
-            }
-            ErrorLogFile.writeStatus("Thread Ended at Download Export Report - " + DateTime.Now.ToShortTimeString());
-            Console.WriteLine("Thread Ended at Download Export Report - " + DateTime.Now.ToShortTimeString());*/
+                             // Save TNMP Utility Export Report history
+                             TblTNMPExportReportUtilityHistory obj = new TblTNMPExportReportUtilityHistory();
+                             obj.FK_ProjectId = projectId;
+                             obj.FromDateTime = Convert.ToDateTime(fromDate);
+                             obj.ToDateTime = Convert.ToDateTime(toDate);
+                             obj.UtilityExecutionStartDateTime = objUtilityExecutionStartDateTime;
+                             obj.UtilityExecutionLastDateTime = new CommonFunctions().ServerDate();
+                             obj.Active = 1;
+                             obj.CreatedBy = 14; // Set defualt user id
+                             obj.CreatedOn = new CommonFunctions().ServerDate();
+                             objCE.TblTNMPExportReportUtilityHistories.Add(obj);
+                             objCE.SaveChanges();
+                             // end here
+                             ErrorLogFile.writeStatus("Save export report history in database -" + DateTime.Now.ToShortTimeString());
+                             Console.WriteLine("Save export report history in database" + DateTime.Now.ToShortTimeString());
+                         }
+                         else
+                         {
+                             ErrorLogFile.writeStatus("Export File don't uploaded -" + DateTime.Now.ToShortTimeString());
+                             Console.WriteLine("Export File don't uploaded");
+                         }
+                     }
+                 }
+             }
+             catch (Exception ex)
+             {
+                 ErrorLogFile.writeStatus("Error:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
+                 Console.WriteLine("Error:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
+             }
+             ErrorLogFile.writeStatus("Thread Ended at Download Export Report - " + DateTime.Now.ToShortTimeString());
+             Console.WriteLine("Thread Ended at Download Export Report - " + DateTime.Now.ToShortTimeString());*/
             #endregion
             // Ends ecport report code
 
@@ -241,44 +241,82 @@ namespace TNMPUploadUtility
              Console.WriteLine("Thread Ended at Uploaded old files s3 bucket - " + DateTime.Now.ToShortTimeString());*/
             #endregion
             //ends hare
+            #region Export Report By Email
+                long projectId = 10122;  // Example project ID
+                 //string fromDate = "2024-08-01";  // Example date range
+                //string toDate = "2024-09-10";
+                 long formTypeId = 2;  // Form type ID for project data
+                 string[] visitStatus = new string[] { "Completed" };  // Export only completed reports
+                 int latlongRequired = 1;  // LatLong not required
+                 int mediaRequired = 1;    // Media not required
 
-            //#region Upload tumbnail files 
-            //    ErrorLogFile.writeStatus("\n\nThread Started at Upload old files - " + DateTime.Now.ToShortTimeString());
-            //     Console.WriteLine("Thread Started at Upload old files- " + DateTime.Now.ToShortTimeString());
-            //     try
-            //     {
-            //         thumbnail tmb = new thumbnail();
-            //         tmb.getFilesPath();
-            //     }
-            //     catch (Exception ex)
-            //     {
-            //         ErrorLogFile.writeStatus("Error for Upload old files:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
-            //         Console.WriteLine("Error for Upload old files:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
-            //     }
-            //     ErrorLogFile.writeStatus("Thread Ended at Uploaded old files - " + DateTime.Now.ToShortTimeString());
-            //     Console.WriteLine("Thread Ended at Uploaded old files - " + DateTime.Now.ToShortTimeString());
-            //     #endregion
-            //     //ends hare
-            //     #region Upload old files s3 bucket
-            //     DateTime twoDaysAgo = DateTime.Now.AddDays(-6);
-            //     ErrorLogFile.writeStatus("\n\nThread Started at Upload old files - " + twoDaysAgo.ToShortTimeString());
+               CompassEntities objCE = new CompassEntities();
+                var lastDateTime = objCE.TblTNMPExportReportUtilityHistories.Where(o => o.FK_ProjectId == projectId && o.Active == 1).OrderByDescending(q => q.Id).Select(o => o.ToDateTime).FirstOrDefault();
+                ErrorLogFile.writeStatus("lastDateTime: " + lastDateTime);
+                DateTime date = new CommonFunctions().ServerDate(); // Get current date
+                string fromDate = string.Empty;
+                string toDate = string.Empty;
+                 DateTime objUtilityExecutionStartDateTime = date;
+              if (lastDateTime.HasValue) {
+                DateTime tempTime = (DateTime)lastDateTime;
+                fromDate = (tempTime.AddMinutes(1)).ToString("yyyy-MM-dd 00:00");
+                fromDate = Convert.ToDateTime(lastDateTime).ToString("MMM-dd-yyyy 00:00");
+                toDate = date.ToString("yyyy-MM-dd HH:MM");
+                
+            }
+            //DateTime date = DateTime.Now;  // Get current date
+            //date = date.AddDays(-1);  // Subtract one day from current date
 
-            //     Console.WriteLine("Thread Started at Upload old files - " + DateTime.Now.ToShortTimeString());
-            //     try
-            //     {
-            //         thumbnail newtmb = new thumbnail();
-            //         newtmb.getFilesPath();
-            //     }
-            //     catch (Exception ex)
-            //     {
-            //         ErrorLogFile.writeStatus("Error for Upload old files:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
-            //         Console.WriteLine("Error for Upload old files:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
-            //     }
-            //     ErrorLogFile.writeStatus("Thread Ended at Uploaded old files - " + DateTime.Now.ToShortTimeString());
-            //     Console.WriteLine("Thread Ended at Uploaded old files - " + DateTime.Now.ToShortTimeString());
-            //    #endregion
-            //    //ends hare
+            //string fromDate = date.ToString("yyyy-MM-dd 00:00");  // Start of the day (00:00)
+            //string toDate = date.ToString("yyyy-MM-dd 23:59");    // End of the day (23:59)
 
-        }
+            ErrorLogFile.writeStatus("Pass FromDate: " + fromDate + " and ToDate: " + toDate);
+
+                 DownloadExportReportSendbyEmail reportUtility = new DownloadExportReportSendbyEmail();
+
+                 // Create CSV data table for the report
+                 DataTable dt = reportUtility.createExcelNew(fromDate, toDate, formTypeId, projectId, visitStatus, latlongRequired, mediaRequired);
+
+                 if (dt.Rows.Count > 0)
+                 {
+                     // Generate the CSV file
+                     string filePath = reportUtility.DownloadCSVExport(dt, projectId);
+
+                     if (!string.IsNullOrEmpty(filePath))
+                     {
+                         if (projectId == 10122)  // Check for specific project ID
+                         {
+                             // Send the CSV file by email
+                             reportUtility.SendEmailWithAttachment(projectId, filePath);
+                         }
+
+                     }
+                     else
+                     {
+                         Console.WriteLine("Failed to generate CSV file.");
+                     }
+                    TblTNMPExportReportUtilityHistory obj = new TblTNMPExportReportUtilityHistory();
+                    obj.FK_ProjectId = projectId;
+                    obj.FromDateTime = Convert.ToDateTime(fromDate);
+                    obj.ToDateTime = Convert.ToDateTime(toDate);
+                    obj.UtilityExecutionStartDateTime = objUtilityExecutionStartDateTime;
+                    obj.UtilityExecutionLastDateTime = new CommonFunctions().ServerDate();
+                    obj.Active = 1;
+                    obj.CreatedBy = 14; // Set defualt user id
+                    obj.CreatedOn = new CommonFunctions().ServerDate();
+                   objCE.TblTNMPExportReportUtilityHistories.Add(obj);
+                    objCE.SaveChanges();
+                    // end here
+                    ErrorLogFile.writeStatus("Save export report history in database -" + DateTime.Now.ToShortTimeString());
+                    Console.WriteLine("Save export report history in database" + DateTime.Now.ToShortTimeString());
+                }
+                 else
+                 {
+                     Console.WriteLine("No data available for the selected date range.");
+            }
+            #endregion
+
+
+    }
     }
 }

@@ -2225,7 +2225,10 @@ namespace GarronT.CMS.Model.DAL
         // open inventory get in list
         public List<OpeningInventoryStockReportSummaryBO> GetOpeningInventryStockReportSummery(long projectId, long installerId, long ProductId, DateTime Defualtfromdate, DateTime toDateOneDayBefore, List<OpeningInventoryStockReportSummaryBO> openinginventoryreportData)
         {
+
             CompassEntities objCompassEntities = new CompassEntities();
+            objCompassEntities.Database.CommandTimeout = 0;
+
             //List<OpeningInventoryStockReportSummaryBO> openinginventoryreportData = new List<OpeningInventoryStockReportSummaryBO>();
             try
             {
@@ -2280,7 +2283,9 @@ namespace GarronT.CMS.Model.DAL
                 DateTime? todate = Convert.ToDateTime(txtToDate);
 
                 // Add opening inventory code
+                //var projectStartDate = objCompassEntities.tblProjects.Where(o => o.ProjectId == projectId).Select(o => o.FromDate).First();
                 DateTime Defualtfromdate = Convert.ToDateTime("Aug-01-2017");
+                //DateTime Defualtfromdate = Convert.ToDateTime(projectStartDate.ToString());
                 DateTime fromdateOneDayBefore = Convert.ToDateTime(txtFromDate);
                 DateTime toDateOneDayBefore = fromdateOneDayBefore.AddDays(-1);
                 List<OpeningInventoryStockReportSummaryBO> openinginventoryreportData = new List<OpeningInventoryStockReportSummaryBO>();

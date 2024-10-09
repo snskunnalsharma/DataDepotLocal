@@ -177,6 +177,7 @@ $("#btnSave").click(function () {
 });
 
 $("#btnExport").click(function () {
+    alert();
     //debugger;
     var Formdata = $("#ddlformtype").val();
     var projectId = $("#ddlProject").val();

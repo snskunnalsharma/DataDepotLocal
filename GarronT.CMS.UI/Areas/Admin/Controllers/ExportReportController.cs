@@ -4194,7 +4194,11 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 {
                     Response.AddHeader("content-disposition", "attachment;filename=meter_exchange_CMS_" + DateTime.Now.ToString("yyyyMMdd") + ".csv");
                 }
-               else if (projectId == 10087)
+                else if (projectId == 10117)
+                {
+                    Response.AddHeader("content-disposition", "attachment;filename=meter_exchange_CMS_" + DateTime.Now.ToString("yyyyMMdd") + ".csv");
+                }
+                else if (projectId == 10087)
                 {
                     Response.AddHeader("content-disposition", "attachment;filename=meter_exchange_TNMP_" + DateTime.Now.ToString("yyyyMMdd") + ".csv");
                 }
@@ -4208,7 +4212,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 //DataTable dt = Session["TillReportData"] as DataTable;
                 // Hide/Remove columns from csv.
                 //dt.Columns.RemoveAt(1); // Removes the column at the specified index
-                dt = datatableColumnChnages(dt);     // Remove column not requied for TNMP project ==> Electric project
+                dt = datatableColumnChnages(dt, projectId);     // Remove column not requied for TNMP project ==> Electric project
                 //dt.Columns.Remove("ATTENDANT NAME"); // Removes DataColumn object that has the specified name
                 //dt.Columns.Remove("VISIT ATTENDED DATETIME");
                 //dt.Columns.Remove("VISIT STATUS");
@@ -4256,7 +4260,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             
         }
 
-        public DataTable datatableColumnChnages(DataTable dt)
+        public DataTable datatableColumnChnages(DataTable dt, long projectId)
         {
             // Dtatable Column chnages applied for Electricty Project
             //CompassEntities objComEn = new CompassEntities();
@@ -4309,10 +4313,12 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 {
                     dt.Columns.Remove("COMMENT");
                 }*/
+                if(projectId != 10122) { 
                 dt.Columns.Add("V_NEW_LATITUDE");
                 dt.AcceptChanges();
                 dt.Columns.Add("V_NEW_LONGITUDE");
                 dt.AcceptChanges();
+                }
                 try
                 {
                     for (int k = 0; k < dt.Rows.Count; k++)
