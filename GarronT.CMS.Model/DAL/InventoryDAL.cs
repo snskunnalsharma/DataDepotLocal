@@ -2275,6 +2275,7 @@ namespace GarronT.CMS.Model.DAL
         public List<InstallerStockReportSummaryBO> GetInventryStockReportSummery(long projectId, long installerId, long ProductId, string txtFromDate, string txtToDate)
         {
             CompassEntities objCompassEntities = new CompassEntities();
+            objCompassEntities.Database.CommandTimeout = 0;
             List<InstallerStockReportSummaryBO> reportData = new List<InstallerStockReportSummaryBO>();
             List<TempInstallerStockReportSummaryBO> tempReportData = new List<TempInstallerStockReportSummaryBO>();
             try
