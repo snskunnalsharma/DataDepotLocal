@@ -90,6 +90,7 @@ namespace GarronT.CMS.Model.BO
         public string CreatedOn { get; set; }
         public string DayName { get; set; }
         public string Time { get; set; }
+        public long ProjectFieldDataId { get; set; }
     }
 
     public class Model_InstalledMeterDetailPayRate

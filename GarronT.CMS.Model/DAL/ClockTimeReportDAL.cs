@@ -157,7 +157,7 @@ namespace GarronT.CMS.Model.DAL
             if (_ProjectID == 10122)
             {
                 string sqlQuery = "select ROW_NUMBER() OVER(ORDER BY (SELECT 1 as bigint)) AS SerianNo,(dm.FieldValue)as MeterSize,CONVERT(varchar, pf.visitdatetime, 101)as CreatedOn,Datename(weekday,pf.visitdatetime) as DayName,FORMAT(pf.visitdatetime,'HH:mm')as Time from uploadedexceldata as up join TblProjectFieldData as pf on up.id = pf.fk_uploadedexceldata_id join tblProjectFieldDataMaster as dm on pf.id = dm.TblProjectFieldData_Id  WHERE up.FKProjectId = " + _ProjectID + " and(CONVERT(DATE, pf.visitdatetime) between CONVERT(DATE, '" + WeekRangefromDate + "') and CONVERT(DATE, '" + WeekRangetoDate + "')) and dm.InitialFieldName = 'NEW METER RADIO' and dm.CreatedBy = '" + installerid + "' and pf.CreatedBy = '" + installerid + "' and dm.Active = 1 and pf.Active=1 order by dm.id";
-                SqlDataAdapter sdaMeterSizeData = new SqlDataAdapter("select ROW_NUMBER() OVER(ORDER BY (SELECT 1 as bigint)) AS SerianNo,(dm.FieldValue)as MeterSize,CONVERT(varchar, pf.visitdatetime, 101)as CreatedOn,Datename(weekday,pf.visitdatetime) as DayName,FORMAT(pf.visitdatetime,'HH:mm')as Time from uploadedexceldata as up join TblProjectFieldData as pf on up.id = pf.fk_uploadedexceldata_id join tblProjectFieldDataMaster as dm on pf.id = dm.TblProjectFieldData_Id  WHERE up.FKProjectId = " + _ProjectID + " and(CONVERT(DATE, pf.visitdatetime) between CONVERT(DATE, '" + WeekRangefromDate + "') and CONVERT(DATE, '" + WeekRangetoDate + "')) and dm.InitialFieldName = 'NEW METER RADIO' and dm.CreatedBy = '" + installerid + "' and pf.CreatedBy = '" + installerid + "' and dm.Active = 1 and pf.Active=1 order by dm.id", con);
+                SqlDataAdapter sdaMeterSizeData = new SqlDataAdapter("select ROW_NUMBER() OVER(ORDER BY (SELECT 1 as bigint)) AS SerianNo,(dm.FieldValue)as MeterSize,CONVERT(varchar, pf.visitdatetime, 101)as CreatedOn,Datename(weekday,pf.visitdatetime) as DayName,FORMAT(pf.visitdatetime,'HH:mm')as Time, dm.TblProjectFieldData_Id as ProjectFieldDataId from uploadedexceldata as up join TblProjectFieldData as pf on up.id = pf.fk_uploadedexceldata_id join tblProjectFieldDataMaster as dm on pf.id = dm.TblProjectFieldData_Id  WHERE up.FKProjectId = " + _ProjectID + " and(CONVERT(DATE, pf.visitdatetime) between CONVERT(DATE, '" + WeekRangefromDate + "') and CONVERT(DATE, '" + WeekRangetoDate + "')) and dm.InitialFieldName = 'NEW METER RADIO' and dm.CreatedBy = '" + installerid + "' and pf.CreatedBy = '" + installerid + "' and dm.Active = 1 and pf.Active=1 order by dm.id", con);
                 DataTable dtMeterSizesData = new DataTable();
                 sdaMeterSizeData.Fill(dtMeterSizesData);
 
@@ -172,40 +172,73 @@ namespace GarronT.CMS.Model.DAL
                                            MeterType = "",
                                            CreatedOn = ms.Field<string>("CreatedOn"),
                                            DayName = ms.Field<string>("DayName"),
-                                           Time = ms.Field<string>("Time")
+                                           Time = ms.Field<string>("Time"),
+                                           ProjectFieldDataId = ms.Field<long>("ProjectFieldDataId")
                                        }).ToList();
                     // Getting meter pay rates
                     CompassEntities objCompassEntities = new CompassEntities();
                     objIMDPR = new List<Model_InstalledMeterDetailPayRate>();
+
+                    //get all services
+                    /*string serviceQuery = "select mfr.*, ts.ID as ServiceId, ts.Service as ServiceName from TblProjectMasterFieldRelation mfr join tblService ts on ts.ID = mfr.MasterFieldID where ProjectID=" + _ProjectID + " and MasterTableName='tblService' and mfr.Active=1 and IsAdditionalService=0 and BasePrice > 0";
+                    SqlDataAdapter sdaServiceData = new SqlDataAdapter(serviceQuery, con);
+                    DataTable dtServiceData = new DataTable();
+                    sdaServiceData.Fill(dtServiceData);*/
+
                     foreach (var item in combineData)
                     {
-                        var objList = objCompassEntities.tblMeterPays.Where(o => o.FK_Project_Id == item.ProjectId && o.Active == 1).ToList();
-                        foreach(var obj in objList)
+                        var appliedServices = objCompassEntities.tblProjectFieldDataMasters.Where(o => o.TblProjectFieldData_Id == item.ProjectFieldDataId && o.InitialFieldName == "SERVICES" && o.Active == 1).Select(a => a.FieldValue).FirstOrDefault();
+                        string[] serviceList = (!string.IsNullOrEmpty(appliedServices) ? appliedServices.Split('|').ToArray() : null);
+                        foreach(var selectedService in serviceList)
                         {
-                            objIMDPR.Add(new Model_InstalledMeterDetailPayRate
+                            var payData = objCompassEntities.tblMeterPays.Where(o => o.Description == selectedService && o.Active == 1).FirstOrDefault();
+                            if(payData != null)
                             {
-                                ProjectId = _ProjectID,
-                                MeterSize = obj.MeterSize,
-                                MeterType = obj.MeterType,
-                                MeterDisplayName = obj.MeterDisplayName,
-                                CreatedOn = item.CreatedOn,
-                                DayName = item.DayName,
-                                Time = item.Time,
-                                Pay = Convert.ToString(obj.Pay)
-                            });
+                                var payOutData = new Model_InstalledMeterDetailPayRate
+                                {
+                                    ProjectId = _ProjectID,
+                                    MeterSize = item.MeterSize,
+                                    MeterType = item.MeterType,
+                                    MeterDisplayName = payData.MeterDisplayName,
+                                    CreatedOn = item.CreatedOn,
+                                    DayName = item.DayName,
+                                    Time = item.Time,
+                                    Pay = Convert.ToString(payData.Pay)
+                                };
+                                objIMDPR.Add(payOutData);
+                            }
+                            
+                            /*if (dtServiceData.Rows.Count > 0)
+                            {
+                                try
+                                {
+                                    var payOutData = (from ms in dtServiceData.AsEnumerable()
+                                                      where ms.Field<long>("ServiceId") == int.Parse(selectedService)
+                                                      select new Model_InstalledMeterDetailPayRate
+                                                      {
+                                                          ProjectId = _ProjectID,
+                                                          MeterSize = item.MeterSize,
+                                                          MeterType = item.MeterType,
+                                                          MeterDisplayName = ms.Field<string>("ServiceName"),
+                                                          CreatedOn = item.CreatedOn,
+                                                          DayName = item.DayName,
+                                                          Time = item.Time,
+                                                          Pay = Convert.ToString(ms.Field<Decimal>("BasePrice"))
+                                                      });
+                                    if (payOutData.Count() > 0)
+                                    {
+                                        objIMDPR.Add(payOutData.FirstOrDefault());
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    log.Error("Error in getInstalledMetersDetails Method : ", ex.InnerException);
+                                    
+                                }
+                                
+                            }*/
                         }
-                        /*var obj = objCompassEntities.tblMeterPays.Where(o => o.FK_Project_Id == item.ProjectId && o.MeterSize == item.MeterSize && o.MeterType == item.MeterType).FirstOrDefault();
-                        objIMDPR.Add(new Model_InstalledMeterDetailPayRate
-                        {
-                            ProjectId = _ProjectID,
-                            MeterSize = item.MeterSize,
-                            MeterType = item.MeterType,
-                            MeterDisplayName = obj.MeterDisplayName,
-                            CreatedOn = item.CreatedOn,
-                            DayName = item.DayName,
-                            Time = item.Time,
-                            Pay = Convert.ToString(obj.Pay)
-                        });*/
+                        
                     }
                 }
             }
@@ -735,7 +768,7 @@ namespace GarronT.CMS.Model.DAL
                         int dayWiseMeterCount = 0;
                         if (w.ToString() == dbDay)
                         {
-                            meterSize = item.Value.MeterSize.ToString(); // Old code witte on meter size wise 
+                            meterSize = item.Value.MeterSize == null ? "" : item.Value.MeterSize.ToString(); // Old code witte on meter size wise 
                             meterDisplayName = item.Value.MeterDisplayName.ToString();  // but new code MeterDisplayName wise 
                             meterCount = item.metercount.ToString();
                             pay = item.Value.Pay.ToString();

@@ -327,6 +327,7 @@ namespace GarronT.CMS.UI.WebAPI
             double calculatedDistance = 0;
 
             // XDocument xDoc = XDocument.Load("https://maps.googleapis.com/maps/api/geocode/xml?address=" + Address + "&sensor=false");
+            string mapUrl = "https://maps.googleapis.com/maps/api/geocode/xml?key=" + Convert.ToString(ConfigurationManager.AppSettings["googleapiKey"]) + " &address=" + Address + "&sensor=false";
             XDocument xDoc = XDocument.Load("https://maps.googleapis.com/maps/api/geocode/xml?key=" + Convert.ToString(ConfigurationManager.AppSettings["googleapiKey"]) + " &address=" + Address + "&sensor=false");
             var resultElements = (from result in xDoc.Descendants("GeocodeResponse").Elements("result")
                                   select new

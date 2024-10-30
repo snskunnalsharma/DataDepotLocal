@@ -116,4 +116,15 @@ namespace GarronT.CMS.Model.BO
         public string MeterType { get; set; }
     }
 
+    public class RadioMeterpayratedetail
+    {
+        public string ServiceId { get; set; }
+        public string ServiceName { get; set; }
+        public decimal BasePay { get; set; }
+        public long MeterSizeId { get; set; }
+        public string MeterSize { get; set; }
+        public long MeterTypeId { get; set; }
+        public string MeterType { get; set; }
+    }
+
 }
