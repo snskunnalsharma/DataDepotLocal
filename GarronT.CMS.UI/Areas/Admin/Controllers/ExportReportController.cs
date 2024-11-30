@@ -2426,6 +2426,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             columnNameList1.Add("VISIT END DATE");
             columnNameList1.Add("VISIT ATTENDED DATETIME");
             columnNameList1.Add("VISIT STATUS");
+            //columnNameList1.Add("NEW METER RADIO");
+
             List<PROC_WebService_GetFieldInfoForProject_Result> ProjectAllFields = new List<PROC_WebService_GetFieldInfoForProject_Result>();
             List<PROC_WebService_GetFieldInfoForProject_Result> ProjectAllFields1 = new List<PROC_WebService_GetFieldInfoForProject_Result>();
 
@@ -2450,6 +2452,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     dt.Columns.Add("VISIT END DATE", typeof(string));
                     dt.Columns.Add("VISIT ATTENDED DATETIME", typeof(string));
                     dt.Columns.Add("VISIT STATUS", typeof(string));
+                   // dt.Columns.Add("NEW METER RADIO", typeof(string));
 
                     GetServiceInfo(objProject.ProjectId, objServiceListForproject, out objRegulorServiceList, out objAdditionalServiceList);
 
@@ -2560,6 +2563,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         dr["VISIT ATTENDED DATETIME"] = "-";
                         dr["ATTENDANT NAME"] = Convert.ToString(item["Installer Name"]);
                         dr["VISIT STATUS"] = "PENDING";
+                        //dr["NEW METER RADIO"] = Convert.ToString(item["NEW METER RADIO"]);
 
 
                         foreach (var item1 in ProjectAllFields1)
@@ -2600,6 +2604,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             columnNameList1.Add("ATTENDANT NAME");
             columnNameList1.Add("VISIT ATTENDED DATETIME");
             columnNameList1.Add("VISIT STATUS");
+            columnNameList1.Add("NEW METER RADIO");
 
             using (ExportReportDAL exportReportDAL = new ExportReportDAL())
             {
@@ -2618,6 +2623,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     dt.Columns.Add("ATTENDANT NAME", typeof(string));
                     dt.Columns.Add("VISIT ATTENDED DATETIME", typeof(string));
                     dt.Columns.Add("VISIT STATUS", typeof(string));
+                    dt.Columns.Add("NEW METER RADIO", typeof(string));
 
                     GetServiceInfoNew(projectId, objServiceListForproject, out objRegulorServiceList, out objAdditionalServiceList);
 
@@ -2690,6 +2696,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         dr["VISIT ATTENDED DATETIME"] = "-";
                         dr["ATTENDANT NAME"] = Convert.ToString(item["Installer Name"]);
                         dr["VISIT STATUS"] = "PENDING";
+                        //dr["NEW METER RADIO"] = Convert.ToString(item["NEW METER RADIO"]);
 
 
                         foreach (var item1 in ProjectExcelFields)
@@ -2733,6 +2740,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             columnNameList1.Add("ATTENDANT NAME");
             columnNameList1.Add("VISIT ATTENDED DATETIME");
             columnNameList1.Add("VISIT STATUS");
+            columnNameList1.Add("NEW METER RADIO");
 
             using (ExportReportDAL exportReportDAL = new ExportReportDAL())
             {
@@ -2751,6 +2759,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     dt.Columns.Add("ATTENDANT NAME", typeof(string));
                     dt.Columns.Add("VISIT ATTENDED DATETIME", typeof(string));
                     dt.Columns.Add("VISIT STATUS", typeof(string));
+                    dt.Columns.Add("NEW METER RADIO", typeof(string));
 
                     GetServiceInfoNew(projectId, objServiceListForproject, out objRegulorServiceList, out objAdditionalServiceList);
 
@@ -2827,6 +2836,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         dr["VISIT ATTENDED DATETIME"] = "-";
                         dr["ATTENDANT NAME"] = Convert.ToString(item["Auditor Name"]);
                         dr["VISIT STATUS"] = "PENDING";
+                        dr["NEW METER RADIO"] = Convert.ToString(item["NEW METER RADIO"]);
 
 
                         foreach (var item1 in ProjectExcelFields)
@@ -2886,12 +2896,14 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             columnNameList1.Add("VISIT END DATE");
             columnNameList1.Add("VISIT ATTENDED DATETIME");
             columnNameList1.Add("VISIT STATUS");
+            //columnNameList1.Add("NEW METER RADIO"); 
 
             dt.Columns.Add("ATTENDANT NAME", typeof(string));
             dt.Columns.Add("VISIT START DATE", typeof(string));
             dt.Columns.Add("VISIT END DATE", typeof(string));
             dt.Columns.Add("VISIT ATTENDED DATETIME", typeof(string));
             dt.Columns.Add("VISIT STATUS", typeof(string));
+            //dt.Columns.Add("NEW METER RADIO", typeof(string));
 
 
             List<PROC_WebService_GetFieldInfoForProject_Result> ProjectAllFields = new List<PROC_WebService_GetFieldInfoForProject_Result>();
@@ -3905,6 +3917,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 }
             }
             return dt;
+            
         }
 
         #endregion
@@ -4145,7 +4158,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             DataTable data = TempData["ExportDataList"] as DataTable;
             
             CompassEntities objCE = new CompassEntities();
-            long projectId =long.Parse(TempData["tempProjectId"].ToString());
+            long projectId = TempData["tempProjectId"] != null ? long.Parse(TempData["tempProjectId"].ToString()) : 0;
             var objUtilitytype = objCE.tblProjects.Where(o => o.ProjectId == projectId).Select(o => o.Utilitytype).FirstOrDefault();
             if (objUtilitytype == "Electric")
             {

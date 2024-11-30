@@ -744,6 +744,28 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 return Json(new { success = objPermissionCheck, returnMessage = strMessage }, JsonRequestBehavior.AllowGet);
             }
         }
+        public ActionResult TransferBackToInstaller(AuditorAllocationData _objAuditorAllocation, string uploadedId, string projectId, string AuditerId)
+
+        {
+            bool success = false;
+            string _OutResult = "Invalid request";
+            AuditReportDAL objAuditReportDAL = new AuditReportDAL();
+
+            try
+            {
+                long currentUserId = new UserDetails().GetUserId(User.Identity.GetUserId());
+
+                // Call DAL method to handle reallocation back to installer
+                success = objAuditReportDAL.TransferBackToInstaller(_objAuditorAllocation, currentUserId, out _OutResult, uploadedId, AuditerId);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, returnMsg = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json(new { success = success, returnMsg = _OutResult }, JsonRequestBehavior.AllowGet);
+        }
+
         public ActionResult DisplayGetListData(int Id)
         {
 

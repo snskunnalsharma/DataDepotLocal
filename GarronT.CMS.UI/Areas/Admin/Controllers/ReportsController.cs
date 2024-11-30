@@ -4300,9 +4300,9 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 return Json(new { success = false, errorMessage = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
-        
-        #endregion
 
+        #endregion
+        
         #region get data on popup for Auditor Allocation to edit for auditor allocation  and Save it into DB  Created by Sominath
 
         [HttpGet]

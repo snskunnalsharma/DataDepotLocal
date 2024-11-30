@@ -131,6 +131,71 @@ namespace GarronT.CMS.Model.DAL
             }
 
         }
+        public bool TransferBackToInstaller(AuditorAllocationData _objAllocation, long currentUserId, out string result, string uploadedId, string AuditerId)
+        {
+            bool output = false;
+            result = string.Empty;
+
+            try
+            {
+                if (_objAllocation != null)
+                {
+                    using (var objCompass = new CompassEntities())
+                    {
+                        // Get FK_InstallerId and FK_AuditorId from the database (change to long)
+                        var fkInstallerId = objCompass.Database.SqlQuery<long>(
+                            "SELECT TOP 1 FK_InstallerId FROM AuditData WHERE FK_ProjectId = @p0 AND FK_UploadId = @p1 AND Active = 1",
+                            _objAllocation.ProjectId, uploadedId
+                        ).FirstOrDefault();
+
+                        // var fkAuditorId = objCompass.Database.SqlQuery<long>(
+                        //"SELECT TOP 1 FK_AuditorId FROM ProjectAuditAllocation WHERE Fk_ProjectId = @p0 AND FK_UploadedExcelData_Id = @p1 AND Active = 1",
+                        //    _objAllocation.ProjectId, _objAllocation.UploadId
+                        // ).FirstOrDefault();
+
+                        // Define SQL parameters
+                        var parameters = new[]
+                        {
+            new SqlParameter("@Fk_ProjectId", _objAllocation.ProjectId),
+            new SqlParameter("@FK_UploadedExcelData_Id", uploadedId),
+            new SqlParameter("@FK_AuditorId", AuditerId),
+           // new SqlParameter("@AuditorID", fkAuditorId),
+            new SqlParameter("@UploadId", uploadedId),
+            new SqlParameter("@Fk_InstallerId", fkInstallerId),
+            new SqlParameter("@CurrentUserId", currentUserId),
+            new SqlParameter("@Result", SqlDbType.NVarChar, -1)
+            {
+                Direction = ParameterDirection.Output
+            }
+        };
+
+                        // Execute the stored procedure
+                        objCompass.Database.ExecuteSqlCommand(
+                            "EXEC [dbo].[PROC_TransferBackToInstaller] @Fk_ProjectId, @FK_UploadedExcelData_Id, @FK_AuditorId,  @UploadId, @Fk_InstallerId, @CurrentUserId, @Result OUTPUT",
+                            parameters
+                        );
+
+                        // Retrieve the result from the output parameter
+                        result = parameters[6].Value?.ToString();
+
+                        // Determine success based on the result message
+                        output = result.StartsWith("Reallocated", StringComparison.OrdinalIgnoreCase);
+                    }
+                }
+                else
+                {
+                    result = "Invalid input data.";
+                }
+            }
+            catch (Exception ex)
+            {
+                result = $"Error occurred: {ex.Message}";
+                output = false;
+            }
+
+            return output;
+        }
+
 
         public DetailsAll detailsOfProjetcs(long userId, long ProjectId, long formId)
         {
@@ -2042,7 +2107,7 @@ namespace GarronT.CMS.Model.DAL
                                                        {
                                                            UserId = b.tblUsers_UserID,
                                                            UserName = CompassEntities.tblUsers.Where(a => a.UserID == b.tblUsers_UserID).Select(m => m.FirstName).FirstOrDefault()
-                                                       }).OrderBy(a => a.UserName).ToList();
+                                                       }).ToList();
 
 
                 var InstallerList1 = CompassEntities.TblProjectInstallers.AsNoTracking().Where(o => o.Active == 0 && o.ProjectID == ProjectId).ToList();

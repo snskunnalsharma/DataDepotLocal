@@ -1003,10 +1003,17 @@ function _searchClick() {
 
 
                                                 //+ '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' onclick="Reopen(' + full.ID + ',' + full.AuditorId + ',' + full.FormId + ',' + full.CategoryType + ');"  title="Reopen" >  <i class="fa fa-retweet"></i></a>';
-                                            } else {
+                                            }
+                                            else if (full.CategoryType == "PENDING") {
+                                                return '<a href="#" id="' + full.ID + '" class="btn btn-success btn-circle" name="' + full.FormId + '" onclick="transferBackToInstaller(' + full.AuditorId + ',' + full.ProjectId + ',' + full.ID + ',' + full.FormId + ');" title="Pending"><i class="fa fa-clock-o"></i></a>';
+
+
+                                            }
+                                            else {
                                                 return '<a href="#" id=' + full.ID + ' name=' + full.FormId + ' > </a>'
 
                                             }
+
                                         }
                                     }
                                     else {
@@ -1086,6 +1093,118 @@ function _searchClick() {
     });
     // waitingDialog.hide();
 }
+function transferBackToInstaller(AuditerId, ProjectId, UpId, FormId) {
+    // Show confirmation dialog before proceeding
+    showConfirmation(function () {
+        // Clear existing values
+        $("#upLoadId").val('');
+        $("#AuditerId").val('');
+        $("#formId").val('');
+        $("#AUProjectId").val('');
+        $("#FkUploadId").val('');
+
+        // Use the received ProjectId instead of fetching it again
+        var projectId = ProjectId;
+
+        // Make the AJAX request
+        $.ajax({
+            type: "POST",
+            url: "/AuditorReports/TransferBackToInstaller",
+            data: JSON.stringify({
+                AuditerId: AuditerId,
+                projectId: projectId,
+                uploadedId: UpId,
+                formId: FormId
+            }),
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                if (response.success) {
+                    toastr["success"]("Record back to Installer successfully.", "Notification");
+                    $('#auditModel').modal('hide');
+                    $('#btnSearch').click();
+                } else {
+                    alert("Error: " + response.returnMsg);
+                }
+            },
+            error: function () {
+                alert("An error occurred while transferring back to installer.");
+            }
+        });
+    });
+}
+
+function showConfirmation(callback) {
+    // Create the overlay
+    const overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+    overlay.style.zIndex = '9999';
+    overlay.style.display = 'flex';
+    overlay.style.justifyContent = 'center';
+    overlay.style.alignItems = 'center';
+
+    // Create the dialog box
+    const dialog = document.createElement('div');
+    dialog.style.backgroundColor = 'white';
+    dialog.style.padding = '20px';
+    dialog.style.borderRadius = '10px';
+    dialog.style.textAlign = 'center';
+    dialog.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
+    dialog.style.minWidth = '300px';
+
+    // Add the message
+    const message = document.createElement('p');
+    message.textContent = "Are you sure you want to transfer this back to the installer?";
+    message.style.fontSize = '15px';
+    dialog.appendChild(message);
+
+    // Add "Yes" button
+    const yesButton = document.createElement('button');
+    yesButton.textContent = "Yes";
+    yesButton.style.marginRight = '10px';
+    yesButton.style.padding = '10px 20px';
+    yesButton.style.backgroundColor = '#007bff';
+    yesButton.style.color = 'white';
+    yesButton.style.border = 'none';
+    yesButton.style.borderRadius = '5px';
+    yesButton.style.cursor = 'pointer';
+
+    yesButton.onclick = function () {
+        document.body.removeChild(overlay); // Remove dialog
+        if (typeof callback === 'function') {
+            callback(); // Call the callback function
+        }
+    };
+
+    // Add "No" button
+    const noButton = document.createElement('button');
+    noButton.textContent = "No";
+    noButton.style.padding = '10px 20px';
+    noButton.style.backgroundColor = '#6d6262';
+    noButton.style.color = 'white';
+    noButton.style.border = 'none';
+    noButton.style.borderRadius = '5px';
+    noButton.style.cursor = 'pointer';
+
+    noButton.onclick = function () {
+        document.body.removeChild(overlay); // Remove dialog
+        console.log("Transfer cancelled.");
+    };
+
+    dialog.appendChild(yesButton);
+    dialog.appendChild(noButton);
+
+    // Add the dialog box to the overlay
+    overlay.appendChild(dialog);
+
+    // Add the overlay to the body
+    document.body.appendChild(overlay);
+}
+
 
 $('#btnReopen').click(function () {
 
