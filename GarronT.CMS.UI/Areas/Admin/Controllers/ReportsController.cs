@@ -789,6 +789,51 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                ? UnixEpoch.AddMilliseconds(unixTimeStamp)
                : UnixEpoch.AddSeconds(unixTimeStamp);
         }
+        [HttpPost]
+        public JsonResult TransferInstallerData(string uploadId, string projectId, string installerId, string newInstallerId, string formid)
+        {
+            try
+            {
+                // Parse and validate the input values
+                if (!int.TryParse(uploadId, out int parsedUploadId) ||
+                    !int.TryParse(projectId, out int parsedProjectId) ||
+                    !int.TryParse(installerId, out int parsedInstallerId) ||
+                    !int.TryParse(newInstallerId, out int parsedNewInstallerId) ||
+                    !int.TryParse(formid, out int parsedFormId))
+                {
+                    return Json(new { success = false, message = "Invalid input data. All fields must be valid integers." });
+                }
+
+                // Ensure all values are greater than zero
+                if (parsedInstallerId <= 0 || parsedNewInstallerId <= 0 || parsedUploadId <= 0 || parsedProjectId <= 0 || parsedFormId <= 0)
+                {
+                    return Json(new { success = false, message = "Input values must be greater than zero." });
+                }
+
+                // Simulate processing the data transfer
+                // Create an instance of ReportDAL
+                ReportDAL objReportDAL = new ReportDAL();
+
+                // Call the method to perform the data transfer
+                string resultMessage = objReportDAL.TransferInstallerData(
+                    parsedInstallerId,    // Current Installer ID
+                    parsedNewInstallerId,  // New Installer ID
+                    parsedUploadId,        // Upload ID
+                    parsedFormId           // Form ID
+                );
+
+                // Return success response
+                return Json(new { success = true, message = resultMessage });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (if necessary)
+                // Example: Logger.LogError(ex.Message, ex);
+
+                // Return error response
+                return Json(new { success = false, message = "An error occurred while transferring data. Please try again." });
+            }
+        }
 
         public ActionResult Create(long userId, int projectId, long uploadId, long reportFormId)
         {
@@ -4308,29 +4353,49 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         [HttpGet]
         public ActionResult GetDataForAuditorAllocation(string uploadedId, string projectId, string installerId, string formid)
         {
-            ReportDAL objReportDAL = new ReportDAL();
-            AuditorAllocationData AuditData = new AuditorAllocationData();
+            ReportDAL objReportDAL = new ReportDAL(); // DAL instance for data access
+            AuditorAllocationData AuditData = new AuditorAllocationData(); // Model to hold auditor allocation data
 
             List<UsersSmallModel> auditorList = new List<UsersSmallModel>();
+            List<UsersSmallModel> InstallerList = new List<UsersSmallModel>();
+
             try
             {
+                // Convert input parameters to appropriate data types
                 long UplodedID = Convert.ToInt64(uploadedId);
                 long ProjectIdID = Convert.ToInt64(projectId);
                 long InstallerID = Convert.ToInt64(installerId);
                 long FormID = Convert.ToInt64(formid);
+
+                // Retrieve auditor user list based on project and installer IDs
                 auditorList = objReportDAL.GetAuditorUserList(ProjectIdID, InstallerID);
+
+                // Retrieve installer list based on project ID
+                InstallerList = objReportDAL.GeInstallerListbyProjectID(ProjectIdID);
+
+                // Retrieve audit data for the given parameters
                 AuditData = objReportDAL.GetAuditorInfoPopup(UplodedID, ProjectIdID, FormID);
 
-                return Json(new { success = true, AuditData = AuditData, auditorList = auditorList }, JsonRequestBehavior.AllowGet);
-
+                // Return data as a JSON response
+                return Json(new
+                {
+                    success = true,
+                    AuditData = AuditData,
+                    auditorList = auditorList,
+                    InstallerList = InstallerList
+                }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, errorMessage = ex.Message }, JsonRequestBehavior.AllowGet);
+                // Handle exceptions and return error message
+                return Json(new
+                {
+                    success = false,
+                    errorMessage = ex.Message
+                }, JsonRequestBehavior.AllowGet);
             }
-
         }
-        
+
         #endregion
 
         #region Insert data into Project Audit Allocation table after auditor allocation from popup Created by Sominath

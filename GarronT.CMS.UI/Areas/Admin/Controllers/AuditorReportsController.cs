@@ -1093,7 +1093,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                             htmlData.Append("</div>");
                             #endregion
                         }
-                        else if (item2.FielddatatypeNames == "SinglePhoto" || item2.FielddatatypeNames == "MultiPhoto")
+                        else if (item2.FielddatatypeNames == "SinglePhotoAndGallery" || item2.FielddatatypeNames == "MultiPhotoAndGallery")
                         {
                             #region
 
@@ -1115,6 +1115,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                             htmlData.Append("</div></div>");
                             #endregion
                         }
+
                         else if (item2.FielddatatypeNames == "Location/GPS")
                         {
                             #region
@@ -1124,12 +1125,33 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                             htmlData.Append("<div class='col-lg-6 col-sm-12 lat-long' style='text-align:left'>");
                             if (serviceVal != null)
                             {
-                                htmlData.Append(serviceVal.FieldValue);
+                                try
+                                {
+                                    var DData = serviceVal.FieldValue.ToArray();
+                                    var DDD = string.Format("{0:N6}", decimal.Parse(item2.CurrentLat)) + "," + string.Format("{0:N6}", decimal.Parse(item2.CurrentLong));
+                                    //htmlData.Append(serviceVal.FieldValue);
+                                    htmlData.Append(DDD);
+                                }
+                                catch (Exception ex)
+                                {
+
+                                    htmlData.Append("-");
+                                }
+
+                            }
+                            try
+                            {
+                                htmlData.Append("<span style='display:none' class ='dynamiclatLong'>" + string.Format("{0:N6}", decimal.Parse(item2.CurrentLat)) + "," + string.Format("{0:N6}", decimal.Parse(item2.CurrentLong)) + "</span>"
+                                + "<button id=" + item2.tblProjectFieldDataMasterId + " class='btn btn-success MapUpdateLocation' type='button'><i class='fa fa-pencil'></i></button>");
+                            }
+                            catch
+                            {
                             }
                             htmlData.Append("</div>");
                             htmlData.Append("</div>");
                             #endregion
                         }
+
                         else if (item2.FielddatatypeNames == "Yes/No")
                         {
                             #region
@@ -1576,6 +1598,22 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
 
 
+        [HttpGet]
+        public ActionResult SetGLocation()  //This code not use because partial view don't use because partial view Map Street view not working
+        {
+            return PartialView("_UpdateLatLong");
+
+        }
+        [HttpPost]
+        public ActionResult UpdateLatLong(long ProjectFieldDataMasterId, string strLat, string strLong)
+        {
+            ReportDAL objReportDAL = new ReportDAL();
+
+            bool Result = objReportDAL.UpdateLatitudeLongitude(ProjectFieldDataMasterId, strLat, strLong);
+
+            return base.Json(new { success = Result }, JsonRequestBehavior.AllowGet);
+
+        }
 
 
 
@@ -1912,6 +1950,9 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         initialId = detailsdata.InitialFieldId,
                         FieldText = detailsdata.InitialFieldName,
                         Fieldvalue = detailsdata.FieldValue,
+                        CurrentLat = detailsdata.FieldLatitude,
+                        CurrentLong = detailsdata.FieldLongitude,
+                        tblProjectFieldDataMasterId = detailsdata.ID,
                         Count = count,
                         SectionId = Convert.ToInt64(SectionId),
                         SectionName = sectionName
@@ -1924,6 +1965,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
             return Field;
         }
+
 
         public ActionResult RemoveImage(int imagesID)
         {

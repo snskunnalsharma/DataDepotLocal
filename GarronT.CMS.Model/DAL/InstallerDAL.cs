@@ -268,6 +268,8 @@ namespace GarronT.CMS.Model.DAL
         public List<PROC_ExistingRoute_Result> GetDynamicExistingRootByCycle(string[] Cycle, long ProjectId, long installerId, DateTime fromDate, DateTime toDate)
         {
             CompassEntities dbcontext = new CompassEntities();
+            dbcontext.Database.CommandTimeout = 0;
+
             string cycleVal = "";
             foreach (var item in Cycle)
             {
@@ -284,6 +286,8 @@ namespace GarronT.CMS.Model.DAL
             List<PROC_ExistingRoute_Result> objListPROC_ExistingRoute_Result = new List<PROC_ExistingRoute_Result>();
             SqlConnection sqlConnection1 = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
             SqlCommand cmd = new SqlCommand();
+            cmd.CommandTimeout = 0;
+
             SqlDataReader reader;
 
             cmd.CommandText = "PROC_DynamicExistingRoute_ByCycle";

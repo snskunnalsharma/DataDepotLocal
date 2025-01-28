@@ -1246,3 +1246,249 @@ $(document).on('keypress', '.Numeric-Only', function (e) {
         }
     }
 });
+$(document).on('click', '.MapUpdateLocation', function () {
+    debugger;
+
+    var elem = $(this).closest('div').find('span.dynamiclatLong');
+
+    var elem2 = $(this).attr('id');
+
+    var urlSetGLocation = $('#urlSetGLocation').val();
+    //$('#ShowDynamicMap').html(data);
+    fnValidateDynamicContent("#ShowDynamicMap")
+
+    $("#CLatLongId").text(elem2);
+    var array = elem.text().split(',');
+    $('#NewLatitude').text(array[0]);
+    $('#NewLongitude').text(array[1]);
+    initMap(array[0], array[1]);
+
+    $("#myModalChangeLatLong").modal({ show: true, backdrop: 'static', keyboard: false });
+    /*waitingDialog.show('Please Wait...');
+    $.ajax({
+        url: urlSetGLocation,
+        datatype: "text",
+        type: "GET",
+        success: function (data) {
+
+            waitingDialog.hide();
+            $('#ShowDynamicMap').html(data);
+            fnValidateDynamicContent("#ShowDynamicMap")
+
+            $("#CLatLongId").text(elem2);
+            var array = elem.text().split(',');
+            $('#NewLatitude').text(array[0]);
+            $('#NewLongitude').text(array[1]);
+            initMap(array[0], array[1]);
+
+            $("#myModalChangeLatLong").modal({ show: true, backdrop: 'static', keyboard: false });
+        },
+        error: function (request, status, error) {
+            waitingDialog.hide();
+            var $toast = toastr["error"](request.responseText, "Notification !");
+
+            console.log(request.responseText)
+
+        }
+    });*/
+})
+
+
+
+var marker;
+function initMap(strlat, strLong) {
+    //initialize(strlat, strLong);
+    //console.log("map===>");
+    //console.log(document.getElementById('map'));
+    var map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 18,
+        center: { lat: parseFloat(strlat), lng: parseFloat(strLong) },
+        //mapTypeId: google.maps.MapTypeId.ROADMAP,
+        mapTypeId: 'satellite',
+        zoomControl: true,
+        zoomControlOptions: { style: google.maps.ZoomControlStyle.DEFAULT },
+        scaleControl: true,
+        scrollwheel: true,
+        panControl: true,
+        streetViewControl: true,
+
+    });
+    //console.log(map);
+    //map.setTilt(45);
+    marker = new google.maps.Marker({
+        map: map,
+        draggable: true,
+        animation: google.maps.Animation.DROP,
+        position: { lat: parseFloat(strlat), lng: parseFloat(strLong) },
+    });
+
+    var infoWindow = new google.maps.InfoWindow({ maxWidth: 400 });
+
+    var geocoder = new google.maps.Geocoder();
+
+    //google.maps.event.addListener(marker, 'dragend', function (event) {
+    /*var marker2 = new google.maps.StreetViewPanorama(
+        document.getElementById("pano"),
+        {
+            map: map,
+            position: { lat: parseFloat(strlat), lng: parseFloat(strLong) },
+            pov: {
+                heading: 34,
+                pitch: 10,
+            },
+            draggable: true,
+            animation: google.maps.Animation.DROP,
+        }
+    );
+    map.setStreetView(marker2);
+    google.maps.event.addListener(marker2, 'dragend', function (event) {
+
+        var a = marker.getPosition().lat().toFixed(6).toString();
+        var b = marker.getPosition().lng().toFixed(6).toString();
+        infoWindow.setContent(a, b);
+        infoWindow.open(map, marker2);
+        $('#NewLatitude').text(a);
+        $('#NewLongitude').text(b);
+
+
+
+
+    })*/
+    google.maps.event.addListener(marker, 'dragend', function (event) {
+        var a = marker.getPosition().lat().toFixed(6).toString();
+        var b = marker.getPosition().lng().toFixed(6).toString();
+        infoWindow.setContent(a, b);
+        infoWindow.open(map, marker);
+        $('#NewLatitude').text(a);
+        $('#NewLongitude').text(b);
+    })
+
+
+    /*function toggleBounce() {
+        if (marker.getAnimation() !== null) {
+            marker.setAnimation(null);
+        } else {
+            marker.setAnimation(google.maps.Animation.BOUNCE);
+        }
+    }*/
+
+}
+
+
+function fnValidateDynamicContent(element) {
+    debugger;
+
+    var currForm = $(element).find("form");
+    currForm.removeData("validator");
+    currForm.removeData("unobtrusiveValidation");
+    var $this = $(element);
+
+    if ($.validator.unobtrusive !== undefined) {
+        $.validator.unobtrusive.parse(element);
+    }
+
+    currForm.validate(); // This line is important and added for client side validation to trigger, without this it didn't fire client side errors.
+}
+
+
+function toggleBounce() {
+    if (marker.getAnimation() !== null) {
+        marker.setAnimation(null);
+    } else {
+        marker.setAnimation(google.maps.Animation.BOUNCE);
+    }
+}
+
+
+
+$(document).on('click', '#btnUpdateLatLong', function () {
+    debugger;
+    var elem = $("#NewLatitude").text();
+
+    var elem1 = $("#NewLongitude").text();
+
+    var elem2 = $("#CLatLongId").text();
+
+
+
+    $.confirm({
+        icon: 'fa fa-warning',
+        columnClass: 'col-md-6 col-md-offset-3',
+        closeIcon: true,
+        animationBounce: 2,
+        title: 'Update Latitude and Longitude!',
+        content: 'The new latitude & longitude will be directly updated in system. Do you want continue?',
+        buttons: {
+            Yes:
+            {
+                text: 'Yes',
+                btnClass: 'btn-danger',
+                action: function () {
+
+                    var urlUpdateLatLong = $('#urlUpdateLatLong').val();
+                    waitingDialog.show('Please Wait...');
+                    $.ajax({
+                        url: urlUpdateLatLong,
+                        datatype: "text",
+                        type: "POST",
+                        data: { 'ProjectFieldDataMasterId': elem2, 'strLat': elem, 'strLong': elem1 },
+                        success: function (data) {
+
+                            waitingDialog.hide();
+                            if (data.success) {
+                                var $toast = toastr["success"]("Updated the lat long for the record successfully!", "Notification !");
+
+
+                                $("#myModalChangeLatLong").modal('hide');
+                                $('#ShowDynamicMap').html('');
+
+
+
+
+                                $('.MapUpdateLocation').each(function () {
+
+                                    if ($(this).attr('id') === elem2) {
+                                        $(this).closest('div').find('span.dynamiclatLong').text(elem + "," + elem1);
+                                    }
+
+                                });
+                            }
+                            else {
+                                var $toast = toastr["error"]("Update failed!", "Notification !");
+                            }
+
+
+                        },
+                        error: function (request, status, error) {
+                            waitingDialog.hide();
+                            var $toast = toastr["error"](request.responseText, "Notification !");
+
+                            console.log(request.responseText)
+
+                        }
+                    });
+                }
+            },
+            No: {
+                text: 'No',
+                btnClass: 'btn-blue',
+                action: function () {
+
+                }
+            }
+        }
+    });
+
+
+
+
+
+
+})
+
+
+$('#btnLatLongCancel').click(function () {
+    $("#myModalChangeLatLong").modal('hide');
+    Golbal_InitialID = "";
+    Golbal_ServiceID = "";
+});

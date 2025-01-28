@@ -22,14 +22,14 @@ namespace TNMPUploadUtility
             /*Console.WriteLine("Test Succeed or not - " + DateTime.Now.ToShortTimeString());
             Console.ReadLine();*/
             //Note==> Emails comment for a testsing time  ==> UploadFile.cs
-            long ProjectID = 10118;
+            long ProjectID = 10124;
             if (args.Length > 0)
             {
                 ProjectID = Convert.ToInt64(args[0]);  // Get project id in Task Schedular Argumnet
             }
             //long ProjectID = 10085; // Static project id
             #region Upload file class
-             /*ErrorLogFile.writeStatus("\n\nThread Started at Uploading file - " + DateTime.Now.ToShortTimeString());
+            /* ErrorLogFile.writeStatus("\n\nThread Started at Uploading file - " + DateTime.Now.ToShortTimeString());
              Console.WriteLine("Thread Started at - " + DateTime.Now.ToShortTimeString());
              ErrorLogFile.writeStatus("Get Project Id ==> Project Id:-" + ProjectID + " -" + DateTime.Now.ToShortTimeString());
              Console.WriteLine("Get Project Id ==> Project Id:-" + ProjectID + "");
@@ -102,7 +102,7 @@ namespace TNMPUploadUtility
                  var lastDateTime = objCE.TblTNMPExportReportUtilityHistories.Where(o => o.FK_ProjectId == projectId && o.Active == 1).OrderByDescending(q => q.Id).Select(o => o.ToDateTime).FirstOrDefault();
                  if (lastDateTime.HasValue)
                  {
-                     if (projectId == 10118) // TNMP CMS
+                     if (projectId == 10124) // TNMP CMS V125
                      {
                          //date = date.AddDays(-2);
                          DateTime tempTime = (DateTime)lastDateTime;
@@ -111,7 +111,17 @@ namespace TNMPUploadUtility
                       toDate = date.ToString("yyyy-MM-dd HH:mm");
                         // toDate = "2024-03-24 19:50";
                      }
-                     if (projectId == 10087) // TNMP HQ
+                    //if (projectId == 10117) // TNMP CMS
+                    //{
+                        //date = date.AddDays(-2);
+                      //  DateTime tempTime = (DateTime)lastDateTime;
+                        //fromDate = "2024-10-29 19:50";// (tempTime.AddMinutes(1)).ToString("yyyy-MM-dd 23:59");
+                        //fromDate = "2024-10-29 19:50";//Convert.ToDateTime(lastDateTime).ToString("MMM-dd-yyyy 23:59");
+                        //toDate = date.ToString("yyyy-MM-dd HH:mm");
+                        // toDate = "2024-03-24 19:50";
+                    //}
+
+                    if (projectId == 10087) // TNMP HQ
                      {
                          date = date.AddDays(-1);
                          DateTime tempTime = (DateTime)lastDateTime;
@@ -150,17 +160,20 @@ namespace TNMPUploadUtility
                              obj.CreatedOn = new CommonFunctions().ServerDate();
                              objCE.TblTNMPExportReportUtilityHistories.Add(obj);
                              objCE.SaveChanges();
+                            
                              // end here
                              ErrorLogFile.writeStatus("Save export report history in database -" + DateTime.Now.ToShortTimeString());
                              Console.WriteLine("Save export report history in database" + DateTime.Now.ToShortTimeString());
-                         }
+                        }
                          else
                          {
                              ErrorLogFile.writeStatus("Export File don't uploaded -" + DateTime.Now.ToShortTimeString());
                              Console.WriteLine("Export File don't uploaded");
                          }
+                        
                      }
                  }
+                
              }
              catch (Exception ex)
              {
@@ -206,7 +219,7 @@ namespace TNMPUploadUtility
 
             // Start code => Upload old files s3 bucket
             #region Upload old files s3 bucket
-            /* ErrorLogFile.writeStatus("\n\nThread Started at Upload old files s3 bucket - " + DateTime.Now.ToShortTimeString());
+            ErrorLogFile.writeStatus("\n\nThread Started at Upload old files s3 bucket - " + DateTime.Now.ToShortTimeString());
              Console.WriteLine("Thread Started at Upload old files s3 bucket - " + DateTime.Now.ToShortTimeString());
              try
              {
@@ -238,11 +251,11 @@ namespace TNMPUploadUtility
                  Console.WriteLine("Error for Upload old files s3 bucket:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
              }
              ErrorLogFile.writeStatus("Thread Ended at Uploaded old files s3 bucket - " + DateTime.Now.ToShortTimeString());
-             Console.WriteLine("Thread Ended at Uploaded old files s3 bucket - " + DateTime.Now.ToShortTimeString());*/
+             Console.WriteLine("Thread Ended at Uploaded old files s3 bucket - " + DateTime.Now.ToShortTimeString());
             #endregion
             //ends hare
             #region Export Report By Email
-                long projectId = 10122;  // Example project ID
+               /* long projectId = 10122;  // Example project ID
                  //string fromDate = "2024-08-01";  // Example date range
                 //string toDate = "2024-09-10";
                  long formTypeId = 2;  // Form type ID for project data
@@ -312,11 +325,10 @@ namespace TNMPUploadUtility
                 }
                  else
                  {
-                     Console.WriteLine("No data available for the selected date range.");
+                     Console.WriteLine("No data available for the selected date range.");*/
             }
             #endregion
 
 
-    }
     }
 }

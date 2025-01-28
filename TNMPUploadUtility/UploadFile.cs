@@ -50,7 +50,7 @@ namespace TNMPUploadUtility
                             DateTime date = new CommonFunctions().ServerDate(); // Get current date
                             date = date.AddDays(-1);        //Add -1 days because upload file coming in SFTP server yesterday
                             string tempFileName = string.Empty;
-                            if (ProjectID == 10118)     // ProjectId  = 10117 (TNMP V30) hold and we Replace ProjectID 10118 (TNMP SV 01)
+                            if (ProjectID == 10124)     // ProjectId  = 10124 for TNMP V125
                             {
                                 tempFileName = "TNMP_CMS_RouteFile_" + date.ToString("yyyyMMdd") + ".csv";
                             }
@@ -436,7 +436,7 @@ namespace TNMPUploadUtility
                         mailcc.Add("yogendra.rajpoot@snssystem.com");
                         mailcc.Add("kunal.sharma@snssystem.com");
                         //mailcc.Add("snssystem.kunnal@gmail.com");
-                        if (ProjectID == 10118)     // for project TNMP Texas V30
+                        if (ProjectID == 10124)     // for project TNMP Texas V30
                         {
                             /*mailcc.Add("awright@cmsmeter.com");       // Removed all mail id from Client side.
                             mailcc.Add("bob@cmsmeter.com");

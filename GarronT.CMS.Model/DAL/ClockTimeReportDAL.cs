@@ -154,10 +154,33 @@ namespace GarronT.CMS.Model.DAL
             // Tbl name -> TblProjectFieldData       == pf.visitdatetime
             //SqlDataAdapter sdaMeterSizeData = new SqlDataAdapter("select ROW_NUMBER() OVER(ORDER BY (SELECT 1 as bigint)) AS SerianNo,(dm.FieldValue)as MeterSize,CONVERT(varchar, dm.CreatedOn, 101)as CreatedOn,Datename(weekday,dm.CreatedOn) as DayName,FORMAT(dm.CreatedOn,'HH:mm')as Time from uploadedexceldata as up join TblProjectFieldData as pf on up.id = pf.fk_uploadedexceldata_id join tblProjectFieldDataMaster as dm on pf.id = dm.TblProjectFieldData_Id join TblMeterSize as ms on dm.FieldValue = ms.MeterSize WHERE up.FKProjectId = " + _ProjectID + " and(CONVERT(DATE, dm.CreatedOn) between CONVERT(DATE, '" + WeekRangefromDate + "') and CONVERT(DATE, '" + WeekRangetoDate + "')) and dm.InitialFieldName = 'NEW METER SIZE' and dm.CreatedBy = '" + installerid + "' and dm.Active = 1 order by dm.id", con);
             List<Model_InstalledMeterDetailPayRate> objIMDPR = new List<Model_InstalledMeterDetailPayRate>();
-            if (_ProjectID == 10122)
+            if (_ProjectID == 10122 || _ProjectID == 10124)
             {
-                string sqlQuery = "select ROW_NUMBER() OVER(ORDER BY (SELECT 1 as bigint)) AS SerianNo,(dm.FieldValue)as MeterSize,CONVERT(varchar, pf.visitdatetime, 101)as CreatedOn,Datename(weekday,pf.visitdatetime) as DayName,FORMAT(pf.visitdatetime,'HH:mm')as Time from uploadedexceldata as up join TblProjectFieldData as pf on up.id = pf.fk_uploadedexceldata_id join tblProjectFieldDataMaster as dm on pf.id = dm.TblProjectFieldData_Id  WHERE up.FKProjectId = " + _ProjectID + " and(CONVERT(DATE, pf.visitdatetime) between CONVERT(DATE, '" + WeekRangefromDate + "') and CONVERT(DATE, '" + WeekRangetoDate + "')) and dm.InitialFieldName = 'NEW METER RADIO' and dm.CreatedBy = '" + installerid + "' and pf.CreatedBy = '" + installerid + "' and dm.Active = 1 and pf.Active=1 order by dm.id";
-                SqlDataAdapter sdaMeterSizeData = new SqlDataAdapter("select ROW_NUMBER() OVER(ORDER BY (SELECT 1 as bigint)) AS SerianNo,(dm.FieldValue)as MeterSize,CONVERT(varchar, pf.visitdatetime, 101)as CreatedOn,Datename(weekday,pf.visitdatetime) as DayName,FORMAT(pf.visitdatetime,'HH:mm')as Time, dm.TblProjectFieldData_Id as ProjectFieldDataId from uploadedexceldata as up join TblProjectFieldData as pf on up.id = pf.fk_uploadedexceldata_id join tblProjectFieldDataMaster as dm on pf.id = dm.TblProjectFieldData_Id  WHERE up.FKProjectId = " + _ProjectID + " and(CONVERT(DATE, pf.visitdatetime) between CONVERT(DATE, '" + WeekRangefromDate + "') and CONVERT(DATE, '" + WeekRangetoDate + "')) and dm.InitialFieldName = 'NEW METER RADIO' and dm.CreatedBy = '" + installerid + "' and pf.CreatedBy = '" + installerid + "' and dm.Active = 1 and pf.Active=1 order by dm.id", con);
+                string fieldName = _ProjectID == 10124 ? "NEW METER NUMBER" : "NEW METER RADIO";
+
+                string sqlQuery = "select ROW_NUMBER() OVER(ORDER BY (SELECT 1 as bigint)) AS SerianNo,(dm.FieldValue) as MeterSize, CONVERT(varchar, pf.visitdatetime, 101) as CreatedOn, Datename(weekday, pf.visitdatetime) as DayName, FORMAT(pf.visitdatetime, 'HH:mm') as Time " +
+                                  "from uploadedexceldata as up " +
+                                  "join TblProjectFieldData as pf on up.id = pf.fk_uploadedexceldata_id " +
+                                  "join tblProjectFieldDataMaster as dm on pf.id = dm.TblProjectFieldData_Id " +
+                                  "WHERE up.FKProjectId = " + _ProjectID + " and " +
+                                  "(CONVERT(DATE, pf.visitdatetime) between CONVERT(DATE, '" + WeekRangefromDate + "') and CONVERT(DATE, '" + WeekRangetoDate + "')) and " +
+                                  "dm.InitialFieldName = '" + fieldName + "' and " +
+                                  "dm.CreatedBy = '" + installerid + "' and pf.CreatedBy = '" + installerid + "' and " +
+                                  "dm.Active = 1 and pf.Active = 1 " +
+                                  "order by dm.id";
+
+                SqlDataAdapter sdaMeterSizeData = new SqlDataAdapter(
+                    "select ROW_NUMBER() OVER(ORDER BY (SELECT 1 as bigint)) AS SerianNo, (dm.FieldValue) as MeterSize, CONVERT(varchar, pf.visitdatetime, 101) as CreatedOn, Datename(weekday, pf.visitdatetime) as DayName, FORMAT(pf.visitdatetime, 'HH:mm') as Time, dm.TblProjectFieldData_Id as ProjectFieldDataId " +
+                    "from uploadedexceldata as up " +
+                    "join TblProjectFieldData as pf on up.id = pf.fk_uploadedexceldata_id " +
+                    "join tblProjectFieldDataMaster as dm on pf.id = dm.TblProjectFieldData_Id " +
+                    "WHERE up.FKProjectId = " + _ProjectID + " and " +
+                    "(CONVERT(DATE, pf.visitdatetime) between CONVERT(DATE, '" + WeekRangefromDate + "') and CONVERT(DATE, '" + WeekRangetoDate + "')) and " +
+                    "dm.InitialFieldName = '" + fieldName + "' and " +
+                    "dm.CreatedBy = '" + installerid + "' and pf.CreatedBy = '" + installerid + "' and " +
+                    "dm.Active = 1 and pf.Active = 1 " +
+                    "order by dm.id",
+                    con);
                 DataTable dtMeterSizesData = new DataTable();
                 sdaMeterSizeData.Fill(dtMeterSizesData);
 

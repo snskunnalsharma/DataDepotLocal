@@ -2786,6 +2786,43 @@ namespace GarronT.CMS.Model.DAL
         }
 
         #endregion
+        public string TransferInstallerData(long currentInstallerId, long newInstallerId, long uploadId, long formId)
+        {
+            try
+            {
+                using (var compassEntities = new CompassEntities())
+                {
+                    using (var sqlConnection = new SqlConnection(compassEntities.Database.Connection.ConnectionString))
+                    {
+                        using (var command = new SqlCommand("PROC_TransferInstallerData", sqlConnection))
+                        {
+                            command.CommandType = CommandType.StoredProcedure;
+
+                            // Add parameters
+                            command.Parameters.AddWithValue("@currentInstallerId", currentInstallerId);
+                            command.Parameters.AddWithValue("@newInstallerId", newInstallerId);
+                            command.Parameters.AddWithValue("@uploadId", uploadId);
+                            command.Parameters.AddWithValue("@formId", formId);
+
+                            // Open the connection
+                            sqlConnection.Open();
+
+                            // Execute the stored procedure and retrieve the result
+                            var result = command.ExecuteScalar();
+
+                            // Return the result message
+                            return result != null ? result.ToString() : "No message returned from the procedure.";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle and log exception
+                throw new Exception("An error occurred while transferring installer data.", ex);
+            }
+        }
+
 
         #region auditorList
 
@@ -2797,7 +2834,7 @@ namespace GarronT.CMS.Model.DAL
 
             if (auditId != null)
             {
-                data = objCompassEntities.AuditorMaps.Where(o => o.Active == 1 && o.FK_AuditId == auditId.Id && o.FK_UserId != InstallerId).Select(o => new UsersSmallModel
+                data = objCompassEntities.AuditorMaps.Where(o => o.Active == 1 && o.FK_AuditId == auditId.Id ).Select(o => new UsersSmallModel
                 {
                     UserId = o.FK_UserId,
                     UserName = objCompassEntities.tblUsers.Where(x => x.UserID == o.FK_UserId).Select(x => x.FirstName).FirstOrDefault(),

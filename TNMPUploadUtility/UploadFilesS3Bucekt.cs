@@ -22,7 +22,7 @@ namespace TNMPUploadUtility
                 ErrorLogFile.writeStatus("Getting files path from DB Table" + DateTime.Now.ToShortTimeString());
                 Console.WriteLine("Getting files path from DB Table");
                 CompassEntities compassEntities = new CompassEntities();
-                var filesPath = compassEntities.TblProjectFieldDataAttachments.Where(o => o.Active == 1 && o.strFilePath!=null && o.strCloudUrl == null && o.CreatedOn.Value.Year == 2024).ToList();
+                var filesPath = compassEntities.TblProjectFieldDataAttachments.Where(o => o.Active == 1 && o.strFilePath!= null && (o.strCloudUrl == null || o.strCloudUrl == "") && o.CreatedOn.Value.Year == 2025).ToList();
                 //var filesPath = compassEntities.TblProjectFieldDataAttachments.Where(o => o.CreatedOn.Value.Year == 2023).ToList();
                 string _webUrl = "C:\\inetpub\\vhosts\\datadepotonline.com\\httpdocs\\"; // Server Image defualt file path
                 //string _webUrl = "D:\\DataDepot\\GarronT.CMS.UI\\"; //Local path for development purpose.
@@ -88,9 +88,9 @@ namespace TNMPUploadUtility
                 ServicePointManager.Expect100Continue = true;
                 ServicePointManager.DefaultConnectionLimit = 9999;
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3;
-                var client = new RestClient("https://cashfreeapi.snssystem.com/api/v1/");
+                var client = new RestClient("https://services.snssystem.com/api/v1/");
                 var request = new RestRequest("file-upload", Method.POST);
-                request.AddParameter("token", "wLZfNogqzMB0tlbACpqceL");
+                request.AddParameter("token", "RcAxZ2ncVHmT5m9y4wClek");
                 request.AddParameter("type", "public");
                 request.AddFile("attachments", path);
                 IRestResponse response = client.Execute(request);

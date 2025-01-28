@@ -1848,7 +1848,7 @@ function GetSKipRTU_Details(InstallerId, ProjectId, ID, FormId) {
                             var imageElement = $('<img/>', {
                                 src: path,
                                 class: "mySlides",
-                                style: "width: 29em;height: 25em;"
+                                style: "width: 29em;height: 25em; display:block;"
                             }).appendTo('#divImage');
                         }
                         else if (item.IsAudioVideoImage == "1") {
@@ -2090,15 +2090,19 @@ $("#btnAuditSave").click(function () {
 
 
 function GetAuditData(UpId, InstallerId, FormId) {
-    //debugger;;
+
+    // alert(UpId: ${UpId}\nInstallerId: ${InstallerId}\nFormId: ${FormId});
+
+    debugger;
     $("#upLoadId").val('');
     $("#formId").val('');
     $("#AUProjectId").val('');
     $("#FkUploadId").val('');
     $("#modalAuditorAllocation").modal('hide');
 
-    var Project = $("#ddlProject option:selected")
+    var Project = $("#ddlProject option:selected");
     var urlGetData = $('#urlGetDataForAddAuditor').val();
+
     $.ajax({
         type: 'GET',
         url: urlGetData,
@@ -2110,35 +2114,45 @@ function GetAuditData(UpId, InstallerId, FormId) {
             waitingDialog.hide();
         },
         success: function (data) {
-            //debugger;;
             $("#ddlAuditor").empty();
-
-            // var count = data.auditorList;
-
-            if (data.success = true) {
-                //debugger;;
-
-                if (data.auditorList != '' || data.auditorList != 'undefined') {
-                    //debugger;;
+            $("#ddlReasonMaster").empty();
+            $("#ddlReopenInstaller").empty();
+            console.log(data);
+            if (data.success === true) {
+                // Populate Auditor List
+                console.log("tt", data.auditorList);
+                console.log("yy", data.auditorList.length);
+                if (data.auditorList && data.auditorList.length >= 0) {
                     $("#modalAuditorAllocation").modal('show');
                     $.each(data.auditorList, function (index, item) {
-                        //debugger;;
-                        if (index == 0) { $('#ddlAuditor').append($('<option></option>').val('0').html("")); }
+                        if (index === 0) {
+                            $('#ddlAuditor').append($('<option></option>').val('0').html(""));
+                        }
                         $('#ddlAuditor').append($('<option></option>').val(item.UserId).html(item.UserName));
                     });
-
                     $('#ddlAuditor').trigger('chosen:updated');
                 }
 
+                // Populate Installer List
+                if (data.InstallerList && data.InstallerList.length > 0) {
+                    console.log("=====" + data.InstallerList);
+                    $.each(data.InstallerList, function (index1, item1) {
+                        console.log("===== item 1" + item1.UserName);
+                        /*  if (index1 === 0) {
+                             $('#ddlReopenInstaller_modalAuditorAllocation').append($('<option></option>').val('0').html(""));
+                          }*/
+                        $('#ddlReopenInstaller_modalAuditorAllocation').append($('<option></option>').val(item1.UserId).html(item1.UserName));
+                    });
+                    // $('#ddlReopenInstaller').val(InstallerId).attr("selected", "selected");
+                    $('#ddlReopenInstaller_modalAuditorAllocation').trigger('chosen:updated');
+                }
 
-                // document.getElementById('ProjectId').value = ProjectID;
-
-                // document.getElementById('UploadId').value = UpId;
-
+                // Populate Audit Data
                 $("#AUProjectId").val(Project.val());
                 $("#FkUploadId").val(UpId);
+                $("#InstallerId").val(InstallerId);
+                $("#FormId").val(FormId);
                 $("#lblProjectName2").text(data.AuditData.ProjectName);
-
                 $("#lblCycle2").text(data.AuditData.Cycle);
                 $("#lblRoute2").text(data.AuditData.Route);
                 $("#lblAddress2").text(data.AuditData.Address);
@@ -2150,17 +2164,14 @@ function GetAuditData(UpId, InstallerId, FormId) {
         },
         error: function (jqXHR, textStatus, errorThrown) {
             waitingDialog.hide();
-            var $toast = toastr["error"](textStatus + "</br>" + errorThrown, "Error Notification");
-            console.log('jqXHR:');
-            console.log(jqXHR);
-            console.log('textStatus:');
-            console.log(textStatus);
-            console.log('errorThrown:');
-            console.log(errorThrown);
+            toastr["error"](textStatus + "</br>" + errorThrown, "Error Notification");
+            console.log('jqXHR:', jqXHR);
+            console.log('textStatus:', textStatus);
+            console.log('errorThrown:', errorThrown);
         },
-
     });
 }
+
 //$("#modalAuditorAllocation").modal({ show: true, backdrop: 'static', keyboard: false });
 
 

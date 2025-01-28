@@ -2037,6 +2037,8 @@ namespace GarronT.CMS.Model.DAL
         public List<PROC_InstallStockDetailReport_Result> GetInventryStockReport(long projectId, long installerId, long ProductId, string txtFromDate, string txtToDate)
         {
             CompassEntities objCompassEntities = new CompassEntities();
+            objCompassEntities.Database.CommandTimeout = 0;
+
             List<PROC_InstallStockDetailReport_Result> reportData = new List<PROC_InstallStockDetailReport_Result>();
             try
             {

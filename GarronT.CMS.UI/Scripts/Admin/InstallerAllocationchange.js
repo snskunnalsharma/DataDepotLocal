@@ -1551,6 +1551,14 @@ $('#btnSave').unbind("click").click(function () {
 
 });
 
+$(document).ready(function () {
+    $('#addressDropdown').on('change', function () {
+        if ($(this).val() === '') { // Check if no address is selected
+            $('#routeDropdown').val(''); // Clear the route selection
+        }
+    });
+});
+
 
 //#region Cancel button on Create Model
 $("#btnCancel").click(function () {

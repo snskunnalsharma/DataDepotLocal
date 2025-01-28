@@ -1434,7 +1434,7 @@ namespace GarronT.CMS.Model.DAL
                             CompassEntities.SaveChanges();
                         }
                     }
-                    if(projectId == 10122)
+                    if(projectId == 10122 || projectId == 10124)
                     {
                         SqlConnection con = new SqlConnection(CompassEntities.Database.Connection.ConnectionString);
                         SqlCommand cmd = new SqlCommand();
