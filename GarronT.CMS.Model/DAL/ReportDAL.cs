@@ -1474,6 +1474,17 @@ namespace GarronT.CMS.Model.DAL
             reader.Dispose();
             cmd.Dispose();
             sqlConnection1.Dispose();
+
+            // Apply sorting only if ProjectID equals 10122
+            if (ProjectID == 10122)
+            {
+                GetCycle = GetCycle
+                    .Select(c => int.Parse(c))
+                    .OrderBy(c => c)
+                    .Select(c => c.ToString())
+                    .ToList();
+            }
+
             return GetCycle;
 
         }
@@ -1508,6 +1519,15 @@ namespace GarronT.CMS.Model.DAL
             cmd.Dispose();
             sqlConnection1.Dispose();
             GetRoot = objListPROC_ExistingRoute_Result.Where(x => Cycle.Contains(x.Cycle)).Select(a => a.Route).Distinct().OrderBy(a => a).ToList();
+
+            if (ProjectId == 10122)
+            {
+                GetRoot = GetRoot
+                    .Select(c => int.Parse(c))
+                    .OrderBy(c => c)
+                    .Select(c => c.ToString())
+                    .ToList();
+            }
 
             return GetRoot;
 
@@ -2472,15 +2492,21 @@ namespace GarronT.CMS.Model.DAL
             List<SkipRtuAttachmentModel> paths = new List<SkipRtuAttachmentModel>();
             if (ID != null)
             {
-                paths = dbcontext.TblProjectFieldDataAttachments.AsNoTracking()
-                         .Where(o => o.ProjectFieldDataId == ID.ID && o.IsSkipped == true &&
-                         !o.strCloudUrl.Contains("img.png") &&
-                         o.Active == 1).Select(o => new SkipRtuAttachmentModel
-                         {
-                             id = o.ID,
-                             IsAudioVideoImage = o.IsAudioVideoImage,
-                             strCloudUrl = o.strCloudUrl
-                         }).OrderBy(o => o.IsAudioVideoImage).ToList();
+                 paths = dbcontext.TblProjectFieldDataAttachments.AsNoTracking()
+                            .Where(o => o.ProjectFieldDataId == ID.ID && o.IsSkipped == true &&
+                             !(o.strCloudUrl.EndsWith("img.png", StringComparison.OrdinalIgnoreCase) ||
+                             o.strCloudUrl.EndsWith("img.jpeg", StringComparison.OrdinalIgnoreCase) ||
+                              o.strCloudUrl.EndsWith("img.jpg", StringComparison.OrdinalIgnoreCase)) &&
+                             o.Active == 1)
+                             .Select(o => new SkipRtuAttachmentModel
+                                {
+                                    id = o.ID,
+                                    IsAudioVideoImage = o.IsAudioVideoImage,
+                                    strCloudUrl = o.strCloudUrl
+                                })
+                                .OrderBy(o => o.IsAudioVideoImage)
+                                .ToList();
+
             }
             return paths;
         }

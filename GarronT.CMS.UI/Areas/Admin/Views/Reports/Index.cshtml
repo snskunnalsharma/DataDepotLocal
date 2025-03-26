@@ -104,7 +104,7 @@
         if (n > x.length) { slideIndex = 1 }
         if (n < 1) { slideIndex = x.length }
         for (i = 0; i < x.length; i++) {
-            x[i].style.display = "block";
+            x[i].style.display = "none";
         }
         if (x.length > 0)
             x[slideIndex - 1].style.display = "block";
@@ -3437,7 +3437,7 @@
 
 
 @*Add to Audit*@
-<div class="modal fade modal-dialog-center" id="modalAuditorAllocation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="overflow-y: auto;">
+<div class="modal fade modal-dialog-center" id="modalAuditorAllocation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="overflow-y: auto;">
     <div class="modal-dialog">
         <div class="modal-content-wrap">
             <div class="modal-content modal-lg modal-sm  clnt-mdlg">
@@ -3493,19 +3493,10 @@
                             <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
                                 <span id="lblFormName2" class="reappnt-span"></span>
                             </div>
-
-                            <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld" type="hidden" style="display: none;">
-                                <span id="FormId" class="reappnt-span"></span>
-                            </div>
-
                             <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label"><b>Installer Name :</b></label>
 
                             <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld">
                                 <span id="lblInataller2" class="reappnt-span"></span>
-                            </div>
-
-                            <div class="col-lg-4 col-xs-12 col-sm-4 addrs-fld" type="hidden" style="display: none;">
-                                <span id="InstallerId" class="reappnt-span"></span>
                             </div>
                         </div>
 
@@ -3522,21 +3513,12 @@
                             <input type="hidden" id="FkUploadId" />
                             <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label "><b>Select Auditor</b> <span style="color:red">*</span></label>
                             <div class="col-lg-4  col-xs-12 col-sm-4 addrs-fld">
-                                <select name="ddlAuditor" id="ddlAuditor" class="form-control chosen-select "></select>
+                                <select data-placeholder="Select Auditor" name="ddlAuditor" id="ddlAuditor" class="form-control chosen-select "></select>
                             </div>
-
-
-                            <label for="name" class="col-lg-2 col-sm-2 col-xs-12 control-label "><b>Select Installer</b> <span style="color:red">*</span></label>
-                            <div class="col-lg-4  col-xs-12 col-sm-4 addrs-fld">
-                                <select data-placeholder="Select Installer" name="ddlReopenInstaller" id="ddlReopenInstaller_modalAuditorAllocation" class="form-control chosen-select "></select>
-                            </div>
-
                         </div>
-
                         <div class="form-group " style="text-align:center; margin-top:50px;">
                             <button id="btnAuditSave" class="btn btn-success" type="button">Save</button>
                             <button class="btn btn-danger" id="btnAuditCancel" type="button">Cancel</button>
-                            <button class="btn btn-primary" type="button" onclick="transferData()">Transfer</button>
                         </div>
 
                     </form>
@@ -3547,74 +3529,6 @@
     </div>
 </div>
 
-<script>
-    function transferData() {
-        // Get input values dynamically
-        const currentInstallerId = document.getElementById('InstallerId').value; // Fetch text content from the span
-        const newInstallerId = document.getElementById('ddlReopenInstaller_modalAuditorAllocation').value; // New installer ID from the dropdown
-        const uploadId = document.getElementById('FkUploadId').value; // Upload ID (hidden input)
-        const ProjectId = document.getElementById('AUProjectId').value; // Project ID (hidden input)
-        const FormId = document.getElementById('FormId').value; // Form ID (hidden input)
-
-        // Validate if newInstallerId is selected (not 0 or null)
-        if (!newInstallerId || newInstallerId === '0') {
-          //  alert("Please select installer first!");
-            var $toast = toastr["error"]('Please select installer first!', "Notification");
-            return; // Stop further execution if no installer is selected
-        }
-
-        // Validate other fields
-        if (!currentInstallerId || !uploadId || !ProjectId || !FormId) {
-            alert("All fields are required!");
-            return;
-        }
-
-        // Show an alert with the values of the input fields
-       // alert(`Current Installer ID: ${currentInstallerId}\nNew Installer ID: ${newInstallerId}\nUpload ID: ${uploadId}\n Project ID: ${ProjectId} \n Form ID: ${FormId}`);
-
-        // Prepare request data
-        const requestData = {
-            uploadId: parseInt(uploadId, 10),
-            ProjectId: parseInt(ProjectId, 10),
-            installerId: parseInt(currentInstallerId, 10),
-            newInstallerId: parseInt(newInstallerId, 10),
-            FormId: parseInt(FormId, 10),
-        };
-
-        // Perform AJAX request
-        fetch('/Reports/TransferInstallerData', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(requestData),
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                if (data.success) {
-                 //   alert(data.message); // Display success message
-                    var $toast = toastr["success"](data.message, "Notification");
-                    $('#modalAuditorAllocation').modal('hide');
-                    $('#btnSearch').click();
-                } else {
-                    alert("Error: " + data.message); // Display error message
-                }
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-                alert("An error occurred while transferring data. Please try again.");
-            });
-    }
-
-    $(document).ready(function () {
-        $('#ddlReopenInstaller_modalAuditorAllocation').chosen({
-            placeholder_text_single: "Select Installer",
-            allow_single_deselect: true,
-            no_results_text: "No installer found!",
-            width: "40%"
-        });
-    });
-</script>
 
 <div class="modal fade modal-dialog-center" id="allImages" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog video-dialog">

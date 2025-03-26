@@ -1808,7 +1808,7 @@ jQuery(function ($) {
 });
 
 function GetSKipRTU_Details(InstallerId, ProjectId, ID, FormId) {
-
+    alert();
     //  $("#activationID").val(ID);
     waitingDialog.show('Loading record please wait...');
 

@@ -359,34 +359,52 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
         public ActionResult GetRootByCycle(long ProjectId, string[] Cycle, string InstallerId, string strDateTime, string strtoTime)
         {
-
-
+            // Get the fresh routes
             List<string> routeList = new InstallerDAL().GetDynamicFreshRootByCycle(Cycle, ProjectId);
 
-            List<PROC_ExistingRoute_Result> ObjExistingList = new InstallerDAL().GetDynamicExistingRootByCycle(Cycle, ProjectId, long.Parse(InstallerId), DateTime.Parse(strDateTime), DateTime.Parse(strtoTime));
+            // Get the existing routes
+            List<PROC_ExistingRoute_Result> ObjExistingList = new InstallerDAL().GetDynamicExistingRootByCycle(
+                Cycle,
+                ProjectId,
+                long.Parse(InstallerId),
+                DateTime.Parse(strDateTime),
+                DateTime.Parse(strtoTime)
+            );
 
-
+            // Ensure routeList is initialized
             if (routeList == null)
             {
                 routeList = new List<string>();
             }
 
+            // Add missing routes from existing list to routeList
             foreach (var item in ObjExistingList)
             {
-                var checkRoutePresent = routeList.Where(o => o == item.Route).FirstOrDefault();
+                var checkRoutePresent = routeList.FirstOrDefault(o => o == item.Route);
                 if (checkRoutePresent == null)
                 {
                     routeList.Add(item.Route);
                 }
             }
 
-            var InstallerRouteList = new List<RouteMaster>();
-
-            foreach (var item in ObjExistingList)
+            // Sort routeList if ProjectId is 10122
+            if (ProjectId == 10122)
             {
-                InstallerRouteList.Add(new RouteMaster { RouteId = item.Route, RouteDisabled = item.Disabled == 1 ? true : false });
+                routeList = routeList.OrderBy(r => int.TryParse(r, out int numericValue) ? numericValue : int.MaxValue).ToList();
             }
 
+            // Prepare InstallerRouteList
+            var InstallerRouteList = new List<RouteMaster>();
+            foreach (var item in ObjExistingList)
+            {
+                InstallerRouteList.Add(new RouteMaster
+                {
+                    RouteId = item.Route,
+                    RouteDisabled = item.Disabled == 1
+                });
+            }
+
+            // Return the JSON response
             return base.Json(new { Route = routeList, selectedRoute = InstallerRouteList }, JsonRequestBehavior.AllowGet);
         }
 

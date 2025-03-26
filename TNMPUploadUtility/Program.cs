@@ -236,7 +236,7 @@ namespace TNMPUploadUtility
              #endregion
              //ends hare
              #region Upload old files s3 bucket
-             DateTime twoDaysAgo = DateTime.Now.AddDays(-6);
+             /*DateTime twoDaysAgo = DateTime.Now.AddDays(-6);
              ErrorLogFile.writeStatus("\n\nThread Started at Upload old files s3 bucket - " + twoDaysAgo.ToShortTimeString());
 
              Console.WriteLine("Thread Started at Upload old files s3 bucket - " + DateTime.Now.ToShortTimeString());
@@ -251,7 +251,7 @@ namespace TNMPUploadUtility
                  Console.WriteLine("Error for Upload old files s3 bucket:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
              }
              ErrorLogFile.writeStatus("Thread Ended at Uploaded old files s3 bucket - " + DateTime.Now.ToShortTimeString());
-             Console.WriteLine("Thread Ended at Uploaded old files s3 bucket - " + DateTime.Now.ToShortTimeString());
+             Console.WriteLine("Thread Ended at Uploaded old files s3 bucket - " + DateTime.Now.ToShortTimeString());*/
             #endregion
             //ends hare
             #region Export Report By Email

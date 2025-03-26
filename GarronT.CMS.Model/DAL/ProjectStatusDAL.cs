@@ -588,7 +588,7 @@ namespace GarronT.CMS.Model.DAL
         }
 
         #endregion
-    // Start new cycle addition method
+        // Start new cycle addition method
         public List<string> GetDynamicFreshCycleByProjectIDs(long projectID)
         {
             CompassEntities dbcontext = new CompassEntities();
@@ -625,6 +625,18 @@ namespace GarronT.CMS.Model.DAL
             reader.Dispose();
             cmd.Dispose();
             sqlConnection1.Dispose();
+
+
+            // Apply sorting only if ProjectID equals 10122
+            if (projectID == 10122)
+            {
+                GetCycle = GetCycle
+                    .Select(c => int.Parse(c))
+                    .OrderBy(c => c)
+                    .Select(c => c.ToString())
+                    .ToList();
+            }
+
             return GetCycle;
         }
 
@@ -706,6 +718,17 @@ namespace GarronT.CMS.Model.DAL
             reader.Dispose();
             cmd.Dispose();
             sqlConnection1.Dispose();
+
+            // Apply sorting only if ProjectID equals 10122
+            if (projectID == 10122)
+            {
+                GetCycles = GetCycles
+                    .Select(c => int.Parse(c))
+                    .OrderBy(c => c)
+                    .Select(c => c.ToString())
+                    .ToList();
+            }
+
             return GetCycles;
         }
 
@@ -738,6 +761,7 @@ namespace GarronT.CMS.Model.DAL
             cmd.Parameters.Add("@ProjectId", ProjectId);
             cmd.Parameters.Add("@InstallerId", InstallerId);
             cmd.Parameters.Add("@Cycle", cycleVal);
+            cmd.CommandTimeout = sqlConnection1.ConnectionTimeout;
             sqlConnection1.Open();
 
             reader = cmd.ExecuteReader();
@@ -753,9 +777,19 @@ namespace GarronT.CMS.Model.DAL
             sqlConnection1.Dispose();
             GetRoot = objListPROC_ExistingRoute_Result.Where(x => Cycle.Contains(x.Cycle)).Select(a => a.Route).Distinct().OrderBy(a => a).ToList();
 
+
+            if (ProjectId == 10122)
+            {
+                GetRoot = GetRoot
+                    .Select(c => int.Parse(c))
+                    .OrderBy(c => c)
+                    .Select(c => c.ToString())
+                    .ToList();
+            }
+
             return GetRoot;
         }
-        
+
         public List<PROC_ExistingRoute_Result> GetDynamicExistingRootByCycles(string[] Cycle, long ProjectId, long InstallerId)
         {
             CompassEntities dbcontext = new CompassEntities();

@@ -73,39 +73,39 @@ namespace GarronT.CMS.Model.DAL
         public List<string> GetDynamicFreshCycleByProjectID(long projectID)
         {
             CompassEntities dbcontext = new CompassEntities();
-            
             var Param = new SqlParameter { ParameterName = "@ProjectId", Value = projectID };
-
-            //var GetCycle1 = dbcontext.Database.SqlQuery<DataTable>("exec  PROC_DynamicPendingCycle @ProjectId", Param);
-
 
             List<string> GetCycle = new List<string>();
 
-
-
-            SqlConnection sqlConnection1 = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
-
-            cmd.CommandText = "PROC_DynamicPendingCycle";
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Connection = sqlConnection1;
-            cmd.Parameters.Add(Param);
-            cmd.CommandTimeout = sqlConnection1.ConnectionTimeout;
-            sqlConnection1.Open();
-
-            reader = cmd.ExecuteReader();
-            while (reader.Read())
+            using (SqlConnection sqlConnection1 = new SqlConnection(dbcontext.Database.Connection.ConnectionString))
             {
-                GetCycle.Add(reader["cycle"].ToString());
-            }
-            // Data is accessible through the DataReader object here.
+                using (SqlCommand cmd = new SqlCommand("PROC_DynamicPendingCycle", sqlConnection1))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add(Param);
+                    cmd.CommandTimeout = sqlConnection1.ConnectionTimeout;
+                    sqlConnection1.Open();
 
-            sqlConnection1.Close();
-            reader.Close();
-            reader.Dispose();
-            cmd.Dispose();
-            sqlConnection1.Dispose();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            GetCycle.Add(reader["cycle"].ToString());
+                        }
+                    }
+                }
+            }
+
+            // Apply sorting only if ProjectID equals 10122
+            if (projectID == 10122)
+            {
+                GetCycle = GetCycle
+                    .Select(c => int.Parse(c)) // Convert strings to integers
+                    .OrderBy(c => c) // Sort as integers
+                    .Select(c => c.ToString()) // Convert back to strings
+                    .ToList();
+            }
+
             return GetCycle;
         }
 
@@ -178,7 +178,7 @@ namespace GarronT.CMS.Model.DAL
         public List<string> GetAllRouteByCycle(string[] Cycle, long ProjectId)
         {
             string cycleVal = "";
-            foreach(var item in Cycle)
+            foreach (var item in Cycle)
             {
                 if (cycleVal.Length == 0)
                 {
@@ -217,6 +217,15 @@ namespace GarronT.CMS.Model.DAL
             sqlConnection1.Dispose();
             GetRoot = objListPROC_ExistingRoute_Result.Where(x => Cycle.Contains(x.Cycle)).Select(a => a.Route).Distinct().OrderBy(a => a).ToList();
 
+            if (ProjectId == 10122)
+            {
+                GetRoot = GetRoot
+                    .Select(c => int.Parse(c)) // Convert strings to integers
+                    .OrderBy(c => c)          // Sort as integers
+                    .Select(c => c.ToString()) // Convert back to strings
+                    .ToList();
+            }
+
             return GetRoot;
         }
 
@@ -227,20 +236,10 @@ namespace GarronT.CMS.Model.DAL
             List<string> GetRoot = new List<string>();
             SqlConnection sqlConnection1 = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
             SqlCommand cmd = new SqlCommand();
+            cmd.CommandTimeout = 0;
             SqlDataReader reader;
 
-            string cycleVal = "";
-            foreach (var item in Cycle)
-            {
-                if (cycleVal.Length == 0)
-                {
-                    cycleVal = item;
-                }
-                else
-                {
-                    cycleVal += "," + item + "";
-                }
-            }
+            string cycleVal = string.Join(",", Cycle); // Join cycles into a comma-separated string
 
             cmd.CommandText = "PROC_DynamicPendingRoute_ByCycle";
             cmd.CommandType = CommandType.StoredProcedure;
@@ -252,7 +251,11 @@ namespace GarronT.CMS.Model.DAL
             reader = cmd.ExecuteReader();
             while (reader.Read())
             {
-                objListPROC_ExistingRoute_Result.Add(new PROC_ExistingRoute_Result { Route = reader["Route"].ToString(), Cycle = reader["Cycle"].ToString() });
+                objListPROC_ExistingRoute_Result.Add(new PROC_ExistingRoute_Result
+                {
+                    Route = reader["Route"].ToString(),
+                    Cycle = reader["Cycle"].ToString()
+                });
             }
 
             sqlConnection1.Close();
@@ -260,7 +263,15 @@ namespace GarronT.CMS.Model.DAL
             reader.Dispose();
             cmd.Dispose();
             sqlConnection1.Dispose();
-            GetRoot = objListPROC_ExistingRoute_Result.Where(x => Cycle.Contains(x.Cycle)).Select(a => a.Route).Distinct().OrderBy(a => a).ToList();
+
+            // Apply conditional sorting
+            GetRoot = objListPROC_ExistingRoute_Result
+                .Where(x => Cycle.Contains(x.Cycle))
+                .Select(a => a.Route)
+                .Distinct()
+                .OrderBy(a => ProjectId == 10122 ? int.Parse(a) : 0) // Sort numerically if ProjectID is 10122
+                .ThenBy(a => a) // Fallback to alphabetical sorting
+                .ToList();
 
             return GetRoot;
         }

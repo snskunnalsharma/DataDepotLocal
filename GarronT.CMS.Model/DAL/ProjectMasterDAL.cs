@@ -2716,26 +2716,40 @@ namespace GarronT.CMS.Model.DAL
                     }
                     dt1 = dt;
                     #endregion
-                    if (projectObject.Utilitytype == "Water")                
+                    if (projectObject.Utilitytype == "Water")
                     {
                         InstallerDAL insDal = new InstallerDAL();
                         string dyCycleColName = insDal.getDynamicColumnName("CYCLE", Convert.ToString(projectObject.ProjectId));
                         DateTime currentDateTime = DateTime.Today;
                         var curentDate = currentDateTime.Date;
-                        var uploadedRecordListObj = objCompassEntities.UploadedExcelDatas.Where(k =>  k.CreatedOn > curentDate && k.FKProjectId == projectObject.ProjectId).ToList();
-                        var uploadedRecordList = uploadedRecordListObj.Where(l => l.GetType().GetProperty(dyCycleColName).GetValue(l).ToString().Length == 1); //k.GetType().GetProperty(dyCycleColName).GetValue(k).ToString().Length == 1 &&
 
+                        var uploadedRecordListObj = objCompassEntities.UploadedExcelDatas
+                            .Where(k => k.CreatedOn > curentDate && k.FKProjectId == projectObject.ProjectId)
+                            .ToList();
 
+                        var uploadedRecordList = uploadedRecordListObj
+                            .Where(l => l.GetType().GetProperty(dyCycleColName).GetValue(l).ToString().Length == 1);
 
                         foreach (var uploadedRecord in uploadedRecordList)
                         {
                             var cycle = uploadedRecord.GetType().GetProperty(dyCycleColName).GetValue(uploadedRecord).ToString();
-                            PropertyInfo currentProperty = uploadedRecord.GetType().GetProperties().Where(o => o.Name == dyCycleColName).FirstOrDefault();
-                            currentProperty.SetValue(uploadedRecord, "0"+ cycle, null);
 
+                            // Skip adding "0" for project ID 10122
+                            if (projectObject.ProjectId != 10122)
+                            {
+                                PropertyInfo currentProperty = uploadedRecord.GetType().GetProperties()
+                                    .FirstOrDefault(o => o.Name == dyCycleColName);
+
+                                if (currentProperty != null)
+                                {
+                                    currentProperty.SetValue(uploadedRecord, "0" + cycle, null);
+                                }
+                            }
                         }
+
                         objCompassEntities.SaveChanges();
                     }
+
                 }
 
             }

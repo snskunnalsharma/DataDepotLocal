@@ -24,7 +24,9 @@ namespace TNMPUploadUtility
                 CompassEntities compassEntities = new CompassEntities();
                 var filesPath = compassEntities.TblProjectFieldDataAttachments.Where(o => o.Active == 1 && o.strFilePath!= null && (o.strCloudUrl == null || o.strCloudUrl == "") && o.CreatedOn.Value.Year == 2025).ToList();
                 //var filesPath = compassEntities.TblProjectFieldDataAttachments.Where(o => o.CreatedOn.Value.Year == 2023).ToList();
-                string _webUrl = "C:\\inetpub\\vhosts\\datadepotonline.com\\httpdocs\\"; // Server Image defualt file path
+                //string _webUrl = "C:\\inetpub\\vhosts\\datadepotonline.com\\httpdocs\\"; // Server Image defualt file path
+                string _webUrl = "C:\\inetpub\\vhosts\\datadepotonline.com\\ts2.datadepotonline.com\\"; // Server Image defualt file path
+
                 //string _webUrl = "D:\\DataDepot\\GarronT.CMS.UI\\"; //Local path for development purpose.
                 ErrorLogFile.writeStatus("Number of old files:- " + filesPath.Count() + " : " + DateTime.Now.ToShortTimeString());
                 Console.WriteLine("Number of old files:- " + filesPath.Count() + " : " + DateTime.Now.ToShortTimeString());
