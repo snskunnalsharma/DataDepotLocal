@@ -1514,7 +1514,7 @@ namespace GarronT.CMS.Model.DAL
             }
 
             sqlConnection1.Close();
-            reader.Close();
+            reader.Close(); 
             reader.Dispose();
             cmd.Dispose();
             sqlConnection1.Dispose();
@@ -2492,20 +2492,21 @@ namespace GarronT.CMS.Model.DAL
             List<SkipRtuAttachmentModel> paths = new List<SkipRtuAttachmentModel>();
             if (ID != null)
             {
-                 paths = dbcontext.TblProjectFieldDataAttachments.AsNoTracking()
-                            .Where(o => o.ProjectFieldDataId == ID.ID && o.IsSkipped == true &&
-                             !(o.strCloudUrl.EndsWith("img.png", StringComparison.OrdinalIgnoreCase) ||
-                             o.strCloudUrl.EndsWith("img.jpeg", StringComparison.OrdinalIgnoreCase) ||
-                              o.strCloudUrl.EndsWith("img.jpg", StringComparison.OrdinalIgnoreCase)) &&
-                             o.Active == 1)
-                             .Select(o => new SkipRtuAttachmentModel
-                                {
-                                    id = o.ID,
-                                    IsAudioVideoImage = o.IsAudioVideoImage,
-                                    strCloudUrl = o.strCloudUrl
-                                })
-                                .OrderBy(o => o.IsAudioVideoImage)
-                                .ToList();
+                paths = dbcontext.TblProjectFieldDataAttachments.AsNoTracking()
+    .Where(o => o.ProjectFieldDataId == ID.ID && o.IsSkipped == true &&
+        !(o.strCloudUrl.ToLower().EndsWith("img.png") ||
+          o.strCloudUrl.ToLower().EndsWith("img.jpeg") ||
+          o.strCloudUrl.ToLower().EndsWith("img.jpg")) &&
+        o.Active == 1)
+    .Select(o => new SkipRtuAttachmentModel
+    {
+        id = o.ID,
+        IsAudioVideoImage = o.IsAudioVideoImage,
+        strCloudUrl = o.strCloudUrl
+    })
+    .OrderBy(o => o.IsAudioVideoImage)
+    .ToList();
+
 
             }
             return paths;

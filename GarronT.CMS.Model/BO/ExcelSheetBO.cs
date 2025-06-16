@@ -11,6 +11,7 @@ namespace GarronT.CMS.Model.BO
         public long FieldID { get; set; }
         public long FieldType { get; set; }
         public string FieldName { get; set; }
+        public string FieldValue { get; internal set; }
     }
 
     public class officeCollection

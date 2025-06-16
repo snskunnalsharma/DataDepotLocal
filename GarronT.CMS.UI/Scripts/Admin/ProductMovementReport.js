@@ -19,7 +19,7 @@ $('#UtilityId').change(function () {
     $('#ProjectId').empty().trigger('chosen:updated');
 
     var value = $("#UtilityId option:selected")
-
+    
     waitingDialog.show('Please Wait Loading Contacts...');
     var urlGetProjectList = $('#urlGetProject').val();
     $.ajax({

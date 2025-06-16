@@ -582,27 +582,49 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
                 List<string> columnNameList1;
 
-
-
                 #region All
 
                 if (formTypeId == 2)
                 {
-                    //DataTable dt = AllRecordDataTable(formTypeId, projectId, visitStatus, _fromDate, _toDate, latlongRequired, mediaRequired, out columnNameList1);
                     DataTable dt = AllRecordDataTable(formTypeId, projectId, visitStatus, _fromDate, _toDate, latlongRequired, mediaRequired, out columnNameList1, currentUserId);
+
                     if (dt != null && dt.Rows.Count > 0)
                     {
+                        // Only apply for projectId 10132
+                        if (projectId == 10132 && dt.Columns.Contains("LOCATION/GPS"))
+                        {
+                            // Add new columns
+                            dt.Columns.Add("LATITUDE");
+                            dt.Columns.Add("LONGITUDE");
+
+                            foreach (DataRow row in dt.Rows)
+                            {
+                                string location = row["LOCATION/GPS"]?.ToString();
+                                if (!string.IsNullOrEmpty(location) && location.Contains(","))
+                                {
+                                    var parts = location.Split(',');
+                                    if (parts.Length == 2)
+                                    {
+                                        row["LATITUDE"] = parts[0].Trim();
+                                        row["LONGITUDE"] = parts[1].Trim();
+                                    }
+                                }
+                            }
+
+                            // Optional: Remove original column
+                            // dt.Columns.Remove("LOCATION/GPS");
+                        }
+
                         TempData["ExportDataList"] = dt;
                         return Json(new { status = true }, JsonRequestBehavior.AllowGet);
                     }
                     else
                     {
-                        return Json(new { status = false, ErrorMessage = "No data avilable for selected date range." }, JsonRequestBehavior.AllowGet);
+                        return Json(new { status = false, ErrorMessage = "No data available for selected date range." }, JsonRequestBehavior.AllowGet);
                     }
                 }
                 else if (formTypeId == 1)
                 {
-                    //DataTable dt = AllAuditRecordDataTable(formTypeId, projectId, visitStatus, _fromDate, _toDate, latlongRequired, mediaRequired, out columnNameList1);
                     DataTable dt = AllAuditRecordDataTable(formTypeId, projectId, visitStatus, _fromDate, _toDate, latlongRequired, mediaRequired, out columnNameList1, currentUserId);
                     if (dt != null && dt.Rows.Count > 0)
                     {
@@ -613,24 +635,20 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     {
                         return Json(new { status = false, ErrorMessage = "No data available for selected date range." }, JsonRequestBehavior.AllowGet);
                     }
-
-
                 }
                 else
                 {
                     return Json(new { status = false, ErrorMessage = "No data available for selected date range." }, JsonRequestBehavior.AllowGet);
                 }
 
-
                 #endregion
-
-
             }
             catch (Exception ex)
             {
                 return Json(new { status = false, ErrorMessage = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
+
 
         #region complete
 
@@ -4160,6 +4178,72 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             CompassEntities objCE = new CompassEntities();
             long projectId = TempData["tempProjectId"] != null ? long.Parse(TempData["tempProjectId"].ToString()) : 0;
             var objUtilitytype = objCE.tblProjects.Where(o => o.ProjectId == projectId).Select(o => o.Utilitytype).FirstOrDefault();
+            if (projectId == 10132)
+            {
+                if (data.Columns.Contains("OUT_READ_DATE") && data.Columns.Contains("VISIT ATTENDED DATETIME"))
+                {
+                    foreach (DataRow row in data.Rows)
+                    {
+                        if (row["VISIT ATTENDED DATETIME"] != DBNull.Value)
+                        {
+                            DateTime visitDate = Convert.ToDateTime(row["VISIT ATTENDED DATETIME"]);
+                            row["OUT_READ_DATE"] = visitDate.ToString("yyyy-MM-dd"); // Date only as string
+                        }
+                    }
+                }
+                if (projectId == 10132)
+                {
+                    if (data.Columns.Contains("STREET") && data.Columns.Contains("Street12"))
+                    {
+                        foreach (DataRow row in data.Rows)
+                        {
+                            row["STREET"] = row["Street12"];
+                        }
+                    }
+                }
+
+
+                if (data.Columns.Contains("IN_READ_DATE") && data.Columns.Contains("VISIT ATTENDED DATETIME"))
+                {
+                    foreach (DataRow row in data.Rows)
+                    {
+                        if (row["VISIT ATTENDED DATETIME"] != DBNull.Value)
+                        {
+                            DateTime visitDate = Convert.ToDateTime(row["VISIT ATTENDED DATETIME"]);
+                            row["IN_READ_DATE"] = visitDate.ToString("yyyy-MM-dd"); // Date only as string
+                        }
+                    }
+                }
+                string[] columnsToRemove = new string[]
+                {
+                    "ATTENDANT NAME",
+                    "VISIT ATTENDED DATETIME",
+                    "VISIT STATUS",
+                    "UBS+ADDTAG",
+                    "Form Name",
+                    "REASON",
+                    "COMMENT",
+                    "LOCATION/GPS"
+                };
+
+                foreach (string colName in columnsToRemove)
+                {
+                    if (data.Columns.Contains(colName))
+                    {
+                        data.Columns.Remove(colName);
+                    }
+                }
+                if (data.Columns.Contains("BASE_SERIAL_NO") && data.Columns.Contains("NEW METER RADIO"))
+                {
+                    foreach (DataRow row in data.Rows)
+                    {
+                        row["BASE_SERIAL_NO"] = row["NEW METER RADIO"];
+                    }
+                }
+               
+
+
+            }
             if (objUtilitytype == "Electric")
             {
                 DownloadCSVExport(data, projectId);

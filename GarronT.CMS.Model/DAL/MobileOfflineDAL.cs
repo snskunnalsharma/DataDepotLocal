@@ -3777,7 +3777,7 @@ namespace GarronT.CMS.Model.DAL
                                                 objAccounts.uploadId = (long)row1["Id"];
 
                                                 objAccounts.visitDateTime = visitDate;
-                                                objAccounts.visitExpiryDateTime = ((DateTime)accountFlag["ToDate"]).ToString("MMM-dd-yyyy");
+                                                objAccounts.visitExpiryDateTime = accountFlag != null ? ((DateTime)accountFlag["ToDate"]).ToString("MMM-dd-yyyy") : "";
                                                 List<AccountMenuForms> objListForms = new List<AccountMenuForms>();
 
                                                 foreach (var item3 in projectDistinctFormList)

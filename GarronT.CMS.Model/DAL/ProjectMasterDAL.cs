@@ -2295,6 +2295,7 @@ namespace GarronT.CMS.Model.DAL
                        o1.FieldID == (a2.Where(o2 => o2.StandardFieldName.ToLower() == "STREET".ToLower())
                        .Select(o2 => o2.StandardFieldId).FirstOrDefault()))).Select(o1 => o1.ID).FirstOrDefault()).Select(o => o.FieldName).FirstOrDefault();
 
+
                     string sAccount = objExcelSheetBOList.Where(o => o.FieldID > 0 && o.FieldID == (a1.Where(o1 =>
                      o1.FieldID == (a2.Where(o2 => o2.StandardFieldName.ToLower() == "ACCOUNT".ToLower())
                      .Select(o2 => o2.StandardFieldId).FirstOrDefault()))).Select(o1 => o1.ID).FirstOrDefault()).Select(o => o.FieldName).FirstOrDefault();
@@ -2745,6 +2746,32 @@ namespace GarronT.CMS.Model.DAL
                                     currentProperty.SetValue(uploadedRecord, "0" + cycle, null);
                                 }
                             }
+                            if (projectObject.ProjectId == 10132)
+                            {
+                                string streetNoCol = insDal.getDynamicColumnName("STREET_NO", Convert.ToString(projectObject.ProjectId));
+                                string apptNoCol = insDal.getDynamicColumnName("APPT_NO", Convert.ToString(projectObject.ProjectId));
+                                string streetIdCol = insDal.getDynamicColumnName("STREET_ID", Convert.ToString(projectObject.ProjectId));
+                                string streetCol = insDal.getDynamicColumnName("STREET", Convert.ToString(projectObject.ProjectId));
+
+                                foreach (var uploadedExcelData in uploadedRecordListObj)
+                                {
+                                    var streetNo = uploadedExcelData.GetType().GetProperty(streetNoCol)?.GetValue(uploadedRecord)?.ToString() ?? "";
+                                    var apptNo = uploadedExcelData.GetType().GetProperty(apptNoCol)?.GetValue(uploadedRecord)?.ToString() ?? "";
+                                    var streetId = uploadedExcelData.GetType().GetProperty(streetIdCol)?.GetValue(uploadedRecord)?.ToString() ?? "";
+
+                                    string combinedStreet = $"{streetNo} {apptNo} {streetId}".Trim();
+
+                                    PropertyInfo streetProperty = uploadedRecord.GetType().GetProperty(streetCol);
+                                    if (streetProperty != null)
+                                    {
+                                        streetProperty.SetValue(uploadedRecord, combinedStreet, null);
+                                    }
+                                }
+
+                                objCompassEntities.SaveChanges();
+                            }
+
+
                         }
 
                         objCompassEntities.SaveChanges();

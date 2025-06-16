@@ -60,6 +60,7 @@ namespace GarronT.CMS.Model.DAL
                 SqlConnection sqlConnection1 = new SqlConnection(_dbcontext.Database.Connection.ConnectionString);
                 SqlCommand cmd = new SqlCommand();
                 SqlDataReader reader;
+                cmd.CommandTimeout = 180; // Set timeout to 3 minutes
 
                 DateTime? fromdate = Convert.ToDateTime(FromDate);
                 DateTime? todate = Convert.ToDateTime(ToDate);

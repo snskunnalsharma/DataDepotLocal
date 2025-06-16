@@ -976,13 +976,14 @@ namespace GarronT.CMS.Model.DAL
                 
             }
             
-           /* for (int i = 0; i < dt.Rows.Count; i++)
-            {
-                var labelName = dt.Rows[i]["ReportFieldName"].ToString();
-                result.Add(labelName);
 
-            }*/
-            
+            /* for (int i = 0; i < dt.Rows.Count; i++)
+             {
+                 var labelName = dt.Rows[i]["ReportFieldName"].ToString();
+                 result.Add(labelName);
+
+             }*/
+
             sqlConnection1.Close();
 
             cmd.Dispose();
