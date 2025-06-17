@@ -3727,11 +3727,20 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             {
                 foreach (DataRow item in dt.Rows)
                 {
+                    int rNum = dt.Rows.Count;
                     foreach (DataColumn item1 in dt.Columns)
                     {
+                        string colname = item1.ColumnName;
                         if (item[item1] == DBNull.Value)
                         {
                             item[item1] = "-";
+                        }
+                        if(colname.Equals("STREET") && projectId == 10132)
+                        {
+                            string streetVal = item[item1].ToString().Trim();
+                            string[] words = streetVal.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                            string newStreet = string.Join(" ", words.Skip(1).Take(words.Length - 2));
+                            item[item1] = newStreet;
                         }
                     }
                 }
