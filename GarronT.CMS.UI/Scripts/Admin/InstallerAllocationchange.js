@@ -3361,6 +3361,7 @@ function Edit(data) {
 
 function EditAllocation(data, cycle, routes) {
     debugger;
+    alert();
     InstallerEdit = true;
     waitingDialog.show('Loading Please Wait...');
 
