@@ -591,7 +591,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     if (dt != null && dt.Rows.Count > 0)
                     {
                         // Only apply for projectId 10132
-                        if (projectId == 10132 && dt.Columns.Contains("LOCATION/GPS"))
+                        /*if (projectId == 10132 && dt.Columns.Contains("LOCATION/GPS"))
                         {
                             // Add new columns
                             dt.Columns.Add("LATITUDE");
@@ -613,7 +613,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
                             // Optional: Remove original column
                             // dt.Columns.Remove("LOCATION/GPS");
-                        }
+                        }*/
 
                         TempData["ExportDataList"] = dt;
                         return Json(new { status = true }, JsonRequestBehavior.AllowGet);
@@ -3735,13 +3735,13 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         {
                             item[item1] = "-";
                         }
-                        if(colname.Equals("STREET") && projectId == 10132)
+                        /*if(colname.Equals("STREET") && projectId == 10132)
                         {
                             string streetVal = item[item1].ToString().Trim();
                             string[] words = streetVal.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                             string newStreet = string.Join(" ", words.Skip(1).Take(words.Length - 2));
                             item[item1] = newStreet;
-                        }
+                        }*/
                     }
                 }
             }
@@ -4187,7 +4187,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             CompassEntities objCE = new CompassEntities();
             long projectId = TempData["tempProjectId"] != null ? long.Parse(TempData["tempProjectId"].ToString()) : 0;
             var objUtilitytype = objCE.tblProjects.Where(o => o.ProjectId == projectId).Select(o => o.Utilitytype).FirstOrDefault();
-            if (projectId == 10132)
+            /*if (projectId == 10132)
             {
                 if (data.Columns.Contains("OUT_READ_DATE") && data.Columns.Contains("VISIT ATTENDED DATETIME"))
                 {
@@ -4252,7 +4252,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                
 
 
-            }
+            }*/
             if (objUtilitytype == "Electric")
             {
                 DownloadCSVExport(data, projectId);
@@ -4365,7 +4365,6 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             }
             
         }
-
         public DataTable datatableColumnChnages(DataTable dt, long projectId)
         {
             // Dtatable Column chnages applied for Electricty Project
@@ -4419,7 +4418,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 {
                     dt.Columns.Remove("COMMENT");
                 }*/
-                if(projectId != 10122) { 
+                if(projectId != 10122 && projectId != 10132) { 
                 dt.Columns.Add("V_NEW_LATITUDE");
                 dt.AcceptChanges();
                 dt.Columns.Add("V_NEW_LONGITUDE");
@@ -4558,7 +4557,6 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 {
                     dt.Columns.Remove("VISIT STATUS");  // Remove Column below regin "COMPLETED" find status in if contion in upper
                 }
-
                 dt.Columns["V_NEW_LATITUDE"].SetOrdinal(27);
                 dt.AcceptChanges();
                 dt.Columns["V_NEW_LONGITUDE"].SetOrdinal(28);
