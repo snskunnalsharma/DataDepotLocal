@@ -4187,6 +4187,44 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             CompassEntities objCE = new CompassEntities();
             long projectId = TempData["tempProjectId"] != null ? long.Parse(TempData["tempProjectId"].ToString()) : 0;
             var objUtilitytype = objCE.tblProjects.Where(o => o.ProjectId == projectId).Select(o => o.Utilitytype).FirstOrDefault();
+            if (data.Columns.Contains("VISIT ATTENDED DATETIME"))
+            {
+                // Ensure the column is of type DateTime before sorting
+                if (data.Columns["VISIT ATTENDED DATETIME"].DataType != typeof(DateTime))
+                {
+                    DataTable converted = data.Clone();
+                    converted.Columns["VISIT ATTENDED DATETIME"].DataType = typeof(DateTime);
+
+                    foreach (DataRow row in data.Rows)
+                    {
+                        DataRow newRow = converted.NewRow();
+                        foreach (DataColumn col in data.Columns)
+                        {
+                            if (col.ColumnName == "VISIT ATTENDED DATETIME")
+                            {
+                                if (DateTime.TryParse(row[col]?.ToString(), out DateTime dtValue))
+                                    newRow[col.ColumnName] = dtValue;
+                                else
+                                    newRow[col.ColumnName] = DBNull.Value;
+                            }
+                            else
+                            {
+                                newRow[col.ColumnName] = row[col.ColumnName];
+                            }
+                        }
+                        converted.Rows.Add(newRow);
+                    }
+
+                    data = converted;
+                }
+
+                // Sort by VISIT ATTENDED DATETIME descending
+                DataView dv = data.DefaultView;
+                dv.Sort = "[VISIT ATTENDED DATETIME] DESC";
+                data = dv.ToTable();
+            }
+            
+
             /*if (projectId == 10132)
             {
                 if (data.Columns.Contains("OUT_READ_DATE") && data.Columns.Contains("VISIT ATTENDED DATETIME"))
@@ -4277,10 +4315,32 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             {
                 ExcelWorksheet wsDt = pck.Workbook.Worksheets.Add("Sheet1");
                 wsDt.Cells["A1"].LoadFromDataTable(dt, true, OfficeOpenXml.Table.TableStyles.None);
+
+                // ✅ Format VISIT ATTENDED DATETIME column to show proper date-time
+                int dateColIndex = -1;
+                for (int i = 0; i < dt.Columns.Count; i++)
+                {
+                    if (dt.Columns[i].ColumnName == "VISIT ATTENDED DATETIME")
+                    {
+                        dateColIndex = i + 1; // EPPlus uses 1-based indexing
+                        break;
+                    }
+                }
+
+                if (dateColIndex != -1)
+                {
+                    // Example: A2:A100 if VISIT ATTENDED DATETIME is column A
+                    string columnLetter = Convert.ToChar('A' + (dateColIndex - 1)).ToString();
+                    string range = $"{columnLetter}2:{columnLetter}{dt.Rows.Count + 1}";
+
+                    wsDt.Cells[range].Style.Numberformat.Format = "mm/dd/yyyy h:mm:ss AM/PM";
+                }
+
                 wsDt.Cells[wsDt.Dimension.Address].AutoFitColumns();
 
                 Response.BinaryWrite(pck.GetAsByteArray());
             }
+
 
             Response.Flush();
             Response.End();

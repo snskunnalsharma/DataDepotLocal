@@ -219,7 +219,7 @@ namespace TNMPUploadUtility
 
             // Start code => Upload old files s3 bucket
             #region Upload old files s3 bucket
-            /* ErrorLogFile.writeStatus("\n\nThread Started at Upload old files s3 bucket - " + DateTime.Now.ToShortTimeString());
+             ErrorLogFile.writeStatus("\n\nThread Started at Upload old files s3 bucket - " + DateTime.Now.ToShortTimeString());
               Console.WriteLine("Thread Started at Upload old files s3 bucket - " + DateTime.Now.ToShortTimeString());
               try
               {
@@ -233,82 +233,76 @@ namespace TNMPUploadUtility
               }
               ErrorLogFile.writeStatus("Thread Ended at Uploaded old files s3 bucket - " + DateTime.Now.ToShortTimeString());
               Console.WriteLine("Thread Ended at Uploaded old files s3 bucket - " + DateTime.Now.ToShortTimeString());
-              #endregion
-              //ends hare
-              #region Upload old files s3 bucket
-              /*DateTime twoDaysAgo = DateTime.Now.AddDays(-6);
-              ErrorLogFile.writeStatus("\n\nThread Started at Upload old files s3 bucket - " + twoDaysAgo.ToShortTimeString());
+            #endregion
+            //ends hare
+            #region Upload old files s3 bucket thumbnail
+            /*DateTime twoDaysAgo = DateTime.Now.AddDays(-6);
+            ErrorLogFile.writeStatus("\n\nThread Started at Upload old files s3 bucket - " + twoDaysAgo.ToShortTimeString());
 
-              Console.WriteLine("Thread Started at Upload old files s3 bucket - " + DateTime.Now.ToShortTimeString());
-              try
-              {
-                  thumbnail newtmb = new thumbnail();
-                  newtmb.getFilesPath();
-              }
-              catch (Exception ex)
-              {
-                  ErrorLogFile.writeStatus("Error for Upload old files s3 bucket:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
-                  Console.WriteLine("Error for Upload old files s3 bucket:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
-              }
-              ErrorLogFile.writeStatus("Thread Ended at Uploaded old files s3 bucket - " + DateTime.Now.ToShortTimeString());
-              Console.WriteLine("Thread Ended at Uploaded old files s3 bucket - " + DateTime.Now.ToShortTimeString());*/
+            Console.WriteLine("Thread Started at Upload old files s3 bucket - " + DateTime.Now.ToShortTimeString());
+            try
+            {
+                thumbnail newtmb = new thumbnail();
+                newtmb.getFilesPath();
+            }
+            catch (Exception ex)
+            {
+                ErrorLogFile.writeStatus("Error for Upload old files s3 bucket:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
+                Console.WriteLine("Error for Upload old files s3 bucket:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
+            }
+            ErrorLogFile.writeStatus("Thread Ended at Uploaded old files s3 bucket - " + DateTime.Now.ToShortTimeString());
+            Console.WriteLine("Thread Ended at Uploaded old files s3 bucket - " + DateTime.Now.ToShortTimeString());*/
             #endregion
             //ends hare
             #region Export Report By Email
-            long projectId = 10132;  // Example project ID
-                                     //string fromDate = "2025-06-18";  // Example date range
-                                    // string toDate = "2025-06-24";
-            long formTypeId = 2;  // Form type ID for project data
-            string[] visitStatus = new string[] { "Completed" };  // Export only completed reports
-            int latlongRequired = 1;  // LatLong not required
-            int mediaRequired = 1;    // Media not required
+            /*long projectId = 10132;
+            long formTypeId = 2;
+            string[] visitStatus = new string[] { "Completed" };
+            int latlongRequired = 1;
+            int mediaRequired = 1;
 
             CompassEntities objCE = new CompassEntities();
             var lastDateTime = objCE.TblTNMPExportReportUtilityHistories.Where(o => o.FK_ProjectId == projectId && o.Active == 1).OrderByDescending(q => q.Id).Select(o => o.ToDateTime).FirstOrDefault();
             ErrorLogFile.writeStatus("lastDateTime: " + lastDateTime);
             DateTime date = new CommonFunctions().ServerDate(); // Get current date
-           string fromDate = string.Empty;
-          string toDate = string.Empty;
+            string fromDate = string.Empty;
+            string toDate = string.Empty;
             DateTime objUtilityExecutionStartDateTime = date;
             if (lastDateTime.HasValue)
             {
-              DateTime tempTime = (DateTime)lastDateTime;
-              fromDate = (tempTime.AddMinutes(1)).ToString("yyyy-MM-dd 00:00");
-              fromDate = Convert.ToDateTime(lastDateTime).ToString("MMM-dd-yyyy 00:00");
-              toDate = date.ToString("yyyy-MM-dd HH:MM");
+                DateTime tempTime = (DateTime)lastDateTime;
 
-             }
-            //DateTime date = DateTime.Now;  // Get current date
-            //date = date.AddDays(-1);  // Subtract one day from current date
+                // FromDate: one minute after last execution, but set time to 00:00 of that day
+                fromDate = tempTime.AddMinutes(1).Date.ToString("yyyy-MM-dd 00:00");
 
-            //string fromDate = date.ToString("yyyy-MM-dd 00:00");  // Start of the day (00:00)
-            //string toDate = date.ToString("yyyy-MM-dd 23:59");    // End of the day (23:59)
+                // ToDate: yesterday at 23:59
+                DateTime toDateTime = date.AddDays(-1).Date.AddHours(23).AddMinutes(59);
+                toDate = toDateTime.ToString("yyyy-MM-dd HH:mm");
+            }
+
+
 
             ErrorLogFile.writeStatus("Pass FromDate: " + fromDate + " and ToDate: " + toDate);
 
             DownloadExportReportSendbyEmail reportUtility = new DownloadExportReportSendbyEmail();
-
-            // Create CSV data table for the report
             DataTable dt = reportUtility.createExcelNew(fromDate, toDate, formTypeId, projectId, visitStatus, latlongRequired, mediaRequired);
 
             if (dt.Rows.Count > 0)
             {
-                // Generate the CSV file
                 string filePath = reportUtility.DownloadExcelExport(dt, projectId);
-
                 if (!string.IsNullOrEmpty(filePath))
                 {
-                    if (projectId == 10132)  // Check for specific project ID
+                    if (projectId == 10132)
                     {
-                        // Send the CSV file by email
                         reportUtility.SendEmailWithAttachment(projectId, filePath);
                     }
-
                 }
                 else
                 {
                     Console.WriteLine("Failed to generate CSV file.");
                 }
+
+                // Save utility history
                 TblTNMPExportReportUtilityHistory obj = new TblTNMPExportReportUtilityHistory();
                 obj.FK_ProjectId = projectId;
                 obj.FromDateTime = Convert.ToDateTime(fromDate);
@@ -316,20 +310,19 @@ namespace TNMPUploadUtility
                 obj.UtilityExecutionStartDateTime = objUtilityExecutionStartDateTime;
                 obj.UtilityExecutionLastDateTime = new CommonFunctions().ServerDate();
                 obj.Active = 1;
-                obj.CreatedBy = 14; // Set defualt user id
+                obj.CreatedBy = 14;
                 obj.CreatedOn = new CommonFunctions().ServerDate();
                 objCE.TblTNMPExportReportUtilityHistories.Add(obj);
                 objCE.SaveChanges();
-                // end here
+
                 ErrorLogFile.writeStatus("Save export report history in database -" + DateTime.Now.ToShortTimeString());
                 Console.WriteLine("Save export report history in database" + DateTime.Now.ToShortTimeString());
             }
             else
             {
                 Console.WriteLine("No data available for the selected date range.");
-            }
+            }*/
             #endregion
-
 
         }
     }

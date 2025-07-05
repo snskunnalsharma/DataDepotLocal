@@ -293,8 +293,11 @@ namespace TNMPUploadUtility
                 SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com"); // Update SMTP server
 
                 mail.From = new MailAddress("datadepotonline@gmail.com");
-                mail.To.Add("kunal.sharma@snssystem.com");
-                // mail.To.Add("yogendra.rajpoot@snssystem.com");
+               // mail.To.Add("kunal.sharma@snssystem.com");
+                mail.To.Add("garron@cmsmeter.com");
+                mail.To.Add("support@udsinc.com");
+                mail.To.Add("jason.norton@republicmeter.com");
+                
                 //mail.To.Add("brigette.johnson@beaumonttexas.gov");
                 // Add CC and BCC
                 // mail.CC.Add("jason.norton@republicmeter.com");

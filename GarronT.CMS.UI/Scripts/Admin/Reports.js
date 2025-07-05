@@ -1808,7 +1808,7 @@ jQuery(function ($) {
 });
 
 function GetSKipRTU_Details(InstallerId, ProjectId, ID, FormId) {
-    alert();
+    //alert();
     //  $("#activationID").val(ID);
     waitingDialog.show('Loading record please wait...');
 
@@ -1816,6 +1816,7 @@ function GetSKipRTU_Details(InstallerId, ProjectId, ID, FormId) {
 
     $("#srcVideo").attr("src", '');
     $("#srcAudio").attr("src", '');
+    $("#divImage").children("img").remove();
     $.ajax({
         type: 'GET',
         url: urlGetData,
@@ -1889,6 +1890,11 @@ function GetSKipRTU_Details(InstallerId, ProjectId, ID, FormId) {
                     }
 
                 }
+
+                else {
+                    $("#imagenotfound").text("Image not found");
+                }
+
                 showDivs(1);
                 $("#ModelSKIP_RTU").modal({
                     show: true,

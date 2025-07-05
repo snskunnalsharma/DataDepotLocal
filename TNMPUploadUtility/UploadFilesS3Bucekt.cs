@@ -22,7 +22,7 @@ namespace TNMPUploadUtility
                 ErrorLogFile.writeStatus("Getting files path from DB Table" + DateTime.Now.ToShortTimeString());
                 Console.WriteLine("Getting files path from DB Table");
                 CompassEntities compassEntities = new CompassEntities();
-                var filesPath = compassEntities.TblProjectFieldDataAttachments.Where(o => o.Active == 1 && o.strFilePath!= null && (o.strCloudUrl == null || o.strCloudUrl == "") && o.CreatedOn.Value.Year == 2025).ToList();
+                var filesPath = compassEntities.TblProjectFieldDataAttachments.Where(o =>  o.strFilePath!= null && (o.strCloudUrl == null || o.strCloudUrl == "") && o.CreatedOn.Value.Year == 2025).ToList();
                 //var filesPath = compassEntities.TblProjectFieldDataAttachments.Where(o => o.CreatedOn.Value.Year == 2023).ToList();
                 string _webUrl = "C:\\inetpub\\vhosts\\datadepotonline.com\\httpdocs\\"; // Server Image defualt file path
                // string _webUrl = "C:\\inetpub\\vhosts\\datadepotonline.com\\ts2.datadepotonline.com\\"; // Server Image defualt file path
@@ -89,7 +89,7 @@ namespace TNMPUploadUtility
                 string path = @"" + filePath + "";
                 ServicePointManager.Expect100Continue = true;
                 ServicePointManager.DefaultConnectionLimit = 9999;
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 
                 var client = new RestClient("https://dddailyapi.mytiny.us/api/v1/");
                 var request = new RestRequest("file-upload", Method.POST);
@@ -98,15 +98,25 @@ namespace TNMPUploadUtility
                 request.AddFile("attachments", path);
 
                 IRestResponse response = client.Execute(request);
-
-                // Log the raw JSON for inspection
                 string jsonResponse = response.Content;
+
                 ErrorLogFile.writeStatus("UploadFileS3Bucket response: " + jsonResponse);
 
-                var jsonData = JsonConvert.DeserializeObject<dynamic>(jsonResponse);
+                // Check for upload failure
+                if (response.ResponseStatus != ResponseStatus.Completed || jsonResponse.Contains("failed to upload"))
+                {
+                    ErrorLogFile.writeStatus("Upload failed: file may not exist or was rejected by the API. File: " + filePath);
+                    return null;
+                }
 
-                // Try accessing the 'data' field safely
-                var imgUrl = jsonData.data?.ToString(); // Ensures it calls ToString() instead of casting
+                var jsonData = JsonConvert.DeserializeObject<dynamic>(jsonResponse);
+                var imgUrl = jsonData?.data?.ToString();
+
+                if (string.IsNullOrWhiteSpace(imgUrl) || imgUrl.Contains("failed to upload"))
+                {
+                    ErrorLogFile.writeStatus("Invalid or empty image URL received for file: " + filePath);
+                    return null;
+                }
 
                 return imgUrl;
             }
@@ -116,6 +126,7 @@ namespace TNMPUploadUtility
                 return null;
             }
         }
+
 
     }
 }
