@@ -69,7 +69,7 @@ function getURLParameters(paramName) {
 
 
 function SectionShowData() {
-
+    alert("3");
 
     waitingDialog.show('Loading Please Wait...');
     var userId = $('#txtUserId').val();
@@ -92,6 +92,7 @@ function SectionShowData() {
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: function (msg) {
+
                 if (msg.status == true) {
                     debugger;
                     var a = msg.htmlData;
@@ -267,7 +268,7 @@ var CurrentImageItems = [];
 
 function reportFieldImages(FieldDataMasterId, fieldName, reportFieldId) {
 
-
+   // alert("4");
     $("#serviceImageList").css("display", "none");
     IsServiceField = false;
     CurrentImageItems = [];
@@ -383,6 +384,7 @@ function reportFieldImages(FieldDataMasterId, fieldName, reportFieldId) {
 }
 
 function reportServiceFieldImages(initialId, serviceId, serviceName, reportFieldId, IsAdditionalService) {
+    //alert("5");
     debugger;
     $("#serviceImageList").css("display", "block");
     IsServiceField = true;
@@ -1037,6 +1039,7 @@ function showAudio(strAudioPath, strServiceName, AttachmentID) {
 
 // Add Code by vishal for upload audio and Video
 $("#btnUploadAudio").click(function () {
+   // alert("1");
     debugger;
     if ($("#AudioFileUpload").val() != "") {
         var pathArray = $("#AudioFileUpload").val();

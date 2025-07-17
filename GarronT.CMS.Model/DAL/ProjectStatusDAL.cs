@@ -778,14 +778,16 @@ namespace GarronT.CMS.Model.DAL
             GetRoot = objListPROC_ExistingRoute_Result.Where(x => Cycle.Contains(x.Cycle)).Select(a => a.Route).Distinct().OrderBy(a => a).ToList();
 
 
-            if (ProjectId == 10122)
+            if (ProjectId == 10122 || ProjectId == 10132)
             {
                 GetRoot = GetRoot
-                    .Select(c => int.Parse(c))
-                    .OrderBy(c => c)
-                    .Select(c => c.ToString())
+                    .Where(c => int.TryParse(c, out _))               // Only keep valid numeric strings
+                    .Select(c => int.Parse(c))                        // Parse safely (since filtered)
+                    .OrderBy(c => c)                                  // Sort numerically
+                    .Select(c => c.ToString())                        // Convert back to string
                     .ToList();
             }
+
 
             return GetRoot;
         }

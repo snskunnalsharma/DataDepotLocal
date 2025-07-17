@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,7 +23,7 @@ namespace TNMPUploadUtility
                 ErrorLogFile.writeStatus("Getting files path from DB Table" + DateTime.Now.ToShortTimeString());
                 Console.WriteLine("Getting files path from DB Table");
                 CompassEntities compassEntities = new CompassEntities();
-                var filesPath = compassEntities.TblProjectFieldDataAttachments.Where(o =>  o.strFilePath!= null && (o.strCloudUrl == null || o.strCloudUrl == "") && o.CreatedOn.Value.Year == 2025).ToList();
+                var filesPath = compassEntities.TblProjectFieldDataAttachments.Where(o =>  o.strFilePath!= null && (o.strCloudUrl == null || o.strCloudUrl == "")).ToList();
                 //var filesPath = compassEntities.TblProjectFieldDataAttachments.Where(o => o.CreatedOn.Value.Year == 2023).ToList();
                 string _webUrl = "C:\\inetpub\\vhosts\\datadepotonline.com\\httpdocs\\"; // Server Image defualt file path
                // string _webUrl = "C:\\inetpub\\vhosts\\datadepotonline.com\\ts2.datadepotonline.com\\"; // Server Image defualt file path

@@ -260,22 +260,27 @@ namespace TNMPUploadUtility
             string[] visitStatus = new string[] { "Completed" };
             int latlongRequired = 1;
             int mediaRequired = 1;
-
+            //string fromDate = "2025-07-04 00:00";
+            //string toDate = "2025-07-07 23:59";
             CompassEntities objCE = new CompassEntities();
             var lastDateTime = objCE.TblTNMPExportReportUtilityHistories.Where(o => o.FK_ProjectId == projectId && o.Active == 1).OrderByDescending(q => q.Id).Select(o => o.ToDateTime).FirstOrDefault();
             ErrorLogFile.writeStatus("lastDateTime: " + lastDateTime);
             DateTime date = new CommonFunctions().ServerDate(); // Get current date
             string fromDate = string.Empty;
             string toDate = string.Empty;
+          
             DateTime objUtilityExecutionStartDateTime = date;
+
+
+
             if (lastDateTime.HasValue)
             {
                 DateTime tempTime = (DateTime)lastDateTime;
 
-                // FromDate: one minute after last execution, but set time to 00:00 of that day
+                 //FromDate: one minute after last execution, but set time to 00:00 of that day
                 fromDate = tempTime.AddMinutes(1).Date.ToString("yyyy-MM-dd 00:00");
 
-                // ToDate: yesterday at 23:59
+                 //ToDate: yesterday at 23:59
                 DateTime toDateTime = date.AddDays(-1).Date.AddHours(23).AddMinutes(59);
                 toDate = toDateTime.ToString("yyyy-MM-dd HH:mm");
             }
@@ -289,7 +294,7 @@ namespace TNMPUploadUtility
 
             if (dt.Rows.Count > 0)
             {
-                string filePath = reportUtility.DownloadExcelExport(dt, projectId);
+                string filePath = reportUtility.DownloadCSVExport(dt, projectId);
                 if (!string.IsNullOrEmpty(filePath))
                 {
                     if (projectId == 10132)

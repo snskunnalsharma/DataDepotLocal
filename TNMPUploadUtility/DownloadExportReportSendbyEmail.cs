@@ -165,10 +165,10 @@ namespace TNMPUploadUtility
 
         #endregion
         #region Generate csv
-        public string DownloadExcelExport(DataTable dt, long projectId)
+        public string DownloadCSVExport(DataTable dt, long projectId)
         {
-            ErrorLogFile.writeStatus("Start ==> Generate Excel file - " + DateTime.Now.ToShortTimeString());
-            Console.WriteLine("Start ==> Generate Excel file - " + DateTime.Now.ToShortTimeString());
+            ErrorLogFile.writeStatus("Start ==> Generate CSV file - " + DateTime.Now.ToShortTimeString());
+            Console.WriteLine("Start ==> Generate CSV file - " + DateTime.Now.ToShortTimeString());
 
             try
             {
@@ -211,7 +211,6 @@ namespace TNMPUploadUtility
                 "LOCATION/GPS",
                 "V_NEW_LATITUDE",
                 "V_NEW_LONGITUDE"
-
                     };
 
                     foreach (string colName in columnsToRemove)
@@ -231,10 +230,9 @@ namespace TNMPUploadUtility
                     }
                 }
 
-             
                 dt = objERC.datatableColumnChnages(dt, projectId);
 
-               
+                // Replace nulls/DBNULL with empty string
                 foreach (DataRow row in dt.Rows)
                 {
                     foreach (DataColumn col in dt.Columns)
@@ -246,10 +244,10 @@ namespace TNMPUploadUtility
                     }
                 }
 
-                // ✅ Set Excel filename
+                // ✅ Set CSV filename
                 fileName = (projectId == 10132)
-                    ? "meter_exchange_NTX_" + DateTime.Now.AddDays(-1).ToString("MMddyyyy") + ".xlsx"
-                    : "Export_Report_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx";
+                    ? "meter_exchange_NTX_" + DateTime.Now.AddDays(-1).ToString("MMddyyyy") + ".csv"
+                    : "Export_Report_" + DateTime.Now.ToString("yyyyMMdd") + ".csv";
 
                 // ✅ Define export folder
                 string baseDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ExportReport");
@@ -258,18 +256,24 @@ namespace TNMPUploadUtility
 
                 string filePath = Path.Combine(baseDir, fileName);
 
-                // ✅ Generate Excel using EPPlus
-                using (ExcelPackage pck = new ExcelPackage())
+                // ✅ Write CSV
+                using (StreamWriter writer = new StreamWriter(filePath, false, Encoding.UTF8))
                 {
-                    ExcelWorksheet ws = pck.Workbook.Worksheets.Add("Report");
-                    ws.Cells["A1"].LoadFromDataTable(dt, true);
-                    ws.Cells[ws.Dimension.Address].AutoFitColumns();
+                    // Write headers
+                    IEnumerable<string> columnNames = dt.Columns.Cast<DataColumn>().Select(col => "\"" + col.ColumnName + "\"");
+                    writer.WriteLine(string.Join(",", columnNames));
 
-                    File.WriteAllBytes(filePath, pck.GetAsByteArray());
+                    // Write rows
+                    foreach (DataRow row in dt.Rows)
+                    {
+                        IEnumerable<string> fields = row.ItemArray.Select(field =>
+                            "\"" + field.ToString().Replace("\"", "\"\"") + "\"");
+                        writer.WriteLine(string.Join(",", fields));
+                    }
                 }
 
-                ErrorLogFile.writeStatus("Excel file generated successfully - " + DateTime.Now.ToShortTimeString());
-                Console.WriteLine("Excel file generated successfully - " + DateTime.Now.ToShortTimeString());
+                ErrorLogFile.writeStatus("CSV file generated successfully - " + DateTime.Now.ToShortTimeString());
+                Console.WriteLine("CSV file generated successfully - " + DateTime.Now.ToShortTimeString());
 
                 return filePath;
             }
@@ -280,6 +284,7 @@ namespace TNMPUploadUtility
                 return "";
             }
         }
+
 
 
 
@@ -296,7 +301,7 @@ namespace TNMPUploadUtility
                // mail.To.Add("kunal.sharma@snssystem.com");
                 mail.To.Add("garron@cmsmeter.com");
                 mail.To.Add("support@udsinc.com");
-                mail.To.Add("jason.norton@republicmeter.com");
+                mail.To.Add("jason.norton@republicmeter.com"); 
                 
                 //mail.To.Add("brigette.johnson@beaumonttexas.gov");
                 // Add CC and BCC

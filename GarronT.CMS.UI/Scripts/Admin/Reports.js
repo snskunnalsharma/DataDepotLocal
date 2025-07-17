@@ -835,7 +835,7 @@ function SelectAll_Recods() {
         //    waitingDialog.show('Loading Please Wait...');
         //},
         success: function (msg) {
-
+           
             if (msg.status == true) {
                 //bindTable()
 
@@ -1059,7 +1059,7 @@ function _searchClick() {
             waitingDialog.show('Loading Please Wait...');
         },
         success: function (msg) {
-
+            
             if (msg.status == true) {
 
 
@@ -1985,17 +1985,19 @@ function GetSKipRTU_Details(InstallerId, ProjectId, ID, FormId) {
 
 }
 function EditRecords(userId, projectId, accinifiledId, reportFId) {
-
+    alert("2");
     var createurl = $("#urlRedirectCreate").val();
     console.log('in EditRecords');
+  
     $.ajax({
+        
         url: createurl,
         datatype: "text",
         type: "GET",
         //long userId, int projectId, long uploadId, long reportFormId
         data: { 'userId': userId, 'projectId': projectId, 'uploadId': accinifiledId, 'reportFormId': reportFId },
         success: function (data) {
-
+          
             if (data.success === undefined) {
                 console.log('in undefined');
                 waitingDialog.show('Please Wait...');
@@ -2291,7 +2293,7 @@ $(document).on("click", '#ReportName input', function () {
 });
 
 function Display(Id) {
-
+    
     //spinner.spin(target);
     //  waitingDialog.show('Please Wait...');
     $("#FieldImage").empty();

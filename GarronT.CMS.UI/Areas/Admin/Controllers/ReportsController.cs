@@ -1035,7 +1035,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         htmlData.Append("<div class='row' style='background-color:white;'>");
                     }
                     #region
-                    htmlData.Append("<div id=" + i + " class='col-sm-6 col-lg-6 col-xs-12 rep-fulldiv' style='background: white;'><br/><div  style=' text-align: center; background: gray; font-size: 14px; color: white;margin-bottom:8px;'><b>"
+                    htmlData.Append("<div id=" + i + " class='col-sm-6 col-lg-6 col-xs-12 rep-fulldiv mobile-margin-top' style='background: white;'><br/><div  style=' text-align: center; background: gray; font-size: 14px; color: white;margin-bottom:8px;'><b>"
                         + item.sectionName + "</b></div>");//open section dive
 
 
@@ -1044,6 +1044,10 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     foreach (var item2 in sectionDate)
                     {
                         #region
+                        htmlData.Append("<style>");
+                        htmlData.Append("@media (max-width: 575.98px) { .mobile-margin-top { margin-top: 30px !important; } }");
+                        htmlData.Append("</style>");
+
                         //AddedBy AniketJ on 18-Oct-2016
                         string requiredicon = "";
                         // var filedProperty = ProjectFieldProperty.Where(a => a.FormSectionFieldID == item2.FieldId).FirstOrDefault();
@@ -1061,8 +1065,10 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         if (item2.FielddatatypeNames == "Text")
                         {
                             #region
+                         
+
                             htmlData.Append("<div class='col-lg-12 drp-div1'>");
-                            htmlData.Append("<div class='col-lg-6 col-sm-12 fld-lab2' style='text-align:left'>" + item2.FieldName + requiredicon + " </div>");
+                            htmlData.Append("<div class='col-lg-6 col-sm-12 col-xs-12 fld-lab2 mobile-margin-top' style='text-align:left;'>" + item2.FieldName + requiredicon + " </div>");
                             htmlData.Append("<input class='col-lg-5 col-sm-12 rep-inpt' style='margin: 9px 0px 0px 0px;'id=''" + item2.FieldId + "' name = '" + item2.FieldName +
                                 "' type='text' value = '" + item2.Fieldvalue + "' placeholder='" + item2.FieldLabel +
                                 "' " + (item2.IsRequired == true ? "required " : "") +
@@ -1093,7 +1099,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         {
                             #region
                             htmlData.Append("<div class='col-lg-12 drp-div1'>");
-                            htmlData.Append("<div class='col-lg-6 col-sm-12 fld-lab2' style='text-align:left'>" + item2.FieldName + requiredicon + " </div>");
+                            htmlData.Append("<div class='col-lg-6 col-sm-12 fld-lab2 mobile-margin-top' style='text-align:left'>" + item2.FieldName + requiredicon + " </div>");
                             htmlData.Append("<input class='col-lg-5 col-sm-12 rep-inpt Numeric-Only' id='" + item2.FieldId + "' name = '" + item2.FieldName +
                                 "' type='text'  value = '" + item2.Fieldvalue + "'  placeholder='" + item2.FieldLabel +
                                 "' " + (item2.IsRequired == true ? "required " : " ") +
@@ -1120,7 +1126,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         {
                             #region
                             htmlData.Append("<div class='col-lg-12 drp-div1'>");
-                            htmlData.Append("<div class='col-lg-6 col-sm-12 fld-lab2' style='text-align:left'>" + item2.FieldName + requiredicon + " </div>");
+                            htmlData.Append("<div class='col-lg-6 col-sm-12 fld-lab2 mobile-margin-top' style='text-align:left;'>" + item2.FieldName + requiredicon + " </div>");
                             htmlData.Append("<input class='col-lg-5 col-sm-12 rep-inpt' id=''" + item2.FieldId + "' name = '" + item2.FieldName +
                                 "' type='text' value = '" + item2.Fieldvalue + "'  placeholder='" + item2.FieldLabel +
                                 "' " + (item2.IsRequired == true ? "required " : "") +
@@ -1148,7 +1154,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         {
                             #region
                             htmlData.Append("<div class='col-lg-12 drp-div1'>");
-                            htmlData.Append("<div class='col-lg-6 col-sm-12 fld-lab2' style='text-align:left'>" + item2.FieldName + requiredicon + " </div>");
+                            htmlData.Append("<div class='col-lg-6 col-sm-12 fld-lab2 mobile-margin-top' style='text-align:left;'>" + item2.FieldName + requiredicon + " </div>");
                             htmlData.Append("<input class='col-lg-5 col-sm-12 rep-inpt' id='" + item2.FieldId + "' name = '" + item2.FieldName +
                                 "' type='text' value = '" + item2.Fieldvalue + "'  placeholder='" + item2.FieldLabel +
                                 "' " + (item2.IsRequired == true ? "required " : " ") +
@@ -1174,7 +1180,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         {
                             #region
                             htmlData.Append("<div class='col-lg-12 drp-div1'>");
-                            htmlData.Append("<div class='col-lg-6 col-sm-12 fld-lab2' style='text-align:left'>" + item2.FieldName + requiredicon + " </div>");
+                            htmlData.Append("<div class='col-lg-6 col-sm-12 fld-lab2 mobile-margin-top' style='text-align:left;'>" + item2.FieldName + requiredicon + " </div>");
                             htmlData.Append("<input class='col-lg-5 col-sm-12 rep-inpt' id=''" + item2.FieldId + "' name = '" + item2.FieldName +
                                 "' type='text' value = '" + item2.Fieldvalue + "'  placeholder='" + item2.FieldLabel +
                                 "' " + (item2.IsRequired == true ? "required " : "") +
@@ -1201,7 +1207,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         {
                             #region
                             htmlData.Append("<div class='col-lg-12 drp-div1'>");
-                            htmlData.Append("<div class='col-lg-6 col-sm-12 fld-lab2' style='text-align:left'>" + item2.FieldName + requiredicon + " </div>");
+                            htmlData.Append("<div class='col-lg-6 col-sm-12 fld-lab2 mobile-margin-top' style='text-align:left;'>" + item2.FieldName + requiredicon + " </div>");
                             htmlData.Append("<input class='col-lg-5 col-sm-12 rep-inpt' id='" + item2.FieldId + "' name = '" + item2.FieldName +
                                 "' type='Date' value = '" + item2.FieldText + "'  placeholder='" + item2.FieldLabel +
                                 "' " + (item2.IsRequired == true ? "required " : "") +
@@ -1233,7 +1239,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
                             _avClass = countNoOfMedialFiles == 0 ? "btn btn-danger btn-xs" : "btn btn-success btn-xs";
                             htmlData.Append("<div class='col-lg-12 drp-div1'>");
-                            htmlData.Append("<div class='col-lg-6 col-sm-12 fld-lab2' style='text-align:left'>" + item2.FieldName + requiredicon + " </div>");
+                            htmlData.Append("<div class='col-lg-6 col-sm-12 fld-lab2 mobile-margin-top' style='text-align:left; '>" + item2.FieldName + requiredicon + " </div>");
                             htmlData.Append("<div  class='col-lg-5 col-sm-12 '>" +
                                " <a href='#' style='margin:3px 0 0 0' data-backdrop='static' data-toggle='modal' id='" + item2.FieldId + "'" +
                             "onclick='reportFieldImages(" + _fieldId + ",\"" + item2.FieldName + "\"," + item2.FieldId + ");' name='reportField' class='" + _avClass + "' role='button' title='Picture'>" +
@@ -1258,7 +1264,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                             #region
                             var serviceVal = new ReportDAL().getFieldValue(obj1.userId1, obj1.reportFormId, obj1.accountinifiledId, item2.FieldName);
                             htmlData.Append("<div class='col-lg-12 loc-gps'>");
-                            htmlData.Append("<div class='col-lg-6 col-sm-12 fld-lab2' style='text-align:left'>" + item2.FieldName + " </div>");
+                            htmlData.Append("<div class='col-lg-6 col-sm-12 fld-lab2 mobile-margin-top' style='text-align:left; '>" + item2.FieldName + " </div>");
                             htmlData.Append("<div class='col-lg-6 col-sm-12 lat-long' style='text-align:left'>");
                             if (serviceVal != null)
                             {
@@ -1293,7 +1299,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                             #region
                             var serviceVal = new ReportDAL().getFieldValue(obj1.userId1, obj1.reportFormId, obj1.accountinifiledId, item2.FieldName);
                             htmlData.Append("<div class='col-lg-12'>");
-                            htmlData.Append("<div class='col-lg-6 col-sm-6 col-xs-6 fld-lab3' style='text-align:left'>" + item2.FieldName + " </div>");
+                            htmlData.Append("<div class='col-lg-6 col-sm-6 col-xs-6 fld-lab3 mobile-margin-top' style='text-align:left;'>" + item2.FieldName + " </div>");
                             htmlData.Append("<div class='col-lg-6 col-sm-6 col-xs-6  ys-lab' style='text-align:left'>");
                             if (serviceVal != null && serviceVal.FieldValue == "true")
                             {
@@ -1593,7 +1599,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                             {
                                 #region
                                 htmlData.Append("<div class='col-lg-12 drp-div'>");
-                                htmlData.Append("<div class='col-lg-6 col-sm-12 fld-lab' style='text-align:left'>" + item2.FieldName + " </div>");
+                                htmlData.Append("<div class='col-lg-6 col-sm-12 fld-lab mobile-margin-top' style='text-align:left; '>" + item2.FieldName + " </div>");
                                 //<select class="col-lg-5 pincode"  id="' + item.FieldId + '" name = "' + item.FieldName + '" type="Date"  value = " " onKeyUp="return CheckIt(' + item.FieldId + ',event);" placeholder="' + item.FieldLabel + '"/>
                                 htmlData.Append("<select class='col-lg-5 col-sm-12 rep-drpdwn' id='" + item2.FieldId + "' name = '" + item2.FieldName + "'>");
 

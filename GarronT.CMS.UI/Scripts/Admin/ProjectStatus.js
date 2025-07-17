@@ -513,6 +513,7 @@ $("#btnCycleFilter").click(function () {
 
                     $('#txtfilterAddress').val("");
                     $('#Address_SelectAll').prop('checked', false);
+                    
                     var selectedlivalue = $('#ulroute li.highlighted').map(function (i, el) { return $(el).val(); });
 
                     
@@ -524,16 +525,22 @@ $("#btnCycleFilter").click(function () {
                         $("#routeHeader").addClass("ddlHeader").text(selectedlilength + " Route selected")
                     }
                     //#region SelectAll checked/unchecked
+                    
                     if ($('#ulroute .liRoute:visible').length > 0 && $('#ulroute .highlighted:visible').length == $('#ulroute .liRoute:visible').length) {
+                        
                         $('#Route_SelectAll').prop('checked', true);
+                       
                     } else {
+                      
                         $('#Route_SelectAll').prop('checked', false);
                     }
                     //#endregion
 
                     if ($('#ulroute1 .liRoute1:visible').length > 0 && $('#ulroute1 .highlighted:visible').length == $('#ulroute1 .liRoute1:visible').length) {
+                       
                         $('#Route1_SelectAll').prop('checked', true);
                     } else {
+                       
                         $('#Route1_SelectAll').prop('checked', false);
                     }
                     //#endregion
@@ -754,8 +761,9 @@ $("#ulCycle1").selectable({
 //#region Route dropdown
 
 $("#ulroute").selectable({
-
+    
     start: function (event, ui) {
+        
         var target = event.target || event.srcElement;
 
         if (target.tagName == "LI") {
@@ -809,6 +817,7 @@ $('#btnRoutebtn').on('click', function (event) {
 });
 
 function getRouteList() {
+   
     // set map location to current city
     //initialize();
 
@@ -848,18 +857,22 @@ function getRouteList() {
                 $('#ulroute').empty();
 
                 $.each(data.Route, function (index, item) {
+                    
                     $('#ulroute').append($('<li></li>').val(item).addClass("liRoute active-result").html(item));
                 });
 
                 if (InstallerID != null) {
                     $.each(data.selectedRoute, function (index, item) {
                         if (item.RouteDisabled == false) {
+                        
                             $("#ulroute").find("li[value='" + item.RouteId + "']").addClass("ui-selected click-selected highlighted")
                         }
                         else if (item.Appointmentflag != "1") {
+                         
                             $("#ulroute").find("li[value='" + item.RouteId + "']").addClass("ui-selected click-selected highlighted")
                         }
                         else {
+                           
                             $("#ulroute").find("li[value='" + item.RouteId + "']").addClass("ui-selected click-selected highlighted disabledli")
                         }
                     });
