@@ -2025,6 +2025,7 @@ namespace GarronT.CMS.Model.DAL
                                         {
 
                                             objtblProjectFieldDataMaster.FieldValue = item.geolocationLatitudeValue + ", " + item.geolocationLongitudeValue;
+                                            updateAccountGPS(objForm.currentAccountData.initialFieldId, item.geolocationLatitudeValue, item.geolocationLongitudeValue);
 
                                             #region location image
                                             if (!string.IsNullOrEmpty(item.geolocationLatitudeValue) && !string.IsNullOrEmpty(item.geolocationLongitudeValue))
@@ -2725,6 +2726,24 @@ namespace GarronT.CMS.Model.DAL
 
         }
 
+        public void updateAccountGPS(long uExcelId, string lat, string lng)
+        {
+            CompassEntities CompassEntities = new CompassEntities();
+            try
+            {
+                var accountObj = CompassEntities.UploadedExcelDatas.Where(o => o.Id == uExcelId).FirstOrDefault();
+                if(!lat.Equals(accountObj.AddressLatitude) || !lng.Equals(accountObj.AddressLongitude))
+                {
+                    accountObj.AddressLatitude = lat;
+                    accountObj.AddressLongitude = lng;
+                    CompassEntities.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                
+            }
+        }
 
         /// <summary>
         /// returns date
