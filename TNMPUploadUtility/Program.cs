@@ -219,7 +219,7 @@ namespace TNMPUploadUtility
 
             // Start code => Upload old files s3 bucket
             #region Upload old files s3 bucket
-             ErrorLogFile.writeStatus("\n\nThread Started at Upload old files s3 bucket - " + DateTime.Now.ToShortTimeString());
+             /*(ErrorLogFile.writeStatus("\n\nThread Started at Upload old files s3 bucket - " + DateTime.Now.ToShortTimeString());
               Console.WriteLine("Thread Started at Upload old files s3 bucket - " + DateTime.Now.ToShortTimeString());
               try
               {
@@ -255,35 +255,35 @@ namespace TNMPUploadUtility
             #endregion
             //ends hare
             #region Export Report By Email
-            /*long projectId = 10132;
+            long projectId = 10132;
             long formTypeId = 2;
             string[] visitStatus = new string[] { "Completed" };
             int latlongRequired = 1;
             int mediaRequired = 1;
-            //string fromDate = "2025-07-04 00:00";
-            //string toDate = "2025-07-07 23:59";
+            string fromDate = "2025-06-01 00:00";
+            string toDate = "2025-08-13 23:59";
             CompassEntities objCE = new CompassEntities();
             var lastDateTime = objCE.TblTNMPExportReportUtilityHistories.Where(o => o.FK_ProjectId == projectId && o.Active == 1).OrderByDescending(q => q.Id).Select(o => o.ToDateTime).FirstOrDefault();
             ErrorLogFile.writeStatus("lastDateTime: " + lastDateTime);
             DateTime date = new CommonFunctions().ServerDate(); // Get current date
-            string fromDate = string.Empty;
-            string toDate = string.Empty;
+            //string fromDate = string.Empty;
+           // string toDate = string.Empty;
           
             DateTime objUtilityExecutionStartDateTime = date;
 
 
 
-            if (lastDateTime.HasValue)
-            {
-                DateTime tempTime = (DateTime)lastDateTime;
+          //  if (lastDateTime.HasValue)
+           // {
+           //     DateTime tempTime = (DateTime)lastDateTime;
 
                  //FromDate: one minute after last execution, but set time to 00:00 of that day
-                fromDate = tempTime.AddMinutes(1).Date.ToString("yyyy-MM-dd 00:00");
+           //     fromDate = tempTime.AddMinutes(1).Date.ToString("yyyy-MM-dd 00:00");
 
                  //ToDate: yesterday at 23:59
-                DateTime toDateTime = date.AddDays(-1).Date.AddHours(23).AddMinutes(59);
-                toDate = toDateTime.ToString("yyyy-MM-dd HH:mm");
-            }
+          //      DateTime toDateTime = date.AddDays(-1).Date.AddHours(23).AddMinutes(59);
+          //      toDate = toDateTime.ToString("yyyy-MM-dd HH:mm");
+          //  }
 
 
 
@@ -326,7 +326,7 @@ namespace TNMPUploadUtility
             else
             {
                 Console.WriteLine("No data available for the selected date range.");
-            }*/
+            }
             #endregion
 
         }

@@ -69,7 +69,7 @@ function getURLParameters(paramName) {
 
 
 function SectionShowData() {
-    alert("3");
+    //alert("3");
 
     waitingDialog.show('Loading Please Wait...');
     var userId = $('#txtUserId').val();

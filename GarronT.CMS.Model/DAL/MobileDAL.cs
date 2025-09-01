@@ -2025,7 +2025,10 @@ namespace GarronT.CMS.Model.DAL
                                         {
 
                                             objtblProjectFieldDataMaster.FieldValue = item.geolocationLatitudeValue + ", " + item.geolocationLongitudeValue;
-                                            updateAccountGPS(objForm.currentAccountData.initialFieldId, item.geolocationLatitudeValue, item.geolocationLongitudeValue);
+                                            if (item.geolocationLatitudeValue != "")
+                                            {
+                                                updateAccountGPS(objForm.currentAccountData.initialFieldId, item.geolocationLatitudeValue, item.geolocationLongitudeValue);
+                                            }
 
                                             #region location image
                                             if (!string.IsNullOrEmpty(item.geolocationLatitudeValue) && !string.IsNullOrEmpty(item.geolocationLongitudeValue))

@@ -127,9 +127,12 @@ namespace TNMPUploadUtility
                     }
                     else
                     {
-                        ErrorLogFile.writeStatus("No data available for selected date range. - " + DateTime.Now.ToShortTimeString());
-                        Console.WriteLine("No data available for selected date range. - " + DateTime.Now.ToShortTimeString());
+                        string noDataMsg = "No data available for selected date range. - " + DateTime.Now.ToShortTimeString();
+                        ErrorLogFile.writeStatus(noDataMsg);
+                        Console.WriteLine(noDataMsg);
+                        SendFailureEmail(projectId, fromDate, toDate);
                         return new DataTable();
+
                     }
                 }
                 else if (formTypeId == 1) // Audit data
@@ -160,7 +163,7 @@ namespace TNMPUploadUtility
                 Console.WriteLine("Error: " + ex.Message + " - " + DateTime.Now.ToShortTimeString());
                 return new DataTable();
             }
-        }
+         }
 
 
         #endregion
@@ -284,25 +287,20 @@ namespace TNMPUploadUtility
                 return "";
             }
         }
-
-
-
-
-
-        #endregion
-        public void SendEmailWithAttachment(long projectId, String filePath)
+       #endregion
+        public void SendEmailWithAttachment(long projectId, string filePath)
         {
             try
             {
                 MailMessage mail = new MailMessage();
-                SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com"); // Update SMTP server
+                SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
 
                 mail.From = new MailAddress("datadepotonline@gmail.com");
-               // mail.To.Add("kunal.sharma@snssystem.com");
-                mail.To.Add("garron@cmsmeter.com");
-                mail.To.Add("support@udsinc.com");
-                mail.To.Add("jason.norton@republicmeter.com"); 
-                
+                mail.To.Add("kunal.sharma@snssystem.com");
+                // mail.To.Add("garron@cmsmeter.com");
+               //  mail.To.Add("support@udsinc.com");
+               //  mail.To.Add("jason.norton@republicmeter.com"); 
+
                 //mail.To.Add("brigette.johnson@beaumonttexas.gov");
                 // Add CC and BCC
                 // mail.CC.Add("jason.norton@republicmeter.com");
@@ -310,17 +308,14 @@ namespace TNMPUploadUtility
 
                 mail.Subject = "Meter Exchange Report – NTX – " + DateTime.Now.AddDays(-1).ToString("MM/dd/yyyy");
                 mail.Body = "Dear Sir,\n\n" +
-                             "Please find the attached Export Report for the project mentioned below:\n\n" +
-                             "Project Name: Newton TX 625\n" +
-                             "Project ID: " + projectId;
-
-
-
+                            "Please find the attached Export Report for the project mentioned below:\n\n" +
+                            "Project Name: Newton TX 625\n" +
+                            "Project ID: " + projectId;
 
                 Attachment attachment = new Attachment(filePath);
                 mail.Attachments.Add(attachment);
 
-                SmtpServer.Port = 587; // Update with the port
+                SmtpServer.Port = 587;
                 SmtpServer.Credentials = new NetworkCredential("datadepotonline@gmail.com", "wgln xqsd iwge okuu");
                 SmtpServer.EnableSsl = true;
 
@@ -332,7 +327,68 @@ namespace TNMPUploadUtility
             {
                 ErrorLogFile.writeStatus("Error in sending email: " + ex.Message + " - " + DateTime.Now.ToShortTimeString());
                 Console.WriteLine("Error in sending email: " + ex.Message + " - " + DateTime.Now.ToShortTimeString());
+
+                // Send fallback email
+                try
+                {
+                    MailMessage fallbackMail = new MailMessage();
+                    SmtpClient fallbackSmtp = new SmtpClient("smtp.gmail.com");
+
+                    fallbackMail.From = new MailAddress("datadepotonline@gmail.com");
+                    fallbackMail.To.Add("kunal.sharma@snssystem.com"); // Notify yourself/admin
+                    fallbackMail.To.Add("yogendra.rajpoot@snssystem.com");
+
+                    fallbackMail.Subject = "ALERT: Meter Exchange Report Email Not Sent";
+                    fallbackMail.Body = "Dear Team,\n\nThe export report email for Project ID: " + projectId +
+                                        " was not sent due to an error.\n\nPlease check the system logs for more details.\n\nError:\n" + ex.Message;
+
+                    fallbackSmtp.Port = 587;
+                    fallbackSmtp.Credentials = new NetworkCredential("datadepotonline@gmail.com", "wgln xqsd iwge okuu");
+                    fallbackSmtp.EnableSsl = true;
+
+                    fallbackSmtp.Send(fallbackMail);
+
+                    ErrorLogFile.writeStatus("Fallback email (failure alert) sent - " + DateTime.Now.ToShortTimeString());
+                    Console.WriteLine("Fallback email sent - " + DateTime.Now.ToShortTimeString());
+                }
+                catch (Exception fallbackEx)
+                {
+                    ErrorLogFile.writeStatus("Failed to send fallback email: " + fallbackEx.Message);
+                    Console.WriteLine("Failed to send fallback email: " + fallbackEx.Message);
+                }
             }
         }
+        private void SendFailureEmail(long projectId, string fromDate, string toDate)
+        {
+            try
+            {
+                MailMessage mail = new MailMessage();
+                SmtpClient smtpServer = new SmtpClient("smtp.gmail.com");
+
+                mail.From = new MailAddress("datadepotonline@gmail.com");
+                mail.To.Add("kunal.sharma@snssystem.com");
+                mail.To.Add("yogendra.rajpoot@snssystem.com");
+
+                mail.Subject = "ALERT: No Data in Export Report – Project ID: " + projectId;
+                mail.Body = "Dear Team,\n\n" +
+                            $"The export report from {fromDate} to {toDate} for Project ID: {projectId} did not return any data.\n\n" +
+                            "Please verify the system or data entries.";
+
+                smtpServer.Port = 587;
+                smtpServer.Credentials = new NetworkCredential("datadepotonline@gmail.com", "wgln xqsd iwge okuu");
+                smtpServer.EnableSsl = true;
+
+                smtpServer.Send(mail);
+
+                ErrorLogFile.writeStatus("Failure email sent - " + DateTime.Now.ToShortTimeString());
+                Console.WriteLine("Failure email sent - " + DateTime.Now.ToShortTimeString());
+            }
+            catch (Exception ex)
+            {
+                ErrorLogFile.writeStatus("Error sending failure email: " + ex.Message);
+                Console.WriteLine("Error sending failure email: " + ex.Message);
+            }
+        }
+
     }
 }

@@ -1747,16 +1747,35 @@
 
                                                                         bool status = false;
                                                                         String aditionalFileName = String.Empty;
-                                                                        if (objCloudeAttachementList1.strCloudUrl != null && objCloudeAttachementList1.IsAudioVideoImage == 3)
-                                                                        {
-                                                                            aditionalFileName = objCloudeAttachementList1.strCloudUrl;
-                                                                            status = true;
-                                                                        }
-                                                                        else if (objAttachementList1.strFilePath != null && objAttachementList1.IsAudioVideoImage == 3)
-                                                                        {
-                                                                            aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) + objAttachementList1.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
-                                                                            status = true;
-                                                                        }
+                                                                       if (objCloudeAttachementList1 != null)
+																			{
+																				if (objCloudeAttachementList1.strCloudUrl != null && objCloudeAttachementList1.IsAudioVideoImage == 3)
+																				{
+																					aditionalFileName = objCloudeAttachementList1.strCloudUrl;
+																					status = true;
+																				}
+																				else if (objCloudeAttachementList1.strCloudUrl == null || objCloudeAttachementList1.IsAudioVideoImage != 3)
+																				{
+																					aditionalFileName = objCloudeAttachementList1.strCloudUrl;
+																					status = true;
+																				}
+																			}
+
+																			if (!status && objAttachementList1 != null)
+																			{
+																				if (objAttachementList1.strFilePath != null && objAttachementList1.IsAudioVideoImage == 3)
+																				{
+																					aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) +
+																										objAttachementList1.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+																					status = true;
+																				}
+																				else if (objAttachementList1.strFilePath == null || objAttachementList1.IsAudioVideoImage != 3)
+																				{
+																					aditionalFileName = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["WebURL"]) +
+																										objAttachementList1.strFilePath.Replace(@"..\", "").Replace(@"~\", "");
+																					status = true;
+																				}
+																			}
                                                                         if (status)
                                                                         {
                                                                             var center = "center=" + @skiprtuModel.Latitude + "," + @skiprtuModel.Longitude + "";
