@@ -6,7 +6,7 @@ using GarronT.CMS.Model;
 using GarronT.CMS.Model.BO;
 using GarronT.CMS.Model.DAL;
 using System.Collections.Generic;
-using System.Web.Script.Serialization;
+using System.Text.Json;
 using KSPL.Indus.MSTS.UI.Filters;
 using GarronT.CMS.UI.CustomHelpers;
 
