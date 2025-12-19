@@ -26,7 +26,7 @@ namespace TNMPUploadUtility
             try
             {
                 ExportReportDAL exportReportDAL = new ExportReportDAL();
-                long currentUserId = 14;  // Default user ID
+                long currentUserId = 274;  // Default user ID
 
                 // Check if export fields are saved
                 bool isFieldConfigured = exportReportDAL.checkFieldSavedForExportFormType(formTypeId, projectId, (int)currentUserId);
@@ -49,8 +49,87 @@ namespace TNMPUploadUtility
 
                     if (dt != null && dt.Rows.Count > 0)
                     {
-                        // Add LATITUDE/LONGITUDE columns for project 10132
-                        if (projectId == 10132 && dt.Columns.Contains("LOCATION/GPS"))
+                        // Add LATITUDE/LONGITUDE columns for project 10133
+                        if (projectId == 10133)
+                        {
+                            // ===============================
+                            // 1️⃣ Keep only required source columns
+                            // ===============================
+                            string[] requiredColumns =
+                            {
+        "ACCOUNT",
+        "STREET",
+        "OLD METER NUMBER",
+        "OLD METER RADIO NUMBER",
+        //"OLD METER FINAL READ",
+        "NEW METER RADIO"
+    };
+
+                            for (int i = dt.Columns.Count - 1; i >= 0; i--)
+                            {
+                                if (!requiredColumns.Contains(dt.Columns[i].ColumnName))
+                                {
+                                    dt.Columns.RemoveAt(i);
+                                }
+                            }
+
+                            // ===============================
+                            // 2️⃣ Remove rows where NEW METER RADIO is blank
+                            // ===============================
+                            for (int i = dt.Rows.Count - 1; i >= 0; i--)
+                            {
+                                var newErtObj = dt.Rows[i]["NEW METER RADIO"];
+
+                                if (newErtObj == DBNull.Value)
+                                {
+                                    dt.Rows.RemoveAt(i);
+                                    continue;
+                                }
+
+                                string newErt = newErtObj.ToString().Trim();
+
+                                if (string.IsNullOrWhiteSpace(newErt) || newErt == "-")
+                                {
+                                    dt.Rows.RemoveAt(i);
+                                }
+                            }
+
+                            // ===============================
+                            // 3️⃣ Create final mapped DataTable
+                            // ===============================
+                            DataTable finalDt = new DataTable();
+
+                            finalDt.Columns.Add("CUSTOMER LOCATION");
+                            finalDt.Columns.Add("ADDRESS");
+                            finalDt.Columns.Add("METER");
+                            finalDt.Columns.Add("OLD ERT");
+                            //finalDt.Columns.Add("OLD METER FINAL READ");
+                            finalDt.Columns.Add("NEW ERT");
+
+                            foreach (DataRow row in dt.Rows)
+                            {
+                                finalDt.Rows.Add(
+                                    row["ACCOUNT"],                 // Customer location #
+                                    row["STREET"],                  // Address
+                                    row["OLD METER NUMBER"],         // Meter #
+                                    row["OLD METER RADIO NUMBER"], 
+                                    //row["OLD METER FINAL READ"],      // Old ert
+                                    row["NEW METER RADIO"]           // New ert
+                                );
+                            }
+
+                            finalDt.AcceptChanges();
+
+                            // ===============================
+                            // 4️⃣ Replace original table
+                            // ===============================
+                            dt = finalDt;
+                        }
+
+
+
+
+                        /*if (projectId == 10133 && dt.Columns.Contains("LOCATION/GPS"))
                         {
                             dt.Columns.Add("LATITUDE");
                             dt.Columns.Add("LONGITUDE");
@@ -88,7 +167,7 @@ namespace TNMPUploadUtility
 
                             // Optional: remove LOCATION/GPS if needed
                             // dt.Columns.Remove("LOCATION/GPS");
-                        }
+                        }*/
 
                         // Clean up row values
                         for (int i = 0; i < dt.Rows.Count; i++)
@@ -100,18 +179,18 @@ namespace TNMPUploadUtility
                                 if (dt.Rows[i][j] == DBNull.Value)
                                     dt.Rows[i][j] = "-";
 
-                                if (projectId == 10132 && columnName.Equals("STREET_NAME"))
+                                /*if (projectId == 10133 && columnName.Equals("STREET_NAME"))
                                 {
                                     string streetVal = dt.Rows[i][j].ToString().Trim();
                                     string[] words = streetVal.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                                     string newStreet = string.Join(" ", words.Skip(1)); // Remove first word
                                     dt.Rows[i][j] = newStreet;
-                                }
+                                }*/
                             }
                         }
 
-                        // Remove V_NEW_LATITUDE and V_NEW_LONGITUDE for project 10132
-                        if (projectId == 10132)
+                        // Remove V_NEW_LATITUDE and V_NEW_LONGITUDE for project 10133
+                        /*if (projectId == 10133)
                         {
                             string[] columnsToRemove = { "V_NEW_LATITUDE", "V_NEW_LONGITUDE" };
                             foreach (string colName in columnsToRemove)
@@ -121,7 +200,7 @@ namespace TNMPUploadUtility
                                     dt.Columns.Remove(colName);
                                 }
                             }
-                        }
+                        }*/
 
                         return dt;
                     }
@@ -248,9 +327,9 @@ namespace TNMPUploadUtility
                 }
 
                 // ✅ Set CSV filename
-                fileName = (projectId == 10132)
-                    ? "meter_exchange_NTX_" + DateTime.Now.AddDays(-1).ToString("MMddyyyy") + ".csv"
-                    : "Export_Report_" + DateTime.Now.ToString("yyyyMMdd") + ".csv";
+                fileName = (projectId == 10133)
+                    ? "New_ERT_Installed_on _" + DateTime.Now.AddDays(-1).ToString("MMddyyyy") + ".csv"
+                    : "New_ERT_Installed_on _" + DateTime.Now.ToString("yyyyMMdd") + ".csv";
 
                 // ✅ Define export folder
                 string baseDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ExportReport");
@@ -259,7 +338,7 @@ namespace TNMPUploadUtility
 
                 string filePath = Path.Combine(baseDir, fileName);
 
-                // ✅ Write CSV
+                //  Write CSV
                 using (StreamWriter writer = new StreamWriter(filePath, false, Encoding.UTF8))
                 {
                     // Write headers
@@ -296,21 +375,28 @@ namespace TNMPUploadUtility
                 SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
 
                 mail.From = new MailAddress("datadepotonline@gmail.com");
-                mail.To.Add("kunal.sharma@snssystem.com");
-                // mail.To.Add("garron@cmsmeter.com");
-               //  mail.To.Add("support@udsinc.com");
-               //  mail.To.Add("jason.norton@republicmeter.com"); 
+                //mail.To.Add("kunal.sharma@snssystem.com");
+               //mail.To.Add("snssystem.pammi@gmail.com");
+               mail.To.Add("mike.harris@beaumonttexas.gov");
+               mail.To.Add("howard.dennings@beaumonttexas.gov");
+               mail.To.Add("ashley.hoyt@beaumonttexas.gov");
+               mail.To.Add("brigette.johnson@BeaumontTexas.gov");
+               // Add CC and BCC
+               mail.CC.Add("garron@cmsmeter.com");
+               mail.CC.Add("jason.norton@republicmeter.com");
+               mail.CC.Add("juston.hargraves@beaumonttexas.gov");
+               mail.CC.Add("kelli.reindel@beaumonttexas.gov");
+               mail.Bcc.Add("kunal.sharma@snssystem.com");
 
-                //mail.To.Add("brigette.johnson@beaumonttexas.gov");
-                // Add CC and BCC
-                // mail.CC.Add("jason.norton@republicmeter.com");
-                //mail.Bcc.Add("kunal.sharma@snssystem.com");
+                mail.Subject = "BTX – Daily ERT Replacement Report – Last Business Day ("
+               + DateTime.Now.AddDays(-1).ToString("MM/dd/yyyy") + ")";
+                mail.Body = "Hi Team,\n\n" +
+                            "Please find the attached Export Report for the project listed below.\n\n" +
+                            "This file includes all ERT replacements completed on the last business day.\n\n" +
+                            "If you have any questions or need anything further, please let me know.\n\n" +
 
-                mail.Subject = "Meter Exchange Report – NTX – " + DateTime.Now.AddDays(-1).ToString("MM/dd/yyyy");
-                mail.Body = "Dear Sir,\n\n" +
-                            "Please find the attached Export Report for the project mentioned below:\n\n" +
-                            "Project Name: Newton TX 625\n" +
-                            "Project ID: " + projectId;
+                            "Thank you.";
+                           // "Project ID: " + projectId;
 
                 Attachment attachment = new Attachment(filePath);
                 mail.Attachments.Add(attachment);
@@ -371,7 +457,7 @@ namespace TNMPUploadUtility
 
                 mail.Subject = "ALERT: No Data in Export Report – Project ID: " + projectId;
                 mail.Body = "Dear Team,\n\n" +
-                            $"The export report from {fromDate} to {toDate} for Project ID: {projectId} did not return any data.\n\n" +
+                            $"The export report With_Meter from {fromDate} to {toDate} for Project ID: {projectId} did not return any data.\n\n" +
                             "Please verify the system or data entries.";
 
                 smtpServer.Port = 587;

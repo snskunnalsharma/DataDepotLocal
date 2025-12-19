@@ -4478,13 +4478,13 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 {
                     dt.Columns.Remove("COMMENT");
                 }*/
-                if(projectId != 10122 && projectId != 10132) { 
+                if(projectId != 10133 && projectId != 10132) { 
                 dt.Columns.Add("V_NEW_LATITUDE");
                 dt.AcceptChanges();
                 dt.Columns.Add("V_NEW_LONGITUDE");
                 dt.AcceptChanges();
                 }
-                try
+            try
                 {
                     for (int k = 0; k < dt.Rows.Count; k++)
                     {
@@ -4568,6 +4568,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                             {
                                 dt.Rows[k]["V_NEW_LATITUDE"] = objLatLong.FieldLatitude;
                                 dt.Rows[k]["V_NEW_LONGITUDE"] = objLatLong.FieldLongitude;
+                                if (projectId == 10133) { 
+}
                             }
                             else
                             {
@@ -4575,7 +4577,9 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                                 dt.Rows[k]["V_NEW_LATITUDE"] = objWorkCompletLatLong.FieldLatitude;
                                 dt.Rows[k]["V_NEW_LONGITUDE"] = objWorkCompletLatLong.FieldLongitude;
                             }
+
                         }
+                     
                         /*if (dt.Columns.Contains("V_NEW_LATITUDE") && dt.Columns.Contains("V_NEW_LONGITUDE") && dt.Columns.Contains("ACCOUNT"))
                         {
                             string objAccount = dt.Rows[k]["ACCOUNT"].ToString();

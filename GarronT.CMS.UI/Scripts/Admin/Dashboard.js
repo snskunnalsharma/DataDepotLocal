@@ -97,6 +97,9 @@ function getProjectList() {
                         if (index == 0) {
                             id = item.ProjectId;
                         }
+                        if (item.ProjectId == "10133") {
+                            id = item.ProjectId;
+                        }
                         $('#ddlProjectComvsPending').append($('<option></option>').val(item.ProjectId).html(item.ProjectCityState));
                     });
 
@@ -828,7 +831,7 @@ for (let i = 0; i < chartContainerElements.length; i++) {
 function CompletionvsPendingChart(projectID) {
 
     var urlGetCompleteVsPendingChartData = $('#urlGetCompleteVsPendingChartData').val();
-   // alert("GetCompleteVsPendingChartData");
+   //alert("GetCompleteVsPendingChartData");
     loading();
     $.ajax({
         url: urlGetCompleteVsPendingChartData,

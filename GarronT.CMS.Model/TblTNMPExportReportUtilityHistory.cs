@@ -25,5 +25,6 @@ namespace GarronT.CMS.Model
         public Nullable<System.DateTime> CreatedOn { get; set; }
     
         public virtual tblProject tblProject { get; set; }
+        public string UtilityType { get; set; }
     }
 }

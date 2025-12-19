@@ -117,6 +117,7 @@
     <Compile Include="DownloadExportReport.cs" />
     <Compile Include="DownloadExportReportSendbyEmail.cs" />
     <Compile Include="ErrorLogFile.cs" />
+    <Compile Include="ExportReportByEmail_2.cs" />
     <Compile Include="MailUtil.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

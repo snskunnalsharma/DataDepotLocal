@@ -302,16 +302,18 @@ namespace GarronT.CMS.Model.DAL
         // completion vs pending
         public List<CompletionModel> GetCompleteVsPendingChartData(long projectID)
         {
-
             var list = new List<CompletionModel>();
-
 
             try
             {
                 CompassEntities objCompassEntities = new CompassEntities();
-                
-                var result = objCompassEntities.PROC_Dashboard_CompVsPendingChart(projectID, 2).FirstOrDefault();
 
+                var result = objCompassEntities
+                    .PROC_Dashboard_CompVsPendingChart(projectID, 2)
+                    .FirstOrDefault();
+
+                if (result == null)
+                    return list;
 
                 int UnMappedRecords = result.UnMappedRecords != null ? Convert.ToInt32(result.UnMappedRecords) : 0;
                 int MappedRecords = result.MappedRecords != null ? Convert.ToInt32(result.MappedRecords) : 0;
@@ -319,57 +321,57 @@ namespace GarronT.CMS.Model.DAL
                 int RtuRecords = result.RtuRecords != null ? Convert.ToInt32(result.RtuRecords) : 0;
                 int CompletedRecords = result.CompletedRecords != null ? Convert.ToInt32(result.CompletedRecords) : 0;
                 int TotalRecords = result.TotalRecords != null ? Convert.ToInt32(result.TotalRecords) : 0;
-                int PendingRecords = MappedRecords - (CompletedRecords + SkippedRecords + RtuRecords);
                 int UnAllocatedSkip = result.UnAllocatedSkip != null ? Convert.ToInt32(result.UnAllocatedSkip) : 0;
+
+                int PendingRecords = MappedRecords - (CompletedRecords + SkippedRecords + RtuRecords);
+
                 CompletionModel obj = new CompletionModel();
                 obj.Status = "Completed";
                 obj.Installations = CompletedRecords;
-                obj.percentage = (int)Math.Round((double)(100 * CompletedRecords) / TotalRecords);
+                obj.percentage = TotalRecords > 0 ? (int)Math.Round((double)(100 * CompletedRecords) / TotalRecords) : 0;
                 list.Add(obj);
 
                 CompletionModel obj1 = new CompletionModel();
                 obj1.Status = "Not Allocated";
                 obj1.Installations = UnMappedRecords;
-                obj1.percentage = (int)Math.Round((double)(100 * UnMappedRecords) / TotalRecords);
+                obj1.percentage = TotalRecords > 0 ? (int)Math.Round((double)(100 * UnMappedRecords) / TotalRecords) : 0;
                 list.Add(obj1);
 
-                // ordering list
-                if (projectID == 10085 || projectID == 10108) // This changes chnage for TNMP Project 
+                if (projectID == 10085 || projectID == 10108)
                 {
                     CompletionModel obj5 = new CompletionModel();
                     obj5.Status = "UnAllocated Skip";
                     obj5.Installations = UnAllocatedSkip;
-                    obj5.percentage = (int)Math.Round((double)(100 * UnAllocatedSkip) / TotalRecords);
+                    obj5.percentage = TotalRecords > 0 ? (int)Math.Round((double)(100 * UnAllocatedSkip) / TotalRecords) : 0;
                     list.Add(obj5);
                 }
-               
+
                 CompletionModel obj2 = new CompletionModel();
                 obj2.Status = "Pending";
                 obj2.Installations = PendingRecords;
-                obj2.percentage = (int)Math.Round((double)(100 * PendingRecords) / TotalRecords);
+                obj2.percentage = TotalRecords > 0 ? (int)Math.Round((double)(100 * PendingRecords) / TotalRecords) : 0;
                 list.Add(obj2);
 
                 CompletionModel obj3 = new CompletionModel();
                 obj3.Status = "Skipped";
                 obj3.Installations = SkippedRecords;
-                obj3.percentage = (int)Math.Round((double)(100 * SkippedRecords) / TotalRecords);
+                obj3.percentage = TotalRecords > 0 ? (int)Math.Round((double)(100 * SkippedRecords) / TotalRecords) : 0;
                 list.Add(obj3);
 
                 CompletionModel obj4 = new CompletionModel();
                 obj4.Status = "RTU";
                 obj4.Installations = RtuRecords;
-                obj4.percentage = (int)Math.Round((double)(100 * RtuRecords) / TotalRecords);
+                obj4.percentage = TotalRecords > 0 ? (int)Math.Round((double)(100 * RtuRecords) / TotalRecords) : 0;
                 list.Add(obj4);
-
-                
-
             }
             catch (Exception ex)
             {
+                // Optional: log error
             }
 
             return list;
         }
+
 
 
         public List<DashboardHeader> GetCityListHeader()
