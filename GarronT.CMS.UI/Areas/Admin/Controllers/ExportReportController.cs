@@ -590,6 +590,20 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
                     if (dt != null && dt.Rows.Count > 0)
                     {
+                        if (projectId == 10134)
+                        {
+                            // ATTENDANT NAME -> TECHNICIAN
+                            if (dt.Columns.Contains("ATTENDANT NAME"))
+                            {
+                                dt.Columns["ATTENDANT NAME"].ColumnName = "TECHNICIAN";
+                            }
+
+                            // VISIT ATTENDED DATETIME -> VISIT
+                            if (dt.Columns.Contains("VISIT ATTENDED DATETIME"))
+                            {
+                                dt.Columns["VISIT ATTENDED DATETIME"].ColumnName = "VISIT DATE-TIME";
+                            }
+                        }
                         // Only apply for projectId 10132
                         /*if (projectId == 10132 && dt.Columns.Contains("LOCATION/GPS"))
                         {
@@ -4478,7 +4492,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 {
                     dt.Columns.Remove("COMMENT");
                 }*/
-                if(projectId != 10133 && projectId != 10132) { 
+                if(projectId != 10134 && projectId != 10132) { 
                 dt.Columns.Add("V_NEW_LATITUDE");
                 dt.AcceptChanges();
                 dt.Columns.Add("V_NEW_LONGITUDE");
@@ -4568,7 +4582,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                             {
                                 dt.Rows[k]["V_NEW_LATITUDE"] = objLatLong.FieldLatitude;
                                 dt.Rows[k]["V_NEW_LONGITUDE"] = objLatLong.FieldLongitude;
-                                if (projectId == 10133) { 
+                                if (projectId == 10134) { 
 }
                             }
                             else
@@ -4579,7 +4593,10 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                             }
 
                         }
-                     
+
+                      
+
+
                         /*if (dt.Columns.Contains("V_NEW_LATITUDE") && dt.Columns.Contains("V_NEW_LONGITUDE") && dt.Columns.Contains("ACCOUNT"))
                         {
                             string objAccount = dt.Rows[k]["ACCOUNT"].ToString();
