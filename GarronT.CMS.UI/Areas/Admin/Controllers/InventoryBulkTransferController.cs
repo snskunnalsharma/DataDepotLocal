@@ -90,7 +90,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 }
 
             }
-
+            data = data.OrderBy(o => o.ProjectName).ToList();
             return base.Json(data, JsonRequestBehavior.AllowGet);
         }
 

@@ -142,7 +142,6 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         [HttpGet]
         public ActionResult GetProject(int UtilityId)
         {
-
             var checkAdmin = Session["CurrentUserIsAdmin"].ToString();
 
             InventoryDAL objInventoryDAL = new InventoryDAL();
@@ -153,26 +152,22 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 var userId = new UserDetails().GetUserId(User.Identity.GetUserId());
                 var abcd = new ProjectMasterDAL().GetUserProjectList(userId);
 
-
                 if (abcd == null || abcd.Count == 0)
                 {
-                    if (data != null && data.Count() > 0)
-                    {
-                        data = data.Take(0).ToList();
-                    }
+                    data = new List<ProjectModel>();
                 }
                 else
                 {
-                    if (data != null && data.Count() > 0)
-                    {
-                        data = data.Where(o => abcd.Contains(o.ProjectId)).ToList();
-                    }
+                    data = data.Where(o => abcd.Contains(o.ProjectId)).ToList();
                 }
-
             }
 
-            return base.Json(data, JsonRequestBehavior.AllowGet);
+            // 🔹 Ascending order (change field if needed)
+            data = data.OrderBy(o => o.ProjectName).ToList();
+
+            return Json(data, JsonRequestBehavior.AllowGet);
         }
+
 
         public ActionResult GetInstallerByProjectId(long ProjectId)
         {

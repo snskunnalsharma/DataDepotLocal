@@ -116,6 +116,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 }
 
             }
+            listProjectModel = listProjectModel.OrderBy(o => o.ProjectName).ToList();
             return Json(listProjectModel, JsonRequestBehavior.AllowGet);
 
         }
