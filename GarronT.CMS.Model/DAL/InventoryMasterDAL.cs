@@ -12,6 +12,7 @@ using iTextSharp.text.html;
 using iTextSharp.text.html.simpleparser;
 using System.Security.AccessControl;
 using System.Security.Cryptography;
+using System.Data.SqlClient;
 
 namespace GarronT.CMS.Model.DAL
 {
@@ -1172,5 +1173,8 @@ namespace GarronT.CMS.Model.DAL
             catch (Exception ex) { throw ex; }
             return isSucessed;
         }
+
+        
+
     }
 }

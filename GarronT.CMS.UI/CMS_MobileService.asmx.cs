@@ -1476,11 +1476,12 @@ namespace GarronT.CMS.UI
                         InventoryWebServiceDAL objInventoryWebServiceDAL = new InventoryWebServiceDAL();
 
                         MobileWarehouseResponseBo objMobileWarehouseResponseBo;
-
+                        //log.Info("STEP 1 - Before WarehouseInsertMobileData Call");
                         string message;
                         var result = objInventoryWebServiceDAL.WarehouseInsertMobileData(ref objMobileWarehouseRecieveBo, jsonDataParam, currentDate1, out objMobileWarehouseResponseBo, out message);
-
+                        //log.Info("STEP 2 - After WarehouseInsertMobileData Call");
                         objInventoryWebServiceDAL.Dispose();
+                        //log.Info("STEP 3 - After WarehouseInsertMobileData Call");
 
 
                         if (result)

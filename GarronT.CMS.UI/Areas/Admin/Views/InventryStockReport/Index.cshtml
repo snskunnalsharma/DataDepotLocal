@@ -70,6 +70,14 @@
             width: auto;
         }
     }
+    .match-green {
+        background: #d4edda !important;
+    }
+    /* green */
+    .notmatch-yellow {
+        background: #fff3cd !important;
+    }
+    /* yellow */
 
 </style>
 <style>
@@ -1148,103 +1156,135 @@
                   
                     <div class="panel-body">
                         @*<div class="row" style="margin-bottom: 5px;">
-                            <div class="col-lg-12 col-sm-12 col-xs-12 rep-box">*@
-                                <div class="row mbot05 sm-mbot1 xs-mbot1 xxs-mbot2">
-                                    @*<div class="col-lg-3 col-md-3 col-sm-6 col-xs-10 for_btn">*@
-                                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 col-xxs-12 mbot05 md-mbot1  sm-mbot1 xs-mbot1 xxs-mbot2 lg-nopaddingright md-nopaddingright">
-                                        @Html.DropDownList("UtilityId", (IEnumerable<SelectListItem>)ViewBag.UtilityListItem, new { @class = "form-control chosen-select" })
-                                    </div>
-                                    @*<div class="col-lg-3 col-md-3 col-sm-6 col-xs-10 for_btn">*@
-                                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 col-xxs-12 mbot05 md-mbot1  sm-mbot1 xs-mbot1 xxs-mbot2 lg-nopaddingright md-nopaddingright">
-                                        @Html.DropDownList("ProjectId", (IEnumerable<SelectListItem>)ViewBag.ProjectList, new { @class = "form-control chosen-select", @title = "Select Project" })
-                                    </div>
-                                    @*<div class="col-lg-3 col-md-3 col-sm-6 col-xs-10 nopadding box1 sm-bot2 for_btn">*@
-                                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 col-xxs-12 nopadding mbot05 md-mbot1 sm-mbot1 xs-mbot1 xxs-mbot2 ">
-                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 col-xxs-6 lg-nopaddingright md-nopaddingright">
-                                            <input type="text" readonly name="FromDate" placeholder="From Date" id="txtFromDate" class="inputclass form-control date_form_nw" value="" />
-                                        </div>
-                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 col-xxs-6 lg-nopaddingright md-nopaddingright">
-                                            <input type="text" readonly name="ToDate" placeholder="To Date" id="txtToDate" value="" class="inputclass form-control date_form_nw1" />
-                                        </div>
-                                    </div>
-                                    @*<div class="col-lg-3 col-md-3 col-sm-6 col-xs-10 for_btn">*@
-                                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 col-xxs-12 mbot05 md-mbot1  sm-mbot1 xs-mbot1 xxs-mbot2">
-                                        <select id="InstallerId" name="InstallerId" class="form-control chosen-select" title="Select Installer/Manager"></select>
-                                        @*@Html.DropDownList("InstallerId", (IEnumerable<SelectListItem>)ViewBag.installerList, new { @class = "form-control chosen-select", @title = "Select Installer/Manager" })*@
-                                    </div>
-                                    @*<div class="col-lg-3 col-sm-6 col-xs-10 for_btn">
-                                            @Html.DropDownList("CategoryId", (IEnumerable<SelectListItem>)ViewBag.categoryList, new { @class = "form-control chosen-select", @title = "Select Category" })
-                                        </div>*@
-                                @*</div>
-
-                                <div class="row" style="padding-top:8px;">*@
-
-
-                                    @*<div class="col-lg-3 col-sm-6 col-xs-10 for_btn sm-bot2 ">*@
-                                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 col-xxs-12 lg-nopaddingright md-nopaddingright sm-mbot1 xs-mbot1 xxs-mbot2">
-                                        @Html.DropDownList("ProductId", (IEnumerable<SelectListItem>)ViewBag.productList, new { @class = "form-control chosen-select", @title = "Select Product" })
-                                    </div>
-                                    @*<div class="col-lg-3 col-sm-6 col-xs-10 for_btn sm-bot2">*@
-                                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 col-xxs-12 lg-nopaddingright md-nopaddingright sm-mbot1 xs-mbot1 xxs-mbot2">
-                                        @Html.DropDownList("ReportType", (IEnumerable<SelectListItem>)ViewBag.ReportType, new { @class = "form-control chosen-select", @title = "Select Report Type" })
-                                    </div>
-                                    @*<div class="col-lg-6 col-md-6 col-sm-12 col-xs-10 for_btn">*@
-                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 col-xxs-12 sm-clear sm-center xs-clear xs-center xxs-center" >
-                                        <button id="btnSearch" class="btn btn-success" type="button">Search</button>
-                                        <button class="btn btn-danger" id="btnReset" type="button">Reset</button>
-                                        <button id="btnExport" class="btn btn-success" type="button">Export</button>
-
-                                    </div>
-
+        <div class="col-lg-12 col-sm-12 col-xs-12 rep-box">*@
+                        <div class="row mbot05 sm-mbot1 xs-mbot1 xxs-mbot2">
+                            @*<div class="col-lg-3 col-md-3 col-sm-6 col-xs-10 for_btn">*@
+                            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 col-xxs-12 mbot05 md-mbot1  sm-mbot1 xs-mbot1 xxs-mbot2 lg-nopaddingright md-nopaddingright">
+                                @Html.DropDownList("UtilityId", (IEnumerable<SelectListItem>)ViewBag.UtilityListItem, new { @class = "form-control chosen-select" })
+                            </div>
+                            @*<div class="col-lg-3 col-md-3 col-sm-6 col-xs-10 for_btn">*@
+                            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 col-xxs-12 mbot05 md-mbot1  sm-mbot1 xs-mbot1 xxs-mbot2 lg-nopaddingright md-nopaddingright">
+                                @Html.DropDownList("ProjectId", (IEnumerable<SelectListItem>)ViewBag.ProjectList, new { @class = "form-control chosen-select", @title = "Select Project" })
+                            </div>
+                            @*<div class="col-lg-3 col-md-3 col-sm-6 col-xs-10 nopadding box1 sm-bot2 for_btn">*@
+                            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 col-xxs-12 nopadding mbot05 md-mbot1 sm-mbot1 xs-mbot1 xxs-mbot2 ">
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 col-xxs-6 lg-nopaddingright md-nopaddingright">
+                                    <input type="text" readonly name="FromDate" placeholder="From Date" id="txtFromDate" class="inputclass form-control date_form_nw" value="" />
                                 </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 col-xxs-6 lg-nopaddingright md-nopaddingright">
+                                    <input type="text" readonly name="ToDate" placeholder="To Date" id="txtToDate" value="" class="inputclass form-control date_form_nw1" />
+                                </div>
+                            </div>
+                            @*<div class="col-lg-3 col-md-3 col-sm-6 col-xs-10 for_btn">*@
+                            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 col-xxs-12 mbot05 md-mbot1  sm-mbot1 xs-mbot1 xxs-mbot2">
+                                <select id="InstallerId" name="InstallerId" class="form-control chosen-select" title="Select Installer/Manager"></select>
+                                @*@Html.DropDownList("InstallerId", (IEnumerable<SelectListItem>)ViewBag.installerList, new { @class = "form-control chosen-select", @title = "Select Installer/Manager" })*@
+                            </div>
+                            @*<div class="col-lg-3 col-sm-6 col-xs-10 for_btn">
+                @Html.DropDownList("CategoryId", (IEnumerable<SelectListItem>)ViewBag.categoryList, new { @class = "form-control chosen-select", @title = "Select Category" })
+            </div>*@
+                            @*</div>
 
-                            @*</div>*@
-                            @*<div class="col-lg-12 col-sm-12 col-xs-12 ">
-                                <div class="row">*@
-                                    <div class="table-responsive  rep_dyn_table">
-                                        <div id="divDetail" style="display:none">
-
-                                            <table id="dynamic-table" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Installer/Manager Name</th>
-                                                        <th>Category</th>
-                                                        <th>Product Name</th>
-                                                        <th>Serial Number</th>
-                                                        <th width="10%">Scanned Inventory</th>
-                                                        <th width="10%">Installed Inventory</th>
-                                                        <th width="10%">Transferred Inventory</th>
-                                                        <th width="10%">Returned Inventory</th>
-                                                        <th width="10%">Inventory InHand</th>
-                                                    </tr>
-                                                </thead>
-                                            </table>
-
-                                        </div>
-
-                                        <div id="divSummary">
-                                            <table id="dynamic-table-Summary" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Installer/Manager Name</th>
-                                                        <th>Category</th>
-                                                        <th>Product Name</th>
-                                                        <th width="10%">Opening Inventory</th>
-                                                        <th width="10%">Scanned Inventory</th>
-                                                        <th width="10%">Installed Inventory</th>
-                                                        <th width="10%">Transferred Inventory</th>
-                                                        <th width="10%">Returned Inventory</th>
-                                                        <th width="10%">Inventory InHand</th>
-                                                    </tr>
-                                                </thead>
-                                            </table>
-
-                                        </div>
-                                    </div>
-                                @*</div>
+            <div class="row" style="padding-top:8px;">*@
 
 
-                            </div>*@
+                            @*<div class="col-lg-3 col-sm-6 col-xs-10 for_btn sm-bot2 ">*@
+                            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 col-xxs-12 lg-nopaddingright md-nopaddingright sm-mbot1 xs-mbot1 xxs-mbot2">
+                                @Html.DropDownList("ProductId", (IEnumerable<SelectListItem>)ViewBag.productList, new { @class = "form-control chosen-select", @title = "Select Product" })
+                            </div>
+                            @*<div class="col-lg-3 col-sm-6 col-xs-10 for_btn sm-bot2">*@
+                            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 col-xxs-12 lg-nopaddingright md-nopaddingright sm-mbot1 xs-mbot1 xxs-mbot2">
+                                @Html.DropDownList("ReportType", (IEnumerable<SelectListItem>)ViewBag.ReportType, new { @class = "form-control chosen-select", @title = "Select Report Type" })
+                            </div>
+                            @*<div class="col-lg-6 col-md-6 col-sm-12 col-xs-10 for_btn">*@
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 col-xxs-12 sm-clear sm-center xs-clear xs-center xxs-center">
+                                <button id="btnSearch" class="btn btn-success" type="button">Search</button>
+                                <button class="btn btn-danger" id="btnReset" type="button">Reset</button>
+                                <button id="btnExport" class="btn btn-success" type="button">Export</button>
+
+                            </div>
+
+
+                        </div>
+                        <div id="divCompleteUpload" style="display:none;margin-top:6px;width:100%;overflow:hidden;">
+                            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:13px;max-width:100%;">
+                                <span style="font-weight:600;color:#2c3e50;white-space:nowrap;">
+                                    Completed Inventory:
+                                </span>
+
+                                <input type="file"
+                                       id="completedInventoryFile"
+                                       accept=".xlsx,.xls,.csv"
+                                       style="font-size:12px;height:21px;max-width:260px;overflow:hidden;" />
+
+                                <button id="btnUploadCompletedInventory"
+                                        type="button"
+                                        class="btn btn-info btn-sm"
+                                        style="padding:4px 10px;font-size:12px;line-height:1.2;">
+                                    <i class="fa fa-upload"></i> Upload
+                                </button>
+                                <button id="btnSubmitCompletedInventory"
+                                        type="button"
+                                        class="btn btn-success btn-sm"
+                                        style="display:none;padding:4px 10px;font-size:12px;">
+                                    <i class="fa fa-check"></i> Compare
+                                </button>
+                                <button id="btnDownloadMatchedCsv"
+                                        class="btn btn-success btn-sm"
+                                        style="display:none;">
+                                    <i class="fa fa-download"></i> Download Inventory Report
+                                </button>
+
+                            </div>
+                        </div>
+
+                        @*</div>*@
+                        @*<div class="col-lg-12 col-sm-12 col-xs-12 ">
+        <div class="row">*@
+                        <div class="table-responsive  rep_dyn_table">
+                            <div id="divDetail" style="display:none">
+
+                                <table id="dynamic-table" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                                    <thead>
+                                        <tr>
+                                            <th>Installer/Manager Name</th>
+                                            <th>Category</th>
+                                            <th>Product Name</th>
+                                            <th>Serial Number</th>
+                                            <th width="10%">Scanned Inventory</th>
+                                            <th width="10%">Installed Inventory</th>
+                                            <th width="10%">Transferred Inventory</th>
+                                            <th width="10%">Returned Inventory</th>
+                                            <th width="10%">Inventory InHand</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+
+                            </div>
+
+                            <div id="divSummary">
+                                <table id="dynamic-table-Summary" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                                    <thead>
+                                        <tr>
+                                            <th>Installer/Manager Name</th>
+                                            <th>Category</th>
+                                            <th>Product Name</th>
+                                            <th width="10%">Opening Inventory</th>
+                                            <th width="10%">Scanned Inventory</th>
+                                            <th width="10%">Installed Inventory</th>
+                                            <th width="10%">Transferred Inventory</th>
+                                            <th width="10%">Returned Inventory</th>
+                                            <th width="10%">Inventory InHand</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+
+                            </div>
+                        </div>
+                        @*</div>
+
+
+        </div>*@
                         @*</div>*@
                     </div>
                 </section>
@@ -1263,6 +1303,10 @@
 <script src="~/Scripts/js/jquery-ui.js"></script>
 
 <script type="text/javascript">
+    var completedSerialSet = new Set();      // uploaded file serials
+    var lastCompareMatched = [];            // matched serials
+    var lastCompareUnmatched = [];          // unmatched serials (optional)
+
     $(document).ready(function () {
 
         $("#InventoryReports").addClass('active');
@@ -1636,28 +1680,518 @@
     })
 
     $("#btnReset").click(function () {
-        debugger;
-        //$("#ProjectId").val('0').trigger("chosen:updated");
-        //$("#InstallerId").val('0').trigger("chosen:updated");
-        //$("#CategoryId").val('0').trigger("chosen:updated");
 
-
+        // Reset dropdowns
         $("#UtilityId").val('0').trigger("chosen:updated");
         $('#ProjectId').empty().trigger('chosen:updated');
         $('#ProductId').empty().trigger('chosen:updated');
         $('#InstallerId').empty().trigger('chosen:updated');
 
-        //$("#ProductId").val('0').trigger("chosen:updated");
-
-        //$("#CategoryId").trigger("change");
-
+        // Reset date
         var todayDate = new Date();
         $("#txtFromDate").datepicker("setDate", todayDate);
         $("#txtToDate").datepicker("setDate", todayDate);
 
-        $('#dynamic-table').dataTable().fnClearTable();//clear the DataTable
-        $('#dynamic-table-Summary').dataTable().fnClearTable();//clear the DataTable
+        // Clear DataTables
+        $('#dynamic-table').DataTable().clear().draw();
+        $('#dynamic-table-Summary').DataTable().clear().draw();
+
         $("#divDetail").hide();
         $("#divSummary").show();
-    })
+
+        // ✅ Hide complete upload section
+        $("#divCompleteUpload").hide();
+
+        // ✅ Clear file input
+        $("#completedInventoryFile").val('');
+
+        // ✅ Hide compare & download buttons
+        $("#btnSubmitCompletedInventory").hide();
+        $("#btnDownloadMatchedCsv").hide();
+
+        // ✅ Reset comparison data
+        completedSerialSet = new Set();
+        lastCompareGreen = [];
+        lastCompareYellow = [];
+        lastCompareRed = [];
+
+    });
+
+
+    $("#ProjectId").change(function () {
+
+        // ---------- NEW LOGIC (SHOW/HIDE UPLOAD UI) ----------
+        var projectId = $("#ProjectId").val();
+
+        if (projectId == "10135") {
+            $("#divCompleteUpload").show();
+        } else {
+            $("#divCompleteUpload").hide();
+            $("#completedInventoryFile").val('');
+        }
+        // ----------------------------------------------------
+
+        // ---------- EXISTING CODE (DO NOT REMOVE) ----------
+        $('#ProductId').empty().trigger('chosen:updated');
+        $('#InstallerId').empty().trigger('chosen:updated');
+
+        waitingDialog.show('Please Wait...');
+        var urlGetInstallerByProjectId = $("#urlGetInstallerByProjectId").val();
+
+        $.ajax({
+            type: 'GET',
+            data: { ProjectId: projectId },
+            async: true,
+            url: urlGetInstallerByProjectId,
+            success: function (data) {
+
+                waitingDialog.hide();
+
+                if (data.statusMessage.Success) {
+
+                    // Installer dropdown
+                    $('#InstallerId').empty();
+                    var count = data.installerList.length;
+
+                    if (count > 0) {
+                        $.each(data.installerList, function (index, item) {
+                            if (index == 0) {
+                                $('#InstallerId').append(
+                                    $('<option></option>').val('0').text("All Installers/Managers")
+                                );
+                            }
+                            $('#InstallerId').append(
+                                $('<option></option>').val(item.UserId).html(item.UserName)
+                            );
+                        });
+                    }
+                    $('#InstallerId').trigger('chosen:updated');
+
+                    // Product dropdown
+                    $('#ProductId').empty();
+                    if (data.ProductList != null) {
+                        $.each(data.ProductList, function (index, item) {
+                            if (index == 0) {
+                                $('#ProductId').append(
+                                    $('<option></option>').val('0').html("")
+                                );
+                            }
+                            $('#ProductId').append(
+                                $('<option></option>').val(item.Id).html(item.FieldValue)
+                            );
+                        });
+                    }
+                    $('#ProductId').trigger('chosen:updated');
+
+                } else {
+                    toastr.error(data.Message, "Notification !");
+                }
+            },
+            error: function (jqXHR, textStatus) {
+                waitingDialog.hide();
+                console.log("error " + textStatus);
+                toastr.error("something seems wrong", "Notification");
+            }
+        });
+        // ----------------------------------------------------
+    });
+
+
+    $("#btnUploadCompletedInventory").click(function () {
+
+        var file = $("#completedInventoryFile")[0].files[0];
+
+        if (!file) {
+            toastr.error("Please select Excel or CSV file");
+            return;
+        }
+
+        var formData = new FormData();
+        formData.append("file", file);
+        formData.append("projectId", $("#ProjectId").val());
+
+        waitingDialog.show("Uploading...");
+
+        $.ajax({
+            url: '/Admin/InventryStockReport/UploadCompletedInventory',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (res) {
+                waitingDialog.hide();
+
+                if (res.success) {
+                    toastr.success("File uploaded & inventory matched");
+                    LoadDatatable(); // reload report
+                } else {
+                    toastr.error(res.message);
+                }
+            },
+            error: function () {
+                waitingDialog.hide();
+                toastr.error("Upload failed");
+            }
+        });
+    });
+
+    let completedInventoryList = [];
+
+    $("#completedInventoryFile").on("change", function () {
+        if (this.files.length > 0) {
+            $("#btnSubmitCompletedInventory").show();
+        } else {
+            $("#btnSubmitCompletedInventory").hide();
+        }
+    });
+
+    function readCSVFile(file, callback) {
+        let reader = new FileReader();
+        reader.onload = function (e) {
+            let lines = e.target.result.split(/\r\n|\n/);
+            let data = [];
+
+            lines.forEach(function (line) {
+                if (line.trim() !== "") {
+                    data.push(line.trim());
+                }
+            });
+
+            callback(data);
+        };
+        reader.readAsText(file);
+    }
+
+    $("#btnSubmitCompletedInventory").click(function () {
+
+        var projectId = $("#ProjectId").val();
+        if (projectId !== "10135") {
+            toastr.error("Allowed only for Project 10143");
+            return;
+        }
+
+        waitingDialog.show("Comparing...");
+
+        $.ajax({
+            url: '/Admin/InventryStockReport/GetCompletedInventoryForCompare',
+            type: 'POST',
+            data: { projectId: projectId },
+            success: function (res) {
+                waitingDialog.hide();
+
+                if (!res.success) { toastr.error(res.message); return; }
+
+                completedSerialSet = new Set(
+                    res.inventoryList.map(normalizeSerial).filter(x => x)
+                );
+
+                // NEW
+                completedConsumableMap = res.consumableList || {};
+
+                completedProductQtyMap = {};
+                (res.productQtyList || []).forEach(function (x) {
+                    completedProductQtyMap[normalizeProduct(x.product)] = Number(x.qty || 0);
+                });
+
+                applyCorrectComparison();
+                toastr.success("Compare completed successfully");
+            }
+        });
+    });
+
+
+
+
+    function highlightMatchedInventory() {
+
+        let table = $('#dynamic-table').DataTable();
+
+        table.rows().every(function () {
+            let row = this.node();
+            let rowData = this.data();
+
+            let serialNumber = rowData.SerialNumber
+                ? rowData.SerialNumber.toString().trim()
+                : "";
+
+            if (completedInventoryList.includes(serialNumber)) {
+                $(row).css("background-color", "#d4edda"); // GREEN
+            }
+        });
+    }
+
+    function normalizeSerial(v) {
+        if (!v) return "";
+        return v.toString().trim().replace(/\s+/g, "").toUpperCase();
+    }
+           
+    function showCompareResultPopup(g, y, r) {
+
+        var html = "";
+
+        lastCompareConsumable.forEach(function (x) {
+            var parts = x.split("|");
+            html += "<div>" + parts[1] +
+                " → " + parts[2] +
+                " (Qty: " + parts[3] + ")</div>";
+        });
+
+        $.confirm({
+            title: 'Compare Result',
+            content:
+                "<div>" +
+                "<b>Serial Matched:</b> " + lastCompareGreen.length + "<br>" +
+                "<b>Serial System Only:</b> " + lastCompareYellow.length + "<br>" +
+                "<b>Serial File Only:</b> " + lastCompareRed.length + "<hr>" +
+                "<b>Consumable Matched:</b> " + g + "<br>" +
+                "<b>Consumable System Only:</b> " + y + "<br>" +
+                "<b>Consumable Mismatch/File Only:</b> " + r + "<hr>" +
+                html +
+                "</div>"
+        });
+    }
+
+
+
+    $('#dynamic-table').on('draw.dt', function () {
+        if (completedSerialSet && completedSerialSet.size > 0) {
+            highlightMatchedRows();
+        }
+    });
+
+
+    function getAllSystemSerials() {
+        var dt = $('#dynamic-table').DataTable();
+        var systemSet = new Set();
+
+        dt.rows({ search: 'applied' }).every(function () {
+            var d = this.data();
+            var s = normalizeSerial(d.SerialNumber);
+            if (s) systemSet.add(s);
+        });
+
+        return systemSet;
+    }
+    var systemProductQtyMap = {};
+    function applyCorrectComparison() {
+
+        var systemSerialSet = getAllSystemSerials();
+        systemProductQtyMap = getSystemProductQtyMap();   // IMPORTANT
+
+        lastCompareGreen = [];
+        lastCompareYellow = [];
+        lastCompareRed = [];
+        lastCompareConsumable = [];
+
+        // ---------------- SERIAL ----------------
+        completedSerialSet.forEach(function (s) {
+            if (systemSerialSet.has(s))
+                lastCompareGreen.push(s);
+            else
+                lastCompareRed.push(s);
+        });
+
+        systemSerialSet.forEach(function (s) {
+            if (!completedSerialSet.has(s))
+                lastCompareYellow.push(s);
+        });
+
+        // ---------------- CONSUMABLE ----------------
+        var allProducts = new Set([
+            ...Object.keys(systemProductQtyMap),
+            ...Object.keys(completedProductQtyMap)
+        ]);
+
+        var consumableGreen = 0;
+        var consumableYellow = 0;
+        var consumableRed = 0;
+
+        allProducts.forEach(function (p) {
+
+            var sysQty = Number(systemProductQtyMap[p] || 0);
+            var fileQty = Number(completedProductQtyMap[p] || 0);
+
+            var status = "";
+
+            // ✅ EXACT MATCH FIRST
+            if (sysQty === fileQty) {
+                status = "MATCHED";
+                consumableGreen++;
+            }
+            else if (sysQty > 0 && fileQty === 0) {
+                status = "SYSTEM_ONLY";
+                consumableYellow++;
+            }
+            else if (fileQty > 0 && sysQty === 0) {
+                status = "FILE_ONLY";
+                consumableRed++;
+            }
+            else {
+                status = "MISMATCH";
+                consumableRed++;
+            }
+
+            lastCompareConsumable.push(
+                "CONSUMABLE|" + p + "|" + status + "|" + sysQty + "|" + fileQty
+            );
+        });
+
+        $("#btnDownloadMatchedCsv").show();
+
+        highlightRows();
+        showCompareResultPopup(consumableGreen, consumableYellow, consumableRed);
+    }
+
+    function highlightMatchedRows(systemSet) {
+
+        var dt = $('#dynamic-table').DataTable();
+
+        dt.rows({ page: 'current' }).every(function () {
+            var rowData = this.data();
+            var serial = normalizeSerial(rowData.SerialNumber);
+
+            var $tr = $(this.node());
+
+            // pehle old classes clear karo
+            $tr.removeClass('match-green notmatch-yellow');
+
+            // agar file upload hi nahi hui to kuch mat karo
+            if (!completedSerialSet || completedSerialSet.size === 0) return;
+
+            // ✅ matched = green
+            if (completedSerialSet.has(serial)) {
+                $tr.addClass('match-green');
+            }
+            // ✅ not matched = yellow
+            else {
+                $tr.addClass('notmatch-yellow');
+            }
+        });
+    }
+
+
+    $("#btnDownloadMatchedCsv").off("click").on("click", function () {
+
+        if (
+            (!lastCompareGreen || lastCompareGreen.length === 0) &&
+            (!lastCompareYellow || lastCompareYellow.length === 0) &&
+            (!lastCompareRed || lastCompareRed.length === 0) &&
+            (!lastCompareConsumable || lastCompareConsumable.length === 0)
+        ) {
+            toastr.error("No comparison data to download");
+            return;
+        }
+
+        var form = $('<form method="POST" action="/Admin/InventryStockReport/DownloadComparisonExcel"></form>');
+
+        form.append($('<input type="hidden" name="projectId">').val($("#ProjectId").val()));
+        form.append($('<input type="hidden" name="greenJson">').val(JSON.stringify(lastCompareGreen)));
+        form.append($('<input type="hidden" name="yellowJson">').val(JSON.stringify(lastCompareYellow)));
+        form.append($('<input type="hidden" name="redJson">').val(JSON.stringify(lastCompareRed)));
+        form.append($('<input type="hidden" name="consumablePurpleJson">').val(JSON.stringify(lastCompareConsumable)));
+
+        $('body').append(form);
+        form.submit();
+        form.remove();
+    });
+          
+    var lastCompareGreen = [];
+    var lastCompareYellow = [];
+    var lastCompareRed = [];
+    var lastCompareConsumable = [];
+    var completedSerialSet = new Set();
+    var completedProductQtyMap = {};   // { PRODUCTNAME: qty }
+    var lastCompareGreen = [];
+    var lastCompareYellow = [];
+    var lastCompareRed = [];
+    var lastConsumablePurple = [];
+ 
+
+    function getSystemProductQtyMap() {
+        var dt = $('#dynamic-table').DataTable();
+        var map = {}; // PRODUCT -> TOTAL INHAND (ONLY CONSUMABLE rows)
+
+        dt.rows({ search: 'applied' }).every(function () {
+            var d = this.data();
+
+            // ✅ consumable rows = serial blank/null
+            var serial = normalizeSerial(d.SerialNumber);
+            if (serial) return; // serial rows skip
+
+            var product = normalizeProduct(d.ProductName);
+            if (!product) return;
+
+            // ✅ IMPORTANT: Use Inventory InHand (NOT scanned)
+            var inhand =
+                Number(d.InHandQty ?? d.InventoryInHand ?? d.InHandInventory ?? d.InHand ?? 0);
+
+            if (!map[product]) map[product] = 0;
+            map[product] += inhand;
+        });
+
+        return map;
+    }
+    function normalizeProduct(v) {
+        if (!v) return "";
+        return v.toString()
+            .trim()
+            .replace(/\s+/g, " ")
+            .toUpperCase();
+    }
+
+    function highlightRows() {
+
+        var dt = $('#dynamic-table').DataTable();
+
+        dt.rows().every(function () {
+
+            var d = this.data();
+            var $row = $(this.node());
+
+            // clear old styling
+            $row.removeClass('match-green notmatch-yellow');
+            $row.css("background-color", "");
+
+            var serialRaw = d.SerialNumber;
+            var serial = normalizeSerial(serialRaw);
+
+            // ================= SERIAL ROW =================
+            // Important: serial must not be null/empty string
+            if (serialRaw && serialRaw.toString().trim() !== "") {
+
+                if (completedSerialSet.has(serial)) {
+                    $row.addClass('match-green');   // GREEN
+                } else {
+                    $row.addClass('notmatch-yellow');  // YELLOW
+                }
+                return;
+            }
+
+            // ================= CONSUMABLE ROW =================
+            var product = normalizeProduct(d.ProductName);
+
+            var sysQty = Number(systemProductQtyMap[product] ?? 0);
+            var fileQty = Number(completedProductQtyMap[product] ?? 0);
+
+            console.log("Consumable:", product, "SYS:", sysQty, "FILE:", fileQty);
+
+            // ✅ Exact match (even if 0)
+            if (sysQty === fileQty) {
+                $row.addClass('match-green'); // GREEN
+            }
+            // System only
+            else if (sysQty > 0 && fileQty === 0) {
+                $row.addClass('notmatch-yellow'); // YELLOW
+            }
+            // File only
+            else if (fileQty > 0 && sysQty === 0) {
+                $row.css("background-color", "#f8d7da"); // RED
+            }
+            // Mismatch
+            else {
+                $row.css("background-color", "#f8d7da"); // RED
+            }
+        });
+    }
+
 </script>

@@ -51,6 +51,7 @@ $(document).ready(function () {
 
 
 
+    // Start date picker - when selected, sets the minimum date for the end date picker
     $("#datepicker1").datepicker({
         dateFormat: 'M-dd-yy',
         //numberOfMonths: 2,
@@ -58,20 +59,19 @@ $(document).ready(function () {
         changeYear: true,
         showButtonPanel: true,
         onSelect: function (selected) {
-            var dt = new Date(selected);
-            dt.setDate(dt.getDate());
-            $("#datepicker2").datepicker("option", "minDate", dt);
+            var selectedDate = new Date(selected);
+            $("#datepicker2").datepicker("option", "minDate", selectedDate);
         }
     });
+    // End date picker - when selected, sets the maximum date for the start date picker
     $("#datepicker2").datepicker({
         dateFormat: 'M-dd-yy',
         changeMonth: true,
         changeYear: true,
         showButtonPanel: true,
         onSelect: function (selected) {
-            var dt = new Date(selected);
-            dt.setDate(dt.getDate());
-            $("#datepicker1").datepicker("option", "maxDate", dt);
+            var selectedDate = new Date(selected);
+            $("#datepicker1").datepicker("option", "maxDate", selectedDate);
         }
     });
 

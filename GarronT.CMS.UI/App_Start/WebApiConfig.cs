@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Http;
-using System.Web.Mvc;
-using System.Web.Routing;
+﻿using System.Web.Http;
 
 namespace GarronT.CMS.UI
 {
@@ -12,14 +6,21 @@ namespace GarronT.CMS.UI
     {
         public static void Register(HttpConfiguration config)
         {
-            // Web API routes
+            // Enable attribute routing
             config.MapHttpAttributeRoutes();
-            config.Routes.MapHttpRoute("DefaultApiWithAction", "Api/{controller}/{action}");
-            //config.Routes.MapHttpRoute(
-            //    name: "DefaultApi",
-            //    routeTemplate: "api/{controller}/{id}",
-            //    defaults: new { id = RouteParameter.Optional }
-            //);
+
+            // Route with action name
+            config.Routes.MapHttpRoute(
+                name: "DefaultApiWithAction",
+                routeTemplate: "Api/{controller}/{action}"
+            );
+
+            // Default REST-style route
+            config.Routes.MapHttpRoute(
+                name: "DefaultApi",
+                routeTemplate: "api/{controller}/{id}",
+                defaults: new { id = RouteParameter.Optional }
+            );
         }
     }
 }
