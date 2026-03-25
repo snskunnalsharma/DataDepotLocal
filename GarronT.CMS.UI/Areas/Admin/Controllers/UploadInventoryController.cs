@@ -205,7 +205,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 DataTable inventoryDataTable = ValidateUploadedExcel(Convert.ToString(fileStream.Name));
 
                 long UtilityId;
-                var checkColumnHeader = CheckDataTableColumns(ref inventoryDataTable);
+                long projectId = Convert.ToInt64(ProjectId);
+                var checkColumnHeader = CheckDataTableColumns(ref inventoryDataTable, projectId);
 
                 if (inventoryDataTable == null || inventoryDataTable.Rows.Count == 0)
                 {
@@ -220,9 +221,24 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     List<UploadInventoryBO> productModelList = new List<UploadInventoryBO>();
                     #region Check product exist in master
 
+                    //long projectId = Convert.ToInt64(ProjectId);
                     using (InventoryDAL objDAL = new InventoryDAL())
                     {
                         productModelList = objDAL.CheckProductMakeTypeSizeExist(inventoryDataTable, ProjectId, WarehouseId, out UtilityId);
+                     
+
+                        // 🔥 LOCATION OVERRIDE LOGIC
+                        foreach (var item in productModelList)
+                        {
+                            if (projectId == 10136)
+                            {
+                                item.Location = string.IsNullOrEmpty(item.TrayId) ? item.Location : item.TrayId;
+                            }
+                            else if (projectId == 10135)
+                            {
+                                item.Location = string.IsNullOrEmpty(item.PONumber) ? item.Location : item.PONumber;
+                            }
+                        }
                     }
 
                     #region validList
@@ -522,78 +538,96 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         /// <param name="objDataTable"></param>
         /// <param name="columnMessage"></param>
         /// <returns></returns>
-        private bool CheckDataTableColumns(ref DataTable objDataTable)
+        private bool CheckDataTableColumns(ref DataTable objDataTable, long projectId)
         {
+            var columnNamList = objDataTable.Columns.Cast<DataColumn>()
+                .Select(x => x.ColumnName.Trim())
+                .ToList();
 
-            var columnNamList = objDataTable.Columns.Cast<DataColumn>().Select(x => x.ColumnName.Trim()).ToList();
+            // ❌ DEBUG REMOVE KAR DIYA (IMPORTANT)
+            // string cols = string.Join(",", columnNamList);
+            // throw new Exception(cols);
 
-            var checkColumn = columnNamList.Where(o => o == "Utility Type").Count();
-            if (checkColumn == 0)
-            {
-                return false;
-            }
-            checkColumn = columnNamList.Where(o => o == "Category Name").Count();
-            if (checkColumn == 0)
-            {
-                return false;
-            }
-
-            checkColumn = columnNamList.Where(o => o == "Product Name").Count();
+            var checkColumn = columnNamList.Where(o => o.Trim().ToLower() == "utility type").Count();
             if (checkColumn == 0)
             {
                 return false;
             }
 
-            checkColumn = columnNamList.Where(o => o == "Part Number").Count();
+            checkColumn = columnNamList.Where(o => o.Trim().ToLower() == "category name").Count();
             if (checkColumn == 0)
             {
                 return false;
             }
 
-            checkColumn = columnNamList.Where(o => o == "UPC Code").Count();
+            checkColumn = columnNamList.Where(o => o.Trim().ToLower() == "product name").Count();
             if (checkColumn == 0)
             {
                 return false;
             }
 
-
-            checkColumn = columnNamList.Where(o => o == "Make").Count();
+            checkColumn = columnNamList.Where(o => o.Trim().ToLower() == "part number").Count();
             if (checkColumn == 0)
             {
                 return false;
             }
 
-
-            checkColumn = columnNamList.Where(o => o == "Type").Count();
+            checkColumn = columnNamList.Where(o => o.Trim().ToLower() == "upc code").Count();
             if (checkColumn == 0)
             {
                 return false;
             }
 
-            checkColumn = columnNamList.Where(o => o == "Size").Count();
+            checkColumn = columnNamList.Where(o => o.Trim().ToLower() == "make").Count();
             if (checkColumn == 0)
             {
                 return false;
             }
 
-            checkColumn = columnNamList.Where(o => o == "Serial Number").Count();
+            checkColumn = columnNamList.Where(o => o.Trim().ToLower() == "type").Count();
             if (checkColumn == 0)
             {
                 return false;
             }
 
-
-            checkColumn = columnNamList.Where(o => o == "Quantity").Count();
+            checkColumn = columnNamList.Where(o => o.Trim().ToLower() == "size").Count();
             if (checkColumn == 0)
             {
                 return false;
             }
 
-            checkColumn = columnNamList.Where(o => o == "Location").Count();
+            checkColumn = columnNamList.Where(o => o.Trim().ToLower() == "serial number").Count();
             if (checkColumn == 0)
             {
                 return false;
             }
+
+            checkColumn = columnNamList.Where(o => o.Trim().ToLower() == "quantity").Count();
+            if (checkColumn == 0)
+            {
+                return false;
+            }
+
+            // 🔥 Location check (dynamic)
+            if (projectId != 10136 && projectId != 10135)
+            {
+                checkColumn = columnNamList.Where(o => o.Trim().ToLower() == "location").Count();
+                if (checkColumn == 0)
+                {
+                    return false;
+                }
+            }
+
+            // ✅ OPTIONAL COLUMNS (ignore if missing)
+            checkColumn = columnNamList.Where(o => o.Trim().ToLower() == "inventory type").Count();
+
+            checkColumn = columnNamList.Where(o => o.Replace(".", "").Trim().ToLower() == "po number").Count();
+
+            checkColumn = columnNamList.Where(o => o.Trim().ToLower() == "manufacturer").Count();
+
+            checkColumn = columnNamList.Where(o => o.Trim().ToLower() == "pallet number").Count();
+
+            checkColumn = columnNamList.Where(o => o.Trim().ToLower() == "tray id").Count();
 
             return true;
         }

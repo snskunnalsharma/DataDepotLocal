@@ -117,6 +117,7 @@ namespace GarronT.CMS.Model
         public virtual DbSet<tblProjectFieldDataInventoryOutwardDetail> tblProjectFieldDataInventoryOutwardDetails { get; set; }
         public virtual DbSet<InventoryMobileUserStockRequestDetail> InventoryMobileUserStockRequestDetails { get; set; }
         public virtual DbSet<tblUser> tblUsers { get; set; }
+        public virtual DbSet<Missing_Inventory> Missing_Inventory { get; set; }
         public virtual DbSet<WarehouseUserRelation> WarehouseUserRelations { get; set; }
         public virtual DbSet<LowInventoryAlert> LowInventoryAlerts { get; set; }
         public virtual DbSet<InventoryUserSignOffDetail> InventoryUserSignOffDetails { get; set; }

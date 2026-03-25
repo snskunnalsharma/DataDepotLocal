@@ -16,6 +16,7 @@ using OfficeOpenXml.Style;
 using System.Drawing;
 using Newtonsoft.Json;
 using System.Data.SqlClient;
+using System.Text.RegularExpressions;
 
 namespace GarronT.CMS.UI.Areas.Admin.Controllers
 {
@@ -238,7 +239,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 {
                     //detail
                     ReportData = new InventoryDAL().GetInventryStockReport(projectId, installerId, ProductId, txtFromDate, txtToDate);
-                    
+
                     success = true;
                     return Json(new { success, ErrorMessage, ReportData }, JsonRequestBehavior.AllowGet);
                 }
@@ -342,8 +343,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         {
             try
             {
-                if (projectId != 10135)
-                    return Json(new { success = false, message = "This feature is enabled only for Project 10135." });
+                if (projectId != 10134)
+                    return Json(new { success = false, message = "This feature is enabled only for Project 10134." });
 
                 if (file == null || file.ContentLength == 0)
                     return Json(new { success = false, message = "No file uploaded." });
@@ -355,8 +356,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 return Json(new
                 {
                     success = true,
-                    serialCount = payload.Serials.Count,
-                    productCount = payload.ProductQty.Count
+                    serialCount = payload.SerialItems.Count,
+                    //productCount = payload.ProductQty.Count
                 });
             }
             catch (Exception ex)
@@ -370,19 +371,24 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         {
             try
             {
-                if (projectId != 10135)
-                    return Json(new { success = false, message = "Comparison allowed only for Project 10135." });
+                if (projectId != 10134)
+                    return Json(new { success = false, message = "Comparison allowed only for Project 10134." });
 
                 var payload = Session["CompletedInventory_" + projectId] as CompletedInventoryPayload;
 
-                if (payload == null || ((payload.Serials?.Count ?? 0) == 0 && (payload.ProductQty?.Count ?? 0) == 0))
+                if (payload == null)
                     return Json(new { success = false, message = "No uploaded inventory found." });
 
                 return Json(new
                 {
                     success = true,
-                    inventoryList = payload.Serials,
-                    productQtyList = payload.ProductQty.Select(x => new { product = x.Key, qty = x.Value }).ToList()
+                    inventoryList = payload.SerialItems.Select(x => new
+                    {
+                        productName = x.ProductName,
+                        serialNumber = x.SerialNumber,
+                        technicianName = x.TechnicianName,
+                        installerEmail = x.InstallerEmail
+                    }).ToList()
                 });
             }
             catch
@@ -411,6 +417,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         private List<string> ReadInventorySerialsFromExcel(HttpPostedFileBase file)
         {
             List<string> serials = new List<string>();
+
 
             using (var package = new ExcelPackage(file.InputStream))
             {
@@ -450,13 +457,54 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         }
 
 
-        private string NormalizeHeader(string value)
+        private string NormalizeHeader(string input)
         {
-            if (string.IsNullOrWhiteSpace(value)) return "";
-            return value.Replace("\uFEFF", "").Replace("\"", "").Trim().ToUpper();
+            if (string.IsNullOrWhiteSpace(input))
+                return "";
+
+            return input
+                .Replace("\uFEFF", "")
+                .Replace("\n", " ")
+                .Replace("\r", " ")
+                .Replace("\t", " ")
+                .Trim()
+                .ToUpper();
         }
 
-     
+        private string NormalizeHeaderKey(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input)) return "";
+
+            return new string(
+                input.Replace("\uFEFF", "")
+                     .Trim()
+                     .ToUpperInvariant()
+                     .Where(char.IsLetterOrDigit)
+                     .ToArray()
+            );
+        }
+
+        private bool IsMeterOrErtHeader(string headerKey)
+        {
+            return headerKey.Contains("METERNUMBER")
+                || headerKey.Contains("NEWMETERNUMBER")
+                || headerKey.Contains("ERTNUMBER")
+                || headerKey.Contains("NEWERTNUMBER");
+        }
+
+        private static readonly Regex EmailRegex = new Regex(
+            @"[A-Z0-9._%+\-]+@[A-Z0-9.\-]+\.[A-Z]{2,}",
+            RegexOptions.IgnoreCase | RegexOptions.Compiled
+        );
+
+        private string ExtractEmail(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text)) return "";
+            var m = EmailRegex.Match(text);
+            return m.Success ? m.Value.Trim() : "";
+        }
+
+
 
         private string NormalizeProduct(string v)
         {
@@ -491,7 +539,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 {
                     var h = NormalizeHeader(headers[i]);
                     if (h == "NEW METER NUMBER") idxNewMeter = i;
-                    if (h == "NEW ERT NUMBER" || h == "NEW ERT NUMBER ") idxNewErt = i; // safe
+                    if (h == "Meter NUMBER" || h == "METER NUMBER ") idxNewErt = i; // safe
                 }
 
                 if (idxNewMeter == -1 && idxNewErt == -1)
@@ -528,31 +576,46 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             using (var package = new ExcelPackage(file.InputStream))
             {
                 var ws = package.Workbook.Worksheets.First();
+
+                if (ws.Dimension == null)
+                    return serials;
+
                 int colCount = ws.Dimension.Columns;
                 int rowCount = ws.Dimension.Rows;
 
-                int idxNewMeter = -1;
-                int idxNewErt = -1;
+                int idxSerial = -1;   // 🔥 single index enough
 
+                // 🔥 HEADER DETECTION
                 for (int c = 1; c <= colCount; c++)
                 {
-                    var header = NormalizeHeader(ws.Cells[1, c].Text);
-                    if (header == "NEW METER NUMBER") idxNewMeter = c;
-                    if (header == "NEW ERT NUMBER") idxNewErt = c;
+                    var rawHeader = ws.Cells[1, c].Text;
+                    var header = NormalizeHeader(rawHeader);
+
+                    // DEBUG (optional)
+                    // throw new Exception("Header: " + header);
+
+                    if (
+                        header.Contains("METER") && header.Contains("NUMBER") ||
+                        header.Contains("ERT")
+                    )
+                    {
+                        idxSerial = c;
+                        break;
+                    }
                 }
 
-                if (idxNewMeter == -1 && idxNewErt == -1)
-                    throw new Exception("Required column not found. Need 'NEW METER NUMBER' or 'NEW ERT Number'.");
+                if (idxSerial == -1)
+                    throw new Exception("Meter/ERT Number column not found in completed inventory file.");
 
+                // 🔥 DATA READ
                 for (int r = 2; r <= rowCount; r++)
                 {
-                    string vMeter = (idxNewMeter > 0) ? ws.Cells[r, idxNewMeter].Text : null;
-                    string vErt = (idxNewErt > 0) ? ws.Cells[r, idxNewErt].Text : null;
+                    string value = ws.Cells[r, idxSerial].Text;
 
-                    var picked = !string.IsNullOrWhiteSpace(vMeter) ? vMeter : vErt;
-
-                    if (!string.IsNullOrWhiteSpace(picked))
-                        serials.Add(picked);
+                    if (!string.IsNullOrWhiteSpace(value))
+                    {
+                        serials.Add(value);
+                    }
                 }
             }
 
@@ -567,103 +630,103 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         {
             if (string.IsNullOrWhiteSpace(v)) return "";
 
-            return v
+            string clean = v
                 .Replace("\uFEFF", "")
                 .Replace("\"", "")
                 .Trim()
-                .Replace(" ", "")
-                .ToUpper();
+                .Replace(" ", "");
+
+            // only numeric values are zero-padded; alphanumeric serials are preserved
+            if (clean.All(char.IsDigit))
+                clean = clean.PadLeft(8, '0');
+
+            return clean.ToUpperInvariant();
         }
 
         [HttpPost]
         public ActionResult DownloadComparisonExcel(
-    long projectId,
-    string greenJson,
-    string yellowJson,
-    string redJson,
-    string consumablePurpleJson
-)
+     long projectId,
+     string greenJson,
+     string yellowJson,
+     string redJson
+ )
         {
-            var green = JsonConvert.DeserializeObject<List<string>>(greenJson ?? "[]");
-            var yellow = JsonConvert.DeserializeObject<List<string>>(yellowJson ?? "[]");
-            var red = JsonConvert.DeserializeObject<List<string>>(redJson ?? "[]");
-            var consumable = JsonConvert.DeserializeObject<List<string>>(consumablePurpleJson ?? "[]");
-
+            var green = JsonConvert.DeserializeObject<List<CompletedInventorySerialItem>>(greenJson ?? "[]");
+            var yellow = JsonConvert.DeserializeObject<List<CompletedInventorySerialItem>>(yellowJson ?? "[]");
+            var red = JsonConvert.DeserializeObject<List<CompletedInventorySerialItem>>(redJson ?? "[]");
             using (ExcelPackage pck = new ExcelPackage())
             {
                 ExcelWorksheet ws = pck.Workbook.Worksheets.Add("Inventory Comparison");
 
-                // HEADER
-                ws.Cells[1, 1].Value = "Item";
-                ws.Cells[1, 2].Value = "Status";
-                ws.Cells[1, 3].Value = "Remaining Qty";
+                ws.Cells[1, 1].Value = "Product Name";
+                ws.Cells[1, 2].Value = "Serial Number";
+                ws.Cells[1, 3].Value = "Technician";
+                ws.Cells[1, 4].Value = "Status";
+                ws.Cells[1, 5].Value = "Remaining Qty";
                 ws.Row(1).Style.Font.Bold = true;
 
                 int row = 2;
 
-                // ---------------- SERIAL MATCHED (GREEN) ----------------
-                foreach (var s in green)
+                string Normalize(string v)
                 {
-                    ws.Cells[row, 1].Value = s;
-                    ws.Cells[row, 2].Value = "MATCHED";
-                    ws.Cells[row, 3].Value = "";
+                    return (v ?? "")
+                        .Trim()
+                        .Replace(".", "")
+                        .Replace(" ", "")
+                        .ToUpper();
+                }
 
-                    ws.Cells[row, 1, row, 3].Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    ws.Cells[row, 1, row, 3].Style.Fill.BackgroundColor.SetColor(Color.LightGreen);
+                // ================= GREEN =================
+                foreach (var item in green)
+                {
+                    ws.Cells[row, 1].Value = item.ProductName ?? "";
+                    ws.Cells[row, 2].Value = item.SerialNumber ?? "";
+                    ws.Cells[row, 3].Value = item.TechnicianName ?? "";
+                    ws.Cells[row, 4].Value = "MATCHED";
+                    ws.Cells[row, 5].Value = 0;
+
+                    ws.Cells[row, 1, row, 5].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    ws.Cells[row, 1, row, 5].Style.Fill.BackgroundColor.SetColor(Color.LightGreen);
 
                     row++;
                 }
 
-                // ---------------- SERIAL SYSTEM ONLY (YELLOW) ----------------
-                foreach (var s in yellow)
+                // ================= YELLOW =================
+                foreach (var item in yellow)
                 {
-                    ws.Cells[row, 1].Value = s;
-                    ws.Cells[row, 2].Value = "SYSTEM_ONLY";
-                    ws.Cells[row, 3].Value = "";
+                    ws.Cells[row, 1].Value = item.ProductName ?? "";
+                    ws.Cells[row, 2].Value = item.SerialNumber ?? "";
+                    ws.Cells[row, 3].Value = item.TechnicianName ?? "";
+                    ws.Cells[row, 4].Value = "SYSTEM_ONLY";
+                    ws.Cells[row, 5].Value = 1;
 
-                    ws.Cells[row, 1, row, 3].Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    ws.Cells[row, 1, row, 3].Style.Fill.BackgroundColor.SetColor(Color.Yellow);
+                    ws.Cells[row, 1, row, 5].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    ws.Cells[row, 1, row, 5].Style.Fill.BackgroundColor.SetColor(Color.Yellow);
 
                     row++;
                 }
 
-                // ---------------- SERIAL FILE ONLY (RED) ----------------
-                foreach (var s in red)
+                // ================= RED / FILE_ONLY =================
+                var uniqueRed = red
+                    .Where(x => x != null && !string.IsNullOrWhiteSpace(x.SerialNumber))
+                    .GroupBy(x => Normalize(x.SerialNumber))
+                    .Select(g => g.First())
+                    .ToList();
+
+                foreach (var item in uniqueRed)
                 {
-                    ws.Cells[row, 1].Value = s;
-                    ws.Cells[row, 2].Value = "FILE_ONLY";
-                    ws.Cells[row, 3].Value = "";
+                    string serialNumber = Normalize(item.SerialNumber);
+                    string installerEmail = (item.InstallerEmail ?? "").Trim().ToUpper();
 
-                    ws.Cells[row, 1, row, 3].Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    ws.Cells[row, 1, row, 3].Style.Fill.BackgroundColor.SetColor(Color.LightCoral);
+                    ws.Cells[row, 1].Value = item.ProductName ?? "";
+                    ws.Cells[row, 2].Value = serialNumber;
+                    ws.Cells[row, 3].Value = item.TechnicianName ?? "";
+                    ws.Cells[row, 4].Value = "FILE_ONLY";
+                    ws.Cells[row, 5].Value = 1;
+                    ws.Cells[row, 6].Value = installerEmail;
 
-                    row++;
-                }
-
-                // ---------------- CONSUMABLE LOGIC ----------------
-                // CONSUMABLE
-                foreach (var x in consumable)
-                {
-                    var parts = (x ?? "").Split('|');
-                    if (parts.Length < 4) continue;
-
-                    var product = parts[1];
-                    var status = parts[2];
-                    int qty = 0;
-                    int.TryParse(parts[3], out qty);
-
-                    ws.Cells[row, 1].Value = product;
-                    ws.Cells[row, 2].Value = status;
-                    ws.Cells[row, 3].Value = qty;
-
-                    ws.Cells[row, 1, row, 3].Style.Fill.PatternType = ExcelFillStyle.Solid;
-
-                    if (status == "MATCHED")
-                        ws.Cells[row, 1, row, 3].Style.Fill.BackgroundColor.SetColor(Color.LightGreen);
-                    else if (status == "SYSTEM_ONLY")
-                        ws.Cells[row, 1, row, 3].Style.Fill.BackgroundColor.SetColor(Color.Yellow);
-                    else
-                        ws.Cells[row, 1, row, 3].Style.Fill.BackgroundColor.SetColor(Color.LightCoral);
+                    ws.Cells[row, 1, row, 6].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    ws.Cells[row, 1, row, 6].Style.Fill.BackgroundColor.SetColor(Color.LightCoral);
 
                     row++;
                 }
@@ -678,12 +741,116 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             }
         }
 
+        [HttpPost]
+        public JsonResult SaveMissingInventory(
+            long projectId,
+            string redJson
+        )
+        {
+            try
+            {
+                if (projectId != 10134)
+                    return Json(new { success = false, message = "Comparison allowed only for Project 10134." });
+
+                var red = JsonConvert.DeserializeObject<List<CompletedInventorySerialItem>>(redJson ?? "[]");
+
+                using (var db = new CompassEntities())
+                {
+                    string Normalize(string v)
+                    {
+                        return (v ?? "")
+                            .Trim()
+                            .Replace(".", "")
+                            .Replace(" ", "")
+                            .ToUpper();
+                    }
+
+                    // Deduplicate by normalized serial; only red/file-only rows persist into Missing_Inventory.
+                    var uniqueRed = red
+                        .Where(x => x != null && !string.IsNullOrWhiteSpace(x.SerialNumber))
+                        .GroupBy(x => Normalize(x.SerialNumber))
+                        .Select(g => g.First())
+                        .ToList();
+
+                    foreach (var item in uniqueRed)
+                    {
+                        string serialNumber = Normalize(item.SerialNumber);
+                        string installerEmail = (item.InstallerEmail ?? "").Trim().ToUpper();
+
+                        long? installerId = null;
+                        if (!string.IsNullOrWhiteSpace(installerEmail))
+                        {
+                            installerId = db.tblUsers
+                                .Where(x => x.Email != null && x.Email.Trim().ToUpper() == installerEmail)
+                                .Select(x => (long?)x.UserID)
+                                .FirstOrDefault();
+                        }
+
+                        var existing = db.Missing_Inventory.FirstOrDefault(x =>
+                            x.SerialNumber != null &&
+                            x.SerialNumber.Trim().ToUpper() == serialNumber
+                        );
+
+                        if (existing == null)
+                        {
+                            db.Database.ExecuteSqlCommand(
+                                @"INSERT INTO Missing_Inventory
+                                  (FKUserId, ProductName, SerialNumber, Qty, UserEmail, CreatedOn, CreatedBy, ModifiedOn, ModifiedBy)
+                                  VALUES
+                                  (@p0, @p1, @p2, @p3, @p4, @p5, @p6, NULL, NULL)",
+                                installerId.HasValue ? (object)installerId.Value : DBNull.Value,
+                                (object)(item.ProductName ?? ""),
+                                (object)serialNumber,
+                                1,
+                                string.IsNullOrWhiteSpace(installerEmail) ? (object)DBNull.Value : installerEmail,
+                                DateTime.Now,
+                                installerId.HasValue ? (object)installerId.Value : DBNull.Value
+                            );
+                        }
+                        else
+                        {
+                            db.Database.ExecuteSqlCommand(
+                                @"UPDATE Missing_Inventory
+                                  SET FKUserId = @p0,
+                                      UserEmail = @p1,
+                                      ModifiedOn = @p2,
+                                      ModifiedBy = @p3
+                                  WHERE Id = @p4",
+                                installerId.HasValue ? (object)installerId.Value : DBNull.Value,
+                                string.IsNullOrWhiteSpace(installerEmail) ? (object)DBNull.Value : installerEmail,
+                                DateTime.Now,
+                                installerId.HasValue ? (object)installerId.Value : DBNull.Value,
+                                existing.Id
+                            );
+                        }
+                    }
+
+                    db.SaveChanges();
+                }
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+        public class CompletedInventorySerialItem
+        {
+           
+            
+                public string ProductName { get; set; }
+                public string SerialNumber { get; set; }
+                public string TechnicianName { get; set; }
+                public string InstallerEmail { get; set; }   // ✅ ADD THIS
+            
+        }
+
         public class CompletedInventoryPayload
         {
-            public List<string> Serials { get; set; } = new List<string>();
+            public List<CompletedInventorySerialItem> SerialItems { get; set; } = new List<CompletedInventorySerialItem>();
 
-            // key = normalized product name, value = total quantity in file
-            public Dictionary<string, decimal> ProductQty { get; set; } = new Dictionary<string, decimal>();
+            //public Dictionary<string, decimal> ProductQty { get; set; } = new Dictionary<string, decimal>();
         }
 
         private CompletedInventoryPayload ReadCompletedInventoryFromFile(HttpPostedFileBase file)
@@ -706,139 +873,261 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             using (var reader = new System.IO.StreamReader(file.InputStream))
             {
                 string headerLine = reader.ReadLine();
-                if (string.IsNullOrWhiteSpace(headerLine)) return payload;
+                if (string.IsNullOrWhiteSpace(headerLine))
+                    return payload;
 
                 char delimiter = headerLine.Contains(";") ? ';' : ',';
                 var headers = headerLine.Split(delimiter);
 
-                int idxNewMeter = -1, idxNewErt = -1, idxSerial = -1;
-                int idxProduct = -1, idxQty = -1, idxType = -1;
+                int idxSerial = -1;
+                int idxEmail = -1;
+                string fileLevelInstallerEmail = ExtractEmail(headerLine);
 
                 for (int i = 0; i < headers.Length; i++)
                 {
-                    var h = NormalizeHeader(headers[i]);
+                    var key = NormalizeHeaderKey(headers[i]);
 
-                    if (h == "NEW METER NUMBER") idxNewMeter = i;
-                    if (h == "NEW ERT NUMBER") idxNewErt = i;
-                    if (h == "SERIAL NUMBER") idxSerial = i;
+                    if (IsMeterOrErtHeader(key))
+                        idxSerial = i;
 
-                    if (h == "PRODUCT NAME") idxProduct = i;
-                    if (h == "QUANTITY") idxQty = i;
-                    if (h == "TYPE") idxType = i;
+                    if (key.Contains("INSTALLER") || key.Contains("EMAIL"))
+                        idxEmail = i;
                 }
 
-                if (idxNewMeter == -1 && idxNewErt == -1 && idxSerial == -1 && (idxProduct == -1 || idxQty == -1))
-                    throw new Exception("Required columns not found. Need Serial columns OR (Product Name + Quantity).");
+                if (idxSerial == -1)
+                    throw new Exception("Meter Number column not found in completed inventory file.");
 
                 while (!reader.EndOfStream)
                 {
                     var line = reader.ReadLine();
-                    if (string.IsNullOrWhiteSpace(line)) continue;
+                    if (string.IsNullOrWhiteSpace(line))
+                        continue;
 
                     var cols = line.Split(delimiter);
 
-                    string type = (idxType >= 0 && cols.Length > idxType) ? NormalizeHeader(cols[idxType]) : "";
+                    string serial = (cols.Length > idxSerial) ? NormalizeSerialValue(cols[idxSerial]) : "";
+                    string email = (idxEmail >= 0 && cols.Length > idxEmail) ? ExtractEmail(cols[idxEmail]) : "";
 
-                    // ---------- SERIAL PICK ----------
-                    string vSerial = null;
-                    if (idxSerial >= 0 && cols.Length > idxSerial) vSerial = cols[idxSerial];
-                    if (string.IsNullOrWhiteSpace(vSerial) && idxNewMeter >= 0 && cols.Length > idxNewMeter) vSerial = cols[idxNewMeter];
-                    if (string.IsNullOrWhiteSpace(vSerial) && idxNewErt >= 0 && cols.Length > idxNewErt) vSerial = cols[idxNewErt];
+                    // fallback: if file carries one installer email in metadata/cell text
+                    if (string.IsNullOrWhiteSpace(email) && !string.IsNullOrWhiteSpace(fileLevelInstallerEmail))
+                        email = fileLevelInstallerEmail;
 
-                    vSerial = NormalizeSerialValue(vSerial);
-
-                    if (!string.IsNullOrWhiteSpace(vSerial))
+                    if (string.IsNullOrWhiteSpace(email))
                     {
-                        payload.Serials.Add(vSerial);
+                        // pick first email seen in row text (works for mixed cells like "Installer: x@y.com")
+                        email = ExtractEmail(line);
+                        if (!string.IsNullOrWhiteSpace(email) && string.IsNullOrWhiteSpace(fileLevelInstallerEmail))
+                            fileLevelInstallerEmail = email;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(serial))
                         continue;
-                    }
 
-                    // ---------- MISC / PRODUCT-QTY ----------
-                    // If serial blank, then treat as product+qty (especially for Miscellaneous)
-                    if (idxProduct >= 0 && idxQty >= 0 && cols.Length > idxProduct && cols.Length > idxQty)
+                    payload.SerialItems.Add(new CompletedInventorySerialItem
                     {
-                        var product = NormalizeProduct(cols[idxProduct]);
-                        var qty = ToDecimalSafe(cols[idxQty]);
-
-                        if (!string.IsNullOrWhiteSpace(product) && qty > 0)
-                        {
-                            if (!payload.ProductQty.ContainsKey(product)) payload.ProductQty[product] = 0;
-                            payload.ProductQty[product] += qty;
-                        }
-                    }
+                        ProductName = "",
+                        SerialNumber = serial,
+                        TechnicianName = "",
+                        InstallerEmail = email
+                    });
                 }
             }
 
-            payload.Serials = payload.Serials.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().ToList();
+            payload.SerialItems = payload.SerialItems
+                .Where(x => !string.IsNullOrWhiteSpace(x.SerialNumber))
+                .GroupBy(x => x.SerialNumber.Trim().ToUpper())
+                .Select(g => g.First())
+                .ToList();
+
             return payload;
         }
-
         private CompletedInventoryPayload ReadCompletedFromExcel(HttpPostedFileBase file)
         {
             var payload = new CompletedInventoryPayload();
 
             using (var package = new ExcelPackage(file.InputStream))
             {
-                var ws = package.Workbook.Worksheets.First();
-                int colCount = ws.Dimension.Columns;
-                int rowCount = ws.Dimension.Rows;
+                ExcelWorksheet targetSheet = null;
+                int headerRow = -1;
+                int idxSerial = -1;
+                int idxEmail = -1;
+                string fileLevelInstallerEmail = "";
+                bool foundBest = false;
 
-                int idxNewMeter = -1, idxNewErt = -1, idxSerial = -1;
-                int idxProduct = -1, idxQty = -1, idxType = -1;
-
-                for (int c = 1; c <= colCount; c++)
+                // scan all sheets and first 25 rows to find meter header
+                foreach (var ws in package.Workbook.Worksheets)
                 {
-                    var header = NormalizeHeader(ws.Cells[1, c].Text);
+                    if (ws.Dimension == null) continue;
 
-                    if (header == "NEW METER NUMBER") idxNewMeter = c;
-                    if (header == "NEW ERT NUMBER") idxNewErt = c;
-                    if (header == "SERIAL NUMBER") idxSerial = c;
+                    int rowCount = ws.Dimension.Rows;
+                    int colCount = ws.Dimension.Columns;
 
-                    if (header == "PRODUCT NAME") idxProduct = c;
-                    if (header == "QUANTITY") idxQty = c;
-                    if (header == "TYPE") idxType = c;
-                }
-
-                if (idxNewMeter == -1 && idxNewErt == -1 && idxSerial == -1 && (idxProduct == -1 || idxQty == -1))
-                    throw new Exception("Required columns not found. Need Serial columns OR (Product Name + Quantity).");
-
-                for (int r = 2; r <= rowCount; r++)
-                {
-                    string type = (idxType > 0) ? NormalizeHeader(ws.Cells[r, idxType].Text) : "";
-
-                    // ---------- SERIAL PICK ----------
-                    string vSerial = null;
-                    if (idxSerial > 0) vSerial = ws.Cells[r, idxSerial].Text;
-                    if (string.IsNullOrWhiteSpace(vSerial) && idxNewMeter > 0) vSerial = ws.Cells[r, idxNewMeter].Text;
-                    if (string.IsNullOrWhiteSpace(vSerial) && idxNewErt > 0) vSerial = ws.Cells[r, idxNewErt].Text;
-
-                    vSerial = NormalizeSerialValue(vSerial);
-
-                    if (!string.IsNullOrWhiteSpace(vSerial))
+                    for (int r = 1; r <= Math.Min(25, rowCount); r++)
                     {
-                        payload.Serials.Add(vSerial);
-                        continue;
-                    }
+                        int serialColTemp = -1;
+                        int emailColTemp = -1;
 
-                    // ---------- PRODUCT-QTY ----------
-                    if (idxProduct > 0 && idxQty > 0)
-                    {
-                        var product = NormalizeProduct(ws.Cells[r, idxProduct].Text);
-                        var qty = ToDecimalSafe(ws.Cells[r, idxQty].Text);
-
-                        if (!string.IsNullOrWhiteSpace(product) && qty > 0)
+                        for (int c = 1; c <= colCount; c++)
                         {
-                            if (!payload.ProductQty.ContainsKey(product)) payload.ProductQty[product] = 0;
-                            payload.ProductQty[product] += qty;
+                            string key = NormalizeHeaderKey(ws.Cells[r, c].Text);
+
+                            if (IsMeterOrErtHeader(key))
+                                serialColTemp = c;
+
+                            if (key.Contains("INSTALLER") || key.Contains("EMAIL"))
+                                emailColTemp = c;
+
+                            if (string.IsNullOrWhiteSpace(fileLevelInstallerEmail))
+                            {
+                                var detectedEmail = ExtractEmail(ws.Cells[r, c].Text);
+                                if (!string.IsNullOrWhiteSpace(detectedEmail))
+                                    fileLevelInstallerEmail = detectedEmail;
+                            }
+                        }
+
+                        if (serialColTemp != -1)
+                        {
+                            // Prefer header that has both serial + installer/email column
+                            if (emailColTemp != -1)
+                            {
+                                targetSheet = ws;
+                                headerRow = r;
+                                idxSerial = serialColTemp;
+                                idxEmail = emailColTemp;
+                                foundBest = true;
+                                break;
+                            }
+
+                            // fallback candidate (serial-only header)
+                            if (targetSheet == null)
+                            {
+                                targetSheet = ws;
+                                headerRow = r;
+                                idxSerial = serialColTemp;
+                                idxEmail = -1;
+                            }
                         }
                     }
+
+                    if (foundBest) break;
+                }
+
+                if (targetSheet == null || idxSerial == -1)
+                    throw new Exception("Meter Number column not found in completed inventory file.");
+
+                int totalRows = targetSheet.Dimension.Rows;
+                for (int r = headerRow + 1; r <= totalRows; r++)
+                {
+                    string serial = NormalizeSerialValue(targetSheet.Cells[r, idxSerial].Text);
+                    string email = "";
+
+                    if (idxEmail > 0)
+                        email = ExtractEmail(targetSheet.Cells[r, idxEmail].Text);
+
+                    if (string.IsNullOrWhiteSpace(email))
+                    {
+                        // fallback: detect email from row text
+                        for (int c = 1; c <= targetSheet.Dimension.Columns; c++)
+                        {
+                            email = ExtractEmail(targetSheet.Cells[r, c].Text);
+                            if (!string.IsNullOrWhiteSpace(email)) break;
+                        }
+                    }
+
+                    if (string.IsNullOrWhiteSpace(email))
+                        email = fileLevelInstallerEmail;
+
+                    if (string.IsNullOrWhiteSpace(serial))
+                        continue;
+
+                    payload.SerialItems.Add(new CompletedInventorySerialItem
+                    {
+                        ProductName = "",
+                        SerialNumber = serial,
+                        TechnicianName = "",
+                        InstallerEmail = email
+                    });
                 }
             }
 
-            payload.Serials = payload.Serials.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().ToList();
+            payload.SerialItems = payload.SerialItems
+                .Where(x => !string.IsNullOrWhiteSpace(x.SerialNumber))
+                .GroupBy(x => x.SerialNumber.Trim().ToUpperInvariant())
+                .Select(g => g.First())
+                .ToList();
+
             return payload;
         }
+        public JsonResult InstallMatchedInventory(int projectId, string serialList)
+        {
+            try
+            {
+                long userId = 0;
 
-        
+                if (Session["UserId"] != null)
+                    long.TryParse(Session["UserId"].ToString(), out userId);
+
+                var serials = JsonConvert.DeserializeObject<List<CompletedInventorySerialItem>>(serialList ?? "[]");
+
+                using (var db = new CompassEntities())
+                {
+                    var master = db.tblProjectFieldDataMasters
+                        .Where(x => x.Active == 1)
+                        .OrderByDescending(x => x.ID)
+                        .FirstOrDefault();
+
+                    if (master == null)
+                        return Json(new { success = false, message = "Master record not found." });
+
+                    long masterId = master.ID;
+
+                    InventoryDAL dal = new InventoryDAL();
+
+                    var userMapByEmail = db.tblUsers
+                        .Where(x => x.Active == 1 && x.Email != null)
+                        .AsEnumerable()
+                        .GroupBy(x => x.Email.Trim().ToUpper())
+                        .ToDictionary(
+                            g => g.Key,
+                            g => g.First().UserID
+                        );
+
+                    foreach (var item in serials.Where(x => x != null && !string.IsNullOrWhiteSpace(x.SerialNumber)))
+                    {
+                        string serial = item.SerialNumber.Trim();
+                        long installerUserId = userId;
+
+                        string installerEmail = (item.InstallerEmail ?? "").Trim().ToUpper();
+
+                        if (!string.IsNullOrEmpty(installerEmail) && userMapByEmail.ContainsKey(installerEmail))
+                        {
+                            installerUserId = userMapByEmail[installerEmail];
+                        }
+
+                        dal.MoveInventoryToInstalled(
+                            projectId,
+                            installerUserId,
+                            serial,
+                            masterId
+                        );
+                    }
+                }
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                string error = ex.Message;
+
+                if (ex.InnerException != null)
+                    error += " | " + ex.InnerException.Message;
+
+                if (ex.InnerException?.InnerException != null)
+                    error += " | " + ex.InnerException.InnerException.Message;
+
+                return Json(new { success = false, message = error });
+            }
+        }
+
     }
 }

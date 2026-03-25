@@ -1208,6 +1208,7 @@
                         </div>
                         <div id="divCompleteUpload" style="display:none;margin-top:6px;width:100%;overflow:hidden;">
                             <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:13px;max-width:100%;">
+
                                 <span style="font-weight:600;color:#2c3e50;white-space:nowrap;">
                                     Completed Inventory:
                                 </span>
@@ -1215,24 +1216,33 @@
                                 <input type="file"
                                        id="completedInventoryFile"
                                        accept=".xlsx,.xls,.csv"
-                                       style="font-size:12px;height:21px;max-width:260px;overflow:hidden;" />
+                                       style="font-size:16px;height:25px;max-width:310px;" />
 
                                 <button id="btnUploadCompletedInventory"
                                         type="button"
                                         class="btn btn-info btn-sm"
-                                        style="padding:4px 10px;font-size:12px;line-height:1.2;">
+                                        style="padding:4px 10px;font-size:12px;">
                                     <i class="fa fa-upload"></i> Upload
                                 </button>
+
                                 <button id="btnSubmitCompletedInventory"
                                         type="button"
                                         class="btn btn-success btn-sm"
                                         style="display:none;padding:4px 10px;font-size:12px;">
                                     <i class="fa fa-check"></i> Compare
                                 </button>
+
                                 <button id="btnDownloadMatchedCsv"
                                         class="btn btn-success btn-sm"
-                                        style="display:none;">
+                                        style="display:none;padding:4px 10px;font-size:12px;">
                                     <i class="fa fa-download"></i> Download Inventory Report
+                                </button>
+
+                                <button id="btnInstallInventory"
+                                        onclick="InstallInventory()"
+                                        class="btn btn-info btn-sm"
+                                        style="display:none;padding:4px 10px;font-size:12px;">
+                                    <i class="fa fa-cogs"></i> Install Inventory
                                 </button>
 
                             </div>
@@ -1436,6 +1446,8 @@
             $("#divSummary").hide();
         }
 
+
+
         //if (InstallerId === '0' || InstallerId === '') {
         //    var $toast = toastr["error"]("Please, select Installers/Managers", "Notification");
         //    return;
@@ -1598,64 +1610,6 @@
     //    });
     //})
 
-    $("#ProjectId").change(function () {
-
-        $('#ProductId').empty().trigger('chosen:updated');
-        $('#InstallerId').empty().trigger('chosen:updated');
-
-        var ProjectId = $("#ProjectId").val();
-
-        waitingDialog.show('Please Wait...');
-        var urlGetInstallerByProjectId = $("#urlGetInstallerByProjectId").val();
-
-        $.ajax({
-            type: 'GET',
-            data: { ProjectId: ProjectId },
-            async: true,
-            url: urlGetInstallerByProjectId,
-            success: function (data) {
-                debugger;
-                waitingDialog.hide();
-                if (data.statusMessage.Success) {
-                    $('#InstallerId').empty();
-
-                    var count = data.installerList.length;
-                    if (count > 0) {
-
-                        $.each(data.installerList, function (index, item) {
-                            if (index == 0) {
-                                $('#InstallerId').append($('<option></option>').val('0').text("All Installers/Managers"));
-                            }
-                            $('#InstallerId').append($('<option></option>').val(item.UserId).html(item.UserName));
-                        });
-                    }
-
-                    $('#InstallerId').trigger('chosen:updated');
-
-                    if (data.ProductList != null) {
-                        $.each(data.ProductList, function (index, item) {
-                            if (index == 0) { $('#ProductId').append($('<option></option>').val('0').html("")); }
-
-                            $('#ProductId').append($('<option></option>').val(item.Id).html(item.FieldValue));
-                        });
-                    }
-                    $('#ProductId').trigger('chosen:updated');
-
-
-                }
-                else {
-                    var $toast = toastr["error"](data.Message, "Notification !");
-                }
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                waitingDialog.hide();
-                console.log("error " + textStatus);
-                console.log("incoming Text " + jqXHR.responseText);
-                var $toast = toastr["error"]("something seems wrong", "Notification");
-            }
-        });
-    })
-
     $("#btnSearch").click(function () {
         debugger;
         LoadDatatable()
@@ -1718,18 +1672,28 @@
     });
 
 
-    $("#ProjectId").change(function () {
-
-        // ---------- NEW LOGIC (SHOW/HIDE UPLOAD UI) ----------
+    function toggleCompletedInventoryUI() {
         var projectId = $("#ProjectId").val();
+        var isInventoryCompareProject = (projectId == "10134");
 
-        if (projectId == "10135") {
+        if (isInventoryCompareProject) {
             $("#divCompleteUpload").show();
         } else {
             $("#divCompleteUpload").hide();
             $("#completedInventoryFile").val('');
+            $("#btnSubmitCompletedInventory").hide();
+            $("#btnDownloadMatchedCsv").hide();
+            $("#btnInstallInventory").hide();
         }
-        // ----------------------------------------------------
+    }
+
+    $("#ProjectId").change(function () {
+        resetReportState();
+        $("#ReportType").val("1").trigger("chosen:updated");
+        $("#divDetail").show();
+        $("#divSummary").hide();
+        toggleCompletedInventoryUI();
+        var projectId = $("#ProjectId").val();
 
         // ---------- EXISTING CODE (DO NOT REMOVE) ----------
         $('#ProductId').empty().trigger('chosen:updated');
@@ -1782,6 +1746,7 @@
                         });
                     }
                     $('#ProductId').trigger('chosen:updated');
+                    toggleCompletedInventoryUI();
 
                 } else {
                     toastr.error(data.Message, "Notification !");
@@ -1796,6 +1761,14 @@
         // ----------------------------------------------------
     });
 
+
+    let completedInventoryList = [];
+    let completedInventoryItems = [];   // [{ productName, serialNumber }]
+   
+
+    let lastCompareGreen = [];
+    let lastCompareYellow = [];
+    let lastCompareRed = [];
 
     $("#btnUploadCompletedInventory").click(function () {
 
@@ -1822,8 +1795,8 @@
                 waitingDialog.hide();
 
                 if (res.success) {
-                    toastr.success("File uploaded & inventory matched");
-                    LoadDatatable(); // reload report
+                    toastr.success("File uploaded successfully");
+                    LoadDatatable();
                 } else {
                     toastr.error(res.message);
                 }
@@ -1835,8 +1808,6 @@
         });
     });
 
-    let completedInventoryList = [];
-
     $("#completedInventoryFile").on("change", function () {
         if (this.files.length > 0) {
             $("#btnSubmitCompletedInventory").show();
@@ -1845,33 +1816,41 @@
         }
     });
 
-    function readCSVFile(file, callback) {
-        let reader = new FileReader();
-        reader.onload = function (e) {
-            let lines = e.target.result.split(/\r\n|\n/);
-            let data = [];
-
-            lines.forEach(function (line) {
-                if (line.trim() !== "") {
-                    data.push(line.trim());
-                }
-            });
-
-            callback(data);
-        };
-        reader.readAsText(file);
+    function normalizeSerial(v) {
+        if (!v) return "";
+        return v.toString().trim().replace(/\s+/g, "").toUpperCase();
     }
 
-    $("#btnSubmitCompletedInventory").click(function () {
+    function normalizeProduct(v) {
+        if (!v) return "";
+        return v.toString().trim().replace(/\s+/g, " ").toUpperCase();
+    }
 
+    function saveMissingInventory(projectId) {
+        if (!lastCompareRed || lastCompareRed.length === 0) return;
+
+        $.ajax({
+            url: '/Admin/InventryStockReport/SaveMissingInventory',
+            type: 'POST',
+            data: {
+                projectId: projectId,
+                redJson: JSON.stringify(lastCompareRed)
+            },
+            success: function (res) {
+                if (res && res.success) {
+                    toastr.success("Missing inventory saved");
+                } else {
+                    toastr.error((res && res.message) ? res.message : "Failed to save missing inventory", "Notification !");
+                }
+            },
+            error: function () {
+                toastr.error("Server error while saving missing inventory", "Notification !");
+            }
+        });
+    }
+
+    function runCompletedInventoryCompare() {
         var projectId = $("#ProjectId").val();
-        if (projectId !== "10135") {
-            toastr.error("Allowed only for Project 10143");
-            return;
-        }
-
-        waitingDialog.show("Comparing...");
-
         $.ajax({
             url: '/Admin/InventryStockReport/GetCompletedInventoryForCompare',
             type: 'POST',
@@ -1879,86 +1858,80 @@
             success: function (res) {
                 waitingDialog.hide();
 
-                if (!res.success) { toastr.error(res.message); return; }
+                if (!res.success) {
+                    toastr.error(res.message);
+                    return;
+                }
 
-                completedSerialSet = new Set(
-                    res.inventoryList.map(normalizeSerial).filter(x => x)
-                );
-
-                // NEW
-                completedConsumableMap = res.consumableList || {};
-
-                completedProductQtyMap = {};
-                (res.productQtyList || []).forEach(function (x) {
-                    completedProductQtyMap[normalizeProduct(x.product)] = Number(x.qty || 0);
+                completedInventoryItems = (res.inventoryList || []).map(function (x) {
+                    return {
+                        productName: x.productName || "",
+                        serialNumber: normalizeSerial(x.serialNumber),
+                        technicianName: x.technicianName || "",
+                        installerEmail: x.installerEmail || ""
+                    };
+                }).filter(function (x) {
+                    return x.serialNumber;
                 });
 
+                completedInventoryList = completedInventoryItems.map(function (x) {
+                    return x.serialNumber;
+                });
+
+                completedSerialSet = new Set(completedInventoryList);
+
                 applyCorrectComparison();
+                saveMissingInventory(projectId);
+                $("#btnInstallInventory").show();
                 toastr.success("Compare completed successfully");
+            },
+            error: function () {
+                waitingDialog.hide();
+                toastr.error("Compare failed");
             }
         });
+    }
+
+    $("#btnSubmitCompletedInventory").click(function () {
+
+        var projectId = $("#ProjectId").val();
+        if (projectId !== "10134") {
+            toastr.error("Allowed only for Project 10134");
+            return;
+        }
+
+        // Color marking is applied on detail serial table; auto-switch if needed.
+        if ($("#ReportType").val() !== "1") {
+            $("#ReportType").val("1").trigger("chosen:updated");
+            LoadDatatable();
+            setTimeout(function () {
+                waitingDialog.show("Comparing...");
+                runCompletedInventoryCompare();
+            }, 1200);
+            return;
+        }
+
+        waitingDialog.show("Comparing...");
+        runCompletedInventoryCompare();
     });
 
-
-
-
-    function highlightMatchedInventory() {
-
-        let table = $('#dynamic-table').DataTable();
-
-        table.rows().every(function () {
-            let row = this.node();
-            let rowData = this.data();
-
-            let serialNumber = rowData.SerialNumber
-                ? rowData.SerialNumber.toString().trim()
-                : "";
-
-            if (completedInventoryList.includes(serialNumber)) {
-                $(row).css("background-color", "#d4edda"); // GREEN
-            }
-        });
-    }
-
-    function normalizeSerial(v) {
-        if (!v) return "";
-        return v.toString().trim().replace(/\s+/g, "").toUpperCase();
-    }
-           
-    function showCompareResultPopup(g, y, r) {
-
-        var html = "";
-
-        lastCompareConsumable.forEach(function (x) {
-            var parts = x.split("|");
-            html += "<div>" + parts[1] +
-                " → " + parts[2] +
-                " (Qty: " + parts[3] + ")</div>";
-        });
-
+    function showCompareResultPopup() {
         $.confirm({
             title: 'Compare Result',
             content:
                 "<div>" +
-                "<b>Serial Matched:</b> " + lastCompareGreen.length + "<br>" +
-                "<b>Serial System Only:</b> " + lastCompareYellow.length + "<br>" +
-                "<b>Serial File Only:</b> " + lastCompareRed.length + "<hr>" +
-                "<b>Consumable Matched:</b> " + g + "<br>" +
-                "<b>Consumable System Only:</b> " + y + "<br>" +
-                "<b>Consumable Mismatch/File Only:</b> " + r + "<hr>" +
-                html +
+                "<b>Matched (Green):</b> " + lastCompareGreen.length + "<br>" +
+                "<b>System Only (Yellow):</b> " + lastCompareYellow.length + "<br>" +
+                "<b>File Only (Red):</b> " + lastCompareRed.length +
                 "</div>"
         });
     }
-
-
 
     $('#dynamic-table').on('draw.dt', function () {
         if (completedSerialSet && completedSerialSet.size > 0) {
             highlightMatchedRows();
         }
     });
-
 
     function getAllSystemSerials() {
         var dt = $('#dynamic-table').DataTable();
@@ -1972,171 +1945,101 @@
 
         return systemSet;
     }
-    var systemProductQtyMap = {};
+    function normalizeSerial(s) {
+        if (!s) return "";
+
+        s = s.toString().trim().replace(/\s+/g, "");
+
+        if (/^\d+$/.test(s)) {
+            s = s.padStart(8, '0'); // 🔥 SAME LOGIC
+        }
+
+        return s.toUpperCase();
+    }
+    function getProductNameBySerial(serial) {
+        serial = normalizeSerial(serial);
+
+        var found = completedInventoryItems.find(function (x) {
+            return x.serialNumber === serial;
+        });
+
+        return found ? (found.productName || "") : "";
+    }
+
+    function getProductNameFromTable(serial) {
+        serial = normalizeSerial(serial);
+
+        var dt = $('#dynamic-table').DataTable();
+        var product = "";
+
+        dt.rows({ search: 'applied' }).every(function () {
+            var d = this.data();
+            if (normalizeSerial(d.SerialNumber) === serial) {
+                product = d.ProductName || "";
+            }
+        });
+
+        return product;
+    }
+
     function applyCorrectComparison() {
 
         var systemSerialSet = getAllSystemSerials();
-        systemProductQtyMap = getSystemProductQtyMap();   // IMPORTANT
 
         lastCompareGreen = [];
         lastCompareYellow = [];
         lastCompareRed = [];
-        lastCompareConsumable = [];
 
-        // ---------------- SERIAL ----------------
         completedSerialSet.forEach(function (s) {
-            if (systemSerialSet.has(s))
+            if (systemSerialSet.has(s)) {
                 lastCompareGreen.push(s);
-            else
-                lastCompareRed.push(s);
+            } else {
+                var item = completedInventoryItems.find(function (x) {
+                    return x.serialNumber === s;
+                });
+
+                lastCompareRed.push({
+                    ProductName: item ? item.productName : "",
+                    SerialNumber: s,
+                    TechnicianName: item ? item.technicianName : "",
+                    InstallerEmail: item ? item.installerEmail : ""
+                });
+            }
         });
 
         systemSerialSet.forEach(function (s) {
-            if (!completedSerialSet.has(s))
-                lastCompareYellow.push(s);
-        });
-
-        // ---------------- CONSUMABLE ----------------
-        var allProducts = new Set([
-            ...Object.keys(systemProductQtyMap),
-            ...Object.keys(completedProductQtyMap)
-        ]);
-
-        var consumableGreen = 0;
-        var consumableYellow = 0;
-        var consumableRed = 0;
-
-        allProducts.forEach(function (p) {
-
-            var sysQty = Number(systemProductQtyMap[p] || 0);
-            var fileQty = Number(completedProductQtyMap[p] || 0);
-
-            var status = "";
-
-            // ✅ EXACT MATCH FIRST
-            if (sysQty === fileQty) {
-                status = "MATCHED";
-                consumableGreen++;
+            if (!completedSerialSet.has(s)) {
+                lastCompareYellow.push({
+                    ProductName: getProductNameFromTable(s),
+                    SerialNumber: s
+                });
             }
-            else if (sysQty > 0 && fileQty === 0) {
-                status = "SYSTEM_ONLY";
-                consumableYellow++;
-            }
-            else if (fileQty > 0 && sysQty === 0) {
-                status = "FILE_ONLY";
-                consumableRed++;
-            }
-            else {
-                status = "MISMATCH";
-                consumableRed++;
-            }
-
-            lastCompareConsumable.push(
-                "CONSUMABLE|" + p + "|" + status + "|" + sysQty + "|" + fileQty
-            );
         });
 
         $("#btnDownloadMatchedCsv").show();
-
         highlightRows();
-        showCompareResultPopup(consumableGreen, consumableYellow, consumableRed);
+        showCompareResultPopup();
     }
 
-    function highlightMatchedRows(systemSet) {
+    function highlightMatchedRows() {
 
         var dt = $('#dynamic-table').DataTable();
 
         dt.rows({ page: 'current' }).every(function () {
             var rowData = this.data();
             var serial = normalizeSerial(rowData.SerialNumber);
-
             var $tr = $(this.node());
 
-            // pehle old classes clear karo
             $tr.removeClass('match-green notmatch-yellow');
 
-            // agar file upload hi nahi hui to kuch mat karo
             if (!completedSerialSet || completedSerialSet.size === 0) return;
 
-            // ✅ matched = green
             if (completedSerialSet.has(serial)) {
                 $tr.addClass('match-green');
-            }
-            // ✅ not matched = yellow
-            else {
+            } else {
                 $tr.addClass('notmatch-yellow');
             }
         });
-    }
-
-
-    $("#btnDownloadMatchedCsv").off("click").on("click", function () {
-
-        if (
-            (!lastCompareGreen || lastCompareGreen.length === 0) &&
-            (!lastCompareYellow || lastCompareYellow.length === 0) &&
-            (!lastCompareRed || lastCompareRed.length === 0) &&
-            (!lastCompareConsumable || lastCompareConsumable.length === 0)
-        ) {
-            toastr.error("No comparison data to download");
-            return;
-        }
-
-        var form = $('<form method="POST" action="/Admin/InventryStockReport/DownloadComparisonExcel"></form>');
-
-        form.append($('<input type="hidden" name="projectId">').val($("#ProjectId").val()));
-        form.append($('<input type="hidden" name="greenJson">').val(JSON.stringify(lastCompareGreen)));
-        form.append($('<input type="hidden" name="yellowJson">').val(JSON.stringify(lastCompareYellow)));
-        form.append($('<input type="hidden" name="redJson">').val(JSON.stringify(lastCompareRed)));
-        form.append($('<input type="hidden" name="consumablePurpleJson">').val(JSON.stringify(lastCompareConsumable)));
-
-        $('body').append(form);
-        form.submit();
-        form.remove();
-    });
-          
-    var lastCompareGreen = [];
-    var lastCompareYellow = [];
-    var lastCompareRed = [];
-    var lastCompareConsumable = [];
-    var completedSerialSet = new Set();
-    var completedProductQtyMap = {};   // { PRODUCTNAME: qty }
-    var lastCompareGreen = [];
-    var lastCompareYellow = [];
-    var lastCompareRed = [];
-    var lastConsumablePurple = [];
- 
-
-    function getSystemProductQtyMap() {
-        var dt = $('#dynamic-table').DataTable();
-        var map = {}; // PRODUCT -> TOTAL INHAND (ONLY CONSUMABLE rows)
-
-        dt.rows({ search: 'applied' }).every(function () {
-            var d = this.data();
-
-            // ✅ consumable rows = serial blank/null
-            var serial = normalizeSerial(d.SerialNumber);
-            if (serial) return; // serial rows skip
-
-            var product = normalizeProduct(d.ProductName);
-            if (!product) return;
-
-            // ✅ IMPORTANT: Use Inventory InHand (NOT scanned)
-            var inhand =
-                Number(d.InHandQty ?? d.InventoryInHand ?? d.InHandInventory ?? d.InHand ?? 0);
-
-            if (!map[product]) map[product] = 0;
-            map[product] += inhand;
-        });
-
-        return map;
-    }
-    function normalizeProduct(v) {
-        if (!v) return "";
-        return v.toString()
-            .trim()
-            .replace(/\s+/g, " ")
-            .toUpperCase();
     }
 
     function highlightRows() {
@@ -2148,50 +2051,134 @@
             var d = this.data();
             var $row = $(this.node());
 
-            // clear old styling
             $row.removeClass('match-green notmatch-yellow');
             $row.css("background-color", "");
 
-            var serialRaw = d.SerialNumber;
-            var serial = normalizeSerial(serialRaw);
+            var serial = normalizeSerial(d.SerialNumber);
 
-            // ================= SERIAL ROW =================
-            // Important: serial must not be null/empty string
-            if (serialRaw && serialRaw.toString().trim() !== "") {
-
+            if (serial) {
                 if (completedSerialSet.has(serial)) {
-                    $row.addClass('match-green');   // GREEN
+                    $row.addClass('match-green');
                 } else {
-                    $row.addClass('notmatch-yellow');  // YELLOW
+                    $row.addClass('notmatch-yellow');
                 }
                 return;
-            }
-
-            // ================= CONSUMABLE ROW =================
-            var product = normalizeProduct(d.ProductName);
-
-            var sysQty = Number(systemProductQtyMap[product] ?? 0);
-            var fileQty = Number(completedProductQtyMap[product] ?? 0);
-
-            console.log("Consumable:", product, "SYS:", sysQty, "FILE:", fileQty);
-
-            // ✅ Exact match (even if 0)
-            if (sysQty === fileQty) {
-                $row.addClass('match-green'); // GREEN
-            }
-            // System only
-            else if (sysQty > 0 && fileQty === 0) {
-                $row.addClass('notmatch-yellow'); // YELLOW
-            }
-            // File only
-            else if (fileQty > 0 && sysQty === 0) {
-                $row.css("background-color", "#f8d7da"); // RED
-            }
-            // Mismatch
-            else {
-                $row.css("background-color", "#f8d7da"); // RED
             }
         });
     }
 
+    $("#btnDownloadMatchedCsv").off("click").on("click", function () {
+
+        if (!lastCompareRed || lastCompareRed.length === 0) {
+            toastr.error("No red/file-only data to download");
+            return;
+        }
+
+        var form = $('<form method="POST" action="/Admin/InventryStockReport/DownloadComparisonExcel"></form>');
+        form.append($('<input type="hidden" name="projectId">').val($("#ProjectId").val()));
+        form.append($('<input type="hidden" name="greenJson">').val("[]"));
+        form.append($('<input type="hidden" name="yellowJson">').val("[]"));
+        form.append($('<input type="hidden" name="redJson">').val(JSON.stringify(lastCompareRed)));
+
+        $('body').append(form);
+        form.submit();
+        form.remove();
+    });
+
+    function resetReportState() {
+
+        if ($.fn.DataTable.isDataTable('#dynamic-table')) {
+            $('#dynamic-table').DataTable().destroy();
+            $('#dynamic-table tbody').empty();
+        }
+
+        if ($.fn.DataTable.isDataTable('#dynamic-table-Summary')) {
+            $('#dynamic-table-Summary').DataTable().destroy();
+            $('#dynamic-table-Summary tbody').empty();
+        }
+
+        $("#divDetail").hide();
+        $("#divSummary").show();
+        toggleCompletedInventoryUI();
+        $("#completedInventoryFile").val('');
+
+        $("#btnSubmitCompletedInventory").hide();
+        $("#btnDownloadMatchedCsv").hide();
+        $("#btnInstallInventory").hide();
+
+        completedInventoryList = [];
+        completedInventoryItems = [];
+        completedSerialSet = new Set();
+        lastCompareGreen = [];
+        lastCompareYellow = [];
+        lastCompareRed = [];
+    }
+
+    function InstallInventory() {
+
+        if (!lastCompareGreen || lastCompareGreen.length === 0) {
+            toastr.error("No matched inventory to install");
+            return;
+        }
+
+        $.confirm({
+            title: "Confirm",
+            content: "Install matched inventory?",
+            buttons: {
+                yes: function () {
+                    $.ajax({
+                        url: '/Admin/InventryStockReport/InstallMatchedInventory',
+                        type: 'POST',
+                        data: {
+                            projectId: $("#ProjectId").val(),
+                            serialList: JSON.stringify(
+                                completedInventoryItems.filter(x => lastCompareGreen.includes(x.serialNumber))
+                            )
+                        },
+                        success: function (res) {
+                            if (res.success) {
+                                toastr.success("Inventory installed successfully");
+                                LoadDatatable();
+                            } else {
+                                toastr.error(res.message);
+                            }
+                        },
+                        error: function (xhr) {
+                            console.log(xhr.responseText);
+                            toastr.error("Server error");
+                        }
+                    });
+                },
+                cancel: function () { }
+            }
+        });
+    }
+
+    function getProductNameFromTable(serial) {
+
+        var dt = $('#dynamic-table').DataTable();
+        var product = "";
+
+        dt.rows().every(function () {
+
+            var d = this.data();
+
+            if (d.SerialNumber == serial) {
+                product = d.ProductName;
+            }
+
+        });
+
+        return product;
+    }
+
+    function getTechnicianBySerial(serial) {
+        serial = normalizeSerial(serial);
+
+        var found = completedInventoryItems.find(function (x) {
+            return x.serialNumber === serial;
+        });
+
+        return found ? (found.technicianName || "") : "";
+    }
 </script>

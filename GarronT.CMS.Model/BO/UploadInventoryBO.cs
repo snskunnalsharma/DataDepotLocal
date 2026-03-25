@@ -43,6 +43,12 @@ namespace GarronT.CMS.Model.BO
         [Required]
         public int Quantity { get; set; }
 
+        public string InventoryType { get; set; }
+        public string PONumber { get; set; }
+        public string Manufacturer { get; set; }
+        public string PalletNumber { get; set; }
+        public string TrayId { get; set; }
+        public string Project { get; set; }
 
         public long ProductId { get; set; }
 
@@ -54,6 +60,7 @@ namespace GarronT.CMS.Model.BO
 
         public int InventryStatus { get; set; }
         public bool IsSerialNumber { get; set; }
+
     }
 
 

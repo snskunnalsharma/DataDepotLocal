@@ -38,7 +38,14 @@ namespace GarronT.CMS.Model
         public System.DateTime CreatedOn { get; set; }
         public Nullable<long> ModifiedBy { get; set; }
         public Nullable<System.DateTime> ModifiedOn { get; set; }
-    
+
+        public string InventoryType { get; set; }
+        public string PONumber { get; set; }
+        public string Manufacturer { get; set; }
+        public string PalletNumber { get; set; }
+        public string TrayID { get; set; }
+        public string Project { get; set; }
+
         public virtual InventoryStatusMaster InventoryStatusMaster { get; set; }
         public virtual UtilityMaster UtilityMaster { get; set; }
         public virtual ProductMaster ProductMaster { get; set; }

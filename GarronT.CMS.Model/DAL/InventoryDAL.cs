@@ -712,7 +712,8 @@ namespace GarronT.CMS.Model.DAL
 
             var a1 = Convert.ToInt64(ProjectId);
             var projectRecord = objCompassEntities.tblProjects.Where(o => o.ProjectId == a1).FirstOrDefault();
-            var ExistingProductsForProject = objCompassEntities.ProjectServiceProductRelations.AsNoTracking().Where(o => o.Active == 1 && o.FKProjectID == projectRecord.ProjectId).ToList();
+            var ExistingProductsForProject = objCompassEntities.ProjectServiceProductRelations.AsNoTracking()
+                .Where(o => o.Active == 1 && o.FKProjectID == projectRecord.ProjectId).ToList();
 
             var _utilityId = objCompassEntities.UtilityMasters.Where(o => o.UtilityName == projectRecord.Utilitytype).FirstOrDefault().Id;
             utilityId = _utilityId;
@@ -720,11 +721,10 @@ namespace GarronT.CMS.Model.DAL
 
             try
             {
-                var warehouseName = objCompassEntities.WarehouseMasters.Where(a => a.Id == warehouseId).Select(a => a.WarehouseName).FirstOrDefault();
-                var utilityName = projectRecord.Utilitytype;//objCompassEntities.UtilityMasters.Where(a => a.Id == utilityId).Select(a => a.UtilityName).FirstOrDefault();
+                var warehouseName = objCompassEntities.WarehouseMasters.Where(a => a.Id == warehouseId)
+                    .Select(a => a.WarehouseName).FirstOrDefault();
 
-
-
+                var utilityName = projectRecord.Utilitytype;
                 var categoryList = objCompassEntities.Categories.Where(a => a.Active == 1).ToList();
 
                 int RowNo = 1;
@@ -744,10 +744,42 @@ namespace GarronT.CMS.Model.DAL
                     var UPCCode = Convert.ToString(row["UPC Code"]).Trim();
                     var SerialNumber = Convert.ToString(row["Serial Number"]).Trim();
                     var Quantity = Convert.ToString(row["Quantity"]).Trim();
-                    var Location = Convert.ToString(row["Location"]).Trim();
+
+                    // ✅ SAFE LOCATION
+                    var Location = GetColumnValue(row, "Location");
+
+                    var InventoryType = GetColumnValue(row, "Inventory Type");
+                    var PONumber = GetColumnValue(row, "PO Number", "P.O. Number", "P O Number");
+                    var Manufacturer = GetColumnValue(row, "Manufacturer");
+                    var PalletNumber = GetColumnValue(row, "Pallet Number");
+                    var TrayId = GetColumnValue(row, "Tray Id", "TrayID", "Tray ID");
+                    var Project = GetColumnValue(row, "Project", "project", "PROJECT");
 
                     bool validQuantity = Quantity.All(char.IsDigit);
 
+                    long projectId = Convert.ToInt64(ProjectId);
+
+                    // 🔥 LOCATION LOGIC
+                    if (projectId == 10136)
+                    {
+                        Location = string.IsNullOrEmpty(TrayId) ? Location : TrayId;
+                    }
+                    else if (projectId == 10135)
+                    {
+                        Location = string.IsNullOrEmpty(PONumber) ? Location : PONumber;
+                    }
+
+                    // 🔴 VALIDATION (only other projects)
+                    if (projectId != 10136 && projectId != 10135)
+                    {
+                        if (string.IsNullOrEmpty(Location))
+                        {
+                            uploadInventoryexist.InventryStatus = 2;
+                            uploadInventoryexist.IsDuplicate = "Location required";
+                        }
+                    }
+
+                    // ✅ COMMON ASSIGNMENT
                     uploadInventoryexist.WarehouseId = warehouseId;
                     uploadInventoryexist.WarehouseName = warehouseName;
                     uploadInventoryexist.UtilityId = utilityId;
@@ -760,6 +792,12 @@ namespace GarronT.CMS.Model.DAL
                     uploadInventoryexist.Size = Size;
                     uploadInventoryexist.SerialNumber = SerialNumber;
                     uploadInventoryexist.Location = Location;
+                    uploadInventoryexist.InventoryType = InventoryType;
+                    uploadInventoryexist.PONumber = PONumber;
+                    uploadInventoryexist.Manufacturer = Manufacturer;
+                    uploadInventoryexist.PalletNumber = PalletNumber;
+                    uploadInventoryexist.TrayId = TrayId;
+                    uploadInventoryexist.Project = Project;
 
                     //uploadInventoryexist.CategoryName = productModel.CategoryName;
                     //uploadInventoryexist.ProductId = productModel.Id;
@@ -1052,7 +1090,30 @@ namespace GarronT.CMS.Model.DAL
             }
             return objInventoryUploadModelList;
         }
+        private string GetColumnValue(DataRow row, params string[] possibleNames)
+        {
+            foreach (DataColumn col in row.Table.Columns)
+            {
+                string actual = Normalize(col.ColumnName);
 
+                foreach (var name in possibleNames)
+                {
+                    if (actual == Normalize(name))
+                        return Convert.ToString(row[col.ColumnName]).Trim();
+                }
+            }
+            return "";
+        }
+
+        private string Normalize(string name)
+        {
+            return (name ?? "")
+                .Replace(".", "")
+                .Replace(" ", "")
+                .Replace("_", "")
+                .ToLower()
+                .Trim();
+        }
         public bool SaveInventryInStockHeader(InwardHeaderBO inwardHeaderBO, out string Message)
         {
             bool result = false;
@@ -1456,6 +1517,7 @@ namespace GarronT.CMS.Model.DAL
             DataTable ObjDataTable = new DataTable();
             CompassEntities objCompassEntities = new CompassEntities();
 
+            // TABLE STRUCTURE
             ObjDataTable.Columns.Add("ParentId", typeof(long));
             ObjDataTable.Columns.Add("ProductId", typeof(long));
             ObjDataTable.Columns.Add("UtilityTypeId", typeof(long));
@@ -1472,12 +1534,21 @@ namespace GarronT.CMS.Model.DAL
             ObjDataTable.Columns.Add("GenerateBarcode", typeof(int));
             ObjDataTable.Columns.Add("BarCodeFilePath", typeof(string));
             ObjDataTable.Columns.Add("Location", typeof(string));
+            ObjDataTable.Columns.Add("InventoryType", typeof(string));
+            ObjDataTable.Columns.Add("PONumber", typeof(string));
+            ObjDataTable.Columns.Add("Manufacturer", typeof(string));
+            ObjDataTable.Columns.Add("PalletNumber", typeof(string));
+            ObjDataTable.Columns.Add("TrayId", typeof(string));
+            ObjDataTable.Columns.Add("Project", typeof(string));
 
+            // =========================
+            // UPLOAD TYPE = 1
+            // =========================
             if (uploadInventryVM.UploadType == 1)
             {
-                foreach (var item in uploadInventryVM.UploadInventoryList.Where(a => a.IsSerialNumber == true).ToList())
+                // SERIAL ITEMS
+                foreach (var item in uploadInventryVM.UploadInventoryList.Where(a => a.IsSerialNumber))
                 {
-
                     DataRow DR = ObjDataTable.NewRow();
 
                     DR["ParentId"] = DBNull.Value;
@@ -1497,16 +1568,22 @@ namespace GarronT.CMS.Model.DAL
                     DR["BarCodeFilePath"] = DBNull.Value;
                     DR["Location"] = item.Location;
 
+                    DR["InventoryType"] = item.InventoryType ?? "";
+                    DR["PONumber"] = item.PONumber ?? "";
+                    DR["Manufacturer"] = item.Manufacturer ?? "";
+                    DR["PalletNumber"] = item.PalletNumber ?? "";
+                    DR["TrayId"] = item.TrayId ?? "";
+                    DR["Project"] = item.Project ?? "";
+
                     ObjDataTable.Rows.Add(DR);
                 }
 
-                foreach (var item in uploadInventryVM.UploadInventoryList.Where(a => a.IsSerialNumber == false).ToList())
+                // NON-SERIAL ITEMS
+                foreach (var item in uploadInventryVM.UploadInventoryList.Where(a => !a.IsSerialNumber))
                 {
-
                     DataRow DR = ObjDataTable.NewRow();
 
                     DR["ParentId"] = DBNull.Value;
-
                     DR["ProductId"] = item.ProductId;
                     DR["UtilityTypeId"] = item.UtilityId;
                     DR["UtilityType"] = item.UtilityType;
@@ -1516,7 +1593,6 @@ namespace GarronT.CMS.Model.DAL
                     DR["Make"] = item.Make;
                     DR["Type"] = item.Type;
                     DR["Size"] = item.Size;
-
                     DR["IsSerialNumber"] = item.IsSerialNumber;
                     DR["SerialNumber"] = DBNull.Value;
                     DR["TotalQty"] = item.Quantity;
@@ -1524,15 +1600,23 @@ namespace GarronT.CMS.Model.DAL
                     DR["BarCodeFilePath"] = DBNull.Value;
                     DR["Location"] = item.Location;
 
+                    DR["InventoryType"] = item.InventoryType ?? "";
+                    DR["PONumber"] = item.PONumber ?? "";
+                    DR["Manufacturer"] = item.Manufacturer ?? "";
+                    DR["PalletNumber"] = item.PalletNumber ?? "";
+                    DR["TrayId"] = item.TrayId ?? "";
+                    DR["Project"] = item.Project ?? "";
+
                     ObjDataTable.Rows.Add(DR);
                 }
             }
             else
             {
-                foreach (var item in uploadInventryVM.ProductMasterList.Where(a => a.SerialNumberRequired == true).ToList())
+                // SERIAL PRODUCTS
+                foreach (var item in uploadInventryVM.ProductMasterList.Where(a => a.SerialNumberRequired))
                 {
-
                     DataRow DR = ObjDataTable.NewRow();
+
                     DR["ParentId"] = item.ParentId;
                     DR["ProductId"] = item.Id;
                     DR["UtilityTypeId"] = item.UtilityId;
@@ -1543,20 +1627,18 @@ namespace GarronT.CMS.Model.DAL
                     DR["Make"] = item.Make;
                     DR["Type"] = item.Type;
                     DR["Size"] = item.Size;
-
                     DR["IsSerialNumber"] = item.SerialNumberRequired;
                     DR["SerialNumber"] = item.SerialNumber;
                     DR["TotalQty"] = item.Quantity;
-                    DR["GenerateBarcode"] = item.GenerateBarcode == true ? 1 : 0;
-                    DR["BarCodeFilePath"] = item.GenerateBarcode == true ? item.WebUrlOfBarcodeFile : "";
-                    //DR["Location"] = item.Location;
+                    DR["GenerateBarcode"] = item.GenerateBarcode ? 1 : 0;
+                    DR["BarCodeFilePath"] = item.GenerateBarcode ? item.WebUrlOfBarcodeFile : "";
 
                     ObjDataTable.Rows.Add(DR);
                 }
 
-                foreach (var item in uploadInventryVM.ProductMasterList.Where(a => a.SerialNumberRequired == false).ToList())
+                // NON-SERIAL PRODUCTS
+                foreach (var item in uploadInventryVM.ProductMasterList.Where(a => !a.SerialNumberRequired))
                 {
-
                     DataRow DR = ObjDataTable.NewRow();
 
                     DR["ParentId"] = item.ParentId;
@@ -1569,20 +1651,18 @@ namespace GarronT.CMS.Model.DAL
                     DR["Make"] = item.Make;
                     DR["Type"] = item.Type;
                     DR["Size"] = item.Size;
-
                     DR["IsSerialNumber"] = item.SerialNumberRequired;
                     DR["SerialNumber"] = DBNull.Value;
                     DR["TotalQty"] = item.Quantity;
                     DR["GenerateBarcode"] = DBNull.Value;
                     DR["BarCodeFilePath"] = DBNull.Value;
-                    //DR["Location"] = item.Location;
 
                     ObjDataTable.Rows.Add(DR);
                 }
 
-                foreach (var item in uploadInventryVM.BarcodeProductList.Where(a => a.GenerateBarcode == true).ToList())
+                // BARCODE PRODUCTS
+                foreach (var item in uploadInventryVM.BarcodeProductList.Where(a => a.GenerateBarcode))
                 {
-
                     DataRow DR = ObjDataTable.NewRow();
 
                     DR["ParentId"] = item.ParentId;
@@ -1595,55 +1675,59 @@ namespace GarronT.CMS.Model.DAL
                     DR["Make"] = item.Make;
                     DR["Type"] = item.Type;
                     DR["Size"] = item.Size;
-
                     DR["IsSerialNumber"] = item.SerialNumberRequired;
                     DR["SerialNumber"] = item.SerialNumber;
                     DR["TotalQty"] = item.Quantity;
                     DR["GenerateBarcode"] = 0;
                     DR["BarCodeFilePath"] = "";
-                    //DR["Location"] = item.Location;
 
                     ObjDataTable.Rows.Add(DR);
                 }
             }
 
-            //var a=objCompassEntities.PROC_Insert_InwardFromMobile(objMobileWarehouseRecieveBo.DeviceDateTimeOfRequest, objMobileWarehouseRecieveBo.UserId,
-            //    objMobileWarehouseRecieveBo.WarehouseId);
             returnmessage = "";
+
             try
             {
                 uploadInventryVM.DeviceDateTime = new CommonFunctions().ServerDate();
 
+                using (SqlConnection con = new SqlConnection(objCompassEntities.Database.Connection.ConnectionString))
+                {
+                    using (SqlCommand cmd = new SqlCommand("PROC_Insert_InwardFromWeb", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
 
-                SqlConnection con = new SqlConnection(objCompassEntities.Database.Connection.ConnectionString);
-                con.Open();
-                SqlCommand cmd = new SqlCommand("PROC_Insert_InwardFromWeb", con);
-                cmd.Parameters.AddWithValue("@tblWebSubmit", ObjDataTable); // passing Datatable
+                        cmd.Parameters.AddWithValue("@tblWebSubmit", ObjDataTable);
+                        cmd.Parameters.AddWithValue("@UserId", uploadInventryVM.UserId);
+                        cmd.Parameters.AddWithValue("@ProjectId", uploadInventryVM.ProjectId);
+                        cmd.Parameters.AddWithValue("@WarehouseId", uploadInventryVM.WarehouseId);
+                        cmd.Parameters.AddWithValue("@UploadType", uploadInventryVM.UploadType);
+                        cmd.Parameters.AddWithValue("@StrFilePath", uploadInventryVM.StrFilePath);
+                        cmd.Parameters.AddWithValue("@deviceDateTime", uploadInventryVM.DeviceDateTime);
 
-                cmd.Parameters.AddWithValue("@UserId", uploadInventryVM.UserId);
-                cmd.Parameters.AddWithValue("@ProjectId", uploadInventryVM.ProjectId);
-                cmd.Parameters.AddWithValue("@WarehouseId", uploadInventryVM.WarehouseId);
-                cmd.Parameters.AddWithValue("@UploadType", uploadInventryVM.UploadType);
-                cmd.Parameters.AddWithValue("@StrFilePath", uploadInventryVM.StrFilePath);
-                cmd.Parameters.AddWithValue("@deviceDateTime", uploadInventryVM.DeviceDateTime);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.ExecuteNonQuery();
-                con.Close();
+                        con.Open();
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
                 result = true;
-                returnmessage = "Inventry data saved successfully";
+                returnmessage = "Inventory data saved successfully";
             }
             catch (SqlException ex)
             {
                 returnmessage = ex.Message;
             }
+
             if (result)
             {
-                inwardHeaderId = objCompassEntities.InwardHeaders.Where(a => a.CreatedBy == uploadInventryVM.UserId && a.DeviceDateTime == uploadInventryVM.DeviceDateTime).Select(a => a.Id).FirstOrDefault();
+                inwardHeaderId = objCompassEntities.InwardHeaders
+                    .Where(a => a.CreatedBy == uploadInventryVM.UserId && a.DeviceDateTime == uploadInventryVM.DeviceDateTime)
+                    .Select(a => a.Id)
+                    .FirstOrDefault();
             }
 
             return result;
         }
-
         public List<ViewUploadInventryVM> GetInwardHeader()
         {
             List<ViewUploadInventryVM> viewUploadInventryVM = new List<ViewUploadInventryVM>();
@@ -3071,6 +3155,105 @@ namespace GarronT.CMS.Model.DAL
             }
 
             return objList;
+        }
+
+
+
+        public void MoveInventoryToInstalled(long projectId, long userId, string serialNumber, long masterId)
+        {
+            using (var db = new CompassEntities())
+            {
+                var serial = (serialNumber ?? "").Trim();
+
+                if (string.IsNullOrEmpty(serial))
+                    throw new Exception("Invalid serial number");
+
+                // 1️⃣ Get stock detail
+                var stock = db.StockDetails
+                    .FirstOrDefault(x =>
+                        x.SerialNumber != null &&
+                        x.SerialNumber.Trim().ToUpper() == serial.ToUpper() &&
+                        x.Active == 1 &&
+                        x.FKProjectId == projectId);
+
+                if (stock == null)
+                    throw new Exception("Stock not found for serial: " + serial);
+
+                // 2️⃣ Get outward record
+                var outward = db.OutwardDetails
+                    .Where(x =>
+                        x.FKStockDetailsID == stock.Id &&
+                        x.Active == 1)
+                    .OrderByDescending(x => x.Id)
+                    .FirstOrDefault();
+
+                if (outward == null)
+                    throw new Exception("Outward record not found for serial: " + serial);
+
+                // 3️⃣ Get service mapping
+                var serviceProduct = db.ProjectServiceProductRelations
+                    .FirstOrDefault(x =>
+                        x.FKProductId == stock.FKProductId &&
+                        x.FKProjectID == projectId);
+
+                if (serviceProduct == null)
+                    throw new Exception("Service mapping not found for product: " + stock.FKProductId);
+
+                // 4️⃣ Prevent duplicate install
+                bool alreadyInstalled = db.tblProjectFieldDataInventoryDetails
+                    .Any(x =>
+                        x.SerialNumber != null &&
+                        x.SerialNumber.Trim().ToUpper() == serial.ToUpper() &&
+                        x.FKtblProjectFieldDataMasterID == masterId &&
+                        x.Active == 1);
+
+                if (alreadyInstalled)
+                    return;
+
+                // 5️⃣ Create inventory detail
+                tblProjectFieldDataInventoryDetail inv = new tblProjectFieldDataInventoryDetail();
+
+                inv.Active = 1;
+                inv.CreatedOn = DateTime.Now;
+                inv.CreatedBy = userId;
+                inv.FKServiceId = serviceProduct.FKServiceId;
+                inv.FKProductId = stock.FKProductId;
+                inv.FKtblProjectFieldDataMasterID = masterId;
+                inv.SerialNumber = serial;
+                inv.TotalQty = 1;
+                inv.StockVerified = 0;
+
+                db.tblProjectFieldDataInventoryDetails.Add(inv);
+                db.SaveChanges();
+
+                // 6️⃣ Create outward mapping
+                tblProjectFieldDataInventoryOutwardDetail outInv = new tblProjectFieldDataInventoryOutwardDetail();
+
+                outInv.Active = 1;
+                outInv.CreatedOn = DateTime.Now;
+                outInv.CreatedBy = userId;
+                outInv.FKOutwardDetailsId = outward.Id;
+                outInv.FKtblProjectFieldDataInventoryDetailsId = inv.ID;
+                outInv.TotalQty = 1;
+
+                db.tblProjectFieldDataInventoryOutwardDetails.Add(outInv);
+
+                // 7️⃣ Update inventory detail
+                inv.StockVerified = 1;
+
+                // 8️⃣ Update outward
+                outward.InstalledQty = 1;
+                outward.AllStockUtilized = true;
+                outward.ModifiedOn = DateTime.Now;
+                outward.ModifiedBy = userId;
+
+                // 9️⃣ Update stock
+                stock.IsAllocated = true;
+                stock.AllStockUtilized = true;
+                stock.BalanceQty = 0;
+
+                db.SaveChanges();
+            }
         }
 
     }

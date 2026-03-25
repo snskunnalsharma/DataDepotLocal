@@ -23,6 +23,7 @@ namespace GarronT.CMS.Model
             this.InventoryMobileUserStockRequests1 = new HashSet<InventoryMobileUserStockRequest>();
             this.AspNetUserRolePermissions = new HashSet<AspNetUserRolePermission>();
             this.TblUnAllocatedSkipHistories = new HashSet<TblUnAllocatedSkipHistory>();
+            this.Missing_Inventory = new HashSet<Missing_Inventory>();
         }
     
         public long UserID { get; set; }
@@ -77,5 +78,6 @@ namespace GarronT.CMS.Model
         public virtual ICollection<InventoryMobileUserStockRequest> InventoryMobileUserStockRequests1 { get; set; }
         public virtual ICollection<AspNetUserRolePermission> AspNetUserRolePermissions { get; set; }
         public virtual ICollection<TblUnAllocatedSkipHistory> TblUnAllocatedSkipHistories { get; set; }
+        public virtual ICollection<Missing_Inventory> Missing_Inventory { get; set; }
     }
 }
