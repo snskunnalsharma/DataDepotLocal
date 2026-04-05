@@ -566,11 +566,16 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 return false;
             }
 
-            checkColumn = columnNamList.Where(o => o.Trim().ToLower() == "part number").Count();
+            checkColumn = columnNamList.Where(o =>
+                  o.Trim().ToLower() == "part number" ||
+                  o.Trim().ToLower() == "form"
+              ).Count();
+
             if (checkColumn == 0)
             {
                 return false;
             }
+
 
             checkColumn = columnNamList.Where(o => o.Trim().ToLower() == "upc code").Count();
             if (checkColumn == 0)
@@ -596,7 +601,11 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 return false;
             }
 
-            checkColumn = columnNamList.Where(o => o.Trim().ToLower() == "serial number").Count();
+            checkColumn = columnNamList.Where(o =>
+                    o.Trim().ToLower() == "serial number" ||
+                    o.Trim().ToLower() == "primary inventory number"
+                ).Count();
+
             if (checkColumn == 0)
             {
                 return false;

@@ -740,9 +740,19 @@ namespace GarronT.CMS.Model.DAL
                     var Make = Convert.ToString(row["Make"]).Trim();
                     var Type = Convert.ToString(row["Type"]).Trim();
                     var Size = Convert.ToString(row["Size"]).Trim();
-                    var PartNumber = Convert.ToString(row["Part Number"]).Trim();
+                    var PartNumber = GetColumnValue(row,
+                        "Part Number",
+                        "PartNumber",
+                        "FORM",
+                        "Form"
+                    );
                     var UPCCode = Convert.ToString(row["UPC Code"]).Trim();
-                    var SerialNumber = Convert.ToString(row["Serial Number"]).Trim();
+                    var SerialNumber = GetColumnValue(row,
+                        "Serial Number",
+                        "SerialNumber",
+                        "Primary Inventory Number",
+                        "PrimaryInventoryNumber"
+                    );
                     var Quantity = Convert.ToString(row["Quantity"]).Trim();
 
                     // ✅ SAFE LOCATION
@@ -3021,73 +3031,41 @@ namespace GarronT.CMS.Model.DAL
 
         public List<MovementReport> GetProductMovementReport(long projectId, string serialnumber)
         {
-
             CompassEntities objCompassEntities = new CompassEntities();
             List<MovementReport> reportdata = new List<MovementReport>();
+
             try
             {
+                // ✅ Step 1: Get Project Name from ProjectId
+                string projectName = objCompassEntities.tblProjects
+                                        .Where(p => p.ProjectId == projectId)
+                                        .Select(p => p.ProjectName)
+                                        .FirstOrDefault();
 
+                // ✅ Step 2: Call SP and override ProjectName
+                reportdata = objCompassEntities
+                    .PROC_Report_ProductMovementReport(projectId, serialnumber)
+                    .Select(a => new MovementReport
+                    {
+                        SerialNumber = a.SerialNumber,
+                        StockStatus = a.StockStatus,
+                        Location = a.Location,
+                        StockMovementDate = a.StockMovementDate,
+                        StockMovementDateString = a.StockMovementDate.Value.ToString("MMM-dd-yyyy h:mm tt"),
+                        UserName = a.UserName,
+                        LatLong = a.LatLong,
+                        Account = a.Account,
+                        Street = a.Street,
 
-                //DataSet ds = new DataSet();
-                //SqlConnection con = new SqlConnection(objCompassEntities.Database.Connection.ConnectionString);
-                //con.Open();
-                //SqlCommand cmd = new SqlCommand("PROC_Report_ProductMovementReport", con);
-                //cmd.Parameters.AddWithValue("@SerialNumber", serialnumber); // passing Datatable
-
-                //cmd.CommandType = CommandType.StoredProcedure;
-
-                //SqlDataAdapter da = new SqlDataAdapter();
-                //da.SelectCommand = cmd;
-                //da.Fill(ds);
-
-                //cmd.ExecuteNonQuery();
-                //con.Close();
-                /*var serialHistory = objCompassEntities.SerialNumberSummary.Where(o => o.SerialNumber == serialnumber).Select(a => new MovementReport
-                {
-                    SerialNumber = a.SerialNumber,
-                    StockStatus = a.StockStatus,
-                    Location = a.Location,
-                    StockMovementDate = a.StockMovementDate,
-                    StockMovementDateString = a.StockMovementDate.Value.ToString("MMM-dd-yyyy h:mm tt"),
-
-                    UserName = a.UserName,
-                    LatLong = a.LatLong,
-                    Account = a.Account,
-                    Street = a.Street,
-                    ProjectName = a.ProjectName
-
-                }).ToList();
-                if(serialHistory != null && serialHistory.Count > 0)
-                {
-                    reportdata.AddRange(serialHistory);
-                }*/
-
-                reportdata = objCompassEntities.PROC_Report_ProductMovementReport(projectId, serialnumber).Select(a => new MovementReport
-                {
-                    SerialNumber = a.SerialNumber,
-                    StockStatus = a.StockStatus,
-                    Location = a.Location,
-                    StockMovementDate = a.StockMovementDate,
-                    StockMovementDateString = a.StockMovementDate.Value.ToString("MMM-dd-yyyy h:mm tt"),
-
-                    UserName = a.UserName,
-                    LatLong = a.LatLong,
-                    Account = a.Account,
-                    Street = a.Street,
-                    ProjectName = a.ProjectName
-
-                }).ToList();
-                //reportdata.AddRange(currentData);
-
-
-
-
+                // 🔥 IMPORTANT: override ProjectName
+                ProjectName = projectName
+                    }).ToList();
             }
             catch (Exception ex)
             {
-
                 throw;
             }
+
             return reportdata;
         }
 
@@ -3187,8 +3165,70 @@ namespace GarronT.CMS.Model.DAL
                     .OrderByDescending(x => x.Id)
                     .FirstOrDefault();
 
-                if (outward == null)
-                    throw new Exception("Outward record not found for serial: " + serial);
+                // For inventory stock report, outward must point to the correct installer.
+                // If missing (or allocated to a different installer), create a new outward row.
+                if (outward == null || outward.AllocatedTo != userId)
+                {
+                    long? requestDetailId = null;
+
+                    if (outward != null)
+                    {
+                        requestDetailId = outward.FKInventoryMobileStockRequestDetailId;
+                    }
+
+                    if (!requestDetailId.HasValue)
+                    {
+                        requestDetailId = (
+                            from od in db.OutwardDetails
+                            join sd in db.StockDetails on od.FKStockDetailsID equals sd.Id
+                            where od.Active == 1
+                                  && sd.Active == 1
+                                  && od.AllocatedTo == userId
+                                  && sd.FKProjectId == projectId
+                                  && sd.FKProductId == stock.FKProductId
+                            orderby od.Id descending
+                            select (long?)od.FKInventoryMobileStockRequestDetailId
+                        ).FirstOrDefault();
+                    }
+
+                    if (!requestDetailId.HasValue)
+                    {
+                        requestDetailId = (
+                            from rd in db.InventoryMobileStockRequestDetails
+                            join rh in db.InventoryMobileStockRequests on rd.FKInventoryMobileStockRequestId equals rh.Id
+                            where rd.Active == 1
+                                  && rh.Active == 1
+                                  && rh.FKProjectId == projectId
+                                  && rd.FKProductId == stock.FKProductId
+                            orderby rd.Id descending
+                            select (long?)rd.Id
+                        ).FirstOrDefault();
+                    }
+
+                    if (!requestDetailId.HasValue)
+                        throw new Exception("Unable to create outward entry for serial: " + serial + ". Request detail not found.");
+
+                    outward = new OutwardDetail
+                    {
+                        FKStockDetailsID = stock.Id,
+                        FKInventoryMobileStockRequestDetailId = requestDetailId.Value,
+                        AllocatedTo = userId,
+                        AllocatedQty = 1,
+                        InstalledQty = 0,
+                        TransferredQty = 0,
+                        ReturnToWarehouseQty = 0,
+                        RemovedQty = 0,
+                        AllocatedByReopen = 0,
+                        AllStockUtilized = false,
+                        MobileResponse = 0,
+                        Active = 1,
+                        CreatedBy = userId,
+                        CreatedOn = DateTime.Now
+                    };
+
+                    db.OutwardDetails.Add(outward);
+                    db.SaveChanges();
+                }
 
                 // 3️⃣ Get service mapping
                 var serviceProduct = db.ProjectServiceProductRelations
@@ -3228,20 +3268,19 @@ namespace GarronT.CMS.Model.DAL
 
                 // 6️⃣ Create outward mapping
                 tblProjectFieldDataInventoryOutwardDetail outInv = new tblProjectFieldDataInventoryOutwardDetail();
-
                 outInv.Active = 1;
                 outInv.CreatedOn = DateTime.Now;
                 outInv.CreatedBy = userId;
                 outInv.FKOutwardDetailsId = outward.Id;
                 outInv.FKtblProjectFieldDataInventoryDetailsId = inv.ID;
                 outInv.TotalQty = 1;
-
                 db.tblProjectFieldDataInventoryOutwardDetails.Add(outInv);
 
                 // 7️⃣ Update inventory detail
                 inv.StockVerified = 1;
 
                 // 8️⃣ Update outward
+                outward.AllocatedTo = userId;
                 outward.InstalledQty = 1;
                 outward.AllStockUtilized = true;
                 outward.ModifiedOn = DateTime.Now;

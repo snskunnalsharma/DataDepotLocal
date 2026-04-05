@@ -1208,43 +1208,38 @@
                         </div>
                         <div id="divCompleteUpload" style="display:none;margin-top:6px;width:100%;overflow:hidden;">
                             <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:13px;max-width:100%;">
-
                                 <span style="font-weight:600;color:#2c3e50;white-space:nowrap;">
                                     Completed Inventory:
                                 </span>
-
                                 <input type="file"
                                        id="completedInventoryFile"
                                        accept=".xlsx,.xls,.csv"
-                                       style="font-size:16px;height:25px;max-width:310px;" />
-
+                                       style="font-size:13px; padding:4px; border:1px solid #ccc; border-radius:4px;
+                                        background:#f8f9fa; cursor:pointer; max-width:260px;" />
                                 <button id="btnUploadCompletedInventory"
                                         type="button"
                                         class="btn btn-info btn-sm"
-                                        style="padding:4px 10px;font-size:12px;">
+                                        style="padding:3px 10px;font-size:13px;border-radius:5px;font-weight:600;min-width:110px;">
                                     <i class="fa fa-upload"></i> Upload
                                 </button>
 
                                 <button id="btnSubmitCompletedInventory"
                                         type="button"
                                         class="btn btn-success btn-sm"
-                                        style="display:none;padding:4px 10px;font-size:12px;">
+                                        style="padding:3px 10px;font-size:13px;border-radius:5px;font-weight:600;min-width:110px;">
                                     <i class="fa fa-check"></i> Compare
                                 </button>
-
                                 <button id="btnDownloadMatchedCsv"
                                         class="btn btn-success btn-sm"
-                                        style="display:none;padding:4px 10px;font-size:12px;">
+                                        style="display:none;padding:3px 10px;font-size:13px;border-radius:5px;font-weight:600;min-width:110px;">
                                     <i class="fa fa-download"></i> Download Inventory Report
                                 </button>
-
                                 <button id="btnInstallInventory"
                                         onclick="InstallInventory()"
                                         class="btn btn-info btn-sm"
-                                        style="display:none;padding:4px 10px;font-size:12px;">
+                                        style="display:none;padding:3px 10px;font-size:13px;border-radius:5px;font-weight:600;min-width:110px;">
                                     <i class="fa fa-cogs"></i> Install Inventory
                                 </button>
-
                             </div>
                         </div>
 
@@ -1318,6 +1313,7 @@
     var lastCompareUnmatched = [];          // unmatched serials (optional)
 
     $(document).ready(function () {
+
 
         $("#InventoryReports").addClass('active');
         $("#subReports").addClass('block');
@@ -1394,7 +1390,16 @@
         $('#ProjectId').empty().trigger('chosen:updated');
         $('#ProductId').empty().trigger('chosen:updated');
         $('#InstallerId').empty().trigger('chosen:updated');
+        $('#dynamic-table').DataTable().clear().draw();
+        $('#dynamic-table-Summary').DataTable().clear().draw();
+        $("#dynamic-table_wrapper").show();
+        $("#dynamic-table-Summary_wrapper").show();
 
+        // Chosen dropdown sometimes updates value slightly after change event; run toggle on next tick.
+        setTimeout(function () {
+            toggleCompletedInventoryUI();
+        }, 0);
+        var projectId = $("#ProjectId").val();
 
         var value = $("#UtilityId option:selected")
 
@@ -1440,10 +1445,15 @@
         if (ReportType == "0") {
             $("#divDetail").hide();
             $("#divSummary").show();
+            // Hide table chrome until Search loads data.
+            $("#dynamic-table_wrapper").hide();
+            $("#dynamic-table-Summary_wrapper").show();
         }
         else {
             $("#divDetail").show();
             $("#divSummary").hide();
+            $("#dynamic-table_wrapper").show();
+            $("#dynamic-table-Summary_wrapper").hide();
         }
 
 
@@ -1673,8 +1683,10 @@
 
 
     function toggleCompletedInventoryUI() {
+        // Use numeric comparison to avoid string/format mismatches from dropdown values.
         var projectId = $("#ProjectId").val();
-        var isInventoryCompareProject = (projectId == "10134");
+        var pid = parseInt(projectId, 10);
+        var isInventoryCompareProject = (pid === 10135 || pid === 10136);
 
         if (isInventoryCompareProject) {
             $("#divCompleteUpload").show();
@@ -1688,11 +1700,20 @@
     }
 
     $("#ProjectId").change(function () {
-        resetReportState();
+       // resetReportState();
+
         $("#ReportType").val("1").trigger("chosen:updated");
         $("#divDetail").show();
         $("#divSummary").hide();
-        toggleCompletedInventoryUI();
+        $('#dynamic-table').DataTable().clear().draw();
+        $('#dynamic-table-Summary').DataTable().clear().draw();
+        $("#dynamic-table_wrapper").show();
+        $("#dynamic-table-Summary_wrapper").show();
+
+        // Chosen dropdown sometimes updates value slightly after change event; run toggle on next tick.
+        setTimeout(function () {
+            toggleCompletedInventoryUI();
+        }, 0);
         var projectId = $("#ProjectId").val();
 
         // ---------- EXISTING CODE (DO NOT REMOVE) ----------
@@ -1895,8 +1916,9 @@
     $("#btnSubmitCompletedInventory").click(function () {
 
         var projectId = $("#ProjectId").val();
-        if (projectId !== "10134") {
-            toastr.error("Allowed only for Project 10134");
+        var pid = parseInt(projectId, 10);
+        if (pid !== 10135 && pid !== 10136) {
+            toastr.error("Allowed only for Projects 10135 and 10136");
             return;
         }
 
@@ -1917,13 +1939,45 @@
 
     function showCompareResultPopup() {
         $.confirm({
-            title: 'Compare Result',
+            title: '<b style="font-size:16px; color:#007bff;">Compare Result</b>',
+            boxWidth: '280px',   // 🔥 chota popup
+            useBootstrap: false,
+
             content:
-                "<div>" +
-                "<b>Matched (Green):</b> " + lastCompareGreen.length + "<br>" +
-                "<b>System Only (Yellow):</b> " + lastCompareYellow.length + "<br>" +
-                "<b>File Only (Red):</b> " + lastCompareRed.length +
-                "</div>"
+                "<div style='font-size:14px; line-height:1.8; padding:10px;'>" +
+
+                "<div style='margin-bottom:10px; padding:6px; background:#d4edda; border-radius:5px; box-shadow:0 2px 6px rgba(0,0,0,0.1);'>" +
+                "<strong style='color:#155724;'>Matched (Green):</strong> " +
+                "<strong style='color:#155724;'>" + lastCompareGreen.length + "</strong>" +
+                "</div>" +
+
+                "<div style='margin-bottom:10px; padding:6px; background:#fff3cd; border-radius:5px; box-shadow:0 2px 6px rgba(0,0,0,0.1);'>" +
+                "<strong style='color:#856404;'>Inventory Unused (Yellow):</strong> " +
+                "<strong style='color:#856404;'>" + lastCompareYellow.length + "</strong>" +
+                "</div>" +
+
+                "<div style='margin-bottom:10px; padding:6px; background:#f8d7da; border-radius:5px; box-shadow:0 2px 6px rgba(0,0,0,0.1);'>" +
+                "<strong style='color:#721c24;'>Not In Inventory (Red):</strong> " +
+                "<strong style='color:#721c24;'>" + lastCompareRed.length + "</strong>" +
+                "</div>" +
+
+                "</div>",
+
+            buttons: {
+                close: {
+                    text: "CLOSE",
+                    btnClass: "btn-default"
+                }
+            },
+
+            onOpen: function () {
+                this.$buttons.find('button').css({
+                    'font-size': '13px',
+                    'padding': '5px 0',
+                    'width': '100px',
+                    'text-align': 'center'
+                });
+            }
         });
     }
 
@@ -2096,6 +2150,10 @@
             $('#dynamic-table-Summary').DataTable().destroy();
             $('#dynamic-table-Summary tbody').empty();
         }
+
+        // Hide DataTables pagination/search/length controls while no data is loaded.
+        $("#dynamic-table_wrapper").hide();
+        $("#dynamic-table-Summary_wrapper").hide();
 
         $("#divDetail").hide();
         $("#divSummary").show();

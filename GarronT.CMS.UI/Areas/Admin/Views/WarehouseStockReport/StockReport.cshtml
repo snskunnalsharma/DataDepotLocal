@@ -14,6 +14,11 @@
 
 @Html.Hidden("urlEditPermission", Url.Action("EditPermission", "WarehouseStockReport"))
 @Html.Hidden("urlDeletePermission", Url.Action("DeletePermission", "WarehouseStockReport"))
+@Html.Hidden("urlUploadCompletedInventory", Url.Action("UploadCompletedInventory", "WarehouseStockReport"))
+@Html.Hidden("urlGetCompletedInventoryForCompare", Url.Action("GetCompletedInventoryForCompare", "WarehouseStockReport"))
+@Html.Hidden("urlSaveMissingInventory", Url.Action("SaveMissingInventory", "WarehouseStockReport"))
+@Html.Hidden("urlDownloadComparisonExcel", Url.Action("DownloadComparisonExcel", "WarehouseStockReport"))
+@Html.Hidden("urlInstallMatchedInventory", Url.Action("InstallMatchedInventory", "InventryStockReport"))
 
 <style>
     .recinv-drp3 {
@@ -78,6 +83,46 @@
         }
     }
 
+</style>
+<style>
+    /* Toolbar polish for new compare controls */
+    .compare-toolbar {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-left: 12px;
+        flex-wrap: wrap;
+    }
+    .compare-filename {
+        max-width: 240px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: #666;
+        display:none;
+    }
+    .compare-legend {
+        display:none;
+        margin: 8px 0 0 0;
+        text-align: left;
+    }
+    .compare-legend .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-right: 12px;
+        margin-bottom: 6px;
+        font-size: 12px;
+    }
+    .compare-legend .swatch {
+        width: 14px;
+        height: 14px;
+        border: 1px solid #ccc;
+        display: inline-block;
+    }
+    .swatch-green { background: #90EE90; }
+    .swatch-yellow { background: #FFFF99; }
+    .swatch-red { background: #F8D7DA; }
 </style>
 <style>
     /*************************************Bootstrap Css***********************************/
@@ -1187,9 +1232,26 @@
                         <button id="btnSearch" class="btn btn-success" type="button">Search</button>
                         <button id="btnReset" class="btn btn-danger" type="button">Reset</button>
                         <button id="btnExport" class="btn btn-success" type="button">Export</button>
+                        <span class="compare-toolbar">
+                            <button id="btnChooseCompletedFile" class="btn btn-default" type="button" style="display:none;" title="Choose completed inventory file">
+                                <i class="fa fa-file-excel-o"></i> Choose File
+                            </button>
+                            <span id="completedFilename" class="compare-filename">No file selected</span>
+                            <input type="file" id="completedInventoryFile" accept=".csv,.xlsx,.xls" style="display:none;" />
+                            <button id="btnUploadCompletedInventory" class="btn btn-primary" type="button" style="display:none;" disabled title="Upload selected file">
+                                <i class="fa fa-upload"></i> Upload
+                            </button>
+                            <button id="btnSubmitCompletedInventory" class="btn btn-info" type="button" style="display:none;" title="Compare uploaded file with system">
+                                <i class="fa fa-exchange"></i> Compare
+                            </button>
+                            <button id="btnDownloadComparison" class="btn btn-warning" type="button" style="display:none;" disabled title="Download comparison Excel">
+                                <i class="fa fa-download"></i> Download
+                            </button>
+                        </span>
                     </div>
                 </div>
 
+                <!-- legend removed per request -->
 
                 <div id="divDetail" style="display:none" class="">
                     <div class="table-responsive  rep_dyn_table" id="inventryReceiveDiv">
@@ -1493,6 +1555,17 @@
 
 
     $('#UtilityId').change(function () {
+        updateCompareUiVisibility();
+        clearReportDataAndTables();
+        $("#btnChooseCompletedFile").hide();
+        $("#completedFilename").hide();
+        $("#btnUploadCompletedInventory").hide();
+        $("#btnSubmitCompletedInventory").hide();
+        $("#btnDownloadComparison").hide();
+        $("#compareLegend").hide();
+        $("#btnDownloadComparison").prop("disabled", true);
+        $("#btnUploadCompletedInventory").prop("disabled", true);
+        $("#completedFilename").text("No file selected");
 
         $('#ProjectId').empty().trigger('chosen:updated');
         //$('#WarehouseId').empty().trigger('chosen:updated');
@@ -1532,6 +1605,7 @@
 
 
     $('#ProjectId').change(function () {
+        clearReportDataAndTables();
 
 
         //$('#WarehouseId').empty().trigger('chosen:updated');
@@ -1604,6 +1678,54 @@
     })
 
     var stockDetailModel;
+    var completedInventoryItems = [];
+    var completedSerialSet = new Set();
+    var lastCompareRed = [];
+    var lastCompareGreen = [];
+    var lastCompareYellow = [];
+    function clearReportDataAndTables() {
+        stockDetailModel = [];
+        completedInventoryItems = [];
+        completedSerialSet = new Set();
+        lastCompareRed = [];
+        lastCompareGreen = [];
+        lastCompareYellow = [];
+
+        try {
+            if ($.fn.DataTable.isDataTable('#dynamic-table')) {
+                $('#dynamic-table').DataTable().clear().draw();
+            }
+            if ($.fn.DataTable.isDataTable('#dynamic-table-summary')) {
+                $('#dynamic-table-summary').DataTable().clear().draw();
+            }
+        } catch (e) { }
+
+        $("#btnDownloadComparison").prop("disabled", true);
+    }
+
+    function updateCompareUiVisibility() {
+        var pid = parseInt($("#ProjectId").val() || "0", 10);
+        var shouldShow = (pid === 10135 || pid === 10136);
+        if (shouldShow) {
+            $("#btnChooseCompletedFile").show();
+            $("#completedFilename").show();
+            $("#btnUploadCompletedInventory").show();
+            $("#btnSubmitCompletedInventory").show();
+            $("#btnDownloadComparison").show();
+            $("#compareLegend").show();
+        } else {
+            $("#btnChooseCompletedFile").hide();
+            $("#completedFilename").hide();
+            $("#btnUploadCompletedInventory").hide();
+            $("#btnSubmitCompletedInventory").hide();
+            $("#btnDownloadComparison").hide();
+            $("#compareLegend").hide();
+            $("#btnDownloadComparison").prop("disabled", true);
+            $("#btnUploadCompletedInventory").prop("disabled", true);
+            $("#completedFilename").text("No file selected");
+        }
+    }
+
     function LoadGrid() {
 
         debugger;
@@ -1680,6 +1802,256 @@
 
         })
     }
+
+    function normalizeSerial(v) {
+        if (!v) return "";
+        return v.toString().trim().replace(/\s+/g, "").toUpperCase();
+    }
+
+    function getSystemSerialSet() {
+        var set = new Set();
+        if (!stockDetailModel || stockDetailModel.length === 0) return set;
+        for (var i = 0; i < stockDetailModel.length; i++) {
+            var s = normalizeSerial(stockDetailModel[i].serialnumber);
+            if (s) set.add(s);
+        }
+        return set;
+    }
+
+    function colorDetailRows(greenSet, yellowSet) {
+        var dt = $('#dynamic-table').DataTable();
+        dt.rows().every(function () {
+            var d = this.data();
+            var $row = $(this.node());
+            var s = normalizeSerial(d.serialnumber);
+            $row.css('background-color', '');
+            if (s) {
+                if (greenSet.has(s)) {
+                    $row.css('background-color', '#90EE90'); // lightgreen
+                } else if (yellowSet.has(s)) {
+                    $row.css('background-color', '#FFFF99'); // light yellow
+                }
+            }
+        });
+    }
+
+    function applyWarehouseComparisonIfReady() {
+        var pid = parseInt($("#ProjectId").val() || "0", 10);
+        if (pid !== 10135 && pid !== 10136) return;
+        if ($("#ReportType").val() !== "1") return;
+
+        if (!stockDetailModel || stockDetailModel.length === 0) {
+            toastr.error("Please run Search before Compare");
+            return;
+        }
+
+        var url = $('#urlGetCompletedInventoryForCompare').val();
+        waitingDialog.show('Comparing...');
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: { projectId: pid },
+            success: function (res) {
+                waitingDialog.hide();
+                if (!res || !res.success) {
+                    toastr.error((res && res.message) ? res.message : "No uploaded inventory found to compare.");
+                    return;
+                }
+                completedInventoryItems = (res.inventoryList || []).map(function (x) {
+                    return {
+                        productName: x.productName || "",
+                        serialNumber: normalizeSerial(x.serialNumber),
+                        technicianName: x.technicianName || "",
+                        installerEmail: x.installerEmail || ""
+                    };
+                }).filter(function (x) { return x.serialNumber; });
+                completedSerialSet = new Set(completedInventoryItems.map(function (x) { return x.serialNumber; }));
+
+                var systemSet = getSystemSerialSet();
+                var green = [];
+                var yellow = [];
+                var red = [];
+
+                // green: intersection
+                completedInventoryItems.forEach(function (x) {
+                    if (systemSet.has(x.serialNumber)) green.push(x);
+                });
+                // yellow: in system only
+                systemSet.forEach(function (s) {
+                    if (!completedSerialSet.has(s)) {
+                        yellow.push({ productName: "", serialNumber: s, technicianName: "", installerEmail: "" });
+                    }
+                });
+                // red: in completed file but not in system
+                completedInventoryItems.forEach(function (x) {
+                    if (!systemSet.has(x.serialNumber)) red.push(x);
+                });
+
+                lastCompareGreen = green;
+                lastCompareYellow = yellow;
+                lastCompareRed = red;
+
+                var greenSet = new Set(green.map(function (x) { return x.serialNumber; }));
+                var yellowSet = new Set(yellow.map(function (x) { return x.serialNumber; }));
+                colorDetailRows(greenSet, yellowSet);
+
+                saveMissingInventory(pid, red);
+                showCompareResultPopup();
+                $("#btnDownloadComparison").prop("disabled", false);
+            },
+            error: function () {
+                waitingDialog.hide();
+                toastr.error("Compare failed");
+            }
+        });
+    }
+
+    function saveMissingInventory(projectId, redList) {
+        if (!redList || redList.length === 0) return;
+        var url = $('#urlSaveMissingInventory').val();
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: {
+                projectId: projectId,
+                redJson: JSON.stringify(redList)
+            },
+            success: function (res) {
+                if (res && res.success) {
+                    // optional success toast
+                } else {
+                    toastr.error((res && res.message) ? res.message : "Failed to save missing inventory", "Notification !");
+                }
+            },
+            error: function () {
+                toastr.error("Server error while saving missing inventory", "Notification !");
+            }
+        });
+    }
+
+    function showCompareResultPopup() {
+        var g = lastCompareGreen.length;
+        var y = lastCompareYellow.length;
+        var r = lastCompareRed.length;
+        var total = g + y + r;
+        var html = ''
+            + '<div style="font-size:14px; line-height:1.6;">'
+            + '<div><b>Total:</b> ' + total + '</div>'
+            + '<div style="color:#155724;background:#d4edda;padding:6px 8px;margin-top:6px;"><b>Matched (Green):</b> ' + g + '</div>'
+            + '<div style="color:#856404;background:#fff3cd;padding:6px 8px;margin-top:6px;"><b>Inventory Unused (Yellow):</b> ' + y + '</div>'
+            + '<div style="color:#721c24;background:#f8d7da;padding:6px 8px;margin-top:6px;"><b>Not in Inventory (Red):</b> ' + r + '</div>'
+            + '<div style="margin-top:10px;">Details are also color-marked in the table.</div>'
+            + '</div>';
+        $.confirm({
+            title: '<b style="font-size:16px; color:#007bff;">Compare Result</b>',
+            boxWidth: '340px',
+            useBootstrap: false,
+            content: html,
+            buttons: {
+                Close: function () { }
+            }
+        });
+    }
+
+    function downloadComparisonExcel() {
+        var pid = parseInt($("#ProjectId").val() || "0", 10);
+        if (!lastCompareGreen && !lastCompareYellow && !lastCompareRed) {
+            toastr.error("Please run Compare first");
+            return;
+        }
+        var url = $('#urlDownloadComparisonExcel').val();
+        var form = $('<form method="POST" style="display:none;"></form>').attr('action', url).attr('target', '_blank');
+        form.append($('<input type="hidden" name="projectId">').val(pid));
+        form.append($('<input type="hidden" name="greenJson">').val(JSON.stringify(lastCompareGreen || [])));
+        form.append($('<input type="hidden" name="yellowJson">').val(JSON.stringify(lastCompareYellow || [])));
+        form.append($('<input type="hidden" name="redJson">').val(JSON.stringify(lastCompareRed || [])));
+        document.body.appendChild(form[0]);
+        form[0].submit();
+        setTimeout(function () { try { form.remove(); } catch (e) {} }, 5000);
+    }
+
+    // choose file UX
+    $("#btnChooseCompletedFile").on("click", function () {
+        $("#completedInventoryFile").trigger("click");
+    });
+    $("#completedInventoryFile").on("change", function () {
+        var f = this.files && this.files.length > 0 ? this.files[0] : null;
+        if (f) {
+            $("#completedFilename").text(f.name);
+            $("#btnUploadCompletedInventory").prop("disabled", false);
+        } else {
+            $("#completedFilename").text("No file selected");
+            $("#btnUploadCompletedInventory").prop("disabled", true);
+        }
+    });
+
+    $('#btnUploadCompletedInventory').click(function () {
+        var pid = parseInt($("#ProjectId").val() || "0", 10);
+        if (pid !== 10135 && pid !== 10136) {
+            toastr.error("Allowed only for Projects 10135 and 10136");
+            return;
+        }
+        var fileInput = document.getElementById('completedInventoryFile');
+        if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+            toastr.error("Please choose a file to upload");
+            return;
+        }
+        var formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+        formData.append('projectId', pid);
+        var url = $('#urlUploadCompletedInventory').val();
+        waitingDialog.show('Uploading...');
+        $.ajax({
+            url: url,
+            data: formData,
+            type: 'POST',
+            contentType: false,
+            processData: false,
+            success: function (res) {
+                waitingDialog.hide();
+                if (res && res.success) {
+                    toastr.success("Completed inventory uploaded (" + res.serialCount + " serials)");
+                    // keep compare enabled; download will enable after compare
+                } else {
+                    toastr.error((res && res.message) ? res.message : "Upload failed");
+                }
+            },
+            error: function () {
+                waitingDialog.hide();
+                toastr.error("Upload failed");
+            }
+        });
+    });
+
+    $("#btnSubmitCompletedInventory").click(function () {
+        var pid = parseInt($("#ProjectId").val() || "0", 10);
+        if (pid !== 10135 && pid !== 10136) {
+            toastr.error("Allowed only for Projects 10135 and 10136");
+            return;
+        }
+        if ($("#ReportType").val() !== "1") {
+            $("#ReportType").val("1").trigger("chosen:updated");
+            LoadGrid();
+            setTimeout(function () {
+                applyWarehouseComparisonIfReady();
+            }, 800);
+            return;
+        }
+        applyWarehouseComparisonIfReady();
+    });
+
+    $("#ProjectId").on("change", function () {
+        updateCompareUiVisibility();
+    });
+    // initial state
+    updateCompareUiVisibility();
+
+    // download comparison excel
+    $("#btnDownloadComparison").on("click", function () {
+        if ($(this).prop("disabled")) return;
+        downloadComparisonExcel();
+    });
+
 
 
     function BindData(varData) {
@@ -1963,6 +2335,15 @@
         $('#ReportType').val('0').trigger("chosen:updated");
         $("#divDetail").hide();
         $("#divSummary").show();
+        $("#btnChooseCompletedFile").hide();
+        $("#completedFilename").hide();
+        $("#btnUploadCompletedInventory").hide();
+        $("#btnSubmitCompletedInventory").hide();
+        $("#btnDownloadComparison").hide();
+        $("#compareLegend").hide();
+        $("#btnDownloadComparison").prop("disabled", true);
+        $("#btnUploadCompletedInventory").prop("disabled", true);
+        $("#completedFilename").text("No file selected");
 
         $('#dynamic-table-summary').dataTable().fnClearTable();
     })

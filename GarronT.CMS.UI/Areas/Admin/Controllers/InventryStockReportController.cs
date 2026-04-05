@@ -343,8 +343,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         {
             try
             {
-                if (projectId != 10134)
-                    return Json(new { success = false, message = "This feature is enabled only for Project 10134." });
+                if (projectId != 10135 && projectId != 10136)
+                    return Json(new { success = false, message = "This feature is enabled only for Projects 10135 and 10136." });
 
                 if (file == null || file.ContentLength == 0)
                     return Json(new { success = false, message = "No file uploaded." });
@@ -371,8 +371,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         {
             try
             {
-                if (projectId != 10134)
-                    return Json(new { success = false, message = "Comparison allowed only for Project 10134." });
+                if (projectId != 10135 && projectId != 10136)
+                    return Json(new { success = false, message = "Comparison allowed only for Projects 10135 and 10136." });
 
                 var payload = Session["CompletedInventory_" + projectId] as CompletedInventoryPayload;
 
@@ -721,7 +721,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     ws.Cells[row, 1].Value = item.ProductName ?? "";
                     ws.Cells[row, 2].Value = serialNumber;
                     ws.Cells[row, 3].Value = item.TechnicianName ?? "";
-                    ws.Cells[row, 4].Value = "FILE_ONLY";
+                    ws.Cells[row, 4].Value = "Not In Inventory";
                     ws.Cells[row, 5].Value = 1;
                     ws.Cells[row, 6].Value = installerEmail;
 
@@ -749,8 +749,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         {
             try
             {
-                if (projectId != 10134)
-                    return Json(new { success = false, message = "Comparison allowed only for Project 10134." });
+                if (projectId != 10135 && projectId != 10136)
+                    return Json(new { success = false, message = "Comparison allowed only for Projects 10135 and 10136." });
 
                 var red = JsonConvert.DeserializeObject<List<CompletedInventorySerialItem>>(redJson ?? "[]");
 

@@ -108,28 +108,38 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         public List<LocationDropdownList> GetLocationList(long ProjectId)
         {
             CompassEntities CompassEntities = new CompassEntities();
-            List<LocationDropdownList> data = CompassEntities.StockDetails.Where(p => p.FKProjectId == ProjectId && p.Active == 1 && p.Location != "" && p.Location != null).OrderBy(o => o.Location).Select(o =>
-                                                         new LocationDropdownList
-                                                         {
-                                                             LocationId = o.Location,
-                                                             Location = o.Location
-                                                         }).Distinct().ToList();
+
+            List<LocationDropdownList> data = CompassEntities.StockDetails
+                .Where(p => p.FKProjectId == ProjectId
+                         && p.Active == 1
+                         && p.Location != ""
+                         && p.Location != null)
+                .OrderBy(o => o.Location)
+                .Select(o => new LocationDropdownList
+                {
+                    LocationId = o.Location,
+                    Location = o.Location
+                })
+                .Distinct()
+                .ToList();
+
             return data;
         }
 
         [HttpGet]
         public ActionResult getToLocationList(long ProjectId, long ProductId, string LocationFromValue)
         {
-            InventoryDAL objInventoryDAL = new InventoryDAL();
-            List<LocationDropdownList> data1 = GetAllLocations(ProjectId);
-            //List<LocationDropdownList> data2 = GetLocationList(ProjectId);
-            var toList = data1.Where(o => o.Location != LocationFromValue).OrderBy(o => o.Location).ToList();
-            /*List<LocationDropdownList> data2 = objInventoryDAL.GetLocationList(ProjectId);
-            var toList = data2.Where(o => o.ProductId == ProductId && o.Location != LocationFromValue).OrderBy(o => o.Location).ToList();*/
-            return base.Json(new { LocationList = toList }, JsonRequestBehavior.AllowGet);
+            List<LocationDropdownList> data1 = GetLocationList(ProjectId);
+
+            var toList = data1
+                .Where(o => o.Location != LocationFromValue)
+                .OrderBy(o => o.Location)
+                .ToList();
+
+            return Json(new { LocationList = toList }, JsonRequestBehavior.AllowGet);
         }
 
-        public List<LocationDropdownList> GetAllLocations(long ProjectId)
+        /*public List<LocationDropdownList> GetAllLocations(long ProjectId)
         {
             CompassEntities CompassEntities = new CompassEntities();
             List<LocationDropdownList> data = new List<LocationDropdownList>();
@@ -146,7 +156,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 }
             }
             return data;
-        }
+        }*/
 
         /// <summary>
         /// 24-jul-2017
