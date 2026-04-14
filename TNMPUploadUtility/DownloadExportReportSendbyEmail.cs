@@ -381,8 +381,9 @@ namespace TNMPUploadUtility
               mail.To.Add("howard.dennings@beaumonttexas.gov");
               mail.To.Add("ashley.hoyt@beaumonttexas.gov");
               mail.To.Add("brigette.johnson@BeaumontTexas.gov");
-               // Add CC and BCC
-              mail.CC.Add("garron@cmsmeter.com");
+                mail.To.Add("Elizabeth.dugas@beaumonttexas.gov");
+                // Add CC and BCC
+                mail.CC.Add("garron@cmsmeter.com");
               mail.CC.Add("jason.norton@republicmeter.com");
               mail.CC.Add("juston.hargraves@beaumonttexas.gov");
               mail.CC.Add("kelli.reindel@beaumonttexas.gov");

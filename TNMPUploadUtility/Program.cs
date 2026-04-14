@@ -251,7 +251,7 @@ namespace TNMPUploadUtility
                Console.WriteLine("Error for Upload old files s3 bucket:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
            }
            ErrorLogFile.writeStatus("Thread Ended at Uploaded old files s3 bucket - " + DateTime.Now.ToShortTimeString());
-           Console.WriteLine("Thread Ended at Uploaded old files s3 bucket - " + DateTime.Now.ToShortTimeString());
+           Console.WriteLine("Thread Ended at Uploaded old files s3 bucket - " + DateTime.Now.ToShortTimeString());*/
             #endregion
             //ends hare
             #region Export Report By Email With_Meter
@@ -390,7 +390,7 @@ namespace TNMPUploadUtility
             #endregion
 
             #region Export Report By Email Without Meter Number
-            /* long projectId = 10134;
+            long projectId = 10134;
                 long formTypeId = 2;
                 string[] visitStatus = new string[] { "Completed" };
                 int latlongRequired = 1;
@@ -497,7 +497,7 @@ namespace TNMPUploadUtility
                 else
                 {
                     Console.WriteLine("No data available for the selected date range.");
-                }*/
+                }
 
             #endregion
 

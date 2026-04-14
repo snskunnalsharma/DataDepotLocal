@@ -19,6 +19,9 @@ namespace GarronT.CMS.Model.BO
         public long WarehouseId { get; set; }
         public string WarehouseName { get; set; }
 
+        /// <summary>Destination warehouse for warehouse transfer screens (optional).</summary>
+        public long ToWarehouseId { get; set; }
+
         public string SerialNumber { get; set; }
         [StringLength(250, ErrorMessage = "Product Description must be at least {2} and max {1} characters long.", MinimumLength = 1)]
         public string ProductDescription { get; set; }
@@ -112,6 +115,13 @@ namespace GarronT.CMS.Model.BO
 
         public string RecordStatus { get; set; }
         public int ValidRecords { get; set; }
+        public string InventoryType { get; internal set; }
+        public string PONumber { get; internal set; }
+        public string Manufacturer { get; internal set; }
+        public string PalletNumber { get; internal set; }
+        public string TrayID { get; internal set; }
+        public string Project { get; internal set; }
+        public string Location { get; internal set; }
     }
     //ObjMeterSizeList
 

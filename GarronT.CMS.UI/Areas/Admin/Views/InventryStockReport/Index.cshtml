@@ -1640,7 +1640,8 @@
 
         LoadDatatable()
         var DownloadExcelExport = $('#urlDownloadExcelExport').val();
-        location.href = DownloadExcelExport + "?projectId=" + ProjectId + "&installerId=" + InstallerId + "&ProductId=" + ProductId + "&txtFromDate=" + txtFromDate + "&txtToDate=" + txtToDate + "&ReportType=" + ReportType;;
+        // Direct download (email alert UI / server email disabled for now)
+        location.href = DownloadExcelExport + "?projectId=" + ProjectId + "&installerId=" + InstallerId + "&ProductId=" + ProductId + "&txtFromDate=" + txtFromDate + "&txtToDate=" + txtToDate + "&ReportType=" + ReportType + "&sendEmail=false";
     })
 
     $("#btnReset").click(function () {
@@ -1940,7 +1941,7 @@
     function showCompareResultPopup() {
         $.confirm({
             title: '<b style="font-size:16px; color:#007bff;">Compare Result</b>',
-            boxWidth: '280px',   // 🔥 chota popup
+            boxWidth: '325px',   // 🔥 chota popup
             useBootstrap: false,
 
             content:
@@ -1956,9 +1957,9 @@
                 "<strong style='color:#856404;'>" + lastCompareYellow.length + "</strong>" +
                 "</div>" +
 
-                "<div style='margin-bottom:10px; padding:6px; background:#f8d7da; border-radius:5px; box-shadow:0 2px 6px rgba(0,0,0,0.1);'>" +
-                "<strong style='color:#721c24;'>Not In Inventory (Red):</strong> " +
-                "<strong style='color:#721c24;'>" + lastCompareRed.length + "</strong>" +
+                "<div style='margin-bottom:10px; padding:6px; background:#cfe2ff; border-radius:5px; box-shadow:0 2px 6px rgba(0,0,0,0.1);'>" +
+                "<strong style='color:#084298;'>Installed Not In Inventory (Blue):</strong> " +
+                "<strong style='color:#084298;'>" + lastCompareRed.length + "</strong>" +
                 "</div>" +
 
                 "</div>",
@@ -2025,15 +2026,20 @@
 
         var dt = $('#dynamic-table').DataTable();
         var product = "";
+        var technician = "";
 
         dt.rows({ search: 'applied' }).every(function () {
             var d = this.data();
             if (normalizeSerial(d.SerialNumber) === serial) {
                 product = d.ProductName || "";
+                technician = d.UserName || "";
             }
         });
 
-        return product;
+        return {
+            productName: product,
+            technicianName: technician
+        };
     }
 
     function applyCorrectComparison() {
@@ -2063,9 +2069,11 @@
 
         systemSerialSet.forEach(function (s) {
             if (!completedSerialSet.has(s)) {
+                var systemRow = getProductNameFromTable(s);
                 lastCompareYellow.push({
-                    ProductName: getProductNameFromTable(s),
-                    SerialNumber: s
+                    ProductName: systemRow.productName,
+                    SerialNumber: s,
+                    TechnicianName: systemRow.technicianName
                 });
             }
         });
@@ -2121,19 +2129,24 @@
         });
     }
 
-    $("#btnDownloadMatchedCsv").off("click").on("click", function () {
+        $("#btnDownloadMatchedCsv").off("click").on("click", function () {
 
-        if (!lastCompareRed || lastCompareRed.length === 0) {
-            toastr.error("No red/file-only data to download");
+        var greenItems = buildGreenItemsForExcel();
+        var hasGreen = greenItems && greenItems.length > 0;
+        var hasYellow = lastCompareYellow && lastCompareYellow.length > 0;
+        var hasRed = lastCompareRed && lastCompareRed.length > 0;
+
+        if (!hasGreen && !hasYellow && !hasRed) {
+            toastr.error("No comparison data to download");
             return;
         }
 
         var form = $('<form method="POST" action="/Admin/InventryStockReport/DownloadComparisonExcel"></form>');
         form.append($('<input type="hidden" name="projectId">').val($("#ProjectId").val()));
-        form.append($('<input type="hidden" name="greenJson">').val("[]"));
-        form.append($('<input type="hidden" name="yellowJson">').val("[]"));
+        form.append($('<input type="hidden" name="greenJson">').val(JSON.stringify(greenItems)));
+        form.append($('<input type="hidden" name="yellowJson">').val(JSON.stringify(lastCompareYellow || [])));
         form.append($('<input type="hidden" name="redJson">').val(JSON.stringify(lastCompareRed)));
-
+        form.append($('<input type="hidden" name="sendEmail">').val("false"));
         $('body').append(form);
         form.submit();
         form.remove();
@@ -2213,21 +2226,23 @@
     }
 
     function getProductNameFromTable(serial) {
-
         var dt = $('#dynamic-table').DataTable();
         var product = "";
+        var technician = "";
+        var normalized = normalizeSerial(serial);
 
         dt.rows().every(function () {
-
             var d = this.data();
-
-            if (d.SerialNumber == serial) {
-                product = d.ProductName;
+            if (normalizeSerial(d.SerialNumber) === normalized) {
+                product = d.ProductName || "";
+                technician = d.UserName || "";
             }
-
         });
 
-        return product;
+        return {
+            productName: product,
+            technicianName: technician
+        };
     }
 
     function getTechnicianBySerial(serial) {
@@ -2238,5 +2253,24 @@
         });
 
         return found ? (found.technicianName || "") : "";
+    }
+
+    /** Matched rows for comparison Excel: ProductName & TechnicianName from grid (DataTable), same shape as server CompletedInventorySerialItem */
+    function buildGreenItemsForExcel() {
+        var list = [];
+        (lastCompareGreen || []).forEach(function (s) {
+            var norm = normalizeSerial(s);
+            var fromTable = getProductNameFromTable(norm);
+            var item = completedInventoryItems.find(function (x) {
+                return x.serialNumber === norm;
+            });
+            list.push({
+                ProductName: (fromTable.productName || "").trim() || (item ? item.productName : ""),
+                SerialNumber: norm || (s ? String(s) : ""),
+                TechnicianName: (fromTable.technicianName || "").trim() || (item ? item.technicianName : ""),
+                InstallerEmail: item ? item.installerEmail : ""
+            });
+        });
+        return list;
     }
 </script>

@@ -247,6 +247,7 @@
                                 </a>
                             </li>
                         }
+                    
                         @if (PermissionList.Contains("ViewUploadRecords"))
                         {
 
@@ -457,7 +458,8 @@
             }
 
             if (PermissionList.Contains("WarehouseStockReport") || PermissionList.Contains("InventryStockReport")
-                || PermissionList.Contains("ProcuctMovementReport") || PermissionList.Contains("InventoryTransfer"))
+                || PermissionList.Contains("ProcuctMovementReport") || PermissionList.Contains("InventoryTransfer") || PermissionList.Contains("WarehouseTransfer")
+                || PermissionList.Contains("INVInstallerReport"))
             {
                 <li class="dcjq-parent-li">
                     <a id="InventoryReports" target="_self" class="nav-bg nav-main  dcjq-parent" href="javascript:void(0);">
@@ -495,7 +497,6 @@
                                     <span class="icon">
                                         <i class="fa fa-check-square-o"></i>
                                     </span>
-
                                     <span>Movement Report</span>
                                 </a>
                             </li>
@@ -507,8 +508,29 @@
                                     <span class="icon">
                                         <i class="fa fa-check-square-o"></i>
                                     </span>
-
                                     <span>Inventory Transfer</span>
+                                </a>
+                            </li>
+                        }
+                        @if (PermissionList.Contains("WarehouseTransfer"))
+                        {
+                            <li id="liWarehouseTransfer">
+                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "WarehouseTransfer", new { area = "Admin" })">
+                                    <span class="icon">
+                                        <i class="fa fa-check-square-o"></i>
+                                    </span>
+                                    <span>Warehouse Transfer</span>
+                                </a>
+                            </li>
+                        }
+                        @if (PermissionList.Contains("INVInstallerReport"))
+                        {
+                            <li id="liWarehouseTransfer">
+                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "INVInstallerReport", new { area = "Admin" })">
+                                    <span class="icon">
+                                        <i class="fa fa-check-square-o"></i>
+                                    </span>
+                                    <span>INV Installer Report</span>
                                 </a>
                             </li>
                         }

@@ -17,6 +17,10 @@ using System.Drawing;
 using Newtonsoft.Json;
 using System.Data.SqlClient;
 using System.Text.RegularExpressions;
+using System.Configuration;
+using System.IO;
+using System.Net.Mail;
+using log4net;
 
 namespace GarronT.CMS.UI.Areas.Admin.Controllers
 {
@@ -26,6 +30,8 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
     [RBAC]
     public class InventryStockReportController : Controller
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(InventryStockReportController));
+
         // GET: Admin/InventryStockReport
         public ActionResult Index()
         {
@@ -256,7 +262,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         }
 
 
-        public void DownloadExcelExport(long projectId, long installerId, long ProductId, string txtFromDate, string txtToDate, long ReportType)
+        public void DownloadExcelExport(long projectId, long installerId, long ProductId, string txtFromDate, string txtToDate, long ReportType, bool sendEmail = false)
         {
 
             StatusMessage statusMessage = new StatusMessage();
@@ -318,7 +324,15 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     wsDt.Cells["A1"].LoadFromDataTable(dt, true, OfficeOpenXml.Table.TableStyles.None);
                     wsDt.Cells[wsDt.Dimension.Address].AutoFitColumns();
 
-                    Response.BinaryWrite(pck.GetAsByteArray());
+                    byte[] excelBytes = pck.GetAsByteArray();
+
+                    // Email on export disabled for now — re-enable when needed.
+                    //if (sendEmail)
+                    //{
+                    //    TryEmailInventryStockReport(excelBytes);
+                    //}
+
+                    Response.BinaryWrite(excelBytes);
                 }
 
                 Response.Flush();
@@ -337,6 +351,54 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             // return Json(new { statusMessage}, JsonRequestBehavior.AllowGet);
             //return new EmptyResult();
         }
+
+        // Email alert disabled for now — restore method body when re-enabling sendEmail on export.
+        //private void TryEmailInventryStockReport(byte[] excelBytes)
+        //{
+        //    try
+        //    {
+        //        if (excelBytes == null || excelBytes.Length == 0) return;
+        //        string toEmail = "kunal.sharma@snssystem.com";
+        //        string fromEmail = (ConfigurationManager.AppSettings["WebMasterMailId"] ?? "").Trim();
+        //        string password = (ConfigurationManager.AppSettings["WebMasterMailPassword"] ?? "").Trim();
+        //        string host = (ConfigurationManager.AppSettings["WebMasterSMTPServer"] ?? "").Trim();
+        //        string portRaw = (ConfigurationManager.AppSettings["WebMasterPort"] ?? "").Trim();
+        //        string sslRaw = (ConfigurationManager.AppSettings["WebMasterEnableSSL"] ?? "").Trim();
+        //        int port;
+        //        if (!int.TryParse(portRaw, out port)) port = 587;
+        //        bool enableSsl;
+        //        if (!bool.TryParse(sslRaw, out enableSsl)) enableSsl = true;
+        //        using (var mail = new MailMessage())
+        //        {
+        //            mail.From = new MailAddress(fromEmail);
+        //            mail.To.Add(new MailAddress(toEmail));
+        //            mail.Subject = "Inventory Stock Report";
+        //            mail.Body = "Please find the Inventory Stock Report attached.";
+        //            mail.IsBodyHtml = false;
+        //            using (var ms = new MemoryStream(excelBytes))
+        //            using (var attachment = new Attachment(
+        //                ms,
+        //                "InventryStockReport.xlsx",
+        //                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        //            ))
+        //            {
+        //                mail.Attachments.Add(attachment);
+        //                using (var smtp = new SmtpClient(host, port))
+        //                {
+        //                    smtp.EnableSsl = enableSsl;
+        //                    smtp.UseDefaultCredentials = false;
+        //                    smtp.Credentials = new System.Net.NetworkCredential(fromEmail, password);
+        //                    smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+        //                    smtp.Send(mail);
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Log.Error("InventryStockReport email failed.", ex);
+        //    }
+        //}
 
         [HttpPost]
         public JsonResult UploadCompletedInventory(HttpPostedFileBase file, long projectId)
@@ -648,21 +710,59 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
      long projectId,
      string greenJson,
      string yellowJson,
-     string redJson
+     string redJson,
+     bool sendEmail = false
  )
         {
             var green = JsonConvert.DeserializeObject<List<CompletedInventorySerialItem>>(greenJson ?? "[]");
             var yellow = JsonConvert.DeserializeObject<List<CompletedInventorySerialItem>>(yellowJson ?? "[]");
             var red = JsonConvert.DeserializeObject<List<CompletedInventorySerialItem>>(redJson ?? "[]");
+
+            byte[] excelBytes = BuildComparisonExcelBytes(green, yellow, red);
+
+            // Email on comparison export disabled for now.
+            //if (sendEmail)
+            //{
+            //    TrySendInventoryComparisonEmail(excelBytes);
+            //}
+
+            return File(
+                excelBytes,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                "Inventory_Comparison_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx"
+            );
+        }
+
+        //private void TrySendInventoryComparisonEmail(byte[] excelBytes)
+        //{
+        //    try
+        //    {
+        //        SendInventoryComparisonEmail(excelBytes);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Log.Error("InventoryComparison email failed.", ex);
+        //    }
+        //}
+
+        private byte[] BuildComparisonExcelBytes(
+            List<CompletedInventorySerialItem> green,
+            List<CompletedInventorySerialItem> yellow,
+            List<CompletedInventorySerialItem> red)
+        {
+            green = green ?? new List<CompletedInventorySerialItem>();
+            yellow = yellow ?? new List<CompletedInventorySerialItem>();
+            red = red ?? new List<CompletedInventorySerialItem>();
+
             using (ExcelPackage pck = new ExcelPackage())
             {
                 ExcelWorksheet ws = pck.Workbook.Worksheets.Add("Inventory Comparison");
 
                 ws.Cells[1, 1].Value = "Product Name";
                 ws.Cells[1, 2].Value = "Serial Number";
-                ws.Cells[1, 3].Value = "Technician";
-                ws.Cells[1, 4].Value = "Status";
-                ws.Cells[1, 5].Value = "Remaining Qty";
+                ws.Cells[1, 3].Value = "Remaining Qty";
+                ws.Cells[1, 4].Value = "Technician";
+                ws.Cells[1, 5].Value = "Status";
                 ws.Row(1).Style.Font.Bold = true;
 
                 int row = 2;
@@ -676,14 +776,13 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         .ToUpper();
                 }
 
-                // ================= GREEN =================
                 foreach (var item in green)
                 {
                     ws.Cells[row, 1].Value = item.ProductName ?? "";
                     ws.Cells[row, 2].Value = item.SerialNumber ?? "";
-                    ws.Cells[row, 3].Value = item.TechnicianName ?? "";
-                    ws.Cells[row, 4].Value = "MATCHED";
-                    ws.Cells[row, 5].Value = 0;
+                    ws.Cells[row, 3].Value = 0;
+                    ws.Cells[row, 4].Value = item.TechnicianName ?? "";
+                    ws.Cells[row, 5].Value = "MATCHED (Green)";
 
                     ws.Cells[row, 1, row, 5].Style.Fill.PatternType = ExcelFillStyle.Solid;
                     ws.Cells[row, 1, row, 5].Style.Fill.BackgroundColor.SetColor(Color.LightGreen);
@@ -691,22 +790,26 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     row++;
                 }
 
-                // ================= YELLOW =================
+                // Unused: same as UI .notmatch-yellow (#fff3cd)
+                Color unusedFill = Color.FromArgb(255, 243, 205);
+                // Installed Not In Inventory: blue (matches compare-result popup)
+                Color installedNotInInvFill = Color.FromArgb(207, 226, 255);
+                Color installedNotInInvText = Color.FromArgb(8, 66, 152);
+
                 foreach (var item in yellow)
                 {
                     ws.Cells[row, 1].Value = item.ProductName ?? "";
                     ws.Cells[row, 2].Value = item.SerialNumber ?? "";
-                    ws.Cells[row, 3].Value = item.TechnicianName ?? "";
-                    ws.Cells[row, 4].Value = "SYSTEM_ONLY";
-                    ws.Cells[row, 5].Value = 1;
+                    ws.Cells[row, 3].Value = 1;
+                    ws.Cells[row, 4].Value = item.TechnicianName ?? "";
+                    ws.Cells[row, 5].Value = "Unused (Yellow)";
 
                     ws.Cells[row, 1, row, 5].Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    ws.Cells[row, 1, row, 5].Style.Fill.BackgroundColor.SetColor(Color.Yellow);
+                    ws.Cells[row, 1, row, 5].Style.Fill.BackgroundColor.SetColor(unusedFill);
 
                     row++;
                 }
 
-                // ================= RED / FILE_ONLY =================
                 var uniqueRed = red
                     .Where(x => x != null && !string.IsNullOrWhiteSpace(x.SerialNumber))
                     .GroupBy(x => Normalize(x.SerialNumber))
@@ -717,29 +820,74 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 {
                     string serialNumber = Normalize(item.SerialNumber);
                     string installerEmail = (item.InstallerEmail ?? "").Trim().ToUpper();
+                    string technicianOrEmail = !string.IsNullOrWhiteSpace(item.TechnicianName)
+                        ? item.TechnicianName
+                        : installerEmail;
 
                     ws.Cells[row, 1].Value = item.ProductName ?? "";
                     ws.Cells[row, 2].Value = serialNumber;
-                    ws.Cells[row, 3].Value = item.TechnicianName ?? "";
-                    ws.Cells[row, 4].Value = "Not In Inventory";
-                    ws.Cells[row, 5].Value = 1;
-                    ws.Cells[row, 6].Value = installerEmail;
+                    ws.Cells[row, 3].Value = 1;
+                    ws.Cells[row, 4].Value = technicianOrEmail;
+                    ws.Cells[row, 5].Value = "Installed Not In Inventory (Blue)";
 
-                    ws.Cells[row, 1, row, 6].Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    ws.Cells[row, 1, row, 6].Style.Fill.BackgroundColor.SetColor(Color.LightCoral);
+                    ws.Cells[row, 1, row, 5].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    ws.Cells[row, 1, row, 5].Style.Fill.BackgroundColor.SetColor(installedNotInInvFill);
+                    ws.Cells[row, 1, row, 5].Style.Font.Color.SetColor(installedNotInInvText);
 
                     row++;
                 }
 
                 ws.Cells.AutoFitColumns();
 
-                return File(
-                    pck.GetAsByteArray(),
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    "Inventory_Comparison_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx"
-                );
+                return pck.GetAsByteArray();
             }
         }
+
+        //private void SendInventoryComparisonEmail(byte[] excelBytes)
+        //{
+        //    if (excelBytes == null || excelBytes.Length == 0)
+        //        throw new InvalidOperationException("No Excel data to send.");
+        //    string toEmail = "kunal.sharma@snssystem.com";
+        //    string fromEmail = (ConfigurationManager.AppSettings["WebMasterMailId"] ?? "").Trim();
+        //    string password = (ConfigurationManager.AppSettings["WebMasterMailPassword"] ?? "").Trim();
+        //    string host = (ConfigurationManager.AppSettings["WebMasterSMTPServer"] ?? "").Trim();
+        //    string portRaw = (ConfigurationManager.AppSettings["WebMasterPort"] ?? "").Trim();
+        //    string sslRaw = (ConfigurationManager.AppSettings["WebMasterEnableSSL"] ?? "").Trim();
+        //    if (string.IsNullOrWhiteSpace(fromEmail) || string.IsNullOrWhiteSpace(password))
+        //        throw new InvalidOperationException("Email is not configured (WebMasterMailId / WebMasterMailPassword).");
+        //    int port;
+        //    if (!int.TryParse(portRaw, out port)) port = 587;
+        //    bool enableSsl;
+        //    if (!bool.TryParse(sslRaw, out enableSsl)) enableSsl = true;
+        //    string fileName = "Inventory_Comparison_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx";
+        //    using (var mail = new MailMessage())
+        //    {
+        //        mail.From = new MailAddress(fromEmail);
+        //        mail.To.Add(new MailAddress(toEmail));
+        //        mail.CC.Add("snssystem.akash@gmail.com");
+        //        mail.CC.Add("snssystem.tarun@gmail.com");
+        //        mail.Bcc.Add("yogendra.rajpoot@snssystem.com");
+        //        mail.Subject = "Inventory comparison report";
+        //        mail.Body = "Please find the inventory comparison Excel attached (same as Download Inventory Report).";
+        //        mail.IsBodyHtml = false;
+        //        using (var ms = new MemoryStream(excelBytes))
+        //        using (var attachment = new Attachment(
+        //            ms,
+        //            fileName,
+        //            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+        //        {
+        //            mail.Attachments.Add(attachment);
+        //            using (var smtp = new SmtpClient(host, port))
+        //            {
+        //                smtp.EnableSsl = enableSsl;
+        //                smtp.UseDefaultCredentials = false;
+        //                smtp.Credentials = new System.Net.NetworkCredential(fromEmail, password);
+        //                smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+        //                smtp.Send(mail);
+        //            }
+        //        }
+        //    }
+        //}
 
         [HttpPost]
         public JsonResult SaveMissingInventory(

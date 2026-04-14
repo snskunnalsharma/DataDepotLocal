@@ -297,152 +297,56 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult DownloadComparisonExcel(long projectId, string greenJson, string yellowJson, string redJson)
+        public ActionResult DownloadComparisonExcel(long projectId, string exportRowsJson, string greenJson, string yellowJson, string redJson)
         {
-            var green = JsonConvert.DeserializeObject<List<CompletedInventorySerialItem>>(greenJson ?? "[]");
-            var red = JsonConvert.DeserializeObject<List<CompletedInventorySerialItem>>(redJson ?? "[]");
+            var rows = JsonConvert.DeserializeObject<List<WarehouseComparisonExcelRow>>(exportRowsJson ?? "[]")
+                       ?? new List<WarehouseComparisonExcelRow>();
+
+            // Backward compatibility: older clients only posted green/yellow/red JSON (red-only export).
+            if (rows.Count == 0)
+            {
+                rows = BuildComparisonExcelRowsFromLegacyJson(greenJson, yellowJson, redJson);
+            }
 
             using (ExcelPackage pck = new ExcelPackage())
             {
-                // Cache installer email -> installer userId to avoid repeated DB lookups.
-                var installerIdByEmail = new Dictionary<string, long?>(StringComparer.OrdinalIgnoreCase);
-                long? ResolveInstallerId(string installerEmail)
-                {
-                    var email = (installerEmail ?? "").Trim();
-                    if (string.IsNullOrWhiteSpace(email)) return null;
-                    var key = email.ToUpperInvariant();
-                    if (installerIdByEmail.TryGetValue(key, out var cached)) return cached;
+                ExcelWorksheet ws = pck.Workbook.Worksheets.Add("Compare Result");
 
-                    using (var db = new CompassEntities())
-                    {
-                        var installerId = db.tblUsers
-                            .Where(x => x.Email != null && x.Email.Trim().ToUpper() == key)
-                            .Select(x => (long?)x.UserID)
-                            .FirstOrDefault();
+                bool StatusHas(string s, string sub) =>
+                    !string.IsNullOrEmpty(s) && s.IndexOf(sub, StringComparison.OrdinalIgnoreCase) >= 0;
 
-                        installerIdByEmail[key] = installerId;
-                        return installerId;
-                    }
-                }
-
-                ExcelWorksheet ws = pck.Workbook.Worksheets.Add("Inventory Comparison");
-
-                ws.Cells[1, 1].Value = "Product Name";
-                ws.Cells[1, 2].Value = "Serial Number";
-                ws.Cells[1, 3].Value = "Technician";
-                ws.Cells[1, 4].Value = "Status";
-                ws.Cells[1, 5].Value = "Remaining Qty";
-                ws.Cells[1, 6].Value = "Installer_Email";
+                string[] headers = { "Product Name", "Serial Number", "Technician", "Status", "Remaining Qty", "Installer_Email" };
+                for (int c = 0; c < headers.Length; c++)
+                    ws.Cells[1, c + 1].Value = headers[c];
                 ws.Row(1).Style.Font.Bold = true;
 
+                var greenFill = ColorTranslator.FromHtml("#90EE90");
+                var yellowFill = ColorTranslator.FromHtml("#FFFF99");
+                var silverFill = ColorTranslator.FromHtml("#C0C0C0");
+
                 int row = 2;
-                string Normalize(string v)
+                foreach (var item in rows)
                 {
-                    return (v ?? "").Trim().Replace(".", "").Replace(" ", "").ToUpper();
-                }
+                    if (item == null) continue;
 
-                // Build product lookup for matched serials from stock details.
-                var matchedSerialKeys = green
-                    .Where(x => x != null && !string.IsNullOrWhiteSpace(x.SerialNumber))
-                    .Select(x => Normalize(x.SerialNumber))
-                    .Where(x => !string.IsNullOrWhiteSpace(x))
-                    .Distinct()
-                    .ToList();
-
-                var productNameBySerial = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-                if (matchedSerialKeys.Count > 0)
-                {
-                    using (var db = new CompassEntities())
-                    {
-                        var stockRows = db.StockDetails
-                            .Where(x => x.Active == 1 && x.FKProjectId == projectId && x.SerialNumber != null)
-                            .Select(x => new { x.SerialNumber, x.ProductName, x.Id })
-                            .ToList();
-
-                        productNameBySerial = stockRows
-                            .Select(x => new
-                            {
-                                SerialKey = Normalize(x.SerialNumber),
-                                ProductName = x.ProductName,
-                                x.Id
-                            })
-                            .Where(x => matchedSerialKeys.Contains(x.SerialKey))
-                            .GroupBy(x => x.SerialKey)
-                            .ToDictionary(
-                                g => g.Key,
-                                g => g.OrderByDescending(x => x.Id)
-                                      .Select(x => x.ProductName)
-                                      .FirstOrDefault() ?? "",
-                                StringComparer.OrdinalIgnoreCase
-                            );
-                    }
-                }
-
-                foreach (var item in green)
-                {
-                    var installerEmail = (item.InstallerEmail ?? "").Trim();
-                    var serialKey = Normalize(item.SerialNumber);
-                    var resolvedProductName = item.ProductName ?? "";
-                    if (string.IsNullOrWhiteSpace(resolvedProductName) && !string.IsNullOrWhiteSpace(serialKey))
-                    {
-                        resolvedProductName = productNameBySerial.ContainsKey(serialKey) ? productNameBySerial[serialKey] : "";
-                    }
-
-                    ws.Cells[row, 1].Value = resolvedProductName;
+                    ws.Cells[row, 1].Value = item.ProductName ?? "";
                     ws.Cells[row, 2].Value = item.SerialNumber ?? "";
                     ws.Cells[row, 3].Value = item.TechnicianName ?? "";
+                    ws.Cells[row, 4].Value = item.Status ?? "";
+                    ws.Cells[row, 5].Value = item.RemainingQty ?? "";
+                    ws.Cells[row, 6].Value = item.InstallerEmail ?? "";
 
-                    bool hasInstallerEmail = !string.IsNullOrWhiteSpace(installerEmail);
-                    bool emailExistsInUsers = false;
-                    if (hasInstallerEmail)
-                    {
-                        // If ResolveInstallerId returns a value, email exists in tblUsers.
-                        var installerId = ResolveInstallerId(installerEmail);
-                        emailExistsInUsers = installerId.HasValue;
-                    }
-
-                    if (!hasInstallerEmail)
-                    {
-                        ws.Cells[row, 4].Value = "MATCHED - Error (No Installer Email)";
-                    }
-                    else if (!emailExistsInUsers)
-                    {
-                        ws.Cells[row, 4].Value = "MATCHED - Error (Installer Email Not Found)";
-                    }
+                    var status = (item.Status ?? "").Trim();
+                    Color rowColor;
+                    if (StatusHas(status, "Matched (Green)"))
+                        rowColor = greenFill;
+                    else if (StatusHas(status, "Inventory Unused (Yellow)"))
+                        rowColor = yellowFill;
                     else
-                    {
-                        ws.Cells[row, 4].Value = "MATCHED";
-                    }
-
-                    ws.Cells[row, 5].Value = 1;
-                    ws.Cells[row, 6].Value = hasInstallerEmail ? installerEmail : "";
+                        rowColor = silverFill;
 
                     ws.Cells[row, 1, row, 6].Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    ws.Cells[row, 1, row, 6].Style.Fill.BackgroundColor.SetColor(
-                        hasInstallerEmail && emailExistsInUsers ? Color.LightGreen : Color.Silver
-                    );
-                    row++;
-                }
-
-                var uniqueRed = red
-                    .Where(x => x != null && !string.IsNullOrWhiteSpace(x.SerialNumber))
-                    .GroupBy(x => Normalize(x.SerialNumber))
-                    .Select(g => g.First())
-                    .ToList();
-
-                foreach (var item in uniqueRed)
-                {
-                    string serialNumber = Normalize(item.SerialNumber);
-                    string installerEmail = (item.InstallerEmail ?? "").Trim().ToUpper();
-                    ws.Cells[row, 1].Value = item.ProductName ?? "";
-                    ws.Cells[row, 2].Value = serialNumber;
-                    ws.Cells[row, 3].Value = item.TechnicianName ?? "";
-                    ws.Cells[row, 4].Value = "Not In Inventory";
-                    ws.Cells[row, 5].Value = 1;
-                    ws.Cells[row, 6].Value = installerEmail;
-
-                    ws.Cells[row, 1, row, 6].Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    ws.Cells[row, 1, row, 6].Style.Fill.BackgroundColor.SetColor(Color.LightCoral);
+                    ws.Cells[row, 1, row, 6].Style.Fill.BackgroundColor.SetColor(rowColor);
                     row++;
                 }
 
@@ -451,9 +355,52 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 return File(
                     pck.GetAsByteArray(),
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    "Warehouse_Inventory_Comparison_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx"
+                    "Warehouse_Comparison_" + projectId + "_" + DateTime.Now.ToString("yyyyMMdd") + ".xlsx"
                 );
             }
+        }
+
+        private static List<WarehouseComparisonExcelRow> BuildComparisonExcelRowsFromLegacyJson(string greenJson, string yellowJson, string redJson)
+        {
+            var list = new List<WarehouseComparisonExcelRow>();
+            string Normalize(string v) => (v ?? "").Trim().Replace(".", "").Replace(" ", "").ToUpper();
+
+            void AddFromCompleted(string json, string statusLabel)
+            {
+                var items = JsonConvert.DeserializeObject<List<CompletedInventorySerialItem>>(json ?? "[]") ?? new List<CompletedInventorySerialItem>();
+                foreach (var x in items.Where(i => i != null && !string.IsNullOrWhiteSpace(i.SerialNumber)))
+                {
+                    list.Add(new WarehouseComparisonExcelRow
+                    {
+                        ProductName = x.ProductName ?? "",
+                        SerialNumber = Normalize(x.SerialNumber),
+                        TechnicianName = x.TechnicianName ?? "",
+                        Status = statusLabel,
+                        RemainingQty = "",
+                        InstallerEmail = (x.InstallerEmail ?? "").Trim()
+                    });
+                }
+            }
+
+            AddFromCompleted(greenJson, "Matched (Green)");
+            AddFromCompleted(yellowJson, "Inventory Unused (Yellow)");
+
+            var red = JsonConvert.DeserializeObject<List<CompletedInventorySerialItem>>(redJson ?? "[]") ?? new List<CompletedInventorySerialItem>();
+            foreach (var item in red.Where(x => x != null && !string.IsNullOrWhiteSpace(x.SerialNumber))
+                .GroupBy(x => Normalize(x.SerialNumber)).Select(g => g.First()))
+            {
+                list.Add(new WarehouseComparisonExcelRow
+                {
+                    ProductName = item.ProductName ?? "",
+                    SerialNumber = Normalize(item.SerialNumber),
+                    TechnicianName = item.TechnicianName ?? "",
+                    Status = "Installed But Not In Warehouse (Silver)",
+                    RemainingQty = "1",
+                    InstallerEmail = (item.InstallerEmail ?? "").Trim()
+                });
+            }
+
+            return list;
         }
 
         [HttpPost]
@@ -626,6 +573,17 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             public string ProductName { get; set; }
             public string SerialNumber { get; set; }
             public string TechnicianName { get; set; }
+            public string InstallerEmail { get; set; }
+        }
+
+        /// <summary>Compare export: six columns only (Product Name, Serial Number, Technician, Status, Remaining Qty, Installer_Email).</summary>
+        public class WarehouseComparisonExcelRow
+        {
+            public string ProductName { get; set; }
+            public string SerialNumber { get; set; }
+            public string TechnicianName { get; set; }
+            public string Status { get; set; }
+            public string RemainingQty { get; set; }
             public string InstallerEmail { get; set; }
         }
 

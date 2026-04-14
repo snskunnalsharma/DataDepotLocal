@@ -1,0 +1,1292 @@
+﻿@{
+    ViewBag.Title = "Warehouse Transfer";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+@Html.Hidden("urlGetProductData", Url.Action("GetProductData", "WarehouseTransfer"))
+@Html.Hidden("urlAddInventry", Url.Action("AddInventry", "WarehouseTransfer"))
+@Html.Hidden("urlEditInventry", Url.Action("EditInventry", "WarehouseTransfer"))
+
+@Html.Hidden("urlSaveInventryList", Url.Action("SaveInventryList", "WarehouseTransfer"))
+
+@Html.Hidden("urlIndex", Url.Action("Index", "WarehouseTransfer"))
+
+@Html.Hidden("urlDeleteInventry", Url.Action("DeleteInventry", "WarehouseTransfer"))
+@Html.Hidden("urlInsertSerialNumber", Url.Action("InsertSerialNumber", "WarehouseTransfer"))
+@Html.Hidden("urlResetAllData", Url.Action("ResetAllData", "WarehouseTransfer"))
+@Html.Hidden("urlViewUploadRecords", Url.Action("ViewUploadRecords", "ViewUploadRecords"))
+
+@Html.Hidden("urlGetProject", Url.Action("GetProject", "WarehouseTransfer"))
+@Html.Hidden("urlGetWarehouseAndProduct", Url.Action("GetWarehouseAndProduct", "WarehouseTransfer"))
+@Html.Hidden("urlViewUpload", Url.Action("ViewUpload", "WarehouseTransfer"))
+
+<style>
+    @@media (min-width:375px) {
+        .dataTables_length > label {
+            white-space: normal;
+            width: auto;
+        }
+    }
+
+    .recinv-drp3 {
+        margin-bottom: 4px;
+    }
+
+    .rep-shw-ent {
+        margin-top: -18px;
+        margin-bottom: -18px;
+        padding: 0px
+    }
+
+    .recinv-drp4 {
+        margin-top: 8px;
+        margin-bottom: 8px;
+    }
+
+    .recinv-drp5 {
+        margin-top: 8px;
+        margin-bottom: 8px;
+    }
+
+    @@media (min-width:1200px) {
+        .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9 {
+            float: left;
+        }
+
+        .col-lg-12 {
+            width: 100%;
+        }
+
+        .col-lg-11 {
+            width: 91.66666667%;
+        }
+
+        .col-lg-10 {
+            width: 83.33333333%;
+        }
+
+        .col-lg-9 {
+            width: 75%;
+        }
+
+        .col-lg-8 {
+            width: 66.66666667%;
+        }
+
+        .col-lg-7 {
+            width: 58.33333333%;
+        }
+
+        .col-lg-6 {
+            width: 50% !important;
+        }
+
+        .col-lg-5 {
+            width: 41.66666667%;
+        }
+
+        .col-lg-4 {
+            width: 33.33333333%;
+        }
+
+        .col-lg-3 {
+            width: 25%;
+        }
+
+        .col-lg-2 {
+            width: 16.66666667%;
+        }
+
+        .col-lg-1 {
+            width: 8.33333333%;
+        }
+
+        .multiselect {
+            padding: 3px;
+        }
+
+        .lg-none {
+            display: none;
+        }
+
+        .lg-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .lg-nopaddingright {
+            padding-right: 0px;
+        }
+    }
+
+    @@media (min-width:992px) and (max-width:1199px) {
+        .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9 {
+            float: left;
+        }
+
+        .col-md-12 {
+            width: 100%;
+        }
+
+        .col-md-11 {
+            width: 91.66666667%;
+        }
+
+        .col-md-10 {
+            width: 83.33333333%;
+        }
+
+        .col-md-9 {
+            width: 75%;
+        }
+
+        .col-md-8 {
+            width: 66.66666667%;
+        }
+
+        .col-md-7 {
+            width: 58.33333333%;
+        }
+
+        .col-md-6 {
+            width: 50%;
+        }
+
+        .col-md-5 {
+            width: 41.66666667%;
+        }
+
+        .col-md-4 {
+            width: 33.33333333%;
+        }
+
+        .col-md-3 {
+            width: 25%;
+        }
+
+        .col-md-2 {
+            width: 16.66666667%;
+        }
+
+        .col-md-1 {
+            width: 8.33333333%;
+        }
+
+        .col-md-pull-12 {
+            right: 100%;
+        }
+
+        .col-md-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-md-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-md-pull-9 {
+            right: 75%;
+        }
+
+        .col-md-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-md-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-md-pull-6 {
+            right: 50%;
+        }
+
+        .col-md-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-md-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-md-pull-3 {
+            right: 25%;
+        }
+
+        .col-md-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-md-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-md-pull-0 {
+            right: auto;
+        }
+
+        .col-md-push-12 {
+            left: 100%;
+        }
+
+        .col-md-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-md-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-md-push-9 {
+            left: 75%;
+        }
+
+        .col-md-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-md-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-md-push-6 {
+            left: 50%;
+        }
+
+        .col-md-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-md-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-md-push-3 {
+            left: 25%;
+        }
+
+        .col-md-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-md-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-md-push-0 {
+            left: auto;
+        }
+
+        .col-md-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-md-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-md-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-md-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-md-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-md-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-md-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-md-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-md-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-md-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-md-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-md-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-md-offset-0 {
+            margin-left: 0;
+        }
+
+        .md-clear {
+            clear: both;
+        }
+
+        .md-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .md-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .md-none {
+            display: none;
+        }
+
+        .md-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .md-nopaddingright {
+            padding-right: 0px;
+        }
+    }
+
+    @@media (min-width:768px) and (max-width:991px) {
+        /*.show_deactive {
+        padding-left: 40px;
+    }*/
+        .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9 {
+            float: left;
+        }
+
+        .col-sm-12 {
+            width: 100%;
+        }
+
+        .col-sm-11 {
+            width: 91.66666667%;
+        }
+
+        .col-sm-10 {
+            width: 83.33333333%;
+        }
+
+        .col-sm-9 {
+            width: 75%;
+        }
+
+        .col-sm-8 {
+            width: 66.66666667%;
+        }
+
+        .col-sm-7 {
+            width: 58.33333333%;
+        }
+
+        .col-sm-6 {
+            width: 50%;
+        }
+
+        .col-sm-5 {
+            width: 41.66666667%;
+        }
+
+        .col-sm-4 {
+            width: 33.33333333%;
+        }
+
+        .col-sm-3 {
+            width: 25%;
+        }
+
+        .col-sm-2 {
+            width: 16.66666667%;
+        }
+
+        .col-sm-1 {
+            width: 8.33333333%;
+        }
+
+        .col-sm-pull-12 {
+            right: 100%;
+        }
+
+        .col-sm-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-sm-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-sm-pull-9 {
+            right: 75%;
+        }
+
+        .col-sm-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-sm-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-sm-pull-6 {
+            right: 50%;
+        }
+
+        .col-sm-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-sm-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-sm-pull-3 {
+            right: 25%;
+        }
+
+        .col-sm-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-sm-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-sm-pull-0 {
+            right: auto;
+        }
+
+        .col-sm-push-12 {
+            left: 100%;
+        }
+
+        .col-sm-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-sm-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-sm-push-9 {
+            left: 75%;
+        }
+
+        .col-sm-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-sm-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-sm-push-6 {
+            left: 50%;
+        }
+
+        .col-sm-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-sm-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-sm-push-3 {
+            left: 25%;
+        }
+
+        .col-sm-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-sm-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-sm-push-0 {
+            left: auto;
+        }
+
+        .col-sm-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-sm-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-sm-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-sm-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-sm-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-sm-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-sm-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-sm-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-sm-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-sm-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-sm-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-sm-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-sm-offset-0 {
+            margin-left: 0;
+        }
+
+        .sm-clear {
+            clear: both;
+        }
+
+        .sm-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .sm-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .sm-block {
+            display: block;
+        }
+
+        .sm-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .sm-nopaddingright {
+            padding-right: 0px;
+        }
+    }
+
+    @@media (min-width:481px) and (max-width:767px) {
+        .xs-clear {
+            clear: both;
+        }
+
+        .col-xs-1, .col-xs-10, .col-xs-11, .col-xs-12, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9 {
+            float: left;
+        }
+
+        .col-xs-12 {
+            width: 100%;
+        }
+
+        .col-xs-11 {
+            width: 91.66666667%;
+        }
+
+        .col-xs-10 {
+            width: 83.33333333%;
+        }
+
+        .col-xs-9 {
+            width: 75%;
+        }
+
+        .col-xs-8 {
+            width: 66.66666667%;
+        }
+
+        .col-xs-7 {
+            width: 58.33333333%;
+        }
+
+        .col-xs-6 {
+            width: 50%;
+        }
+
+        .col-xs-5 {
+            width: 41.66666667%;
+        }
+
+        .col-xs-4 {
+            width: 33.33333333%;
+        }
+
+        .col-xs-3 {
+            width: 25%;
+        }
+
+        .col-xs-2 {
+            width: 16.66666667%;
+        }
+
+        .col-xs-1 {
+            width: 8.33333333%;
+        }
+
+        .col-xs-pull-12 {
+            right: 100%;
+        }
+
+        .col-xs-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-xs-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-xs-pull-9 {
+            right: 75%;
+        }
+
+        .col-xs-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-xs-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-xs-pull-6 {
+            right: 50%;
+        }
+
+        .col-xs-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-xs-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-xs-pull-3 {
+            right: 25%;
+        }
+
+        .col-xs-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-xs-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-xs-pull-0 {
+            right: auto;
+        }
+
+        .col-xs-push-12 {
+            left: 100%;
+        }
+
+        .col-xs-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-xs-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-xs-push-9 {
+            left: 75%;
+        }
+
+        .col-xs-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-xs-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-xs-push-6 {
+            left: 50%;
+        }
+
+        .col-xs-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-xs-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-xs-push-3 {
+            left: 25%;
+        }
+
+        .col-xs-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-xs-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-xs-push-0 {
+            left: auto;
+        }
+
+        .col-xs-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-xs-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-xs-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-xs-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-xs-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-xs-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-xs-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-xs-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-xs-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-xs-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-xs-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-xs-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-xs-offset-0 {
+            margin-left: 0;
+        }
+
+        .cre_uti_label {
+            margin-left: 0%;
+            text-align: right !important;
+        }
+
+        .create_label {
+            margin-right: 0px;
+        }
+
+        .xs-mbot1 {
+            margin-bottom: 1%;
+        }
+
+        .xs-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .xs-block {
+            display: block;
+        }
+
+        .xs-nopadding {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+
+        .xs-none {
+            display: none;
+        }
+
+        .xs-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .xs-nopaddingright {
+            padding-right: 0px;
+        }
+    }
+
+    @@media (max-width:480px) {
+        .xxs-clear {
+            clear: both;
+        }
+
+        .col-xxs-1, .col-xxs-10, .col-xxs-11, .col-xxs-12, .col-xxs-2, .col-xxs-3, .col-xxs-4, .col-xxs-5, .col-xxs-6, .col-xxs-7, .col-xxs-8, .col-xxs-9 {
+            float: left;
+        }
+
+        .col-xxs-12 {
+            width: 100%;
+        }
+
+        .col-xxs-11 {
+            width: 91.66666667%;
+        }
+
+        .col-xxs-10 {
+            width: 83.33333333%;
+        }
+
+        .col-xxs-9 {
+            width: 75%;
+        }
+
+        .col-xxs-8 {
+            width: 66.66666667%;
+        }
+
+        .col-xxs-7 {
+            width: 58.33333333%;
+        }
+
+        .col-xxs-6 {
+            width: 50%;
+        }
+
+        .col-xxs-5 {
+            width: 41.66666667%;
+        }
+
+        .col-xxs-4 {
+            width: 33.33333333%;
+        }
+
+        .col-xxs-3 {
+            width: 25%;
+        }
+
+        .col-xxs-2 {
+            width: 16.66666667%;
+        }
+
+        .col-xxs-1 {
+            width: 8.33333333%;
+        }
+
+        .col-xxs-pull-12 {
+            right: 100%;
+        }
+
+        .col-xxs-pull-11 {
+            right: 91.66666667%;
+        }
+
+        .col-xxs-pull-10 {
+            right: 83.33333333%;
+        }
+
+        .col-xxs-pull-9 {
+            right: 75%;
+        }
+
+        .col-xxs-pull-8 {
+            right: 66.66666667%;
+        }
+
+        .col-xxs-pull-7 {
+            right: 58.33333333%;
+        }
+
+        .col-xxs-pull-6 {
+            right: 50%;
+        }
+
+        .col-xxs-pull-5 {
+            right: 41.66666667%;
+        }
+
+        .col-xxs-pull-4 {
+            right: 33.33333333%;
+        }
+
+        .col-xxs-pull-3 {
+            right: 25%;
+        }
+
+        .col-xxs-pull-2 {
+            right: 16.66666667%;
+        }
+
+        .col-xxs-pull-1 {
+            right: 8.33333333%;
+        }
+
+        .col-xxs-pull-0 {
+            right: auto;
+        }
+
+        .col-xxs-push-12 {
+            left: 100%;
+        }
+
+        .col-xxs-push-11 {
+            left: 91.66666667%;
+        }
+
+        .col-xxs-push-10 {
+            left: 83.33333333%;
+        }
+
+        .col-xxs-push-9 {
+            left: 75%;
+        }
+
+        .col-xxs-push-8 {
+            left: 66.66666667%;
+        }
+
+        .col-xxs-push-7 {
+            left: 58.33333333%;
+        }
+
+        .col-xxs-push-6 {
+            left: 50%;
+        }
+
+        .col-xxs-push-5 {
+            left: 41.66666667%;
+        }
+
+        .col-xxs-push-4 {
+            left: 33.33333333%;
+        }
+
+        .col-xxs-push-3 {
+            left: 25%;
+        }
+
+        .col-xxs-push-2 {
+            left: 16.66666667%;
+        }
+
+        .col-xxs-push-1 {
+            left: 8.33333333%;
+        }
+
+        .col-xxs-push-0 {
+            left: auto;
+        }
+
+        .col-xxs-offset-12 {
+            margin-left: 100%;
+        }
+
+        .col-xxs-offset-11 {
+            margin-left: 91.66666667%;
+        }
+
+        .col-xxs-offset-10 {
+            margin-left: 83.33333333%;
+        }
+
+        .col-xxs-offset-9 {
+            margin-left: 75%;
+        }
+
+        .col-xxs-offset-8 {
+            margin-left: 66.66666667%;
+        }
+
+        .col-xxs-offset-7 {
+            margin-left: 58.33333333%;
+        }
+
+        .col-xxs-offset-6 {
+            margin-left: 50%;
+        }
+
+        .col-xxs-offset-5 {
+            margin-left: 41.66666667%;
+        }
+
+        .col-xxs-offset-4 {
+            margin-left: 33.33333333%;
+        }
+
+        .col-xxs-offset-3 {
+            margin-left: 25%;
+        }
+
+        .col-xxs-offset-2 {
+            margin-left: 16.66666667%;
+        }
+
+        .col-xxs-offset-1 {
+            margin-left: 8.33333333%;
+        }
+
+        .col-xxs-offset-0 {
+            margin-left: 0;
+        }
+
+        .create_label {
+            margin-left: 0%;
+            margin-right: 0px;
+        }
+
+        .xxs-mbot2 {
+            margin-bottom: 2%;
+        }
+
+        .xxs-mbot3 {
+            margin-bottom: 3%;
+        }
+
+        .xxs-block {
+            display: block;
+        }
+
+        .xxs-nopadding {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+
+        .xxs-none {
+            display: none;
+        }
+
+        .xxs-nopaddingleft {
+            padding-left: 0px;
+        }
+
+        .xxs-nopaddingright {
+            padding-right: 0px;
+        }
+    }
+</style>
+<div id="loading">
+    <div id="loadingcontent">
+        <p id="loadingspinner">
+            Searching things...
+        </p>
+    </div>
+</div>
+
+
+
+<section id="main-content">
+    <section class="wrapper">
+        @*<div class="row">
+            <div class="col-sm-12 xs-nopadding xxs-nopadding">
+                *@
+                <!--progress bar start-->
+                <section class="panel">
+                    <header class="panel-heading">
+                        <b>Warehouse Transfer</b>
+                    </header>
+
+
+                    <div class="panel-body">
+                        <div class="row mbot05" style="bottom:10px !important">
+
+                            <div class="col-lg-2 col-md-3 col-sm-6 col-xs-6 col-xxs-12  sm-mbot1 xs-mbot1 xxs-mbot2 lg-nopaddingright md-nopaddingright sm-nopaddingright xs-nopaddingright">
+                                @Html.DropDownList("UtilityId", (IEnumerable<SelectListItem>)ViewBag.UtilityListItem, new { @class = "form-control chosen-select" })
+                            </div>
+                            <div class="col-lg-2 col-md-3 col-sm-6 col-xs-6 col-xxs-12  sm-mbot1 xs-mbot1 xxs-mbot2 lg-nopaddingright md-nopaddingright sm-nopaddingright xs-nopaddingright">
+                                @Html.DropDownList("ProjectId", (List<SelectListItem>)ViewBag.ProjectList, new { @class = "form-control chosen-select" })
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 col-xxs-12  sm-mbot1 xxs-mbot2 lg-nopaddingright md-nopaddingright sm-nopaddingright xs-nopaddingright">
+
+                                @Html.DropDownList("FromWarehouseId", (IEnumerable<SelectListItem>)ViewBag.WarehouseList, new { @class = "form-control chosen-select", @title = "From Warehouse" })
+                            </div>
+                            <div class=" col-lg-3 col-md-3 col-sm-6 col-xs-6 col-xxs-12 sm-mbot1 xxs-mbot2 lg-nopaddingright md-nopaddingright sm-nopaddingright xs-nopaddingright">
+
+                                @Html.DropDownList("ToWarehouseId", (IEnumerable<SelectListItem>)ViewBag.WarehouseList, new { @class = "form-control chosen-select", @title = "To Warehouse" })
+                            </div>
+                            <div class="col-lg-2 col-md-3 col-sm-6 col-xs-6 col-xxs-12  sm-mbot1 xxs-mbot2 lg-nopaddingright md-nopaddingright sm-nopaddingright xs-nopaddingright">
+                                @Html.DropDownList("ProductId", (IEnumerable<SelectListItem>)ViewBag.ProductList, new { @class = "form-control chosen-select" })
+                            </div>
+
+
+                            @*
+                        </div>
+                        <div class="row mbot05">
+                            *@
+                            @*<div class="col-lg-3 col-md-4 col-sm-6 col-xs-6 col-xxs-12 recinv-drp3 md-mbot1 sm-clear xs-mbot1 xxs-mbot2 ">
+                                *@
+                                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 col-xxs-12 recinv-drp3 md-mbot1 sm-clear xs-mbot1 xxs-mbot2 lg-nopaddingright md-nopaddingright sm-nopaddingright xs-nopaddingright">
+                                    @*<span class="flex sm-block xs-block xxs-block ">
+                                        *@
+                                        <label class="control-label"><strong>OR</strong></label>
+                                        @*<strong>OR</strong>&nbsp;&nbsp;*@
+                                        <div>
+                                            <input type="text" placeholder="Search by Barcode/Part number/UPC Code" title="Search by Barcode/Part number/UPC Code" class="form-control inputclass chosen-container" id="txtBarcode" name="Barcode" />
+                                        </div>
+                                        @*
+                                    </span>*@
+
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6 col-xxs-6 xs-mbot1 xxs-mbot2 lg-nopaddingright md-nopaddingright sm-nopaddingright xs-nopaddingright">
+                                    <label class="control-label xs-none  xxs-none">&nbsp;</label>
+                                    <div>
+                                        <input type="text" placeholder="Enter Quantity" maxlength="4" title="Enter Quantity" class="form-control chosen-container numeric-only" id="txtQuantity" name="Quantity" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6 col-xxs-6 text-nowrap xs-mbot2  xs-nopaddingright" id="divGenerateBarcode">
+                                    <label class="control-label mbot0 xs-none   xxs-none">&nbsp;</label>
+                                    <div>
+                                        <input type="checkbox" name="GenerateBarcode" id="chkGenerateBarcode" />Generate Barcode
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xxs-12 text-center">
+                                    <button id="btnAdd" class="btn btn-success" type="button">Add</button>
+                                    <button id="btnupdate" class="btn btn-success" type="button">Update</button>
+                                    <button class="btn btn-danger" id="btnReset" type="button">Reset</button>
+                                </div>
+                            </div>
+                            <div class="table-responsive  rep_dyn_table" id="inventryReceiveDiv">
+                                <table id="dynamic-table" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+                                    <thead>
+                                        <tr>
+                                            <th width="5%">Generate Barcode</th>
+                                            <th width="5%">Warehouse</th>
+                                            <th width="10%">Product</th>
+                                            <th width="15%">Description</th>
+                                            <th width="10%">Part Number</th>
+                                            <th width="10%">UPC Code</th>
+                                            <th width="10%">Utility Type</th>
+                                            <th width="10%">Category</th>
+                                            <th width="10%">Make</th>
+                                            <th width="10%">Type</th>
+                                            <th width="10%">Size</th>
+                                            <th width="5%">Serial Number</th>
+                                            <th width="5%">Quantity</th>
+                                            <th width="5%">Status</th>
+                                            <th width="5%">Action</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                            <div class="col-lg-12 form-group" style="text-align:center" id="divFinalSaveCancel">
+                                <button id="btnSave" class="btn btn-success" type="button">Save</button>
+                                <button class="btn btn-danger" id="btnCancelSave" type="button">Cancel</button>
+                            </div>
+                        </div>
+
+
+
+                </section>
+                @*
+            </div>
+        </div>*@
+    </section>
+</section>
+
+
+<!-- Modal for deactivation -->
+<div class="modal fade modal-dialog-center" id="inventrySerialDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content-wrap">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h5 class="modal-title">Add Serial Numbers</h5>
+                </div>
+                <div class="modal-body" style="height: 25em; overflow-y: auto;">
+                    <div id="divSerialNumber"></div>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnAddSerialNumber" class="btn btn-success" type="button">Add</button>
+                    <button class="btn btn-danger" id="btnCancelSerialNumber" data-dismiss="modal" type="button">Cancel</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal -->
+<!-- Modal for deactivation -->
+<div class="modal fade modal-dialog-center" id="editInventrySerialDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content-wrap">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h5 class="modal-title">Edit Record</h5>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="hndIsBarcode" name="name" />
+                    <input type="hidden" id="hndIsSerialNumber" name="name" />
+                    <input type="hidden" id="hndUniqueInventryId" name="name" />
+                    <label id="editRecordLabel"></label>
+                    <input type="text" id="txtEditQuantity" maxlength="4" class="form-control numeric-only" name="Quantity" value="" />
+                    <input type="text" id="txtEditSerialNumber" maxlength="20" class="form-control alfanumeric" name="SerialNumber" value="" />
+                </div>
+                <div class="modal-footer">
+                    <button id="btnUpdateSerialNumber" class="btn btn-success" type="button">Update</button>
+                    <button class="btn btn-danger" id="btnUpdateSerialNumber" data-dismiss="modal" type="button">Cancel</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal -->
+<!-- Modal for deactivation -->
+<div class="modal fade modal-dialog-center" id="barcodeConfirm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content-wrap">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h5 class="modal-title">Confirmation!</h5>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="hndIsBarcode" name="name" />
+                    <input type="hidden" id="hndIsSerialNumber" name="name" />
+                    <input type="hidden" id="hndUniqueInventryId" name="name" />
+                    <label id="editRecordLabel">Scanned barcode quantity mismatch.</label>
+                    <br />
+                    <label id="editRecordLabel">Do you want to continue?</label>
+                </div>
+                <div class="modal-footer">
+                    <button id="barcodeConfirmOk" class="btn btn-success" data-dismiss="modal" type="button">Ok</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal -->
+@Styles.Render("~/jquery-confirm-master/css/jquery_confirm_css")
+@Scripts.Render("~/bundles/jquery-confirm_js")
+
+
+<script src="@Url.Content("~/Scripts/Admin/WarehouseTransfer.js")"></script>
+

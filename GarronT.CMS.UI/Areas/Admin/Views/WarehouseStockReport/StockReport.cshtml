@@ -122,7 +122,7 @@
     }
     .swatch-green { background: #90EE90; }
     .swatch-yellow { background: #FFFF99; }
-    .swatch-red { background: #F8D7DA; }
+    .swatch-red { background: #C0C0C0; }
 </style>
 <style>
     /*************************************Bootstrap Css***********************************/
@@ -1683,6 +1683,9 @@
     var lastCompareRed = [];
     var lastCompareGreen = [];
     var lastCompareYellow = [];
+    var lastCompareGreenSet = null;
+    var lastCompareYellowSet = null;
+    var comparisonCompareDone = false;
     function clearReportDataAndTables() {
         stockDetailModel = [];
         completedInventoryItems = [];
@@ -1690,6 +1693,9 @@
         lastCompareRed = [];
         lastCompareGreen = [];
         lastCompareYellow = [];
+        lastCompareGreenSet = null;
+        lastCompareYellowSet = null;
+        comparisonCompareDone = false;
 
         try {
             if ($.fn.DataTable.isDataTable('#dynamic-table')) {
@@ -1819,20 +1825,13 @@
     }
 
     function colorDetailRows(greenSet, yellowSet) {
-        var dt = $('#dynamic-table').DataTable();
-        dt.rows().every(function () {
-            var d = this.data();
-            var $row = $(this.node());
-            var s = normalizeSerial(d.serialnumber);
-            $row.css('background-color', '');
-            if (s) {
-                if (greenSet.has(s)) {
-                    $row.css('background-color', '#90EE90'); // lightgreen
-                } else if (yellowSet.has(s)) {
-                    $row.css('background-color', '#FFFF99'); // light yellow
-                }
+        lastCompareGreenSet = greenSet;
+        lastCompareYellowSet = yellowSet;
+        try {
+            if ($.fn.DataTable.isDataTable('#dynamic-table')) {
+                $('#dynamic-table').DataTable().draw(false);
             }
-        });
+        } catch (e) { }
     }
 
     function applyWarehouseComparisonIfReady() {
@@ -1890,6 +1889,7 @@
                 lastCompareGreen = green;
                 lastCompareYellow = yellow;
                 lastCompareRed = red;
+                comparisonCompareDone = true;
 
                 var greenSet = new Set(green.map(function (x) { return x.serialNumber; }));
                 var yellowSet = new Set(yellow.map(function (x) { return x.serialNumber; }));
@@ -1936,15 +1936,15 @@
         var total = g + y + r;
         var html = ''
             + '<div style="font-size:14px; line-height:1.6;">'
-            + '<div><b>Total:</b> ' + total + '</div>'
-            + '<div style="color:#155724;background:#d4edda;padding:6px 8px;margin-top:6px;"><b>Matched (Green):</b> ' + g + '</div>'
-            + '<div style="color:#856404;background:#fff3cd;padding:6px 8px;margin-top:6px;"><b>Inventory Unused (Yellow):</b> ' + y + '</div>'
-            + '<div style="color:#721c24;background:#f8d7da;padding:6px 8px;margin-top:6px;"><b>Not in Inventory (Red):</b> ' + r + '</div>'
+            + '<div style="margin-bottom:8px;"><b>Total:</b> ' + total + '</div>'
+            + '<div style="color:#155724;background:#d4edda;padding:8px 10px;border-radius:4px;"><b>Matched (Green):</b> ' + g + '</div>'
+            + '<div style="color:#856404;background:#fff3cd;padding:8px 10px;border-radius:4px;margin-top:8px;"><b>Inventory Unused (Yellow):</b> ' + y + '</div>'
+            + '<div style="color:#343a40;background:#e9ecef;padding:8px 10px;border-radius:4px;margin-top:8px;border:1px solid #adb5bd;"><b>Installed But Not In Warehouse (Silver):</b> ' + r + '</div>'
             + '<div style="margin-top:10px;">Details are also color-marked in the table.</div>'
             + '</div>';
         $.confirm({
             title: '<b style="font-size:16px; color:#007bff;">Compare Result</b>',
-            boxWidth: '340px',
+            boxWidth: '420px',
             useBootstrap: false,
             content: html,
             buttons: {
@@ -1953,21 +1953,162 @@
         });
     }
 
+    function comparisonExportSix(productName, serialNumber, technicianName, status, remainingQty, installerEmail) {
+        return {
+            productName: productName || "",
+            serialNumber: serialNumber || "",
+            technicianName: technicianName || "",
+            status: status || "",
+            remainingQty: (remainingQty !== undefined && remainingQty !== null && remainingQty !== "") ? String(remainingQty) : "",
+            installerEmail: installerEmail || ""
+        };
+    }
+
+    function findStockRowsByNormalizedSerial(serialNorm) {
+        var out = [];
+        if (!stockDetailModel || stockDetailModel.length === 0 || !serialNorm) return out;
+        for (var i = 0; i < stockDetailModel.length; i++) {
+            if (normalizeSerial(stockDetailModel[i].serialnumber) === serialNorm) out.push(stockDetailModel[i]);
+        }
+        return out;
+    }
+
+    /** Six columns only; same categories/status text as the Compare popup; row colors in Excel. */
+    function buildComparisonExportRows() {
+        var rows = [];
+
+        var greenSeen = {};
+        (lastCompareGreen || []).forEach(function (g) {
+            var sn = g.serialNumber;
+            if (!sn || greenSeen[sn]) return;
+            greenSeen[sn] = true;
+            var stocks = findStockRowsByNormalizedSerial(sn);
+            var tech = g.technicianName || "";
+            var email = g.installerEmail || "";
+            var fileProduct = g.productName || "";
+            if (stocks.length === 0) {
+                rows.push(comparisonExportSix(fileProduct, sn, tech, "Matched (Green)", "", email));
+            } else {
+                for (var j = 0; j < stocks.length; j++) {
+                    var s = stocks[j];
+                    var qty = (s.BalanceQty !== null && s.BalanceQty !== undefined) ? s.BalanceQty : "";
+                    rows.push(comparisonExportSix(fileProduct || (s.ProductName || ""), sn, tech, "Matched (Green)", qty, email));
+                }
+            }
+        });
+
+        (lastCompareYellow || []).forEach(function (y) {
+            var sn = y.serialNumber;
+            if (!sn) return;
+            var stocks = findStockRowsByNormalizedSerial(sn);
+            if (stocks.length === 0) {
+                rows.push(comparisonExportSix("", sn, "", "Inventory Unused (Yellow)", "", ""));
+            } else {
+                for (var k = 0; k < stocks.length; k++) {
+                    var sy = stocks[k];
+                    var qtyY = (sy.BalanceQty !== null && sy.BalanceQty !== undefined) ? sy.BalanceQty : "";
+                    rows.push(comparisonExportSix(sy.ProductName || "", sn, "", "Inventory Unused (Yellow)", qtyY, ""));
+                }
+            }
+        });
+
+        var redSeen = {};
+        (lastCompareRed || []).forEach(function (rItem) {
+            var sn = rItem.serialNumber;
+            if (!sn || redSeen[sn]) return;
+            redSeen[sn] = true;
+            rows.push(comparisonExportSix(rItem.productName || "", sn, rItem.technicianName || "", "Installed But Not In Warehouse (Silver)", "1", rItem.installerEmail || ""));
+        });
+
+        return rows;
+    }
+
     function downloadComparisonExcel() {
         var pid = parseInt($("#ProjectId").val() || "0", 10);
-        if (!lastCompareGreen && !lastCompareYellow && !lastCompareRed) {
+        if (!comparisonCompareDone) {
             toastr.error("Please run Compare first");
             return;
         }
+        var exportRows = buildComparisonExportRows();
         var url = $('#urlDownloadComparisonExcel').val();
-        var form = $('<form method="POST" style="display:none;"></form>').attr('action', url).attr('target', '_blank');
-        form.append($('<input type="hidden" name="projectId">').val(pid));
-        form.append($('<input type="hidden" name="greenJson">').val(JSON.stringify(lastCompareGreen || [])));
-        form.append($('<input type="hidden" name="yellowJson">').val(JSON.stringify(lastCompareYellow || [])));
-        form.append($('<input type="hidden" name="redJson">').val(JSON.stringify(lastCompareRed || [])));
-        document.body.appendChild(form[0]);
-        form[0].submit();
-        setTimeout(function () { try { form.remove(); } catch (e) {} }, 5000);
+        var defaultName = "Warehouse_Comparison_" + pid + "_" + new Date().toISOString().slice(0, 10).replace(/-/g, "") + ".xlsx";
+
+        // Use raw XHR — jQuery $.ajax corrupts binary / blob responses via its data converters (triggers "Download failed").
+        var body = $.param({
+            projectId: pid,
+            exportRowsJson: JSON.stringify(exportRows),
+            greenJson: JSON.stringify(lastCompareGreen || []),
+            yellowJson: JSON.stringify(lastCompareYellow || []),
+            redJson: JSON.stringify(lastCompareRed || [])
+        });
+
+        waitingDialog.show("Preparing download...");
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+        xhr.responseType = "blob";
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState !== 4) return;
+            waitingDialog.hide();
+            if (xhr.status >= 200 && xhr.status < 300) {
+                var blob = xhr.response;
+                if (!blob || blob.size === 0) {
+                    toastr.error("Empty file from server");
+                    return;
+                }
+                var ct = (xhr.getResponseHeader("Content-Type") || "").toLowerCase();
+                if (ct.indexOf("application/json") >= 0 || ct.indexOf("text/html") >= 0) {
+                    var r = new FileReader();
+                    r.onload = function () {
+                        try {
+                            var j = JSON.parse(r.result);
+                            toastr.error(j.message || j.Message || "Download failed");
+                        } catch (e) {
+                            toastr.error("Download failed");
+                        }
+                    };
+                    r.readAsText(blob);
+                    return;
+                }
+                var fileName = defaultName;
+                var cd = xhr.getResponseHeader("Content-Disposition");
+                if (cd) {
+                    var m = /filename\*?=(?:UTF-8''|)([^;\r\n]+)|filename="?([^";\r\n]+)"?/i.exec(cd);
+                    var raw = (m && (m[1] || m[2])) ? (m[1] || m[2]).trim() : null;
+                    if (raw) {
+                        try { fileName = decodeURIComponent(raw.replace(/^"|"$/g, "")); } catch (e) { fileName = raw.replace(/^"|"$/g, ""); }
+                    }
+                }
+                var link = document.createElement("a");
+                link.href = window.URL.createObjectURL(blob);
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.setTimeout(function () { window.URL.revokeObjectURL(link.href); }, 2500);
+            } else {
+                var errBlob = xhr.response;
+                if (errBlob instanceof Blob && errBlob.size > 0 && errBlob.size < 65536) {
+                    var reader = new FileReader();
+                    reader.onload = function () {
+                        try {
+                            var j = JSON.parse(reader.result);
+                            toastr.error(j.message || j.Message || ("Download failed (" + xhr.status + ")"));
+                        } catch (e) {
+                            toastr.error("Download failed (" + xhr.status + ")");
+                        }
+                    };
+                    reader.readAsText(errBlob);
+                } else {
+                    toastr.error("Download failed (" + xhr.status + ")");
+                }
+            }
+        };
+        xhr.onerror = function () {
+            waitingDialog.hide();
+            toastr.error("Network error while downloading");
+        };
+        xhr.send(body);
     }
 
     // choose file UX
@@ -2067,6 +2208,21 @@
                 },
                 "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
                 "aaData": varData,
+                "fnRowCallback": function (nRow, aData) {
+                    var $row = $(nRow);
+                    $row.css('background-color', '');
+                    if (comparisonCompareDone && lastCompareGreenSet && lastCompareYellowSet && aData) {
+                        var s = normalizeSerial(aData.serialnumber);
+                        if (s) {
+                            if (lastCompareGreenSet.has(s)) {
+                                $row.css('background-color', '#90EE90');
+                            } else if (lastCompareYellowSet.has(s)) {
+                                $row.css('background-color', '#FFFF99');
+                            }
+                        }
+                    }
+                    return nRow;
+                },
                 // "aaSorting": [[3, "asc"]],
                 "aoColumns": [
 

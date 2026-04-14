@@ -404,24 +404,39 @@
                     <span class="icon">
                         <i class="fa fa-check-square-o"></i>
                     </span>
-
                     <span>Movement Report</span>
                 </a>
             </li>
             @*<li id="liInventoryTransfer">
-                <a target="_self" class="AdminMenu" href="@Url.Action("InventoryTransferReport", "InventoryTransfer", new { area = "Admin" })">
-                    <span class="icon">
-                        <i class="fa fa-check-square-o"></i>
-                    </span>
-                    <span>Inventory Transfer</span>
-                </a>
-            </li>*@
+            <a target="_self" class="AdminMenu" href="@Url.Action("InventoryTransferReport", "InventoryTransfer", new { area = "Admin" })">
+                <span class="icon">
+                    <i class="fa fa-check-square-o"></i>
+                </span>
+                <span>Inventory Transfer</span>
+            </a>
+        </li>*@
             <li id="liInventoryBulkTransfer">
                 <a target="_self" class="AdminMenu" href="@Url.Action("Index", "InventoryBulkTransfer", new { area = "Admin" })">
                     <span class="icon">
                         <i class="fa fa-check-square-o"></i>
                     </span>
                     <span>Inventory Transfer</span>
+                </a>
+            </li>
+            <li id="liWarehouseTransfer">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "WarehouseTransfer", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    <span>Warehouse Transfer</span>
+                </a>
+            </li>
+            <li id="liINVInstallerReport">
+                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "INVInstallerReport", new { area = "Admin" })">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    <span>INV Installer Report</span>
                 </a>
             </li>
         </ul>

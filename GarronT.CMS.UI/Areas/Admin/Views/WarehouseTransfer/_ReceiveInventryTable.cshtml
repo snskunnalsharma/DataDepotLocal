@@ -1,0 +1,86 @@
+﻿@model IEnumerable<GarronT.CMS.Model.BO.ProductMasterBO>
+
+
+<table id="dynamic-table" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
+    <thead>
+        <tr>
+            <th width="5%">Generate Barcode</th>
+            <th width="5%">Warehouse</th>
+            <th width="10%">Product</th>
+            <th width="15%">Description</th>
+            <th width="10%">Part Number</th>
+            <th width="10%">UPC Code</th>
+            <th width="10%">Utility Type</th>
+            <th width="10%">Category</th>
+            <th width="10%">Make</th>
+            <th width="10%">Type</th>
+            <th width="10%">Size</th>
+            <th width="5%">Serial Number</th>
+            <th width="5%">Quantity</th>
+            <th width="5%">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.CheckBoxFor(model => item.GenerateBarcode,new { @disabled="disabled"})
+                    @*<input type="checkbox" disabled="disabled" name="name" value="@item.GenerateBarcode" />*@
+                </td>
+                <td>
+                    <input type="hidden" id="hndSerialNumberRequired" name="name" value="@item.SerialNumberRequired.ToString()" />
+                    <input type="hidden" id="hndUniqueId" name="name" value="@item.UniqueId" />
+                    <input type="hidden" id="hndWarehouseId" name="name" value="@item.WarehouseId" />
+                    @item.WarehouseName
+                </td>
+                <td>
+                    <input type="hidden" id="hndProductId" name="name" value="@item.Id" />
+                    @item.ProductName
+                </td>
+                <td>
+                    @item.ProductDescription
+                </td>
+                <td>
+                    @item.ProductPartNumber
+                </td>
+                <td>
+                    @item.ProductUPCCode
+                </td>
+                <td>
+                    @item.UtilityName
+                </td>
+                <td>
+                    @item.CategoryName
+                </td>
+                <td>
+                    @item.Make
+                </td>
+                <td>
+                    @item.Type
+                </td>
+                <td>
+                    @item.Size
+                </td>
+                <td>
+                    <input type="hidden" id="hndSerialNumber" name="name" value="@item.SerialNumber" />
+                    @item.SerialNumber
+                </td>
+                <td>
+                    <input type="hidden" id="hndQuantity" name="name" value="@item.Quantity" />
+                    @item.Quantity
+                </td>
+                
+                <td>
+                    <a id="" onclick="editInvetryRecord(this)" class="btn btn-primary btn-xs" role="button" alt="Edit" title="Edit"><i class="fa fa-pencil"></i></a>
+                    <a id="" onclick="deleteInvetryRecord(this)" class="btn btn-danger btn-xs" role="button" alt="Delete" title="Delete"><i class="fa fa-ban"></i></a>
+                 
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+
