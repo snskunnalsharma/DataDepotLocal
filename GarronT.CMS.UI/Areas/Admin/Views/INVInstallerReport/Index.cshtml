@@ -1,0 +1,306 @@
+@{
+    ViewBag.Title = "INV Installer Report";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@Html.Hidden("urlGetProject", Url.Action("GetProject", "INVInstallerReport"))
+@Html.Hidden("urlGetInstallers", Url.Action("GetInstallers", "INVInstallerReport"))
+@Html.Hidden("urlGetINVInstallerReportData", Url.Action("GetINVInstallerReportData", "INVInstallerReport"))
+
+<style>
+    @@media (min-width:375px) {
+        .dataTables_length > label {
+            white-space: normal;
+            width: auto;
+        }
+    }
+    .rep-shw-ent {
+        margin-top: -18px;
+        margin-bottom: -18px;
+        padding: 0;
+    }
+
+    /* Mobile-only */
+    @@media (max-width: 480px) {
+        #main-content .panel-body .form-control,
+        #main-content .panel-body select,
+        #main-content .panel-body input[type="text"],
+        #main-content .panel-body button.btn {
+            font-size: 13px !important;
+        }
+
+        /* Fix DataTables length/search overlap on small screens */
+        #main-content .dataTables_wrapper .dataTables_length,
+        #main-content .dataTables_wrapper .dataTables_filter {
+            float: none !important;
+            width: 100% !important;
+            text-align: left !important;
+            display: block !important;
+            clear: both !important;
+        }
+
+        #main-content .dataTables_wrapper .dataTables_filter {
+            margin-top: 6px !important;
+        }
+
+        #main-content .dataTables_wrapper .dataTables_filter input {
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+    }
+</style>
+
+<section id="main-content">
+    <section class="wrapper site-min-height">
+        <section class="panel rep_panel">
+            <header class="panel-heading rep_header" style="background: #80B2DF; color: #fff;">
+                INV Installer Report
+                <span class="tools pull-right">
+                    <a class="fa fa-chevron-down clickdive" href="javascript:;" style="color: #fff; padding-right:10px;"></a>
+                </span>
+            </header>
+
+            <div class="panel-body">
+                <div class="row mbot05">
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6 col-xxs-12 sm-mbot1 xs-mbot1 xxs-mbot2">
+                        @Html.DropDownList("UtilityId", (IEnumerable<SelectListItem>)ViewBag.UtilityListItem, new { @class = "form-control chosen-select", @data_placeholder = "Select Utility", @title = "Select Utility" })
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6 col-xxs-12 sm-mbot1 xs-mbot1 xxs-mbot2">
+                        @Html.DropDownList("ProjectId", (List<SelectListItem>)ViewBag.ProjectList, new { @class = "form-control chosen-select", @data_placeholder = "Select Project", @title = "Select Project" })
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 col-xxs-12 sm-mbot1 xs-mbot1 xxs-mbot2">
+                        @Html.DropDownList("InstallerId", (List<SelectListItem>)ViewBag.InstallerList, new { @class = "form-control chosen-select", @data_placeholder = "Select Installer", @title = "Select Installer" })
+                    </div>
+                </div>
+
+                <div class="row mbot05">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xxs-12 text-center">
+                        <button id="btnSearch" class="btn btn-success" type="button">Search</button>
+                        <button id="btnReset" class="btn btn-danger" type="button">Reset</button>
+                    </div>
+                </div>
+
+                <div class="row mbot05">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xxs-12">
+                        <div class="table-responsive">
+                            <table id="dynamic-table" class="display table table-bordered table-striped dataTable">
+                                <thead>
+                                    <tr>
+                                        <th>Completion Date</th>
+                                        <th>Installer Name</th>
+                                        <th>Work Order Id</th>
+                                        <th>Serial Number</th>
+                                        <th>Service Address</th>
+                                        <th>Latitude</th>
+                                        <th>Longitude</th>
+                                        <th>Status</th>
+                                        <th>Project Name</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </section>
+</section>
+
+<script>
+    (function () {
+        var isMobileBrowser = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+        function applyMobileNativePlaceholder($select, sentinelValue, label) {
+            if (!isMobileBrowser || !$select || !$select.length) return;
+            var v = String(sentinelValue);
+            var $opt = $select.find("option").filter(function () { return String($(this).val()) === v; });
+            if ($opt.length === 0) {
+                $opt = $('<option></option>').val(v).text(label);
+                $select.prepend($opt);
+            } else {
+                $opt = $opt.first();
+                $opt.text(label);
+                $opt.prependTo($select);
+            }
+            $select.find("option").prop("selected", false);
+            $opt.prop({ hidden: true, selected: true });
+        }
+
+        function initChosen() {
+            $("#UtilityId").chosen({ placeholder_text_single: "Select Utility", no_results_text: "Oops, nothing found!" });
+            $('#UtilityId').trigger('chosen:updated');
+
+            $("#ProjectId").chosen({ placeholder_text_single: "Select Project", no_results_text: "Oops, nothing found!" });
+            $('#ProjectId').trigger('chosen:updated');
+
+            $("#InstallerId").chosen({ placeholder_text_single: "Select Installer", no_results_text: "Oops, nothing found!" });
+            $('#InstallerId').trigger('chosen:updated');
+        }
+
+        function setActiveMenu() {
+            try {
+                $("#InventoryReports").addClass('active');
+                $("#subReports").addClass('block');
+                $('.sub').find("*").removeClass('active');
+                $('#liINVInstallerReport').addClass("active");
+            } catch (e) { }
+        }
+
+        function initTable() {
+            $('#dynamic-table').DataTable({
+                language: { emptyTable: "No Data To Show" },
+                sDom: '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
+                data: [],
+                columns: [
+                    { data: "CompletionDate" },
+                    { data: "InstallerName" },
+                    { data: "WorkOrderId" },
+                    { data: "SerialNumber" },
+                    { data: "ServiceAddress" },
+                    { data: "Latitude" },
+                    { data: "Longitude" },
+                    { data: "Status" },
+                    { data: "ProjectName" }
+                ]
+            });
+        }
+
+        function clearDropdown($ddl, mobileLabel) {
+            $ddl.empty();
+            var $o = $('<option></option>').val('0');
+            if (isMobileBrowser) {
+                $o.text(mobileLabel || "Select").prop({ hidden: true, selected: true });
+            } else {
+                $o.html('');
+            }
+            $ddl.append($o);
+            $ddl.val('0');
+            $ddl.trigger('chosen:updated');
+        }
+
+        function loadProjects(utilityId) {
+            clearDropdown($('#ProjectId'), "Select Project");
+            clearDropdown($('#InstallerId'), "Select Installer");
+            if (!utilityId || utilityId === '0') return;
+
+            waitingDialog.show('Please Wait Loading Projects...');
+            $.ajax({
+                type: 'GET',
+                data: { UtilityId: utilityId },
+                url: $('#urlGetProject').val(),
+                success: function (data) {
+                    if (data != null) {
+                        $.each(data, function (index, item) {
+                            $('#ProjectId').append($('<option></option>').val(item.ProjectId).html(item.ProjectName));
+                        });
+                    }
+                    $('#ProjectId').trigger('chosen:updated');
+                    waitingDialog.hide();
+                },
+                error: function () {
+                    waitingDialog.hide();
+                    toastr.error("something seems wrong", "Error Notification");
+                }
+            });
+        }
+
+        function loadInstallers(projectId) {
+            clearDropdown($('#InstallerId'), "Select Installer");
+            if (!projectId || projectId === '0') return;
+
+            waitingDialog.show('Please Wait Loading Installers...');
+            $.ajax({
+                type: 'GET',
+                data: { projectId: projectId },
+                url: $('#urlGetInstallers').val(),
+                success: function (data) {
+                    if (data != null) {
+                        $.each(data, function (index, item) {
+                            $('#InstallerId').append($('<option></option>').val(item.UserId).html(item.UserName));
+                        });
+                    }
+                    $('#InstallerId').trigger('chosen:updated');
+                    waitingDialog.hide();
+                },
+                error: function () {
+                    waitingDialog.hide();
+                    toastr.error("something seems wrong", "Error Notification");
+                }
+            });
+        }
+
+        function runSearch() {
+            var projectId = $("#ProjectId").val();
+            if (!projectId || projectId === '0') {
+                toastr.error("Please, select project", "Notification");
+                return;
+            }
+
+            var installerId = $("#InstallerId").val() || '0';
+            waitingDialog.show('Loading Please Wait...');
+            $.ajax({
+                type: 'POST',
+                url: $('#urlGetINVInstallerReportData').val(),
+                data: { projectId: projectId, installerId: installerId, search: '' },
+                success: function (res) {
+                    waitingDialog.hide();
+                    if (!res || res.success !== true) {
+                        toastr.error("Unable to load report", "Notification");
+                        return;
+                    }
+                    var dt = $('#dynamic-table').DataTable();
+                    dt.clear();
+                    dt.rows.add(res.rows || []);
+                    dt.draw();
+                },
+                error: function () {
+                    waitingDialog.hide();
+                    toastr.error("something seems wrong", "Notification");
+                }
+            });
+        }
+
+        function resetAll() {
+            $("#UtilityId").val('0').trigger('chosen:updated');
+            clearDropdown($('#ProjectId'), "Select Project");
+            clearDropdown($('#InstallerId'), "Select Installer");
+            var dt = $('#dynamic-table').DataTable();
+            dt.clear().draw();
+        }
+
+        $(document).ready(function () {
+            setActiveMenu();
+            if (!isMobileBrowser) {
+                initChosen();
+            } else {
+                // Mobile: remove blank options so native selects don't show empty rows
+                $("#UtilityId option").filter(function () { return $.trim($(this).text()) === ""; }).remove();
+                applyMobileNativePlaceholder($("#UtilityId"), "0", "Select Utility");
+                applyMobileNativePlaceholder($("#ProjectId"), "0", "Select Project");
+                applyMobileNativePlaceholder($("#InstallerId"), "0", "Select Installer");
+            }
+            initTable();
+
+            $('#UtilityId').on('change', function () {
+                loadProjects($(this).val());
+                var dt = $('#dynamic-table').DataTable();
+                dt.clear().draw();
+            });
+
+            $('#ProjectId').on('change', function () {
+                loadInstallers($(this).val());
+                var dt = $('#dynamic-table').DataTable();
+                dt.clear().draw();
+            });
+
+            $('#btnSearch').on('click', function () {
+                runSearch();
+            });
+
+            $('#btnReset').on('click', function () {
+                resetAll();
+            });
+        });
+    })();
+</script>
+

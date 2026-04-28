@@ -26,7 +26,17 @@ namespace GarronT.CMS.UI.CustomHelpers
 
                 string strMessage = "";
 
+                if (PermissionList == null || UserAccess == null)
+                {
+                    return false;
+                }
+
                 var currentController = PermissionList.Where(o => o.PermissionDescription == strcurrentController).FirstOrDefault();
+                if (currentController == null)
+                {
+                    return false;
+                }
+
                 var currentUserAccess = UserAccess.Where(o => o.FKAspNetPermissionId == currentController.Permission_Id).FirstOrDefault();
 
                 if (currentUserAccess != null)

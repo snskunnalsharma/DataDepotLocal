@@ -8,542 +8,538 @@
 </style>
 <ul class="sidebar-menu" id="nav-accordion">
     @{
-        GarronT.CMS.Model.CompassEntities database = new GarronT.CMS.Model.CompassEntities();
-        List<string> PermissionList1 = new List<string>();
+        // Permanent source of truth: role rights (AspNetRolePermissions).
+        // Avoid relying on per-user AspNetUserRolePermissions, which can get out of sync when role rights change.
+        var PermissionList = new List<string>();
 
-
-        if (!string.IsNullOrEmpty(User.Identity.Name))
+        // Prefer login session cache (set in LoginController) for performance.
+        var sessionPerms = Session["PermissionList"] as List<GarronT.CMS.Model.AspNetPermission>;
+        if (sessionPerms != null)
         {
-
-
-            var user = database.AspNetUsers.Where(r => r.UserName == User.Identity.Name).FirstOrDefault();
-            var Activeuser = database.tblUsers.Where(o => o.UserName == User.Identity.Name).FirstOrDefault();
-
-
-
-            var ObjList = database.AspNetUserRolePermissions.Where(o => o.Active == true && o.UserId == Activeuser.UserID &&
-                   (o.ViewOperation == true || o.AddOperation == true || o.EditOperation || o.DeleteOperation)).Select(o => o.FKAspNetPermissionId).ToList();
-
-            var PermissionList = database.AspNetPermissions.Where(o => ObjList.Contains(o.Permission_Id)).Select(o => o.PermissionDescription).ToList();
-
-            if (PermissionList.Contains("Dashboard"))
+            PermissionList = sessionPerms.Select(p => p.PermissionDescription).ToList();
+        }
+        else if (!string.IsNullOrEmpty(User.Identity.Name))
+        {
+            using (var database = new GarronT.CMS.Model.CompassEntities())
             {
-                <li>
+                // tblUsers.UserName doesn't always match AspNetUsers.UserName; prefer aspnet_UserId linkage when available.
+                var aspUser = database.AspNetUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
+                var activeUser = database.tblUsers.Where(t => t.UserName == User.Identity.Name).FirstOrDefault();
 
-                    <a class="active AdminMenu" target="_self" href="@Url.Action("Index", "Dashboard", new { area = "Admin" })">
-                        <i class="fa fa-dashboard"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-            }
+                if (activeUser == null && aspUser != null)
+                {
+                    activeUser = database.tblUsers.Where(t => t.aspnet_UserId.ToString() == aspUser.Id).FirstOrDefault();
+                }
+                if (aspUser == null && activeUser != null && activeUser.aspnet_UserId != null)
+                {
+                    var aspId = activeUser.aspnet_UserId.ToString();
+                    aspUser = database.AspNetUsers.Where(u => u.Id == aspId).FirstOrDefault();
+                }
 
+                var roleIds = (aspUser != null) ? aspUser.AspNetRoles.Select(r => r.Id).ToList() : new List<string>();
 
-            if (PermissionList.Contains("ProjectStatus"))
-            {
-                <li>
-                    <a class="active AdminMenu" target="_self" href="@Url.Action("Index", "ProjectStatus", new { area = "Admin" })">
-                        <i class="fa fa-dashboard"></i>
-                        <span>Project Status</span>
-                    </a>
-                </li>
-            }
+                var allowedPermissionIds = database.AspNetRolePermissions
+                    .Where(rp => roleIds.Contains(rp.Role_Id) &&
+                                 (rp.ViewOperation || rp.AddOperation || rp.EditOperation || rp.DeleteOperation))
+                    .Select(rp => rp.Permission_Id)
+                    .Distinct()
+                    .ToList();
 
-            if (PermissionList.Contains("UploadCityLogo") || PermissionList.Contains("FormType") ||
-                PermissionList.Contains("MeterMake") || PermissionList.Contains("MeterType") ||
-                PermissionList.Contains("MeterSize") || PermissionList.Contains("Services") ||
-                PermissionList.Contains("Picture") || PermissionList.Contains("Reason") ||
-                PermissionList.Contains("Users"))
-            {
-                <li>
-                    <a class="active" href="#">
-                        <i class="fa fa-user"></i>
-                        <span>Administration</span>
-                    </a>
-                    <ul class="sub">
-                        @if (PermissionList.Contains("UploadCityLogo"))
-                        {
-                            <li id="liUploadCityLogoMaster">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "UploadCityLogo", new { area = "Admin" })">
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-
-                                    <span>City Logo Master</span>
-                                </a>
-
-                            </li>
-                        }
-                        @if (PermissionList.Contains("FormType"))
-                        {
-                            <li id="liFormType">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "FormType", new { area = "Admin" })">
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-                                    <span>Form Type</span>
-                                </a>
-                            </li>
-                        }
-
-                        @if (PermissionList.Contains("MeterMake"))
-                        {
-                            <li id="liMetermake">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "MeterMake", new { area = "Admin" })">
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-                                    <span>Meter Make</span>
-
-                                </a>
-                            </li>
-                        }
-                        @if (PermissionList.Contains("MeterType"))
-                        {
-                            <li id="liMeterType">
-                                <a target="_self" href="@Url.Action("Index", "MeterType", new { area = "Admin" })">
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-                                    <span>Meter Type</span>
-
-                                </a>
-                            </li>
-                        }
-                        @if (PermissionList.Contains("MeterSize"))
-                        {
-                            <li id="liMeterSize">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "MeterSize", new { area = "Admin" })">
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-                                    <span>Meter Size</span>
-
-                                </a>
-                            </li>
-                        }
-                        @if (PermissionList.Contains("Picture"))
-                        {
-                            <li id="liPicture">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Picture", new { area = "Admin" })">
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-                                    <span>Picture</span>
-
-                                </a>
-                            </li>
-                        }
-                        @if (PermissionList.Contains("Reason"))
-                        {
-                            <li id="liReasonMaster">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Reason", new { area = "Admin" })">
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-
-                                    <span>Reason Master</span>
-                                </a>
-                            </li>
-                        }
-                        @if (PermissionList.Contains("Services"))
-                        {
-                            <li id="liServices">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Services", new { area = "Admin" })">
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-                                    <span>Services</span>
-
-                                </a>
-                            </li>
-                        }
-                        @if (PermissionList.Contains("Users"))
-                        {
-                            <li id="liUserMaster">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Users", new { area = "Admin" })">
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-
-                                    <span>User Master</span>
-                                </a>
-                            </li>
-                        }
-                    </ul>
-                </li>
-            }
-
-
-            if (PermissionList.Contains("Warehouse") || PermissionList.Contains("Category") || PermissionList.Contains("Product") ||
-                PermissionList.Contains("UploadInventory") || PermissionList.Contains("ReceiveInventry") || PermissionList.Contains("ViewUploadRecords")
-                || PermissionList.Contains("StockRequest")
-                )
-            {
-                <li class="dcjq-parent-li">
-                    <a id="InventoryManagement" class="nav-bg nav-main dcjq-parent" href="javascript:void(0);">
-                        <i class="fa fa-user"></i>
-                        <span>Inventory</span>
-                        <span class="dcjq-icon"></span>
-                    </a>
-                    <ul id="subInventoryManagement" class="sub" style="display: none;">
-
-                        @if (PermissionList.Contains("Warehouse"))
-                        {
-                            <li id="liWarehouseMaster">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Warehouse", new { area = "Admin" })">
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-
-                                    <span>Warehouse Master</span>
-                                </a>
-                            </li>
-                        }
-                        @if (PermissionList.Contains("Category"))
-                        {
-                            <li id="liCategoryMaster">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Category", new { area = "Admin" })">
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-
-                                    <span>Category Master</span>
-                                </a>
-                            </li>
-                        }
-                        @if (PermissionList.Contains("Product"))
-                        {
-                            <li id="liProductMaster">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Product", new { area = "Admin" })">
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-
-                                    <span>Product Master</span>
-                                </a>
-                            </li>
-                        }
-                        @if (PermissionList.Contains("UploadInventory"))
-                        {
-                            <li id="liUploadInventory">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "UploadInventory", new { area = "Admin" })">
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-
-                                    <span>Inventory Upload</span>
-                                </a>
-                            </li>
-                        }
-                        @if (PermissionList.Contains("ReceiveInventry"))
-                        {
-                            <li id="liWebInvenotryRecieve">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "ReceiveInventry", new { area = "Admin" })">
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-
-                                    <span>Inventory Receive</span>
-                                </a>
-                            </li>
-                        }
-                    
-                        @if (PermissionList.Contains("ViewUploadRecords"))
-                        {
-
-                            <li id="liviewInventry">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "ViewUploadRecords", new { area = "Admin" })">
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-
-                                    <span>Inventory View</span>
-                                </a>
-                            </li>
-                        }
-
-                        @if (PermissionList.Contains("StockRequest"))
-                        {
-                            <li id="liInventoryStockRequest">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "StockRequest", new { area = "Admin"})">
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-                                    <span>View Stock Request</span>
-                                </a>
-                            </li>
-
-                        }
-
-                    </ul>
-                </li>
-
-            }
-
-
-            if (PermissionList.Contains("Customer") || PermissionList.Contains("Project") || PermissionList.Contains("InstallerAllocation") ||
-                PermissionList.Contains("Alert") || PermissionList.Contains("ProjectAudit") || PermissionList.Contains("AppointmentAllocation"))
-            {
-                <li>
-                    <a class="active" href="#">
-                        <i class="fa fa-user"></i>
-                        <span>Operations</span>
-
-                    </a>
-                    <ul class="sub">
-
-                        @if (PermissionList.Contains("Alert"))
-                        {
-                            <li id="liAlertMaster">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Alert", new { area = "Admin" })">
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-                                    <span>Alert Master</span>
-                                </a>
-                            </li>
-                        }
-                        @if (PermissionList.Contains("ProjectAudit"))
-                        {
-                            <li id="liAudit">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "ProjectAudit", new { area = "Admin" })">
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-                                    <span>Audit</span>
-                                </a>
-                            </li>
-                        }
-                        @if (PermissionList.Contains("Customer"))
-                        {
-                            <li id="liClient">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Customer", new { area = "Admin" })">
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-                                    <span>Customer</span>
-                                </a>
-                            </li>
-                        }
-                        @if (PermissionList.Contains("Project"))
-                        {
-                            <li id="liProject">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Project", new { area = "Admin" })">
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-                                    <span>Project</span>
-                                </a>
-                            </li>
-                        }
-                        @if (PermissionList.Contains("InstallerAllocation"))
-                        {
-                            <li id="liInstaller">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "InstallerAllocation", new { area = "Admin" })">
-
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-                                    <span>Installer Allocation</span>
-                                </a>
-                            </li>
-                        }
-                        @if (PermissionList.Contains("AppointmentAllocation"))
-                        {
-                            <li id="liAppointment">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "AppointmentAllocation", new { area = "Admin" })">
-
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-                                    <span>Appointment</span>
-                                </a>
-                            </li>
-                        }
-                    </ul>
-                </li>
-            }
-            if (PermissionList.Contains("FormManagement"))
-            {
-                <li>
-                    <a target="_self" class="active AdminMenu" href="@Url.Action("Index", "FormManagement", new { area = "" })">
-                        <i class="fa fa-user"></i>
-                        <span>Form Management</span>
-                    </a>
-                </li>
-            }
-
-            if (PermissionList.Contains("Reports") || PermissionList.Contains("DuplicateReport") || PermissionList.Contains("ExportReport") ||
-                PermissionList.Contains("AuditorReports") || PermissionList.Contains("InstallerMapDataHistory") || PermissionList.Contains("ClockTimeReport"))
-            {
-                <li>
-                    <a id="Reports" target="_self" class="nav-bg nav-main  dcjq-parent" href="javascript:void(0);">
-                        <i class="fa fa-file">
-                        </i>
-                        <span>Reports</span>
-                    </a>
-
-                    <ul id="subReports" class="sub" style="display: none;">
-                        @if (PermissionList.Contains("ClockTimeReport"))
-                        {
-                            <li id="liDu+plicateReport">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "ClockTimeReport", new { area = "Admin" })">
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-                                    <span>Time Clock Report</span>
-                                </a>
-                            </li>
-                        }
-                        @if (PermissionList.Contains("DuplicateReport"))
-                        {
-                            <li id="liDu+plicateReport">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "DuplicateReport", new { area = "Admin" })">
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-                                    <span>Duplicate Report</span>
-                                </a>
-                            </li>
-                        }
-                        @if (PermissionList.Contains("ExportReport"))
-                        {
-                            <li id="liExportReport">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "ExportReport", new { area = "Admin"})">
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-                                    <span>Export Report</span>
-                                </a>
-                            </li>
-                        }
-                        @if (PermissionList.Contains("Reports"))
-                        {
-                            <li id="liReport">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Reports", new { area = "Admin" })">
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-                                    <span>Installer Report</span>
-                                </a>
-                            </li>
-                        }
-                        @if (PermissionList.Contains("AuditorReports"))
-                        {
-                            <li id="liAuditorReport">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "AuditorReports", new { area = "Admin" })">
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-                                    <span>Auditor Report</span>
-                                </a>
-                            </li>
-                        }
-                        @if (PermissionList.Contains("InstallerMapDataHistory"))
-                        {
-                            <li id="liInstallerMapHistory">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "InstallerMapDataHistory", new { area = "Admin" })">
-
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-                                    <span>Skip History Report</span>
-                                </a>
-                            </li>
-                        }
-                       
-                    </ul>
-                </li>
-
-            }
-
-            if (PermissionList.Contains("WarehouseStockReport") || PermissionList.Contains("InventryStockReport")
-                || PermissionList.Contains("ProcuctMovementReport") || PermissionList.Contains("InventoryTransfer") || PermissionList.Contains("WarehouseTransfer")
-                || PermissionList.Contains("INVInstallerReport"))
-            {
-                <li class="dcjq-parent-li">
-                    <a id="InventoryReports" target="_self" class="nav-bg nav-main  dcjq-parent" href="javascript:void(0);">
-                        <i class="fa fa-file">
-                        </i>
-                        <span>Inventory Reports</span>
-                    </a>
-                    <ul id="subReports" class="sub" style="display: none;">
-                        @if (PermissionList.Contains("WarehouseStockReport"))
-                        {
-                            <li id="liWarehouseStockReport">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("StockReport", "WarehouseStockReport", new { area = "Admin" })">
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-                                    <span>Warehouse Stock</span>
-                                </a>
-                            </li>
-                        }
-                        @if (PermissionList.Contains("InventryStockReport"))
-                        {
-                            <li id="liInventoryStockReport">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "InventryStockReport", new { area = "Admin"})">
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-                                    <span>Inventory Stock</span>
-                                </a>
-                            </li>
-                        }
-                        @if (PermissionList.Contains("ProcuctMovementReport"))
-                        {
-                            <li id="liInventoryMovementReport">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "ProcuctMovementReport", new { area = "Admin" })">
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-                                    <span>Movement Report</span>
-                                </a>
-                            </li>
-                        }
-                        @if (PermissionList.Contains("InventoryTransfer"))
-                        {
-                            <li id="liInventoryMovementReport">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("InventoryTransferReport", "InventoryTransfer", new { area = "Admin" })">
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-                                    <span>Inventory Transfer</span>
-                                </a>
-                            </li>
-                        }
-                        @if (PermissionList.Contains("WarehouseTransfer"))
-                        {
-                            <li id="liWarehouseTransfer">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "WarehouseTransfer", new { area = "Admin" })">
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-                                    <span>Warehouse Transfer</span>
-                                </a>
-                            </li>
-                        }
-                        @if (PermissionList.Contains("INVInstallerReport"))
-                        {
-                            <li id="liWarehouseTransfer">
-                                <a target="_self" class="AdminMenu" href="@Url.Action("Index", "INVInstallerReport", new { area = "Admin" })">
-                                    <span class="icon">
-                                        <i class="fa fa-check-square-o"></i>
-                                    </span>
-                                    <span>INV Installer Report</span>
-                                </a>
-                            </li>
-                        }
-                    </ul>
-
-                </li>
+                PermissionList = database.AspNetPermissions
+                    .Where(p => allowedPermissionIds.Contains(p.Permission_Id))
+                    .Select(p => p.PermissionDescription)
+                    .ToList();
             }
         }
-        else
+
+        if (PermissionList.Contains("Dashboard"))
         {
-            Response.Redirect("~/Login/index");
+            <li>
+                <a class="active AdminMenu" target="_self" href="@Url.Action("Index", "Dashboard", new { area = "Admin" })">
+                    <i class="fa fa-dashboard"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+        }
+
+
+        if (PermissionList.Contains("ProjectStatus"))
+        {
+            <li>
+                <a class="active AdminMenu" target="_self" href="@Url.Action("Index", "ProjectStatus", new { area = "Admin" })">
+                    <i class="fa fa-dashboard"></i>
+                    <span>Project Status</span>
+                </a>
+            </li>
+        }
+
+        if (PermissionList.Contains("UploadCityLogo") || PermissionList.Contains("FormType") ||
+            PermissionList.Contains("MeterMake") || PermissionList.Contains("MeterType") ||
+            PermissionList.Contains("MeterSize") || PermissionList.Contains("Services") ||
+            PermissionList.Contains("Picture") || PermissionList.Contains("Reason") ||
+            PermissionList.Contains("Users"))
+        {
+            <li>
+                <a class="active" href="#">
+                    <i class="fa fa-user"></i>
+                    <span>Administration</span>
+                </a>
+                <ul class="sub">
+                    @if (PermissionList.Contains("UploadCityLogo"))
+                    {
+                        <li id="liUploadCityLogoMaster">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "UploadCityLogo", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>City Logo Master</span>
+                            </a>
+                        </li>
+                    }
+                    @if (PermissionList.Contains("FormType"))
+                    {
+                        <li id="liFormType">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "FormType", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>Form Type</span>
+                            </a>
+                        </li>
+                    }
+                    @if (PermissionList.Contains("MeterMake"))
+                    {
+                        <li id="liMetermake">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "MeterMake", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>Meter Make</span>
+                            </a>
+                        </li>
+                    }
+                    @if (PermissionList.Contains("MeterType"))
+                    {
+                        <li id="liMeterType">
+                            <a target="_self" href="@Url.Action("Index", "MeterType", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>Meter Type</span>
+                            </a>
+                        </li>
+                    }
+                    @if (PermissionList.Contains("MeterSize"))
+                    {
+                        <li id="liMeterSize">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "MeterSize", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>Meter Size</span>
+                            </a>
+                        </li>
+                    }
+                    @if (PermissionList.Contains("Picture"))
+                    {
+                        <li id="liPicture">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Picture", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>Picture</span>
+                            </a>
+                        </li>
+                    }
+                    @if (PermissionList.Contains("Reason"))
+                    {
+                        <li id="liReasonMaster">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Reason", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>Reason Master</span>
+                            </a>
+                        </li>
+                    }
+                    @if (PermissionList.Contains("Services"))
+                    {
+                        <li id="liServices">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Services", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>Services</span>
+                            </a>
+                        </li>
+                    }
+                    @if (PermissionList.Contains("Users"))
+                    {
+                        <li id="liUserMaster">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Users", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>User Master</span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </li>
+        }
+
+
+        if (PermissionList.Contains("Warehouse") || PermissionList.Contains("Category") || PermissionList.Contains("Product") ||
+            PermissionList.Contains("UploadInventory") || PermissionList.Contains("ReceiveInventry") || PermissionList.Contains("ViewUploadRecords")
+            || PermissionList.Contains("StockRequest")
+            )
+        {
+            <li class="dcjq-parent-li">
+                <a id="InventoryManagement" class="nav-bg nav-main dcjq-parent" href="javascript:void(0);">
+                    <i class="fa fa-user"></i>
+                    <span>Inventory</span>
+                    <span class="dcjq-icon"></span>
+                </a>
+                <ul id="subInventoryManagement" class="sub" style="display: none;">
+                    @if (PermissionList.Contains("Warehouse"))
+                    {
+                        <li id="liWarehouseMaster">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Warehouse", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>Warehouse Master</span>
+                            </a>
+                        </li>
+                    }
+                    @if (PermissionList.Contains("Category"))
+                    {
+                        <li id="liCategoryMaster">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Category", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>Category Master</span>
+                            </a>
+                        </li>
+                    }
+                    @if (PermissionList.Contains("Product"))
+                    {
+                        <li id="liProductMaster">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Product", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>Product Master</span>
+                            </a>
+                        </li>
+                    }
+                    @if (PermissionList.Contains("UploadInventory"))
+                    {
+                        <li id="liUploadInventory">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "UploadInventory", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>Inventory Upload</span>
+                            </a>
+                        </li>
+                    }
+                    @if (PermissionList.Contains("ReceiveInventry"))
+                    {
+                        <li id="liWebInvenotryRecieve">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "ReceiveInventry", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>Inventory Receive</span>
+                            </a>
+                        </li>
+                    }
+
+                    @if (PermissionList.Contains("ViewUploadRecords"))
+                    {
+
+                        <li id="liviewInventry">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "ViewUploadRecords", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>Inventory View</span>
+                            </a>
+                        </li>
+                    }
+                    @if (PermissionList.Contains("StockRequest"))
+                    {
+                        <li id="liInventoryStockRequest">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "StockRequest", new { area = "Admin"})">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>View Stock Request</span>
+                            </a>
+                        </li>
+
+                    }
+                </ul>
+            </li>
+
+        }
+
+
+        if (PermissionList.Contains("Customer") || PermissionList.Contains("Project") || PermissionList.Contains("InstallerAllocation") ||
+            PermissionList.Contains("Alert") || PermissionList.Contains("ProjectAudit") || PermissionList.Contains("AppointmentAllocation"))
+        {
+            <li>
+                <a class="active" href="#">
+                    <i class="fa fa-user"></i>
+                    <span>Operations</span>
+                </a>
+                <ul class="sub">
+                    @if (PermissionList.Contains("Alert"))
+                    {
+                        <li id="liAlertMaster">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Alert", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>Alert Master</span>
+                            </a>
+                        </li>
+                    }
+                    @if (PermissionList.Contains("ProjectAudit"))
+                    {
+                        <li id="liAudit">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "ProjectAudit", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>Audit</span>
+                            </a>
+                        </li>
+                    }
+                    @if (PermissionList.Contains("Customer"))
+                    {
+                        <li id="liClient">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Customer", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>Customer</span>
+                            </a>
+                        </li>
+                    }
+                    @if (PermissionList.Contains("Project"))
+                    {
+                        <li id="liProject">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Project", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>Project</span>
+                            </a>
+                        </li>
+                    }
+                    @if (PermissionList.Contains("InstallerAllocation"))
+                    {
+                        <li id="liInstaller">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "InstallerAllocation", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>Installer Allocation</span>
+                            </a>
+                        </li>
+                    }
+                    @if (PermissionList.Contains("AppointmentAllocation"))
+                    {
+                        <li id="liAppointment">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "AppointmentAllocation", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>Appointment</span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </li>
+        }
+        if (PermissionList.Contains("FormManagement"))
+        {
+            <li>
+                <a target="_self" class="active AdminMenu" href="@Url.Action("Index", "FormManagement", new { area = "" })">
+                    <i class="fa fa-user"></i>
+                    <span>Form Management</span>
+                </a>
+            </li>
+        }
+
+        if (PermissionList.Contains("Reports") || PermissionList.Contains("DuplicateReport") || PermissionList.Contains("ExportReport") ||
+            PermissionList.Contains("AuditorReports") || PermissionList.Contains("InstallerMapDataHistory") || PermissionList.Contains("ClockTimeReport"))
+        {
+            <li>
+                <a id="Reports" target="_self" class="nav-bg nav-main  dcjq-parent" href="javascript:void(0);">
+                    <i class="fa fa-file">
+                    </i>
+                    <span>Reports</span>
+                </a>
+                <ul id="subReports" class="sub" style="display: none;">
+                    @if (PermissionList.Contains("ClockTimeReport"))
+                    {
+                        <li id="liDu+plicateReport">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "ClockTimeReport", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>Time Clock Report</span>
+                            </a>
+                        </li>
+                    }
+                    @if (PermissionList.Contains("DuplicateReport"))
+                    {
+                        <li id="liDu+plicateReport">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "DuplicateReport", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>Duplicate Report</span>
+                            </a>
+                        </li>
+                    }
+                    @if (PermissionList.Contains("ExportReport"))
+                    {
+                        <li id="liExportReport">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "ExportReport", new { area = "Admin"})">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>Export Report</span>
+                            </a>
+                        </li>
+                    }
+                    @if (PermissionList.Contains("Reports"))
+                    {
+                        <li id="liReport">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "Reports", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>Installer Report</span>
+                            </a>
+                        </li>
+                    }
+                    @if (PermissionList.Contains("AuditorReports"))
+                    {
+                        <li id="liAuditorReport">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "AuditorReports", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>Auditor Report</span>
+                            </a>
+                        </li>
+                    }
+                    @if (PermissionList.Contains("InstallerMapDataHistory"))
+                    {
+                        <li id="liInstallerMapHistory">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "InstallerMapDataHistory", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>Skip History Report</span>
+                            </a>
+                        </li>
+                    }
+
+                </ul>
+            </li>
+
+        }
+
+        if (PermissionList.Contains("WarehouseStockReport") || PermissionList.Contains("InventryStockReport")
+            || PermissionList.Contains("ProcuctMovementReport") || PermissionList.Contains("InventoryBulkTransfer") || PermissionList.Contains("WarehouseTransfer")
+            || PermissionList.Contains("INVInstallerReport"))
+        {
+            <li class="dcjq-parent-li">
+                <a id="InventoryReports" target="_self" class="nav-bg nav-main  dcjq-parent" href="javascript:void(0);">
+                    <i class="fa fa-file">
+                    </i>
+                    <span>Inventory Reports</span>
+                </a>
+                <ul id="subReports" class="sub" style="display: none;">
+                    @if (PermissionList.Contains("WarehouseStockReport"))
+                    {
+                        <li id="liWarehouseStockReport">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("StockReport", "WarehouseStockReport", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>Warehouse Stock</span>
+                            </a>
+                        </li>
+                    }
+                    @if (PermissionList.Contains("InventryStockReport"))
+                    {
+                        <li id="liInventoryStockReport">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "InventryStockReport", new { area = "Admin"})">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>Inventory Stock</span>
+                            </a>
+                        </li>
+                    }
+                    @if (PermissionList.Contains("ProcuctMovementReport"))
+                    {
+                        <li id="liInventoryMovementReport">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "ProcuctMovementReport", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>Movement Report</span>
+                            </a>
+                        </li>
+                    }
+                    @if (PermissionList.Contains("InventoryBulkTransfer"))
+                    {
+                        <li id="liInventoryBulkTransfer">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "InventoryBulkTransfer", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>Inventory Transfer</span>
+                            </a>
+                        </li>
+                    }
+                    @if (PermissionList.Contains("WarehouseTransfer"))
+                    {
+                        <li id="liWarehouseTransfer">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "WarehouseTransfer", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>Warehouse Transfer</span>
+                            </a>
+                        </li>
+                    }
+                    @if (PermissionList.Contains("INVInstallerReport"))
+                    {
+                        <li id="liINVInstallerReport">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "INVInstallerReport", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>INV Installer Report</span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </li>
         }
     }
+    @* no-op: menu will render empty when unauthenticated  }*@
+
 </ul>
 
 <div class="nav_btm_ht" style="height:100px;"></div>
@@ -551,7 +547,7 @@
 
 
 
-</ul>
+
 
 <!-- Right Slidebar start -->
 

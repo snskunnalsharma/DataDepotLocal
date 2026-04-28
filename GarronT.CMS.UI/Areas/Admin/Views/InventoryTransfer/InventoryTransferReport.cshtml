@@ -63,6 +63,36 @@
             margin-bottom: 2%;
         }
     }
+
+    /* Mobile-only */
+    @@media (max-width: 480px) {
+        #main-content .panel-body .form-control,
+        #main-content .panel-body select,
+        #main-content .panel-body input[type="text"],
+        #main-content .panel-body input[type="number"],
+        #main-content .panel-body button.btn {
+            font-size: 13px !important;
+        }
+
+        /* Fix DataTables length/search overlap on small screens */
+        #main-content .dataTables_wrapper .dataTables_length,
+        #main-content .dataTables_wrapper .dataTables_filter {
+            float: none !important;
+            width: 100% !important;
+            text-align: left !important;
+            display: block !important;
+            clear: both !important;
+        }
+
+        #main-content .dataTables_wrapper .dataTables_filter {
+            margin-top: 6px !important;
+        }
+
+        #main-content .dataTables_wrapper .dataTables_filter input {
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+    }
 </style>
 <style>
     /*************************************Bootstrap Css***********************************/
@@ -1122,19 +1152,19 @@
                 <div class="row mbot05 sm-mbot1 xs-mbot1 xxs-mbot2">
 
                     <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 col-xxs-12 mbot05 md-mbot1  sm-mbot1 lg-nopaddingright md-nopaddingright sm-nopaddingright xs-mbot1 xxs-mbot2">
-                        @Html.DropDownList("UtilityId", (IEnumerable<SelectListItem>)ViewBag.UtilityListItem, new { @class = "form-control chosen-select" })
+                        @Html.DropDownList("UtilityId", (IEnumerable<SelectListItem>)ViewBag.UtilityListItem, "Select Utility", new { @class = "form-control chosen-select", @title = "Select Utility" })
                     </div>
 
                     <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 col-xxs-12 mbot05 md-mbot1 sm-mbot1 lg-nopaddingright md-nopaddingright sm-nopaddingright xs-mbot1 xxs-mbot2">
-                        @Html.DropDownList("ProjectId", (List<SelectListItem>)ViewBag.ProjectList, new { @class = "form-control chosen-select" })
+                        @Html.DropDownList("ProjectId", (List<SelectListItem>)ViewBag.ProjectList, "Select Project", new { @class = "form-control chosen-select", @title = "Select Project" })
                     </div>
 
                     <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 col-xxs-12 mbot05  sm-mbot1 lg-nopaddingright md-nopaddingright xs-mbot1 xs-clear xxs-mbot2">
-                        @Html.DropDownList("WarehouseId", (IEnumerable<SelectListItem>)ViewBag.WarehouseList, new { @class = "form-control chosen-select", @title = "Select Warehouse" })
+                        @Html.DropDownList("WarehouseId", (IEnumerable<SelectListItem>)ViewBag.WarehouseList, "Select Warehouse", new { @class = "form-control chosen-select", @title = "Select Warehouse" })
                     </div>
 
                     <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 col-xxs-12 mbot05 sm-nopaddingright xs-mbot1 xxs-mbot2">
-                        @Html.DropDownList("ProductId", (IEnumerable<SelectListItem>)ViewBag.ProductList, new { @class = "form-control chosen-select", @title = "Select Product" })
+                        @Html.DropDownList("ProductId", (IEnumerable<SelectListItem>)ViewBag.ProductList, "Select Product", new { @class = "form-control chosen-select", @title = "Select Product" })
                     </div>
 
                 </div>
@@ -1152,7 +1182,9 @@
 
                     <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 col-xxs-12 lg-nopaddingright md-nopaddingright md-clear sm-nopaddingright xs-clear">
                         <label for="name" class="col-lg-2 col-sm-2 control-label"><strong>From Select Location</strong></label>
-                        <select data-placeholder="From Select Location" name="ddlLocationFrom" id="ddlLocationFrom" class="form-control chosen-select"></select>
+                        <select data-placeholder="From Select Location" name="ddlLocationFrom" id="ddlLocationFrom" class="form-control chosen-select">
+                            <option value="0">From Select Location</option>
+                        </select>
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 col-xxs-12 lg-nopaddingright md-nopaddingright md-clear sm-nopaddingright xs-clear">
                         <label for="name" class="col-lg-2 col-sm-2 control-label"><strong>Available Quantity</strong></label>
@@ -1160,7 +1192,9 @@
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 col-xxs-12 lg-nopaddingright md-nopaddingright md-clear sm-nopaddingright xs-clear">
                         <label for="name" class="col-lg-2 col-sm-2 control-label"><strong>To Select Location</strong></label>
-                        <select data-placeholder="To Select Location" name="ddlLocationTo" id="ddlLocationTo" class="form-control chosen-select "></select>
+                        <select data-placeholder="To Select Location" name="ddlLocationTo" id="ddlLocationTo" class="form-control chosen-select ">
+                            <option value="0">To Select Location</option>
+                        </select>
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 col-xxs-12 lg-nopaddingright md-nopaddingright md-clear sm-nopaddingright xs-clear">
                         <label for="name" class="col-lg-2 col-sm-2 control-label"><strong>Enter Quantity</strong></label>
@@ -1190,6 +1224,8 @@
 <script src="~/jquery-confirm-master/js/jquery-confirm.js"></script>
 
 <script>
+    var isMobileBrowser = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
     $(document).ready(function () {
 
         $("#InventoryReports").addClass('active');
@@ -1199,23 +1235,22 @@
         $('#liInventoryTransfer').addClass("active");
 
 
-        $("#UtilityId").chosen({ placeholder_text_single: "Select Utility", no_results_text: "Oops, nothing found!" });
-        $('#UtilityId').trigger('chosen:updated');
+        if (!isMobileBrowser) {
+            $("#UtilityId").chosen({ placeholder_text_single: "Select Utility", no_results_text: "Oops, nothing found!" });
+            $('#UtilityId').trigger('chosen:updated');
 
-        $("#ProjectId").chosen({ placeholder_text_single: "Select Project", no_results_text: "Oops, nothing found!" });
-        $('#ProjectId').trigger('chosen:updated');
+            $("#ProjectId").chosen({ placeholder_text_single: "Select Project", no_results_text: "Oops, nothing found!" });
+            $('#ProjectId').trigger('chosen:updated');
 
+            $("#WarehouseId").chosen({ placeholder_text_single: "Select Warehouse", no_results_text: "Oops, nothing found!" });
+            $('#WarehouseId').trigger('chosen:updated');
 
-        $("#WarehouseId").chosen({ placeholder_text_single: "Select Warehouse", no_results_text: "Oops, nothing found!" });
-        $('#WarehouseId').trigger('chosen:updated');
-
-
-
-        $("#ProductId").chosen({ placeholder_text_single: "Select Product", no_results_text: "Oops, nothing found!" });
-        $('#ProductId').val("0").attr("selected", "selected").trigger('chosen:updated');
-
-        $("#ReportType").chosen();
-        $('#ReportType').val("0").attr("selected", "selected").trigger('chosen:updated');
+            $("#ProductId").chosen({ placeholder_text_single: "Select Product", no_results_text: "Oops, nothing found!" });
+            $('#ProductId').val("0").attr("selected", "selected").trigger('chosen:updated');
+        } else {
+            // Mobile: remove blank options so native selects don't show empty rows
+            $("#UtilityId option").filter(function () { return $.trim($(this).text()) === ""; }).remove();
+        }
 
         $('#dynamic-table').DataTable({ "language": { "emptyTable": "No Data To Show" } });
 
@@ -1226,11 +1261,13 @@
             "bPaginate": false, //hide pagination
         });
 
-        $("#ddlLocationFrom").chosen({ placeholder_text_single: "From Select Location", no_results_text: "Oops, nothing found!" });
-        $('#ddlLocationFrom').val("0").attr("selected", "selected").trigger('chosen:updated');
+        if (!isMobileBrowser) {
+            $("#ddlLocationFrom").chosen({ placeholder_text_single: "From Select Location", no_results_text: "Oops, nothing found!" });
+            $('#ddlLocationFrom').val("0").attr("selected", "selected").trigger('chosen:updated');
 
-        $("#ddlLocationTo").chosen({ placeholder_text_single: "To Select Location", no_results_text: "Oops, nothing found!" });
-        $('#ddlLocationTo').val("0").attr("selected", "selected").trigger('chosen:updated');
+            $("#ddlLocationTo").chosen({ placeholder_text_single: "To Select Location", no_results_text: "Oops, nothing found!" });
+            $('#ddlLocationTo').val("0").attr("selected", "selected").trigger('chosen:updated');
+        }
 
         $("#divDetail").hide();
         $("#divSummary").show();
@@ -1255,15 +1292,24 @@
 
     $('#UtilityId').change(function () {
 
-        $('#ProjectId').empty().trigger('chosen:updated');
-        $('#WarehouseId').empty().trigger('chosen:updated');
-        $('#ProductId').empty().trigger('chosen:updated');
+        if (isMobileBrowser) {
+            $('#ProjectId').html('<option value="0">Select Project</option>').trigger('chosen:updated');
+            $('#WarehouseId').html('<option value="0">Select Warehouse</option>').trigger('chosen:updated');
+            $('#ProductId').html('<option value="0">Select Product</option>').trigger('chosen:updated');
+        } else {
+            $('#ProjectId').empty().trigger('chosen:updated');
+            $('#WarehouseId').empty().trigger('chosen:updated');
+            $('#ProductId').empty().trigger('chosen:updated');
+        }
         $("#WarehouseId").trigger("chosen:updated");
         $("#ProductId").trigger("chosen:updated");
-        $("#ddlLocationFrom").empty();
-        $("#ddlLocationFrom").trigger("chosen:updated");
-        $("#ddlLocationTo").empty();
-        $("#ddlLocationTo").trigger("chosen:updated");
+        if (isMobileBrowser) {
+            $("#ddlLocationFrom").html('<option value="0">From Select Location</option>').trigger("chosen:updated");
+            $("#ddlLocationTo").html('<option value="0">To Select Location</option>').trigger("chosen:updated");
+        } else {
+            $("#ddlLocationFrom").empty().trigger("chosen:updated");
+            $("#ddlLocationTo").empty().trigger("chosen:updated");
+        }
         document.getElementById("availableQty").value = "";
         document.getElementById("enterQty").value = "";
         $('#dynamic-table').dataTable().fnClearTable();//clear the DataTable
@@ -1280,7 +1326,7 @@
 
                 if (data != null) {
                     $.each(data, function (index, item) {
-                        if (index == 0) { $('#ProjectId').append($('<option></option>').val('0').html("")); }
+                        if (index == 0) { $('#ProjectId').append($('<option></option>').val('0').html(isMobileBrowser ? "Select Project" : "")); }
                         $('#ProjectId').append($('<option></option>').val(item.ProjectId).html(item.ProjectName));
                     });
                 }
@@ -1298,9 +1344,14 @@
     });
 
     $('#ProjectId').change(function () {
-        $('#WarehouseId').empty().trigger('chosen:updated');
-        $('#ProductId').empty().trigger('chosen:updated');
-        $('#LocationType').empty().trigger('chosen:updated');
+        if (isMobileBrowser) {
+            $('#WarehouseId').html('<option value="0">Select Warehouse</option>').trigger('chosen:updated');
+            $('#ProductId').html('<option value="0">Select Product</option>').trigger('chosen:updated');
+        } else {
+            $('#WarehouseId').empty().trigger('chosen:updated');
+            $('#ProductId').empty().trigger('chosen:updated');
+            $('#LocationType').empty().trigger('chosen:updated');
+        }
         var value = $("#ProjectId option:selected")
 
         waitingDialog.show('Please Wait Loading Contacts...');
@@ -1312,7 +1363,7 @@
             success: function (data) {
                 if (data.WarehouseList != null) {
                     $.each(data.WarehouseList, function (index, item) {
-                        if (index == 0) { $('#WarehouseId').append($('<option></option>').val('0').html("")); }
+                        if (index == 0) { $('#WarehouseId').append($('<option></option>').val('0').html(isMobileBrowser ? "Select Warehouse" : "")); }
                         $('#WarehouseId').append($('<option></option>').val(item.WarehouseId).html(item.WarehouseName));
                     });
                 }
@@ -1320,7 +1371,7 @@
 
                 if (data.ProductList != null) {
                     $.each(data.ProductList, function (index, item) {
-                        if (index == 0) { $('#ProductId').append($('<option></option>').val('0').html("")); }
+                        if (index == 0) { $('#ProductId').append($('<option></option>').val('0').html(isMobileBrowser ? "Select Product" : "")); }
                         $('#ProductId').append($('<option></option>').val(item.Id).html(item.FieldValue));
                     });
                 }

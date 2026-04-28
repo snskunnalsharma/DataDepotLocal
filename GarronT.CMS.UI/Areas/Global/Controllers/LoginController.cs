@@ -121,16 +121,57 @@ namespace GarronT.CMS.UI.Areas.Global.Controllers
                 //}
                 //var PermissionList = PermissionList1.Distinct().ToList();
 
-                var ObjList = obj.AspNetUserRolePermissions.Where(o => o.Active == true && o.UserId == Activeuser.UserID &&
-                    (o.ViewOperation == true || o.AddOperation == true || o.EditOperation || o.DeleteOperation)).Select(o => o.FKAspNetPermissionId).ToList();
+                // Role-based effective permissions (source of truth).
+                // IMPORTANT: tblUsers.UserName doesn't always match AspNetUsers.UserName.
+                // Use tblUsers.aspnet_UserId as the primary lookup for identity roles.
+                var aspUserId = Activeuser.aspnet_UserId != null ? Activeuser.aspnet_UserId.ToString() : null;
+                var aspUser = !string.IsNullOrWhiteSpace(aspUserId)
+                    ? obj.AspNetUsers.Where(u => u.Id == aspUserId).FirstOrDefault()
+                    : null;
 
-                var PermissionList = obj.AspNetPermissions.Where(o => ObjList.Contains(o.Permission_Id)).Select(o => o.PermissionDescription).ToList();
+                if (aspUser == null)
+                {
+                    aspUser = obj.AspNetUsers.Where(u => u.UserName == model.UserName).FirstOrDefault();
+                }
+                var roleIds = (aspUser != null)
+                    ? aspUser.AspNetRoles.Select(r => r.Id).ToList()
+                    : new List<string>();
 
-                var UserAccess = obj.AspNetUserRolePermissions.Where(o => o.Active == true && o.UserId == Activeuser.UserID).ToList();
-                var PermissionList1 = obj.AspNetPermissions.Where(o => ObjList.Contains(o.Permission_Id)).ToList();
-                Session["UserPermissionList"] = UserAccess;
+                var rolePerms = obj.AspNetRolePermissions
+                    .Where(rp => roleIds.Contains(rp.Role_Id))
+                    .ToList();
 
+                // Effective ops = OR across all roles.
+                var effectiveByPermission = rolePerms
+                    .GroupBy(rp => rp.Permission_Id)
+                    .Select(g => new
+                    {
+                        PermissionId = g.Key,
+                        ViewOperation = g.Any(x => x.ViewOperation),
+                        AddOperation = g.Any(x => x.AddOperation),
+                        EditOperation = g.Any(x => x.EditOperation),
+                        DeleteOperation = g.Any(x => x.DeleteOperation)
+                    })
+                    .Where(x => x.ViewOperation || x.AddOperation || x.EditOperation || x.DeleteOperation)
+                    .ToList();
+
+                var allowedPermissionIds = effectiveByPermission.Select(x => x.PermissionId).ToList();
+                var PermissionList1 = obj.AspNetPermissions.Where(p => allowedPermissionIds.Contains(p.Permission_Id)).ToList();
+
+                // Preserve existing session keys used across UI.
                 Session["PermissionList"] = PermissionList1;
+                Session["UserPermissionList"] = effectiveByPermission.Select(x => new AspNetUserRolePermission
+                {
+                    UserId = Activeuser.UserID,
+                    FKAspNetPermissionId = (int)x.PermissionId,
+                    ViewOperation = x.ViewOperation,
+                    AddOperation = x.AddOperation,
+                    EditOperation = x.EditOperation,
+                    DeleteOperation = x.DeleteOperation,
+                    Active = true
+                }).ToList();
+
+                var PermissionList = PermissionList1.Select(p => p.PermissionDescription).ToList();
 
 
 

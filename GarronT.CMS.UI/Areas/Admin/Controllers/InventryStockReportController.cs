@@ -1206,6 +1206,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
             return payload;
         }
+        [HttpPost]
         public JsonResult InstallMatchedInventory(int projectId, string serialList)
         {
             try
@@ -1215,7 +1216,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 if (Session["UserId"] != null)
                     long.TryParse(Session["UserId"].ToString(), out userId);
 
-                var serials = JsonConvert.DeserializeObject<List<CompletedInventorySerialItem>>(serialList ?? "[]");
+                var serials = JsonConvert.DeserializeObject<List<CompletedInventorySerialItem>>(serialList ?? "[]") ?? new List<CompletedInventorySerialItem>();
 
                 using (var db = new CompassEntities())
                 {
@@ -1240,28 +1241,52 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                             g => g.First().UserID
                         );
 
-                    foreach (var item in serials.Where(x => x != null && !string.IsNullOrWhiteSpace(x.SerialNumber)))
+                    string Normalize(string v)
                     {
-                        string serial = item.SerialNumber.Trim();
+                        return (v ?? "").Trim().Replace(".", "").Replace(" ", "").ToUpperInvariant();
+                    }
+
+                    var unique = serials
+                        .Where(x => x != null && !string.IsNullOrWhiteSpace(x.SerialNumber))
+                        .GroupBy(x => Normalize(x.SerialNumber))
+                        .Select(g => g.First())
+                        .ToList();
+
+                    int installed = 0, skipped = 0, errors = 0;
+                    var errorList = new List<string>();
+
+                    foreach (var item in unique)
+                    {
+                        string serial = item.SerialNumber?.Trim() ?? "";
+                        if (string.IsNullOrWhiteSpace(serial))
+                        {
+                            skipped++;
+                            continue;
+                        }
+
                         long installerUserId = userId;
 
-                        string installerEmail = (item.InstallerEmail ?? "").Trim().ToUpper();
+                        string installerEmail = (item.InstallerEmail ?? "").Trim().ToUpperInvariant();
 
                         if (!string.IsNullOrEmpty(installerEmail) && userMapByEmail.ContainsKey(installerEmail))
                         {
                             installerUserId = userMapByEmail[installerEmail];
                         }
 
-                        dal.MoveInventoryToInstalled(
-                            projectId,
-                            installerUserId,
-                            serial,
-                            masterId
-                        );
+                        try
+                        {
+                            dal.MoveInventoryToInstalled(projectId, installerUserId, serial, masterId);
+                            installed++;
+                        }
+                        catch (Exception itemEx)
+                        {
+                            errors++;
+                            errorList.Add(serial + ": " + itemEx.Message);
+                        }
                     }
-                }
 
-                return Json(new { success = true });
+                    return Json(new { success = true, installed, skipped, errors, errorList });
+                }
             }
             catch (Exception ex)
             {
@@ -1276,6 +1301,9 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 return Json(new { success = false, message = error });
             }
         }
+
+
+
 
     }
 }

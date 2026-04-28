@@ -210,7 +210,8 @@ namespace GarronT.CMS.Model.BO
         public long UserId { get; set; }
         public string GPSLocation { get; set; }
         public string DeviceIp { get; set; }
-        
+        public string Location { get; set; }
+
     }
 
 
@@ -222,6 +223,7 @@ namespace GarronT.CMS.Model.BO
         public string SerialNumber { get; set; }
         public string ServerReponseStatus { get; set; }
         public long ParentId { get; set; }
+        public string Location { get; set; }
     }
 
     public class MobileProductQuantity
@@ -242,7 +244,7 @@ namespace GarronT.CMS.Model.BO
 
         public long ParentId { get; set; }
 
-
+        public string Location { get; set; }
     }
 
 

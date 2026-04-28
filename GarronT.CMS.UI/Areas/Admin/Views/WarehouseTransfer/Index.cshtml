@@ -47,6 +47,35 @@
         margin-bottom: 8px;
     }
 
+    /* Mobile-only */
+    @@media (max-width: 480px) {
+        #main-content .panel-body .form-control,
+        #main-content .panel-body select,
+        #main-content .panel-body input[type="text"],
+        #main-content .panel-body button.btn {
+            font-size: 13px !important;
+        }
+
+        /* Fix DataTables length/search overlap on small screens */
+        #main-content .dataTables_wrapper .dataTables_length,
+        #main-content .dataTables_wrapper .dataTables_filter {
+            float: none !important;
+            width: 100% !important;
+            text-align: left !important;
+            display: block !important;
+            clear: both !important;
+        }
+
+        #main-content .dataTables_wrapper .dataTables_filter {
+            margin-top: 6px !important;
+        }
+
+        #main-content .dataTables_wrapper .dataTables_filter input {
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+    }
+
     @@media (min-width:1200px) {
         .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9 {
             float: left;
@@ -1114,10 +1143,10 @@
                         <div class="row mbot05" style="bottom:10px !important">
 
                             <div class="col-lg-2 col-md-3 col-sm-6 col-xs-6 col-xxs-12  sm-mbot1 xs-mbot1 xxs-mbot2 lg-nopaddingright md-nopaddingright sm-nopaddingright xs-nopaddingright">
-                                @Html.DropDownList("UtilityId", (IEnumerable<SelectListItem>)ViewBag.UtilityListItem, new { @class = "form-control chosen-select" })
+                                @Html.DropDownList("UtilityId", (IEnumerable<SelectListItem>)ViewBag.UtilityListItem, new { @class = "form-control chosen-select", @title = "Select Utility" })
                             </div>
                             <div class="col-lg-2 col-md-3 col-sm-6 col-xs-6 col-xxs-12  sm-mbot1 xs-mbot1 xxs-mbot2 lg-nopaddingright md-nopaddingright sm-nopaddingright xs-nopaddingright">
-                                @Html.DropDownList("ProjectId", (List<SelectListItem>)ViewBag.ProjectList, new { @class = "form-control chosen-select" })
+                                @Html.DropDownList("ProjectId", (List<SelectListItem>)ViewBag.ProjectList, new { @class = "form-control chosen-select", @title = "Select Project" })
                             </div>
                             <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 col-xxs-12  sm-mbot1 xxs-mbot2 lg-nopaddingright md-nopaddingright sm-nopaddingright xs-nopaddingright">
 
@@ -1128,7 +1157,7 @@
                                 @Html.DropDownList("ToWarehouseId", (IEnumerable<SelectListItem>)ViewBag.WarehouseList, new { @class = "form-control chosen-select", @title = "To Warehouse" })
                             </div>
                             <div class="col-lg-2 col-md-3 col-sm-6 col-xs-6 col-xxs-12  sm-mbot1 xxs-mbot2 lg-nopaddingright md-nopaddingright sm-nopaddingright xs-nopaddingright">
-                                @Html.DropDownList("ProductId", (IEnumerable<SelectListItem>)ViewBag.ProductList, new { @class = "form-control chosen-select" })
+                                @Html.DropDownList("ProductId", (IEnumerable<SelectListItem>)ViewBag.ProductList, new { @class = "form-control chosen-select", @title = "Select Product" })
                             </div>
 
 

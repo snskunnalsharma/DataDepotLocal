@@ -13,6 +13,7 @@ using System.IO;
 using System.Net;
 using System.Net.Mail;
 using OfficeOpenXml;
+using System.Data.SqlClient;
 
 namespace TNMPUploadUtility
 {
@@ -57,19 +58,19 @@ namespace TNMPUploadUtility
                             // ===============================
                             string[] requiredColumns =
                             {
-        "CYCLE-ROUTE",
-        "ACCOUNT",
-        "STREET",
-        "OLD METER NUMBER",
-        "OLD METER FINAL READ",
-        "NEW METER NUMBER",
-        "NEW METER READING",
-        "NEW REGISTER READ",
-        "OLD FINAL REGISTER READ",
-        "OLD METER RADIO NUMBER",
-        "NEW METER RADIO",
-        "LOCATION/GPS"
-    };
+                                "CYCLE-ROUTE",
+                                "ACCOUNT",
+                                "STREET",
+                                "OLD METER NUMBER",
+                                "OLD METER FINAL READ",
+                                "NEW METER NUMBER",
+                                "NEW METER READING",
+                                "NEW REGISTER READ",
+                                "OLD FINAL REGISTER READ",
+                                "OLD METER RADIO NUMBER",
+                                "NEW METER RADIO",
+                                "LOCATION/GPS"
+                            };
 
                             for (int i = dt.Columns.Count - 1; i >= 0; i--)
                             {
@@ -114,6 +115,8 @@ namespace TNMPUploadUtility
                             finalDt.Columns.Add("Address");
                             finalDt.Columns.Add("Removed Meter");
                             finalDt.Columns.Add("Remove Read");
+                            finalDt.Columns.Add("MAKE");
+                            finalDt.Columns.Add("PRODUCT DESCRIPTION");
                             finalDt.Columns.Add("New Meter");
                             finalDt.Columns.Add("Set Read");
                             finalDt.Columns.Add("NEW REGISTER READ");
@@ -187,6 +190,8 @@ namespace TNMPUploadUtility
                                     row["STREET"],                   // Address
                                     row["OLD METER NUMBER"],         // Removed Meter
                                     removeRead,                      // Remove Read
+                                    "",                              // MAKE (filled below)
+                                    "",                              // PRODUCT DESCRIPTION (filled below)
                                     newMeter,                        // New Meter
                                     setRead,                         // Set Read
                                     newRegisterRead,                 // NEW REGISTER READ
@@ -195,6 +200,38 @@ namespace TNMPUploadUtility
                                     row["NEW METER RADIO"],          // NEW ERT
                                     gpsValue                          // GPS
                                 );
+                            }
+
+                            // Enrich by New Meter (serial/meter number) => Make + ProductDescription (water meters only)
+                            try
+                            {
+                                var serials = finalDt.AsEnumerable()
+                                    .Select(r => (r["New Meter"] ?? "").ToString().Trim())
+                                    .Where(s => !string.IsNullOrWhiteSpace(s) && s != "-")
+                                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                                    .ToList();
+
+                                if (serials.Count > 0)
+                                {
+                                    var lookup = FetchProductInfoForSerials(projectId, serials);
+                                    foreach (DataRow r in finalDt.Rows)
+                                    {
+                                        string serial = (r["New Meter"] ?? "").ToString().Trim();
+                                        if (string.IsNullOrWhiteSpace(serial) || serial == "-")
+                                            continue;
+
+                                        if (lookup.TryGetValue(serial, out var info))
+                                        {
+                                            r["MAKE"] = info.Make ?? "";
+                                            r["PRODUCT DESCRIPTION"] = info.ProductDescription ?? "";
+                                        }
+                                    }
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                ErrorLogFile.writeStatus("Product enrichment error: " + ex.Message + " - " + DateTime.Now.ToShortTimeString());
+                                Console.WriteLine("Product enrichment error: " + ex.Message + " - " + DateTime.Now.ToShortTimeString());
                             }
 
                             finalDt.AcceptChanges();
@@ -319,10 +356,95 @@ namespace TNMPUploadUtility
             }
             catch (Exception ex)
             {
-                ErrorLogFile.writeStatus("Error: " + ex.Message + " - " + DateTime.Now.ToShortTimeString());
-                Console.WriteLine("Error: " + ex.Message + " - " + DateTime.Now.ToShortTimeString());
+                string err = ex.Message;
+                if (ex.InnerException != null)
+                {
+                    err += " | Inner: " + ex.InnerException.Message;
+                    if (ex.InnerException.InnerException != null)
+                        err += " | Inner2: " + ex.InnerException.InnerException.Message;
+                }
+                ErrorLogFile.writeStatus("Error: " + err + " - " + DateTime.Now.ToShortTimeString());
+                Console.WriteLine("Error: " + err + " - " + DateTime.Now.ToShortTimeString());
                 return new DataTable();
             }
+        }
+
+        private sealed class ProductInfoRow
+        {
+            public string SerialNumber { get; set; }
+            public string Make { get; set; }
+            public string ProductDescription { get; set; }
+        }
+
+        private static Dictionary<string, ProductInfoRow> FetchProductInfoForSerials(long projectId, List<string> serials)
+        {
+            const int batchSize = 500;
+
+            var result = new Dictionary<string, ProductInfoRow>(StringComparer.OrdinalIgnoreCase);
+            if (serials == null || serials.Count == 0)
+                return result;
+
+            using (var db = new CompassEntities())
+            {
+                db.Database.CommandTimeout = 600;
+
+                for (int offset = 0; offset < serials.Count; offset += batchSize)
+                {
+                    var batch = serials.Skip(offset).Take(batchSize).ToList();
+                    if (batch.Count == 0)
+                        continue;
+
+                    var parameters = new List<SqlParameter>
+                    {
+                        new SqlParameter("@ProjectId", projectId)
+                    };
+
+                    var inParams = new List<string>();
+                    for (int i = 0; i < batch.Count; i++)
+                    {
+                        string pname = "@s" + i;
+                        inParams.Add(pname);
+                        parameters.Add(new SqlParameter(pname, batch[i]));
+                    }
+
+                    string sql = $@"
+                                    SELECT DISTINCT
+                                        idt.SerialNumber AS SerialNumber,
+                                        mm.Make AS Make,
+                                        pm.ProductDescription AS ProductDescription
+                                    FROM InwardDetails idt
+                                    INNER JOIN ProductMaster pm ON idt.FKProductId = pm.Id
+                                    INNER JOIN Category c ON pm.ProductCategoryId = c.CategoryId
+                                    LEFT JOIN tblMeterMake mm ON pm.MeterMakeId = mm.Id
+                                    WHERE
+                                        idt.SerialNumber IN ({string.Join(",", inParams)})
+                                        AND c.CategoryName LIKE @CategoryLike
+                                        AND EXISTS (
+                                            SELECT 1
+                                            FROM StockDetails sd
+                                            INNER JOIN OutwardDetails od ON od.FKStockDetailsId = sd.Id
+                                            WHERE sd.FKInwardDetailId = idt.Id
+                                              AND sd.FKProjectId = @ProjectId
+                                              AND od.InstalledQty = 1
+                                        );
+                                    ";
+
+                    // @ProjectId kept (filter)
+                    parameters.Add(new SqlParameter("@CategoryLike", "%water meter%"));
+
+                    var rows = db.Database.SqlQuery<ProductInfoRow>(sql, parameters.ToArray()).ToList();
+                    foreach (var row in rows)
+                    {
+                        if (row == null || string.IsNullOrWhiteSpace(row.SerialNumber))
+                            continue;
+
+                        if (!result.ContainsKey(row.SerialNumber))
+                            result[row.SerialNumber] = row;
+                    }
+                }
+            }
+
+            return result;
         }
 
 
@@ -365,15 +487,15 @@ namespace TNMPUploadUtility
 
                     string[] columnsToRemove = new string[]
                     {
-                "ATTENDANT NAME",
-                "VISIT ATTENDED DATETIME",
-                "VISIT STATUS",
-                "Form Name",
-                "REASON",
-                "COMMENT",
-                "LOCATION/GPS",
-                "V_NEW_LATITUDE",
-                "V_NEW_LONGITUDE"
+                        "ATTENDANT NAME",
+                        "VISIT ATTENDED DATETIME",
+                        "VISIT STATUS",
+                        "Form Name",
+                        "REASON",
+                        "COMMENT",
+                        "LOCATION/GPS",
+                        "V_NEW_LATITUDE",
+                        "V_NEW_LONGITUDE"
                     };
 
                     foreach (string colName in columnsToRemove)
@@ -411,6 +533,9 @@ namespace TNMPUploadUtility
                 fileName = (projectId == 10134)
                     ? "New_Reg-Meter_Installed_on _" + DateTime.Now.AddDays(-1).ToString("MMddyyyy") + ".csv"
                     : "New_Reg-Meter_Installed_on _" + DateTime.Now.ToString("yyyyMMdd") + ".csv";
+                /*fileName = (projectId == 10134)
+                            ? "New_Reg-Meter_Installed_12-01-2025_to_12-31-2025.csv"
+                            : "New_Reg-Meter_Installed_12-01-2025_to_12-31-2025.csv";*/
 
                 // ✅ Define export folder
                 string baseDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ExportReport");
@@ -457,7 +582,7 @@ namespace TNMPUploadUtility
 
                 mail.From = new MailAddress("datadepotonline@gmail.com");
                 //mail.To.Add("kunal.sharma@snssystem.com");
-                //mail.To.Add("snssystem.pammi@gmail.com");
+               // mail.To.Add("manish.baghel@snssystem.com");
                  mail.To.Add("mike.harris@beaumonttexas.gov");
                  mail.To.Add("howard.dennings@beaumonttexas.gov");
                  mail.To.Add("ashley.hoyt@beaumonttexas.gov");
@@ -470,18 +595,26 @@ namespace TNMPUploadUtility
                  mail.CC.Add("jason.norton@republicmeter.com");
                  mail.CC.Add("juston.hargraves@beaumonttexas.gov");
                  mail.CC.Add("kelli.reindel@beaumonttexas.gov");
-                 mail.Bcc.Add("kunal.sharma@snssystem.com");
+                mail.CC.Add("Jamie.Nelson@beaumonttexas.gov");
+                mail.Bcc.Add("kunal.sharma@snssystem.com");
 
-                mail.Subject = "BTX – Daily Meter & Register ERT Replacement Report ("
-               + DateTime.Now.AddDays(-1).ToString("MM/dd/yyyy") + ")";
+                 mail.Subject = "BTX – Daily Meter & Register ERT Replacement Report ("
+                + DateTime.Now.AddDays(-1).ToString("MM/dd/yyyy") + ")";
+                //mail.Subject = "BTX – (Dec-01-2025 to Dec-31-2025) Meter & Register ERT Replacement Report";
 
-                mail.Body = "Hi Team,\n\n" +
+                 mail.Body = "Hi Team,\n\n" +
+                             "Please find the attached export report for the project listed below.\n\n" +
+                             "This report includes all meter and register ERT replacements completed on the last business day, "
+                             + DateTime.Now.AddDays(-1).ToString("MMMM dd, yyyy") + ".\n\n" +
+                             "If you have any questions or need additional information, please let me know.\n\n" +
+                             "Thank you,";
+
+                /*mail.Body = "Hi Team,\n\n" +
                             "Please find the attached export report for the project listed below.\n\n" +
-                            "This report includes all meter and register ERT replacements completed on the last business day, "
-                            + DateTime.Now.AddDays(-1).ToString("MMMM dd, yyyy") + ".\n\n" +
+                            "This report includes all meter and register ERT replacements completed between " +
+                            "December 01, 2025 and December 31, 2025.\n\n" +
                             "If you have any questions or need additional information, please let me know.\n\n" +
-                            "Thank you,";
-
+                            "Thank you,";*/
                 // "Project ID: " + projectId;
 
                 Attachment attachment = new Attachment(filePath);

@@ -1,4 +1,32 @@
-﻿$(document).ready(function () {
+﻿var isMobileBrowser = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+function applyMobileNativePlaceholder($select, sentinelValue, label) {
+    if (!isMobileBrowser || !$select || !$select.length) return;
+    var v = String(sentinelValue);
+    var $opt = $select.find("option").filter(function () { return String($(this).val()) === v; });
+    if ($opt.length === 0) {
+        $opt = $('<option></option>').val(v).text(label);
+        $select.prepend($opt);
+    } else {
+        $opt = $opt.first();
+        $opt.text(label);
+        $opt.prependTo($select);
+    }
+    $select.find("option").prop("selected", false);
+    $opt.prop({ hidden: true, selected: true });
+}
+
+function appendSentinelOptionVal0($select, mobileLabel) {
+    var $o = $('<option></option>').val('0');
+    if (isMobileBrowser) {
+        $o.text(mobileLabel).prop({ hidden: true, selected: true });
+    } else {
+        $o.text('');
+    }
+    $select.append($o);
+}
+
+$(document).ready(function () {
     $("#InventoryReports").addClass('active');
     $("#subReports").addClass('block');
 
@@ -7,11 +35,17 @@
 
     $('#dynamic-table').DataTable({ "language": { "emptyTable": "No Data To Show" }, "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">', });
 
-    $("#UtilityId").chosen({ placeholder_text_single: "Select Utility", no_results_text: "Oops, nothing found!" });
-    $('#UtilityId').trigger('chosen:updated');
+    if (!isMobileBrowser) {
+        $("#UtilityId").chosen({ placeholder_text_single: "Select Utility", no_results_text: "Oops, nothing found!" });
+        $('#UtilityId').trigger('chosen:updated');
 
-    $("#ProjectId").chosen({ placeholder_text_single: "Select Project", no_results_text: "Oops, nothing found!" });
-    $('#ProjectId').trigger('chosen:updated');
+        $("#ProjectId").chosen({ placeholder_text_single: "Select Project", no_results_text: "Oops, nothing found!" });
+        $('#ProjectId').trigger('chosen:updated');
+    } else {
+        $("#UtilityId option").filter(function () { return $.trim($(this).text()) === ""; }).remove();
+        applyMobileNativePlaceholder($("#UtilityId"), "0", "Select Utility");
+        applyMobileNativePlaceholder($("#ProjectId"), "0", "Select Project");
+    }
 })
 
 $('#UtilityId').change(function () {
@@ -19,7 +53,7 @@ $('#UtilityId').change(function () {
     $('#ProjectId').empty().trigger('chosen:updated');
 
     var value = $("#UtilityId option:selected")
-    
+
     waitingDialog.show('Please Wait Loading Contacts...');
     var urlGetProjectList = $('#urlGetProject').val();
     $.ajax({
@@ -27,13 +61,14 @@ $('#UtilityId').change(function () {
         data: { "UtilityId": value.val() },
         url: urlGetProjectList,
         success: function (data) {
-
+            $('#ProjectId').empty();
             if (data != null) {
+                appendSentinelOptionVal0($('#ProjectId'), "Select Project");
                 $.each(data, function (index, item) {
-                    if (index == 0) { $('#ProjectId').append($('<option></option>').val('0').html("")); }
-
                     $('#ProjectId').append($('<option></option>').val(item.ProjectId).html(item.ProjectName));
                 });
+            } else if (isMobileBrowser) {
+                appendSentinelOptionVal0($('#ProjectId'), "Select Project");
             }
             $('#ProjectId').trigger('chosen:updated');
 
@@ -106,6 +141,10 @@ $("#btnReset").click(function () {
     $('#UtilityId').val("0").trigger('chosen:updated');
 
     $('#ProjectId').empty().trigger('chosen:updated');
+    if (isMobileBrowser) {
+        applyMobileNativePlaceholder($("#UtilityId"), "0", "Select Utility");
+        applyMobileNativePlaceholder($("#ProjectId"), "0", "Select Project");
+    }
 })
 
 function BindData(varData) {
@@ -160,4 +199,3 @@ function BindData(varData) {
 
 
 }
-

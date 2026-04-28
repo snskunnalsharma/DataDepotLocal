@@ -219,7 +219,7 @@ namespace TNMPUploadUtility
 
             // Start code => Upload old files s3 bucket
             #region Upload old files s3 bucket
-            ErrorLogFile.writeStatus("\n\nThread Started at Upload old files s3 bucket - " + DateTime.Now.ToShortTimeString());
+            /*ErrorLogFile.writeStatus("\n\nThread Started at Upload old files s3 bucket - " + DateTime.Now.ToShortTimeString());
              Console.WriteLine("Thread Started at Upload old files s3 bucket - " + DateTime.Now.ToShortTimeString());
              try
              {
@@ -232,7 +232,7 @@ namespace TNMPUploadUtility
                  Console.WriteLine("Error for Upload old files s3 bucket:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
              }
              ErrorLogFile.writeStatus("Thread Ended at Uploaded old files s3 bucket - " + DateTime.Now.ToShortTimeString());
-             Console.WriteLine("Thread Ended at Uploaded old files s3 bucket - " + DateTime.Now.ToShortTimeString());
+             Console.WriteLine("Thread Ended at Uploaded old files s3 bucket - " + DateTime.Now.ToShortTimeString());*/
            #endregion
            //ends hare
            #region Upload old files s3 bucket thumbnail
@@ -255,14 +255,14 @@ namespace TNMPUploadUtility
             #endregion
             //ends hare
             #region Export Report By Email With_Meter
-            /*long projectId = 10134;
+          /* long projectId = 10134;
             long formTypeId = 2;
             string utilityType = "WITH_METER";
             string[] visitStatus = new string[] { "Completed" };
             int latlongRequired = 1;
             int mediaRequired = 1;
-            //string fromDate = "2025-12-08 00:00";
-           //string toDate = "2025-12-16 23:59";
+            //string fromDate = "2026-03-01 00:00";
+           //string toDate = "2026-03-30 23:59";
 
             CompassEntities objCE = new CompassEntities();
 
@@ -293,7 +293,7 @@ namespace TNMPUploadUtility
 
             DateTime objUtilityExecutionStartDateTime = date;
 
-            if (lastDateTime.HasValue)
+           if (lastDateTime.HasValue)
             {
                 DateTime tempTime = (DateTime)lastDateTime;
 
@@ -396,8 +396,8 @@ namespace TNMPUploadUtility
                 int latlongRequired = 1;
                 int mediaRequired = 1;
                 string utilityType = "WITHOUT_METER";
-                //string fromDate = "2025-12-08 00:00";
-                //string toDate = "2025-12-17 23:59";
+                //string fromDate = "2025-12-01 00:01";
+                //string toDate = "2025-12-31 23:59";
 
                 CompassEntities objCE = new CompassEntities();
 
@@ -430,7 +430,7 @@ namespace TNMPUploadUtility
 
                 DateTime objUtilityExecutionStartDateTime = date;
 
-               if (lastDateTime.HasValue)
+              if (lastDateTime.HasValue)
                 {
                     DateTime tempTime = (DateTime)lastDateTime;
 
@@ -452,7 +452,7 @@ namespace TNMPUploadUtility
                     string filePath = reportUtility_2.DownloadCSVExport(dt, projectId);
                     if (!string.IsNullOrEmpty(filePath))
                     {
-                        if (projectId == 10134)
+                        if (projectId == 10133)
                         {
                             reportUtility_2.SendEmailWithAttachment(projectId, filePath);
                         }

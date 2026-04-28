@@ -606,6 +606,12 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                                 dt.Columns["VISIT ATTENDED DATETIME"].ColumnName = "VISIT DATE-TIME";
                             }
                         }
+
+                        // Add Make + ProductDescription (by New Meter Number/Serial) only for specific projects
+                        if (projectId == 10122 || projectId == 10133 || projectId == 10134)
+                        {
+                            TryAppendMakeAndProductDescriptionColumns(dt, projectId, exportReportDAL);
+                        }
                         // Only apply for projectId 10132
                         /*if (projectId == 10132 && dt.Columns.Contains("LOCATION/GPS"))
                         {
@@ -662,6 +668,85 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             catch (Exception ex)
             {
                 return Json(new { status = false, ErrorMessage = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        private static void TryAppendMakeAndProductDescriptionColumns(DataTable dt, long projectId, ExportReportDAL exportReportDAL)
+        {
+            if (dt == null || dt.Rows.Count == 0 || exportReportDAL == null)
+            {
+                return;
+            }
+
+            // Serial/New Meter column can differ across projects; check common names.
+            string serialColumn =
+                (dt.Columns.Contains("NEW METER NUMBER") ? "NEW METER NUMBER" : null) ??
+                (dt.Columns.Contains("NEW METER NUM") ? "NEW METER NUM" : null) ??
+                (dt.Columns.Contains("NEW METER RADIO") ? "NEW METER RADIO" : null) ??
+                (dt.Columns.Contains("BASE_SERIAL_NO") ? "BASE_SERIAL_NO" : null) ??
+                (dt.Columns.Contains("SerialNumber") ? "SerialNumber" : null) ??
+                (dt.Columns.Contains("SERIAL NUMBER") ? "SERIAL NUMBER" : null) ??
+                (dt.Columns.Contains("SERIAL_NO") ? "SERIAL_NO" : null);
+         
+
+            if (string.IsNullOrWhiteSpace(serialColumn))
+            {
+                return;
+            }
+
+            const string makeColName = "MAKE";
+            const string productDescColName = "PRODUCT DESCRIPTION";
+
+            if (!dt.Columns.Contains(makeColName))
+            {
+                dt.Columns.Add(makeColName, typeof(string));
+            }
+            if (!dt.Columns.Contains(productDescColName))
+            {
+                dt.Columns.Add(productDescColName, typeof(string));
+            }
+
+            // Ensure MAKE + PRODUCT DESCRIPTION appear just before New Meter Number/Serial column in export.
+            // (SetOrdinal adjusts column order without changing data.)
+            if (dt.Columns.Contains(serialColumn))
+            {
+                int serialOrdinal = dt.Columns[serialColumn].Ordinal;
+                dt.Columns[makeColName].SetOrdinal(serialOrdinal);
+                dt.Columns[productDescColName].SetOrdinal(serialOrdinal + 1);
+            }
+
+            var serials = dt.AsEnumerable()
+                .Select(r => r[serialColumn] == DBNull.Value ? null : Convert.ToString(r[serialColumn]))
+                .Where(s => !string.IsNullOrWhiteSpace(s))
+                .Select(s => s.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            if (serials.Count == 0)
+            {
+                return;
+            }
+
+            var map = exportReportDAL.GetMakeAndProductDescriptionBySerialNumbers(projectId, serials);
+            if (map == null || map.Count == 0)
+            {
+                return;
+            }
+
+            foreach (DataRow row in dt.Rows)
+            {
+                var serial = row[serialColumn] == DBNull.Value ? null : Convert.ToString(row[serialColumn]);
+                if (string.IsNullOrWhiteSpace(serial))
+                {
+                    continue;
+                }
+
+                ExportReportDAL.MeterMakeProductInfo info;
+                if (map.TryGetValue(serial.Trim(), out info) && info != null)
+                {
+                    row[makeColName] = info.Make ?? string.Empty;
+                    row[productDescColName] = info.ProductDescription ?? string.Empty;
+                }
             }
         }
 

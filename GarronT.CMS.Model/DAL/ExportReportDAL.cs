@@ -511,6 +511,8 @@ namespace GarronT.CMS.Model.DAL
                 cmd.CommandText = "PROC_ExportReport_CompleteRecords_FormType";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Connection = sqlConnection1;
+                // Export stored proc can be heavy for large date ranges
+                cmd.CommandTimeout = 300;
                 cmd.Parameters.Add("@FormTypeId", formTypeId);
                 cmd.Parameters.Add("@projectId", projectId);
                 cmd.Parameters.Add("@FromDate", fromDate);
@@ -1020,11 +1022,13 @@ namespace GarronT.CMS.Model.DAL
                 using (SqlCommand cmd = new SqlCommand("PROC_ExportReport_CompleteRecords_ExcelData", sqlcon))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandTimeout = 300;
                     cmd.Parameters.Add("@FormId", formId);
                     cmd.Parameters.Add("@FromDate", startDate);
                     cmd.Parameters.Add("@Todate", endDate);
                     using (SqlDataAdapter da = new SqlDataAdapter(cmd))
                     {
+                        da.SelectCommand.CommandTimeout = 300;
                         da.Fill(dt);
                     }
                 }
@@ -1046,12 +1050,14 @@ namespace GarronT.CMS.Model.DAL
                 using (SqlCommand cmd = new SqlCommand("PROC_ExportReport_CompleteRecords_ExcelData_FormType", sqlcon))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandTimeout = 300;
                     cmd.Parameters.Add("@ProjectId", projectId);
                     cmd.Parameters.Add("@FormTypeId", formTypeId);
                     cmd.Parameters.Add("@FromDate", startDate);
                     cmd.Parameters.Add("@Todate", endDate);
                     using (SqlDataAdapter da = new SqlDataAdapter(cmd))
                     {
+                        da.SelectCommand.CommandTimeout = 300;
                         da.Fill(dt);
                     }
                 }
@@ -1168,6 +1174,108 @@ namespace GarronT.CMS.Model.DAL
                 return FinalFieldList;
             }
 
+        }
+
+        public class MeterMakeProductInfo
+        {
+            public string Make { get; set; }
+            public string ProductDescription { get; set; }
+        }
+
+        public Dictionary<string, MeterMakeProductInfo> GetMakeAndProductDescriptionBySerialNumbers(long projectId, IEnumerable<string> serialNumbers)
+        {
+            var result = new Dictionary<string, MeterMakeProductInfo>(StringComparer.OrdinalIgnoreCase);
+            if (serialNumbers == null)
+            {
+                return result;
+            }
+
+            var serialList = serialNumbers
+                .Where(s => !string.IsNullOrWhiteSpace(s))
+                .Select(s => s.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            if (serialList.Count == 0)
+            {
+                return result;
+            }
+
+            // Parameterize serial numbers in batches to avoid SQL parameter limits.
+            const int batchSize = 1500;
+
+            using (var dbcontext = new CompassEntities())
+            using (var sqlcon = new SqlConnection(dbcontext.Database.Connection.ConnectionString))
+            {
+                sqlcon.Open();
+
+                for (int offset = 0; offset < serialList.Count; offset += batchSize)
+                {
+                    var batch = serialList.Skip(offset).Take(batchSize).ToList();
+                    var inParams = new List<string>(batch.Count);
+
+                    using (var cmd = new SqlCommand())
+                    {
+                        cmd.Connection = sqlcon;
+                        cmd.CommandType = CommandType.Text;
+                        cmd.CommandTimeout = 300;
+
+                        cmd.Parameters.AddWithValue("@ProjectId", projectId);
+
+                        for (int i = 0; i < batch.Count; i++)
+                        {
+                            string paramName = "@s" + i;
+                            inParams.Add(paramName);
+                            cmd.Parameters.AddWithValue(paramName, batch[i]);
+                        }
+
+                        cmd.CommandText = @"
+SELECT DISTINCT
+    idt.SerialNumber AS SerialNumber,
+    mm.Make AS Make,
+    pm.ProductDescription AS ProductDescription
+FROM InwardDetails idt
+INNER JOIN ProductMaster pm ON idt.FKProductId = pm.Id
+INNER JOIN Category c ON pm.ProductCategoryId = c.CategoryId
+LEFT JOIN tblMeterMake mm ON pm.MeterMakeId = mm.Id
+WHERE
+    c.CategoryName LIKE '%Water Meter%'
+    AND idt.SerialNumber IN (" + string.Join(",", inParams) + @")
+    AND EXISTS (
+        SELECT 1
+        FROM StockDetails sd
+        INNER JOIN OutwardDetails od ON od.FKStockDetailsId = sd.Id
+        WHERE
+            sd.FKInwardDetailId = idt.Id
+            AND sd.FKProjectId = @ProjectId
+            AND od.InstalledQty = 1
+    );";
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var serial = reader["SerialNumber"]?.ToString();
+                                if (string.IsNullOrWhiteSpace(serial))
+                                {
+                                    continue;
+                                }
+
+                                if (!result.ContainsKey(serial))
+                                {
+                                    result[serial] = new MeterMakeProductInfo
+                                    {
+                                        Make = reader["Make"]?.ToString(),
+                                        ProductDescription = reader["ProductDescription"]?.ToString()
+                                    };
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return result;
         }
     }
 }

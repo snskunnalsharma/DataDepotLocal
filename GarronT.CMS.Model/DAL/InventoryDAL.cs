@@ -3334,18 +3334,49 @@ namespace GarronT.CMS.Model.DAL
         {
             using (var db = new CompassEntities())
             {
-                var serial = (serialNumber ?? "").Trim();
+                string NormalizeSerial(string v)
+                {
+                    if (string.IsNullOrWhiteSpace(v)) return "";
+
+                    string clean = v
+                        .Replace("\uFEFF", "")
+                        .Replace("\"", "")
+                        .Replace(" ", "")
+                        .Replace(".", "")
+                        .Trim();
+
+                    if (clean.All(char.IsDigit))
+                        clean = clean.PadLeft(8, '0');
+
+                    return clean.ToUpperInvariant();
+                }
+
+                var serial = NormalizeSerial(serialNumber);
 
                 if (string.IsNullOrEmpty(serial))
                     throw new Exception("Invalid serial number");
 
+                // for numeric serials: also try without leading zeros (DB sometimes stores raw number)
+                var serialNoZeros = serial.All(char.IsDigit) ? serial.TrimStart('0') : serial;
+                if (string.IsNullOrWhiteSpace(serialNoZeros) && serial.All(char.IsDigit))
+                    serialNoZeros = "0";
+
                 // 1️⃣ Get stock detail
-                var stock = db.StockDetails
-                    .FirstOrDefault(x =>
+                var stockCandidates = db.StockDetails
+                    .Where(x =>
                         x.SerialNumber != null &&
-                        x.SerialNumber.Trim().ToUpper() == serial.ToUpper() &&
+                        (
+                            x.SerialNumber.Replace(" ", "").Replace(".", "").Trim().ToUpper() == serial
+                            || x.SerialNumber.Replace(" ", "").Replace(".", "").Trim().ToUpper() == serialNoZeros
+                        ) &&
                         x.Active == 1 &&
-                        x.FKProjectId == projectId);
+                        x.FKProjectId == projectId)
+                    .OrderByDescending(x => x.Id)
+                    .ToList();
+
+                var stock = stockCandidates
+                    .FirstOrDefault(s => db.OutwardDetails.Any(o => o.Active == 1 && o.FKStockDetailsID == s.Id))
+                    ?? stockCandidates.FirstOrDefault();
 
                 if (stock == null)
                     throw new Exception("Stock not found for serial: " + serial);
@@ -3423,6 +3454,19 @@ namespace GarronT.CMS.Model.DAL
                     db.SaveChanges();
                 }
 
+                // Prevent duplicate active outward rows for same stock,
+                // otherwise reports can keep showing InHand from older rows.
+                var otherActiveOutwards = db.OutwardDetails
+                    .Where(x => x.FKStockDetailsID == stock.Id && x.Active == 1 && x.Id != outward.Id)
+                    .ToList();
+
+                foreach (var o in otherActiveOutwards)
+                {
+                    o.Active = 0;
+                    o.ModifiedOn = DateTime.Now;
+                    o.ModifiedBy = userId;
+                }
+
                 // 3️⃣ Get service mapping
                 var serviceProduct = db.ProjectServiceProductRelations
                     .FirstOrDefault(x =>
@@ -3436,45 +3480,85 @@ namespace GarronT.CMS.Model.DAL
                 bool alreadyInstalled = db.tblProjectFieldDataInventoryDetails
                     .Any(x =>
                         x.SerialNumber != null &&
-                        x.SerialNumber.Trim().ToUpper() == serial.ToUpper() &&
+                        x.SerialNumber.Replace(" ", "").Replace(".", "").Trim().ToUpper() == serial &&
                         x.FKtblProjectFieldDataMasterID == masterId &&
                         x.Active == 1);
 
-                if (alreadyInstalled)
-                    return;
+                if (!alreadyInstalled)
+                {
+                    // 5️⃣ Create inventory detail
+                    tblProjectFieldDataInventoryDetail inv = new tblProjectFieldDataInventoryDetail();
 
-                // 5️⃣ Create inventory detail
-                tblProjectFieldDataInventoryDetail inv = new tblProjectFieldDataInventoryDetail();
+                    inv.Active = 1;
+                    inv.CreatedOn = DateTime.Now;
+                    inv.CreatedBy = userId;
+                    inv.FKServiceId = serviceProduct.FKServiceId;
+                    inv.FKProductId = stock.FKProductId;
+                    inv.FKtblProjectFieldDataMasterID = masterId;
+                    inv.SerialNumber = serial;
+                    inv.TotalQty = 1;
+                    inv.StockVerified = 1;
 
-                inv.Active = 1;
-                inv.CreatedOn = DateTime.Now;
-                inv.CreatedBy = userId;
-                inv.FKServiceId = serviceProduct.FKServiceId;
-                inv.FKProductId = stock.FKProductId;
-                inv.FKtblProjectFieldDataMasterID = masterId;
-                inv.SerialNumber = serial;
-                inv.TotalQty = 1;
-                inv.StockVerified = 0;
+                    db.tblProjectFieldDataInventoryDetails.Add(inv);
+                    db.SaveChanges();
 
-                db.tblProjectFieldDataInventoryDetails.Add(inv);
-                db.SaveChanges();
+                    // 6️⃣ Create outward mapping
+                    tblProjectFieldDataInventoryOutwardDetail outInv = new tblProjectFieldDataInventoryOutwardDetail();
+                    outInv.Active = 1;
+                    outInv.CreatedOn = DateTime.Now;
+                    outInv.CreatedBy = userId;
+                    outInv.FKOutwardDetailsId = outward.Id;
+                    outInv.FKtblProjectFieldDataInventoryDetailsId = inv.ID;
+                    outInv.TotalQty = 1;
+                    db.tblProjectFieldDataInventoryOutwardDetails.Add(outInv);
+                }
+                else
+                {
+                    // Inventory detail exists; ensure it is linked to this outward record,
+                    // because reports often derive Installed/InHand from the outward mapping table.
+                    var existingInv = db.tblProjectFieldDataInventoryDetails
+                        .Where(x =>
+                            x.Active == 1 &&
+                            x.FKtblProjectFieldDataMasterID == masterId &&
+                            x.SerialNumber != null &&
+                            x.SerialNumber.Replace(" ", "").Replace(".", "").Trim().ToUpper() == serial)
+                        .OrderByDescending(x => x.ID)
+                        .FirstOrDefault();
 
-                // 6️⃣ Create outward mapping
-                tblProjectFieldDataInventoryOutwardDetail outInv = new tblProjectFieldDataInventoryOutwardDetail();
-                outInv.Active = 1;
-                outInv.CreatedOn = DateTime.Now;
-                outInv.CreatedBy = userId;
-                outInv.FKOutwardDetailsId = outward.Id;
-                outInv.FKtblProjectFieldDataInventoryDetailsId = inv.ID;
-                outInv.TotalQty = 1;
-                db.tblProjectFieldDataInventoryOutwardDetails.Add(outInv);
+                    if (existingInv != null)
+                    {
+                        existingInv.StockVerified = 1;
 
-                // 7️⃣ Update inventory detail
-                inv.StockVerified = 1;
+                        bool mappingExists = db.tblProjectFieldDataInventoryOutwardDetails.Any(m =>
+                            m.Active == 1 &&
+                            m.FKOutwardDetailsId == outward.Id &&
+                            m.FKtblProjectFieldDataInventoryDetailsId == existingInv.ID);
+
+                        if (!mappingExists)
+                        {
+                            var outInv = new tblProjectFieldDataInventoryOutwardDetail
+                            {
+                                Active = 1,
+                                CreatedOn = DateTime.Now,
+                                CreatedBy = userId,
+                                FKOutwardDetailsId = outward.Id,
+                                FKtblProjectFieldDataInventoryDetailsId = existingInv.ID,
+                                TotalQty = 1
+                            };
+
+                            db.tblProjectFieldDataInventoryOutwardDetails.Add(outInv);
+                        }
+                    }
+                }
 
                 // 8️⃣ Update outward
                 outward.AllocatedTo = userId;
+                if (outward.AllocatedQty <= 0)
+                    outward.AllocatedQty = 1;
                 outward.InstalledQty = 1;
+                outward.TransferredQty = 0;
+                outward.ReturnToWarehouseQty = 0;
+                outward.RemovedQty = 0;
                 outward.AllStockUtilized = true;
                 outward.ModifiedOn = DateTime.Now;
                 outward.ModifiedBy = userId;

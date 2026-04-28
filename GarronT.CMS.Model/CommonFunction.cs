@@ -46,7 +46,14 @@ namespace GarronT.CMS.Model
         {
             try
             {
-                var dbdate = db.Database.SqlQuery<DateTime>("SELECT GETDATE()").FirstOrDefault();
+                // Use a fresh context + higher timeout to avoid intermittent command timeouts
+                // when the shared context/connection is stale or the DB is under load.
+                DateTime dbdate;
+                using (var ctx = new CompassEntities())
+                {
+                    ctx.Database.CommandTimeout = 180;
+                    dbdate = ctx.Database.SqlQuery<DateTime>("SELECT GETDATE()").FirstOrDefault();
+                }
 
                 // Log the value obtained from the database
                 Console.WriteLine("Value obtained from the database: " + dbdate);

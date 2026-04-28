@@ -1,5 +1,33 @@
 ﻿var oTable;
 var serialNumberRequired = false;
+var isMobileBrowser = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+// Mobile native: option[hidden] keeps closed-box label but hides the row from the opened list (avoid disabled — jQuery .val() skips disabled selected options).
+function applyMobileNativePlaceholder($select, sentinelValue, label) {
+    if (!isMobileBrowser || !$select || !$select.length) return;
+    var v = String(sentinelValue);
+    var $opt = $select.find("option").filter(function () { return String($(this).val()) === v; });
+    if ($opt.length === 0) {
+        $opt = $('<option></option>').val(v).text(label);
+        $select.prepend($opt);
+    } else {
+        $opt = $opt.first();
+        $opt.text(label);
+        $opt.prependTo($select);
+    }
+    $select.find("option").prop("selected", false);
+    $opt.prop({ hidden: true, selected: true });
+}
+
+function appendSentinelOptionVal0($select, mobileLabel) {
+    var $o = $('<option></option>').val('0');
+    if (isMobileBrowser) {
+        $o.text(mobileLabel).prop({ hidden: true, selected: true });
+    } else {
+        $o.text('');
+    }
+    $select.append($o);
+}
 
 //window.onbeforeunload = function () {
 //    return "Data will be lost if you leave the page, are you sure?";
@@ -11,20 +39,29 @@ $(document).ready(function () {
     $('.sub').find("*").removeClass('active');
     $('#liWarehouseTransfer').addClass("active");
 
-    $("#UtilityId").chosen({ placeholder_text_single: "Select Utility", no_results_text: "Oops, nothing found!" });
-    $('#UtilityId').trigger('chosen:updated');
+    if (!isMobileBrowser) {
+        $("#UtilityId").chosen({ placeholder_text_single: "Select Utility", no_results_text: "Oops, nothing found!" });
+        $('#UtilityId').trigger('chosen:updated');
 
-    $("#ProjectId").chosen({ placeholder_text_single: "Select Project", no_results_text: "Oops, nothing found!" });
-    $('#ProjectId').trigger('chosen:updated');
+        $("#ProjectId").chosen({ placeholder_text_single: "Select Project", no_results_text: "Oops, nothing found!" });
+        $('#ProjectId').trigger('chosen:updated');
 
-    $("#FromWarehouseId").chosen({ placeholder_text_single: "From Warehouse", no_results_text: "Oops, nothing found!" });
-    $('#FromWarehouseId').trigger('chosen:updated');
+        $("#FromWarehouseId").chosen({ placeholder_text_single: "From Warehouse", no_results_text: "Oops, nothing found!" });
+        $('#FromWarehouseId').trigger('chosen:updated');
 
-    $("#ToWarehouseId").chosen({ placeholder_text_single: "To Warehouse", no_results_text: "Oops, nothing found!" });
-    $('#ToWarehouseId').trigger('chosen:updated');
+        $("#ToWarehouseId").chosen({ placeholder_text_single: "To Warehouse", no_results_text: "Oops, nothing found!" });
+        $('#ToWarehouseId').trigger('chosen:updated');
 
-    $("#ProductId").chosen({ placeholder_text_single: "Select Product", no_results_text: "Oops, nothing found!" });
-    $('#ProductId').trigger('chosen:updated');
+        $("#ProductId").chosen({ placeholder_text_single: "Select Product", no_results_text: "Oops, nothing found!" });
+        $('#ProductId').trigger('chosen:updated');
+    } else {
+        $("#UtilityId option").filter(function () { return $.trim($(this).text()) === ""; }).remove();
+        applyMobileNativePlaceholder($("#UtilityId"), "0", "Select Utility");
+        applyMobileNativePlaceholder($("#ProjectId"), "0", "Select Project");
+        applyMobileNativePlaceholder($("#FromWarehouseId"), "0", "From Warehouse");
+        applyMobileNativePlaceholder($("#ToWarehouseId"), "0", "To Warehouse");
+        applyMobileNativePlaceholder($("#ProductId"), "0", "Select Product");
+    }
 
     $('#dynamic-table').DataTable({ "language": { "emptyTable": "No Data To Show" }, "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',  });
 
@@ -37,14 +74,10 @@ $(document).ready(function () {
 
 $('#UtilityId').change(function () {
 
-    $('#ProjectId').empty();
-    $('#ProjectId').trigger('chosen:updated');
-    $('#FromWarehouseId').empty();
-    $('#FromWarehouseId').trigger('chosen:updated');
-    $('#ToWarehouseId').empty();
-    $('#ToWarehouseId').trigger('chosen:updated');
-    $('#ProductId').empty();
-    $('#ProductId').trigger('chosen:updated');
+    $('#ProjectId').empty().trigger('chosen:updated');
+    $('#FromWarehouseId').empty().trigger('chosen:updated');
+    $('#ToWarehouseId').empty().trigger('chosen:updated');
+    $('#ProductId').empty().trigger('chosen:updated');
 
 
     var value = $("#UtilityId option:selected")
@@ -56,16 +89,22 @@ $('#UtilityId').change(function () {
         data: { "UtilityId": value.val() },
         url: urlGetProjectList,
         success: function (data) {
-
+            $('#ProjectId').empty();
             if (data != null) {
+                appendSentinelOptionVal0($('#ProjectId'), "Select Project");
                 $.each(data, function (index, item) {
-                    if (index == 0) { $('#ProjectId').append($('<option></option>').val('0').html("")); }
-
                     $('#ProjectId').append($('<option></option>').val(item.ProjectId).html(item.ProjectName));
                 });
+            } else if (isMobileBrowser) {
+                appendSentinelOptionVal0($('#ProjectId'), "Select Project");
             }
             $('#ProjectId').trigger('chosen:updated');
 
+            if (isMobileBrowser) {
+                applyMobileNativePlaceholder($("#FromWarehouseId"), "0", "From Warehouse");
+                applyMobileNativePlaceholder($("#ToWarehouseId"), "0", "To Warehouse");
+                applyMobileNativePlaceholder($("#ProductId"), "0", "Select Product");
+            }
 
             waitingDialog.hide();
         },
@@ -80,12 +119,9 @@ $('#UtilityId').change(function () {
 
 $('#ProjectId').change(function () {
 
-    $('#FromWarehouseId').empty();
-    $('#FromWarehouseId').trigger('chosen:updated');
-    $('#ToWarehouseId').empty();
-    $('#ToWarehouseId').trigger('chosen:updated');
-    $('#ProductId').empty();
-    $('#ProductId').trigger('chosen:updated');
+    $('#FromWarehouseId').empty().trigger('chosen:updated');
+    $('#ToWarehouseId').empty().trigger('chosen:updated');
+    $('#ProductId').empty().trigger('chosen:updated');
     var value = $("#ProjectId option:selected")
 
     waitingDialog.show('Please Wait Loading Contacts...');
@@ -96,29 +132,32 @@ $('#ProjectId').change(function () {
         url: urlGetWarehouseAndProduct,
         success: function (data) {
 
+            $('#FromWarehouseId').empty();
+            $('#ToWarehouseId').empty();
             if (data.WarehouseList != null) {
+                appendSentinelOptionVal0($('#FromWarehouseId'), "From Warehouse");
+                appendSentinelOptionVal0($('#ToWarehouseId'), "To Warehouse");
                 $.each(data.WarehouseList, function (index, item) {
-                    if (index == 0) {
-                        $('#FromWarehouseId').append($('<option></option>').val('0').html(""));
-                        $('#ToWarehouseId').append($('<option></option>').val('0').html(""));
-                    }
-
                     $('#FromWarehouseId').append($('<option></option>').val(item.WarehouseId).html(item.WarehouseName));
                     $('#ToWarehouseId').append($('<option></option>').val(item.WarehouseId).html(item.WarehouseName));
                 });
+            } else if (isMobileBrowser) {
+                appendSentinelOptionVal0($('#FromWarehouseId'), "From Warehouse");
+                appendSentinelOptionVal0($('#ToWarehouseId'), "To Warehouse");
             }
             $('#FromWarehouseId').trigger('chosen:updated');
             $('#ToWarehouseId').trigger('chosen:updated');
 
+            $('#ProductId').empty();
             if (data.ProductList != null) {
+                appendSentinelOptionVal0($('#ProductId'), "Select Product");
                 $.each(data.ProductList, function (index, item) {
-                    if (index == 0) { $('#ProductId').append($('<option></option>').val('0').html("")); }
-
                     $('#ProductId').append($('<option></option>').val(item.Id).html(item.FieldValue));
                 });
+            } else if (isMobileBrowser) {
+                appendSentinelOptionVal0($('#ProductId'), "Select Product");
             }
             $('#ProductId').trigger('chosen:updated');
-
 
             waitingDialog.hide();
         },
@@ -751,6 +790,13 @@ $("#btnReset").click(function () {
         $('#ProductId').empty();
         $('#ProductId').trigger('chosen:updated');
 
+        if (isMobileBrowser) {
+            applyMobileNativePlaceholder($("#UtilityId"), "0", "Select Utility");
+            applyMobileNativePlaceholder($("#ProjectId"), "0", "Select Project");
+            applyMobileNativePlaceholder($("#FromWarehouseId"), "0", "From Warehouse");
+            applyMobileNativePlaceholder($("#ToWarehouseId"), "0", "To Warehouse");
+            applyMobileNativePlaceholder($("#ProductId"), "0", "Select Product");
+        }
 
     }
     else {
@@ -964,6 +1010,13 @@ $('#btnCancelSave').click(function () {
     $('#ToWarehouseId').trigger('chosen:updated');
     $('#ProductId').empty();
     $('#ProductId').trigger('chosen:updated');
+    if (isMobileBrowser) {
+        applyMobileNativePlaceholder($("#UtilityId"), "0", "Select Utility");
+        applyMobileNativePlaceholder($("#ProjectId"), "0", "Select Project");
+        applyMobileNativePlaceholder($("#FromWarehouseId"), "0", "From Warehouse");
+        applyMobileNativePlaceholder($("#ToWarehouseId"), "0", "To Warehouse");
+        applyMobileNativePlaceholder($("#ProductId"), "0", "Select Product");
+    }
     $("#txtQuantity").val('')
     $('#divSaveCancel').hide();
     $('#dynamic-table').dataTable().fnClearTable();//clear the DataTable

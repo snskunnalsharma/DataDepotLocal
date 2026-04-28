@@ -86,12 +86,11 @@
 
 <script type="text/javascript">
 
-    $("#btnUpdate").live("click", function () {
+    $(document).on("click", "#btnUpdate", function () {
         //$('#btnUpdate').click(function () {
 
         var _PermissionTable = $('#PermissionTable');
         var PermissionList = [];
-        debugger;
         var _alltr = _PermissionTable.find('tbody tr');
 
         for (var i = 0; i < _alltr.length; i++) {
@@ -127,8 +126,6 @@
             PermissionList.push(Permission)
 
         }
-        debugger
-
 
         //  var _parameters = { id: _id, permissionId: _permissionId };
         var urlAssignPermissionsToRole = $('#urlAssignPermissionsToRole').val();
@@ -143,20 +140,22 @@
             beforeSend: function () {
                 waitingDialog.show('Loading Please Wait...');
             },
-            complete: function (data) {
-                if (data.statusText == "OK")
-                {
-                var $toast = toastr["success"]("Record Updated", "Success Notification");
-                }
-                else {
-                    var $toast = toastr["error"]("Unable to Update record", "Error Notification");
-                }
+            complete: function () {
                 waitingDialog.hide();
             },
-            success: function (data, textStatus, jqXHR) {
-                alert("success")
-                $('#PermissionsTable').html(data);
+            success: function (data) {
+                if (data && data.result) {
+                    toastr["success"](data.resultMessage || "Record Updated", "Success Notification");
+                } else {
+                    toastr["error"]((data && data.resultMessage) ? data.resultMessage : "Unable to update record", "Error Notification");
+                }
+            },
+            error: function () {
+                toastr["error"]("Unable to update record", "Error Notification");
             }
         });
     });
 </script>
+</script>
+
+

@@ -234,7 +234,20 @@ namespace GarronT.CMS.Model.BO
     }
 
 
+    public class MissingInventory
+    {
+        public string ProductName { get; set; }
+        public string SerialNumber { get; set; }
+        public int? Quantity { get; set; }
+        public string Color { get; set; }
+    }
 
+    public class MissingInventoryBO
+    {
+        public long UserId { get; set; }
+        public long ProjectId { get; set; }
+        public List<MissingInventory> MissingInventoryList { get; set; }
+    }
 
 
 }

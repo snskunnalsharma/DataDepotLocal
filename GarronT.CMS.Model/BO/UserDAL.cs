@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Data.Entity;
+using GarronT.CMS.Model.DAL;
 
 namespace GarronT.CMS.Model.BO
 {
@@ -866,7 +867,8 @@ namespace GarronT.CMS.Model.BO
                                   .Include(a => a.AspNetRolePermissions)
                                   .ToList();
 
-
+                _permissions = PermissionBAL.DedupeAspNetPermissionsByDescription(
+                    PermissionBAL.ReorderAspNetPermissionsForRightsGrid(_permissions));
 
                 List<AspNetRole> _role = database1.AspNetRoles.Where(o => o.Id == MaxRoleId)
                                  .OrderBy(wn => wn.Name)

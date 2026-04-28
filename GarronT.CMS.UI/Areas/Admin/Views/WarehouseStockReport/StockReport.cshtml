@@ -83,6 +83,40 @@
         }
     }
 
+    /* Mobile-only: make controls a bit more compact */
+    @@media (max-width: 480px) {
+        #main-content .panel-body .form-control,
+        #main-content .panel-body select,
+        #main-content .panel-body input[type="text"],
+        #main-content .panel-body button.btn {
+            font-size: 13px !important;
+        }
+
+        /* Give a bit more breathing room between stacked controls */
+        #main-content .panel-body .row.mbot05 > div {
+            margin-bottom: 6px;
+        }
+
+        /* Fix DataTables length/search overlap on small screens */
+        #main-content .dataTables_wrapper .dataTables_length,
+        #main-content .dataTables_wrapper .dataTables_filter {
+            float: none !important;
+            width: 100% !important;
+            text-align: left !important;
+            display: block !important;
+            clear: both !important;
+        }
+
+        #main-content .dataTables_wrapper .dataTables_filter {
+            margin-top: 6px !important;
+        }
+
+        #main-content .dataTables_wrapper .dataTables_filter input {
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+    }
+
 </style>
 <style>
     /* Toolbar polish for new compare controls */
@@ -1185,11 +1219,11 @@
                 <div class="row mbot05 sm-mbot1 xs-mbot1 xxs-mbot2">
 
                     <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 col-xxs-12 mbot05 md-mbot1  sm-mbot1 lg-nopaddingright md-nopaddingright sm-nopaddingright xs-mbot1 xxs-mbot2">
-                        @Html.DropDownList("UtilityId", (IEnumerable<SelectListItem>)ViewBag.UtilityListItem, new { @class = "form-control chosen-select" })
+                        @Html.DropDownList("UtilityId", (IEnumerable<SelectListItem>)ViewBag.UtilityListItem, new { @class = "form-control chosen-select", @title = "Select Utility" })
                     </div>
 
                     <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 col-xxs-12 mbot05 md-mbot1 sm-mbot1 lg-nopaddingright md-nopaddingright sm-nopaddingright xs-mbot1 xxs-mbot2">
-                        @Html.DropDownList("ProjectId", (List<SelectListItem>)ViewBag.ProjectList, new { @class = "form-control chosen-select" })
+                        @Html.DropDownList("ProjectId", (List<SelectListItem>)ViewBag.ProjectList, new { @class = "form-control chosen-select", @title = "Select Project" })
                     </div>
 
                     <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 col-xxs-12 mbot05  sm-mbot1 lg-nopaddingright md-nopaddingright xs-mbot1 xs-clear xxs-mbot2">
@@ -1379,6 +1413,35 @@
 <script src="~/jquery-confirm-master/js/jquery-confirm.js"></script>
 
 <script>
+    var isMobileBrowser = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    // Mobile native: placeholder row uses option[hidden] so it does not appear in the opened list (do not use disabled — jQuery .val() skips disabled options).
+    function applyMobileNativePlaceholder($select, sentinelValue, label) {
+        if (!isMobileBrowser || !$select || !$select.length) return;
+        var v = String(sentinelValue);
+        var $opt = $select.find("option").filter(function () { return String($(this).val()) === v; });
+        if ($opt.length === 0) {
+            $opt = $('<option></option>').val(v).text(label);
+            $select.prepend($opt);
+        } else {
+            $opt = $opt.first();
+            $opt.text(label);
+            $opt.prependTo($select);
+        }
+        $select.find("option").prop("selected", false);
+        $opt.prop({ hidden: true, selected: true });
+    }
+
+    function appendSentinelOptionVal0($select, mobileLabel) {
+        var $o = $('<option></option>').val('0');
+        if (isMobileBrowser) {
+            $o.text(mobileLabel).prop({ hidden: true, selected: true });
+        } else {
+            $o.text('');
+        }
+        $select.append($o);
+    }
+
     $(document).ready(function () {
 
         $("#InventoryReports").addClass('active');
@@ -1388,11 +1451,20 @@
         $('#liWarehouseStockReport').addClass("active");
 
 
-        $("#UtilityId").chosen({ placeholder_text_single: "Select Utility", no_results_text: "Oops, nothing found!" });
-        $('#UtilityId').trigger('chosen:updated');
+        if (!isMobileBrowser) {
+            $("#UtilityId").chosen({ placeholder_text_single: "Select Utility", no_results_text: "Oops, nothing found!" });
+            $('#UtilityId').trigger('chosen:updated');
 
-        $("#ProjectId").chosen({ placeholder_text_single: "Select Project", no_results_text: "Oops, nothing found!" });
-        $('#ProjectId').trigger('chosen:updated');
+            $("#ProjectId").chosen({ placeholder_text_single: "Select Project", no_results_text: "Oops, nothing found!" });
+            $('#ProjectId').trigger('chosen:updated');
+        } else {
+            // Mobile: remove any server-provided blank options so native selects don't show empty rows
+            $("#UtilityId option").filter(function () { return $.trim($(this).text()) === ""; }).remove();
+            applyMobileNativePlaceholder($("#UtilityId"), "0", "Select Utility");
+            applyMobileNativePlaceholder($("#ProjectId"), "0", "Select Project");
+            applyMobileNativePlaceholder($("#ProductId"), "0", "Select Product");
+            applyMobileNativePlaceholder($("#LocationType"), "0", "Select Location");
+        }
 
 
         //$("#WarehouseId").chosen({ placeholder_text_single: "Select Warehouse", no_results_text: "Oops, nothing found!" });
@@ -1400,20 +1472,24 @@
 
 
 
-        $("#ProductId").chosen({ placeholder_text_single: "Select Product", no_results_text: "Oops, nothing found!" });
-        $('#ProductId').val("0").attr("selected", "selected").trigger('chosen:updated');
+        if (!isMobileBrowser) {
+            $("#ProductId").chosen({ placeholder_text_single: "Select Product", no_results_text: "Oops, nothing found!" });
+            $('#ProductId').val("0").attr("selected", "selected").trigger('chosen:updated');
 
-        $("#ReportType").chosen();
-        $('#ReportType').val("0").attr("selected", "selected").trigger('chosen:updated');
+            $("#ReportType").chosen();
+            $('#ReportType').val("0").attr("selected", "selected").trigger('chosen:updated');
+        }
 
         $('#dynamic-table').DataTable({ "language": { "emptyTable": "No Data To Show" }, "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">', });
         $('#dynamic-table-summary').DataTable({ "language": { "emptyTable": "No Data To Show" }, "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">', });
 
-        $("#LocationType").chosen({ placeholder_text_single: "Select Location", no_results_text: "Oops, nothing found!" });
-        $('#LocationType').val("0").attr("selected", "selected").trigger('chosen:updated');
+        if (!isMobileBrowser) {
+            $("#LocationType").chosen({ placeholder_text_single: "Select Location", no_results_text: "Oops, nothing found!" });
+            $('#LocationType').val("0").attr("selected", "selected").trigger('chosen:updated');
 
-        $("#ddlLocationFrom").chosen({ placeholder_text_single: "Select Location", no_results_text: "Oops, nothing found!" });
-        $('#ddlLocationFrom').val("0").attr("selected", "selected").trigger('chosen:updated');
+            $("#ddlLocationFrom").chosen({ placeholder_text_single: "Select Location", no_results_text: "Oops, nothing found!" });
+            $('#ddlLocationFrom').val("0").attr("selected", "selected").trigger('chosen:updated');
+        }
 
         $("#divDetail").hide();
         $("#divSummary").show();
@@ -1583,12 +1659,14 @@
             data: { "UtilityId": value.val() },
             url: urlGetProjectList,
             success: function (data) {
-
+                $('#ProjectId').empty();
                 if (data != null) {
+                    appendSentinelOptionVal0($('#ProjectId'), "Select Project");
                     $.each(data, function (index, item) {
-                        if (index == 0) { $('#ProjectId').append($('<option></option>').val('0').html("")); }
                         $('#ProjectId').append($('<option></option>').val(item.ProjectId).html(item.ProjectName));
                     });
+                } else if (isMobileBrowser) {
+                    appendSentinelOptionVal0($('#ProjectId'), "Select Project");
                 }
                 $('#ProjectId').trigger('chosen:updated');
 
@@ -1636,18 +1714,22 @@
                 //$('#WarehouseId').trigger('chosen:updated');
 
                 if (data.ProductList != null) {
+                    appendSentinelOptionVal0($('#ProductId'), "Select Product");
                     $.each(data.ProductList, function (index, item) {
-                        if (index == 0) { $('#ProductId').append($('<option></option>').val('0').html("")); }
                         $('#ProductId').append($('<option></option>').val(item.Id).html(item.FieldValue));
                     });
+                } else if (isMobileBrowser) {
+                    appendSentinelOptionVal0($('#ProductId'), "Select Product");
                 }
                 $('#ProductId').trigger('chosen:updated');
 
                 if (data.LocationType != null) {
+                    appendSentinelOptionVal0($('#LocationType'), "Select Location");
                     $.each(data.LocationType, function (index, item) {
-                        if (index == 0) { $('#LocationType').append($('<option></option>').val('0').html("")); }
                         $('#LocationType').append($('<option></option>').val(item.LocationId).html(item.Location));
                     });
+                } else if (isMobileBrowser) {
+                    appendSentinelOptionVal0($('#LocationType'), "Select Location");
                 }
                 $('#LocationType').trigger('chosen:updated');
                 waitingDialog.hide();
@@ -2392,12 +2474,8 @@
 
                     var count = data.productList.length;
                     if (count > 0) {
-
+                        $('#ProductId').append($('<option></option>').val('0').text("All Product"));
                         $.each(data.productList, function (index, item) {
-                            if (index == 0) {
-                                $('#ProductId').append(
-                                  $('<option></option>').val('0').text("All Product"));
-                            }
                             $('#ProductId').append(
                                                   $('<option></option>').val(item.Id).html(item.ProductName)
                                             );
@@ -2484,6 +2562,13 @@
 
         $("#LocationType").empty();
         $("#LocationType").trigger("chosen:updated");
+
+        if (isMobileBrowser) {
+            applyMobileNativePlaceholder($("#UtilityId"), "0", "Select Utility");
+            applyMobileNativePlaceholder($("#ProjectId"), "0", "Select Project");
+            applyMobileNativePlaceholder($("#ProductId"), "0", "Select Product");
+            applyMobileNativePlaceholder($("#LocationType"), "0", "Select Location");
+        }
 
         //$("#CategoryId").trigger("change");
         $('#dynamic-table').dataTable().fnClearTable();//clear the DataTable

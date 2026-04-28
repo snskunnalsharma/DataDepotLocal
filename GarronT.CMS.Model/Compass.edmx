@@ -29,6 +29,24 @@
           <Property Name="ModifiedOn" Type="datetime" />
           <Property Name="ModifiedBy" Type="bigint" />
         </EntityType>
+        <EntityType Name="INVInstallerReport">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="project_id" Type="bigint" />
+          <Property Name="completion_date" Type="datetime" />
+          <Property Name="installer_name" Type="nvarchar" MaxLength="250" />
+          <Property Name="work_order_id" Type="nvarchar" MaxLength="250" />
+          <Property Name="serial_number" Type="nvarchar" MaxLength="250" />
+          <Property Name="service_address" Type="nvarchar(max)" />
+          <Property Name="latitude" Type="nvarchar" MaxLength="50" />
+          <Property Name="longitude" Type="nvarchar" MaxLength="50" />
+          <Property Name="status" Type="nvarchar" MaxLength="100" />
+          <Property Name="project_name" Type="nvarchar" MaxLength="250" />
+          <Property Name="created_at" Type="datetime" />
+          <Property Name="updated_at" Type="datetime" />
+        </EntityType>
         <EntityType Name="Appointment">
           <Key>
             <PropertyRef Name="AppointmentID" />
@@ -3720,6 +3738,7 @@
         <EntityContainer Name="CompassModelStoreContainer">
           <EntitySet Name="__MigrationHistory" EntityType="Self.__MigrationHistory" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Missing_Inventory" EntityType="Self.Missing_Inventory" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="INVInstallerReport" EntityType="Self.INVInstallerReport" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Appointment" EntityType="Self.Appointment" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetPermissions" EntityType="Self.AspNetPermissions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetRolePermissions" EntityType="Self.AspNetRolePermissions" Schema="dbo" store:Type="Tables" />
@@ -4246,6 +4265,7 @@
         <EntityContainer Name="CompassEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="C__MigrationHistory" EntityType="CompassModel.C__MigrationHistory" />
           <EntitySet Name="Missing_Inventory" EntityType="CompassModel.Missing_Inventory" />
+          <EntitySet Name="INVInstallerReport" EntityType="CompassModel.INVInstallerReport" />
           <EntitySet Name="AspNetUserClaims" EntityType="CompassModel.AspNetUserClaim" />
           <EntitySet Name="AspNetUserLogins" EntityType="CompassModel.AspNetUserLogin" />
           <EntitySet Name="AspNetUsers" EntityType="CompassModel.AspNetUser" />
@@ -10070,6 +10090,24 @@
           <NavigationProperty Name="tblUser" Relationship="CompassModel.FK_TblUnAllocatedSkipHistory_tblUsers" FromRole="TblUnAllocatedSkipHistory" ToRole="tblUser" />
           <NavigationProperty Name="UploadedExcelData" Relationship="CompassModel.FK_TblUnAllocatedSkipHistory_UploadedExcelData" FromRole="TblUnAllocatedSkipHistory" ToRole="UploadedExcelData" />
         </EntityType>
+        <EntityType Name="INVInstallerReport">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="project_id" Type="Int64" />
+          <Property Name="completion_date" Type="DateTime" />
+          <Property Name="installer_name" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="work_order_id" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="serial_number" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="service_address" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="latitude" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="longitude" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="status" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="project_name" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="created_at" Type="DateTime" />
+          <Property Name="updated_at" Type="DateTime" />
+        </EntityType>
         <Association Name="FK_TblUnAllocatedSkipHistory_TblProjectFieldData">
           <End Type="CompassModel.TblProjectFieldData" Role="TblProjectFieldData" Multiplicity="0..1" />
           <End Type="CompassModel.TblUnAllocatedSkipHistory" Role="TblUnAllocatedSkipHistory" Multiplicity="*" />
@@ -10124,6 +10162,25 @@
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="INVInstallerReport">
+            <EntityTypeMapping TypeName="CompassModel.INVInstallerReport">
+              <MappingFragment StoreEntitySet="INVInstallerReport">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="project_id" ColumnName="project_id" />
+                <ScalarProperty Name="completion_date" ColumnName="completion_date" />
+                <ScalarProperty Name="installer_name" ColumnName="installer_name" />
+                <ScalarProperty Name="work_order_id" ColumnName="work_order_id" />
+                <ScalarProperty Name="serial_number" ColumnName="serial_number" />
+                <ScalarProperty Name="service_address" ColumnName="service_address" />
+                <ScalarProperty Name="latitude" ColumnName="latitude" />
+                <ScalarProperty Name="longitude" ColumnName="longitude" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="project_name" ColumnName="project_name" />
+                <ScalarProperty Name="created_at" ColumnName="created_at" />
+                <ScalarProperty Name="updated_at" ColumnName="updated_at" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

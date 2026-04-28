@@ -1073,19 +1073,23 @@ namespace GarronT.CMS.Model.DAL
                     long projectId = objMobileWarehouseRecieveBo.ProjectId;
                     var project = objCompassEntities.tblProjects.Where(o => o.ProjectId == projectId).First();
                     var utility = objCompassEntities.UtilityMasters.Where(o => o.Active == 1 && o.UtilityName == project.Utilitytype).First();
+                    var location = objMobileWarehouseRecieveBo.Location;
                     foreach (var item in objMobileWarehouseRecieveBo.SerialNumberList)
                     {
                         item.UtilityId = utility.Id;
+                        item.Location = location;
                     }
 
                     foreach (var item in NewSerialNumberList)
                     {
                         item.UtilityId = utility.Id;
+                        item.Location = location;
                     }
 
                     foreach (var item in objMobileWarehouseRecieveBo.ProductQuantityList)
                     {
                         item.UtilityId = utility.Id;
+                        item.Location = location;
                     }
 
                     DataTable ObjDataTable = new DataTable();
@@ -1096,6 +1100,7 @@ namespace GarronT.CMS.Model.DAL
                     ObjDataTable.Columns.Add("TotalQty", typeof(int));
                     ObjDataTable.Columns.Add("GenerateBarcode", typeof(int));
                     ObjDataTable.Columns.Add("BarcodeFilePath", typeof(string));
+                    ObjDataTable.Columns.Add("Location", typeof(string));
 
                     foreach (var item in objMobileWarehouseRecieveBo.SerialNumberList)
                     {
@@ -1107,6 +1112,7 @@ namespace GarronT.CMS.Model.DAL
                         DR["TotalQty"] = 1;
                         DR["GenerateBarcode"] = 0;
                         DR["BarcodeFilePath"] = DBNull.Value;
+                        DR["Location"] = item.Location;
                         ObjDataTable.Rows.Add(DR);
                     }
 
@@ -1120,6 +1126,7 @@ namespace GarronT.CMS.Model.DAL
                         DR["TotalQty"] = 1;
                         DR["GenerateBarcode"] = 0;
                         DR["BarcodeFilePath"] = DBNull.Value;
+                        DR["Location"] = item.Location;
                         ObjDataTable.Rows.Add(DR);
                     }
 
@@ -1133,6 +1140,7 @@ namespace GarronT.CMS.Model.DAL
                         DR["TotalQty"] = item.ProductQuantity;
                         DR["GenerateBarcode"] = item.GenerateBarcode == true ? 1 : 0;
                         DR["BarcodeFilePath"] = item.WebUrlOfBarcodeFile;
+                        DR["Location"] = item.Location;
                         ObjDataTable.Rows.Add(DR);
                     }
 
@@ -1187,15 +1195,15 @@ namespace GarronT.CMS.Model.DAL
 
                     var objData2 = objCompassEntities.InwardDetails_RejectedData.Where(o => o.Active == 1 && o.FKInwardHeaderId == ObjHeader.Id).
                         Select(o => new MobileWarehouseResponseProductData
-                    {
-                        UtilityName = o.UtilityMaster.UtilityName,
-                        ProductName = o.ProductMaster.ProductName,
-                        Quantity = o.UploadQty,
-                        SerialNumber = o.SerialNumber,
-                        GenerateBarcode = o.GenerateBarcode == 0 ? false : true,
-                        WebUrlOfBarcodeFile = o.BarCodeFilePath,
-                        ServerReponseStatus = o.InventoryStatusMaster.InventoryStatusName
-                    }).ToList();
+                        {
+                            UtilityName = o.UtilityMaster.UtilityName,
+                            ProductName = o.ProductMaster.ProductName,
+                            Quantity = o.UploadQty,
+                            SerialNumber = o.SerialNumber,
+                            GenerateBarcode = o.GenerateBarcode == 0 ? false : true,
+                            WebUrlOfBarcodeFile = o.BarCodeFilePath,
+                            ServerReponseStatus = o.InventoryStatusMaster.InventoryStatusName
+                        }).ToList();
 
 
                     List<MobileWarehouseResponseProductData> objData = new List<MobileWarehouseResponseProductData>();

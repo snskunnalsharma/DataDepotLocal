@@ -1,6 +1,7 @@
 ﻿using GarronT.CMS.Model.BO;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,117 @@ namespace GarronT.CMS.Model.DAL
 {
     public class PermissionBAL
     {
+        /// <summary>
+        /// Orders permissions for Role Rights / User Permission grids: main app sections first (through Form Management),
+        /// then <b>Inventory Reports</b>, then <b>Reports</b> (Duplicate/Export/…), then <b>Other Reports</b> (Time Clock), then any remainder.
+        /// Hides <c>InventoryTransfer</c> so Role Rights shows only <c>InventoryBulkTransfer</c> (same UI label: Inventory Transfer).
+        /// Uses Permission_Id &lt; 27 as the split before "Duplicate Report" (standard CMS schema).
+        /// </summary>
+        public static List<AspNetPermission> ReorderAspNetPermissionsForRightsGrid(IEnumerable<AspNetPermission> source)
+        {
+            var list = source.OrderBy(p => p.Permission_Id)
+                .Where(p => p.PermissionDescription != "InventoryTransfer")
+                .ToList();
+
+            var inventoryNames = new HashSet<string>(StringComparer.Ordinal)
+            {
+                "Warehouse Stock Report",
+                "Inventory Stock Report",
+                "Product Movement Report",
+                "Inventory Transfer",
+                "Warehouse Transfer",
+                "INV Installer Report"
+            };
+
+            int InventorySortKey(AspNetPermission p)
+            {
+                switch (p.PermissionName)
+                {
+                    case "Warehouse Stock Report": return 0;
+                    case "Inventory Stock Report": return 1;
+                    case "Product Movement Report": return 2;
+                    case "Inventory Transfer": return 3;
+                    case "Warehouse Transfer": return 4;
+                    case "INV Installer Report": return 5;
+                    default: return 99;
+                }
+            }
+
+            var invOrdered = list.Where(p => inventoryNames.Contains(p.PermissionName))
+                .OrderBy(InventorySortKey)
+                .ThenBy(p => p.Permission_Id)
+                .ToList();
+
+            var reportNames = new HashSet<string>(StringComparer.Ordinal)
+            {
+                "Duplicate Report",
+                "Export Report",
+                "Installer Report",
+                "Auditor Report",
+                "Skip History Report"
+            };
+
+            var reportOrdered = list.Where(p => reportNames.Contains(p.PermissionName))
+                .OrderBy(p => p.Permission_Id)
+                .ToList();
+
+            var duplicateReport = list.FirstOrDefault(p => p.PermissionName == "Duplicate Report");
+            var firstReportsCutoff = duplicateReport != null ? duplicateReport.Permission_Id : 27L;
+            var firstBlock = list.Where(p =>
+                    p.Permission_Id < firstReportsCutoff
+                    && !inventoryNames.Contains(p.PermissionName)
+                    && !reportNames.Contains(p.PermissionName)
+                    && p.PermissionName != "Time Clock Report"
+                    && p.PermissionName != "Test")
+                .OrderBy(p => p.Permission_Id)
+                .ToList();
+
+            var timeClockItems = list.Where(p => p.PermissionName == "Time Clock Report")
+                .OrderBy(p => p.Permission_Id)
+                .ToList();
+
+            var testItems = list.Where(p => p.PermissionName == "Test")
+                .OrderBy(p => p.Permission_Id)
+                .ToList();
+
+            var assigned = new HashSet<long>(
+                firstBlock.Select(p => p.Permission_Id)
+                    .Concat(invOrdered.Select(p => p.Permission_Id))
+                    .Concat(reportOrdered.Select(p => p.Permission_Id))
+                    .Concat(timeClockItems.Select(p => p.Permission_Id))
+                    .Concat(testItems.Select(p => p.Permission_Id)));
+
+            var remainder = list.Where(p => !assigned.Contains(p.Permission_Id))
+                .OrderBy(p => p.Permission_Id)
+                .ToList();
+
+            return firstBlock
+                .Concat(invOrdered)
+                .Concat(reportOrdered)
+                .Concat(timeClockItems)
+                .Concat(testItems)
+                .Concat(remainder)
+                .ToList();
+        }
+
+        /// <summary>
+        /// If the same permission was inserted twice in DB (same <see cref="AspNetPermission.PermissionDescription"/>),
+        /// keep the first row in display order (lowest Permission_Id) so Role Rights does not show duplicates.
+        /// </summary>
+        public static List<AspNetPermission> DedupeAspNetPermissionsByDescription(IEnumerable<AspNetPermission> ordered)
+        {
+            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var result = new List<AspNetPermission>();
+            foreach (var p in ordered)
+            {
+                var key = (p.PermissionDescription ?? string.Empty).Trim();
+                if (string.IsNullOrEmpty(key))
+                    key = "id:" + p.Permission_Id.ToString(CultureInfo.InvariantCulture);
+                if (seen.Add(key))
+                    result.Add(p);
+            }
+            return result;
+        }
 
         public AspNetPermissionVM GetPermissionData()
         {
@@ -22,7 +134,7 @@ namespace GarronT.CMS.Model.DAL
                               .Include(a => a.AspNetRolePermissions)
                               .ToList();
 
-
+            _permissions = DedupeAspNetPermissionsByDescription(ReorderAspNetPermissionsForRightsGrid(_permissions));
 
             List<AspNetRole> _role = database1.AspNetRoles
                              .OrderBy(wn => wn.SortingNumber)
@@ -68,7 +180,14 @@ namespace GarronT.CMS.Model.DAL
             CompassEntities database = new CompassEntities();
             try
             {
-
+                if (PermissionList != null && PermissionList.Count > 0)
+                {
+                    PermissionList = PermissionList
+                        .Where(p => p != null && !string.IsNullOrWhiteSpace(p.PermissionID) && !string.IsNullOrWhiteSpace(p.RoleID))
+                        .GroupBy(p => (p.PermissionID.Trim() + "|" + p.RoleID.Trim()), StringComparer.OrdinalIgnoreCase)
+                        .Select(g => g.First())
+                        .ToList();
+                }
 
                 var ObjOldPermissionList = database.AspNetRolePermissions.Select(o =>
                     new AccessPermissionBo
@@ -115,141 +234,8 @@ namespace GarronT.CMS.Model.DAL
 
                 }
                 database.SaveChanges();
-
-
-                var ObjNewPermissionList = database.AspNetRolePermissions.Select(o =>
-                  new AccessPermissionBo
-                  {
-                      PermissionID = o.Permission_Id.ToString(),
-                      RoleID = o.Role_Id,
-                      RoleAddChecked = o.AddOperation,
-                      RoleEditChecked = o.EditOperation,
-                      RoleDeleteChecked = o.DeleteOperation,
-                      RoleViewChecked = o.ViewOperation
-                  }).ToList();
-
-
-
-                var ABCUserList = database.tblUsers.ToList();
-                /*Check for every user*/
-                foreach (var item in ABCUserList)
-                {
-                    var UserRoleList = database.ASPNET_GetUserRoles(item.UserID).ToList();
-                    /*Set user role priority*/
-                    string MaxRoleId = UserRoleList.Where(o => o.Name == "Manager").Select(o => o.RoleId).FirstOrDefault();
-                    if (string.IsNullOrEmpty(MaxRoleId))
-                    {
-                        MaxRoleId = UserRoleList.Where(o => o.Name == "Field Supervisor").Select(o => o.RoleId).FirstOrDefault();
-                    }
-                    if (string.IsNullOrEmpty(MaxRoleId))
-                    {
-                        MaxRoleId = UserRoleList.Where(o => o.Name == "Installer").Select(o => o.RoleId).FirstOrDefault();
-                    }
-                    if (string.IsNullOrEmpty(MaxRoleId))
-                    {
-                        MaxRoleId = UserRoleList.Where(o => o.Name == "Auditor").Select(o => o.RoleId).FirstOrDefault();
-                    }
-                    if (string.IsNullOrEmpty(MaxRoleId))
-                    {
-                        MaxRoleId = UserRoleList.Where(o => o.Name == "Warehouse Manager").Select(o => o.RoleId).FirstOrDefault();
-                    }
-
-                    if (string.IsNullOrEmpty(MaxRoleId))
-                    {
-                        MaxRoleId = UserRoleList.Where(o => o.Name == "Reporter").Select(o => o.RoleId).FirstOrDefault();
-                    }
-
-                    if (string.IsNullOrEmpty(MaxRoleId))
-                    {
-                        MaxRoleId = UserRoleList.Where(o => o.Name == "Customer").Select(o => o.RoleId).FirstOrDefault();
-                    }
-
-                    if (string.IsNullOrEmpty(MaxRoleId))
-                    {
-                        MaxRoleId = UserRoleList.Where(o => o.Name == "IT Access").Select(o => o.RoleId).FirstOrDefault();
-                    }
-
-                    /*Get user existing role permissions*/
-                    var UserAccessList = database.AspNetUserRolePermissions.Where(o => o.Active == true && o.UserId == item.UserID).ToList();
-
-                    var CurrentUserPermissionList = ObjNewPermissionList.Where(o => o.RoleID == MaxRoleId).ToList();
-
-                    foreach (var item2 in CurrentUserPermissionList)
-                    {
-                        /*
-                         * Check user permission 1 by 1 per form.
-                         * Compare with old list & if the permission seems updated then check status for user & update.                              
-                         */
-
-                        var abcOldPermission = ObjOldPermissionList.Where(o => o.PermissionID == item2.PermissionID && o.RoleID == MaxRoleId).FirstOrDefault();
-
-                        var abcItem = UserAccessList.Where(o => o.FKAspNetPermissionId.ToString() == item2.PermissionID).FirstOrDefault();
-
-
-                        if (abcItem != null)
-                        {
-
-                            /*Compare if changes found then only update the record else not required to update*/
-                            if (abcOldPermission.RoleAddChecked != item2.RoleAddChecked
-                                || abcOldPermission.RoleDeleteChecked != item2.RoleDeleteChecked
-                                || abcOldPermission.RoleEditChecked != item2.RoleEditChecked
-                                || abcOldPermission.RoleViewChecked != item2.RoleViewChecked)
-                            {
-
-                                /*If add permission given*/
-                                if (abcOldPermission.RoleAddChecked != item2.RoleAddChecked)
-                                {
-                                    abcItem.AddOperation = item2.RoleAddChecked;
-                                }
-
-                                /*If delete permission given*/
-                                if (abcOldPermission.RoleDeleteChecked != item2.RoleDeleteChecked)
-                                {
-                                    abcItem.DeleteOperation = item2.RoleDeleteChecked;
-                                }
-
-                                /*If edit permission given*/
-                                if (abcOldPermission.RoleEditChecked != item2.RoleEditChecked)
-                                {
-                                    abcItem.EditOperation = item2.RoleEditChecked;
-                                }
-
-                                /*If view permission given*/
-                                if (abcOldPermission.RoleViewChecked != item2.RoleViewChecked)
-                                {
-                                    abcItem.ViewOperation = item2.RoleViewChecked;
-                                }
-
-                                abcItem.ModifiedBy = currentUserId;
-                                abcItem.ModifiedOn = DateTime.Now;
-                                database.SaveChanges();
-                            }
-
-
-                        }
-                        else
-                        {
-                            /*If add permission given*/
-
-                            abcItem = new AspNetUserRolePermission();
-                            abcItem.FKAspNetPermissionId = int.Parse(item2.PermissionID);
-                            abcItem.UserId = item.UserID;
-                            abcItem.AddOperation = item2.RoleAddChecked;
-                            abcItem.DeleteOperation = item2.RoleDeleteChecked;
-                            abcItem.EditOperation = item2.RoleEditChecked;
-                            abcItem.ViewOperation = item2.RoleViewChecked;
-                            abcItem.Active = true;
-                            abcItem.CreatedBy = currentUserId;
-                            abcItem.CreatedOn = DateTime.Now;
-                            database.AspNetUserRolePermissions.Add(abcItem);
-                            database.SaveChanges();
-                        }
-
-
-                    }
-
-
-                }
+                // Role rights are the source of truth; do not sync per-user permissions here.
+                // This keeps updates fast and avoids forcing manual SQL fixes per user.
                 Message = "Record saved successfully!";
                 return true;
 

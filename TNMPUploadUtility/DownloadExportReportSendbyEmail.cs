@@ -99,22 +99,22 @@ namespace TNMPUploadUtility
                             // ===============================
                             DataTable finalDt = new DataTable();
 
-                            finalDt.Columns.Add("CUSTOMER LOCATION");
+                            // Required header order for Beaumont (Project 10134)
+                            finalDt.Columns.Add("CUSTOMER NAME");
                             finalDt.Columns.Add("ADDRESS");
                             finalDt.Columns.Add("METER");
                             finalDt.Columns.Add("OLD ERT");
-                            //finalDt.Columns.Add("OLD METER FINAL READ");
                             finalDt.Columns.Add("NEW ERT");
 
                             foreach (DataRow row in dt.Rows)
                             {
                                 finalDt.Rows.Add(
-                                    row["ACCOUNT"],                 // Customer location #
+                                    row["ACCOUNT"],                 // Customer name/location #
                                     row["STREET"],                  // Address
                                     row["OLD METER NUMBER"],         // Meter #
                                     row["OLD METER RADIO NUMBER"], 
                                     //row["OLD METER FINAL READ"],      // Old ert
-                                    row["NEW METER RADIO"]           // New ert
+                                    row["NEW METER RADIO"]           // New ert (serial/radio)
                                 );
                             }
 
@@ -243,7 +243,6 @@ namespace TNMPUploadUtility
                 return new DataTable();
             }
          }
-
 
         #endregion
         #region Generate csv
@@ -375,8 +374,8 @@ namespace TNMPUploadUtility
                 SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
 
                 mail.From = new MailAddress("datadepotonline@gmail.com");
-                //mail.To.Add("kunal.sharma@snssystem.com");
-               //mail.To.Add("snssystem.pammi@gmail.com");
+               // mail.To.Add("kunal.sharma@snssystem.com");
+              // mail.To.Add("manish.baghel@snssystem.com");
               mail.To.Add("mike.harris@beaumonttexas.gov");
               mail.To.Add("howard.dennings@beaumonttexas.gov");
               mail.To.Add("ashley.hoyt@beaumonttexas.gov");

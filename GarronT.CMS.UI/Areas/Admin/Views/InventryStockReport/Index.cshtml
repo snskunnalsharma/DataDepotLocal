@@ -79,6 +79,41 @@
     }
     /* yellow */
 
+    /* Mobile-only: make controls a bit more compact */
+    @@media (max-width: 480px) {
+        #main-content .panel-body .form-control,
+        #main-content .panel-body select,
+        #main-content .panel-body input[type="text"],
+        #main-content .panel-body button.btn {
+            font-size: 13px !important;
+        }
+
+        /* Datepicker input text size */
+        #txtFromDate,
+        #txtToDate {
+            font-size: 13px !important;
+        }
+
+        /* Fix DataTables length/search overlap on small screens */
+        #main-content .dataTables_wrapper .dataTables_length,
+        #main-content .dataTables_wrapper .dataTables_filter {
+            float: none !important;
+            width: 100% !important;
+            text-align: left !important;
+            display: block !important;
+            clear: both !important;
+        }
+
+        #main-content .dataTables_wrapper .dataTables_filter {
+            margin-top: 6px !important;
+        }
+
+        #main-content .dataTables_wrapper .dataTables_filter input {
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+    }
+
 </style>
 <style>
     /*************************************Bootstrap Css***********************************/
@@ -1160,7 +1195,7 @@
                         <div class="row mbot05 sm-mbot1 xs-mbot1 xxs-mbot2">
                             @*<div class="col-lg-3 col-md-3 col-sm-6 col-xs-10 for_btn">*@
                             <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 col-xxs-12 mbot05 md-mbot1  sm-mbot1 xs-mbot1 xxs-mbot2 lg-nopaddingright md-nopaddingright">
-                                @Html.DropDownList("UtilityId", (IEnumerable<SelectListItem>)ViewBag.UtilityListItem, new { @class = "form-control chosen-select" })
+                                @Html.DropDownList("UtilityId", (IEnumerable<SelectListItem>)ViewBag.UtilityListItem, new { @class = "form-control chosen-select", @title = "Select Utility" })
                             </div>
                             @*<div class="col-lg-3 col-md-3 col-sm-6 col-xs-10 for_btn">*@
                             <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 col-xxs-12 mbot05 md-mbot1  sm-mbot1 xs-mbot1 xxs-mbot2 lg-nopaddingright md-nopaddingright">
@@ -1311,6 +1346,36 @@
     var completedSerialSet = new Set();      // uploaded file serials
     var lastCompareMatched = [];            // matched serials
     var lastCompareUnmatched = [];          // unmatched serials (optional)
+    var isMobileBrowser = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    // Mobile native <select>: a normal first-row "Select …" prompt appears inside the opened list (bad UX).
+    // HTML5: option[hidden] is kept for the closed-box label but should not appear in the dropdown list.
+    // Do NOT use disabled on the sentinel: jQuery .val() often skips disabled selected options and breaks filters.
+    function applyMobileNativePlaceholder($select, sentinelValue, label) {
+        if (!isMobileBrowser || !$select || !$select.length) return;
+        var v = String(sentinelValue);
+        var $opt = $select.find("option").filter(function () { return String($(this).val()) === v; });
+        if ($opt.length === 0) {
+            $opt = $('<option></option>').val(v).text(label);
+            $select.prepend($opt);
+        } else {
+            $opt.first().text(label);
+            $opt.first().prependTo($select);
+            $opt = $opt.first();
+        }
+        $select.find("option").prop("selected", false);
+        $opt.prop({ hidden: true, selected: true });
+    }
+
+    function appendProjectProductSentinel($select, labelIfMobile) {
+        var $o = $('<option></option>').val('0');
+        if (isMobileBrowser) {
+            $o.text(labelIfMobile).prop({ hidden: true, selected: true });
+        } else {
+            $o.html('');
+        }
+        $select.append($o);
+    }
 
     $(document).ready(function () {
 
@@ -1321,23 +1386,40 @@
         $('.sub').find("*").removeClass('active');
         $('#liInventoryStockReport').addClass("active");
 
-        $("#UtilityId").chosen({ placeholder_text_single: "Select Utility", no_results_text: "Oops, nothing found!" });
-        $('#UtilityId').trigger('chosen:updated');
+        if (!isMobileBrowser) {
+            // Desktop (Chosen): keep the first "0" option text empty so Chosen shows placeholder_text_single
+            // without duplicating "Select …" as a real list row.
+            $("#InstallerId").empty().append($('<option></option>').val('0').html(''));
 
-        $("#ProjectId").chosen({ placeholder_text_single: "Select Project", no_results_text: "Oops, nothing found!" });
-        $('#ProjectId').trigger('chosen:updated');
+            $("#UtilityId").chosen({ placeholder_text_single: "Select Utility", no_results_text: "Oops, nothing found!" });
+            $('#UtilityId').trigger('chosen:updated');
 
-        $("#InstallerId").chosen({ placeholder_text_single: "Select Installer/Manager", no_results_text: "Oops, nothing found!" });
-        $('#InstallerId').val("0").attr("selected", "selected").trigger('chosen:updated');
+            $("#ProjectId").chosen({ placeholder_text_single: "Select Project", no_results_text: "Oops, nothing found!" });
+            $('#ProjectId').trigger('chosen:updated');
 
-        //$("#CategoryId").chosen({ placeholder_text_single: "Select Category", no_results_text: "Oops, nothing found!" });
-        //$('#CategoryId').trigger('chosen:updated');
+            $("#InstallerId").chosen({ placeholder_text_single: "Select Installer/Manager", no_results_text: "Oops, nothing found!" });
+            $('#InstallerId').val("0").attr("selected", "selected").trigger('chosen:updated');
 
-        $("#ProductId").chosen({ placeholder_text_single: "Select Product", no_results_text: "Oops, nothing found!" });
-        $('#ProductId').trigger('chosen:updated');
+            $("#ProductId").chosen({ placeholder_text_single: "Select Product", no_results_text: "Oops, nothing found!" });
+            $('#ProductId').trigger('chosen:updated');
 
-        $("#ReportType").chosen();
-        $('#ReportType').val("0").attr("selected", "selected").trigger('chosen:updated');
+            $("#ReportType").chosen();
+            $('#ReportType').val("0").attr("selected", "selected").trigger('chosen:updated');
+        } else {
+            // Mobile: remove any server-provided blank options so native selects don't show "empty rows"
+            $("#UtilityId option").filter(function () {
+                return $.trim($(this).text()) === "";
+            }).remove();
+
+            // Mobile (native): show visible prompt text on the sentinel "0" rows (without affecting desktop Chosen).
+            applyMobileNativePlaceholder($("#UtilityId"), "0", "Select Utility");
+            applyMobileNativePlaceholder($("#ProjectId"), "0", "Select Project");
+            applyMobileNativePlaceholder($("#ProductId"), "0", "Select Product");
+
+            $("#InstallerId").empty().append(
+                $('<option></option>').val('0').text('Select Installer/Manager').prop({ hidden: true, selected: true })
+            );
+        }
 
         $('#dynamic-table').DataTable({ "language": { "emptyTable": "No Data To Show" }, "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">', });
         $('#dynamic-table-Summary').DataTable({ "language": { "emptyTable": "No Data To Show" }, "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">', });
@@ -1387,6 +1469,7 @@
 
     $('#UtilityId').change(function () {
 
+        // Reset dependent dropdowns with a visible prompt on mobile (native selects)
         $('#ProjectId').empty().trigger('chosen:updated');
         $('#ProductId').empty().trigger('chosen:updated');
         $('#InstallerId').empty().trigger('chosen:updated');
@@ -1410,12 +1493,14 @@
             data: { "UtilityId": value.val() },
             url: urlGetProjectList,
             success: function (data) {
-
+                $('#ProjectId').empty();
                 if (data != null) {
+                    appendProjectProductSentinel($('#ProjectId'), "Select Project");
                     $.each(data, function (index, item) {
-                        if (index == 0) { $('#ProjectId').append($('<option></option>').val('0').html("")); }
                         $('#ProjectId').append($('<option></option>').val(item.ProjectId).html(item.ProjectName));
                     });
+                } else if (isMobileBrowser) {
+                    appendProjectProductSentinel($('#ProjectId'), "Select Project");
                 }
                 $('#ProjectId').trigger('chosen:updated');
 
@@ -1645,12 +1730,20 @@
     })
 
     $("#btnReset").click(function () {
-
         // Reset dropdowns
         $("#UtilityId").val('0').trigger("chosen:updated");
         $('#ProjectId').empty().trigger('chosen:updated');
         $('#ProductId').empty().trigger('chosen:updated');
         $('#InstallerId').empty().trigger('chosen:updated');
+
+        if (isMobileBrowser) {
+            applyMobileNativePlaceholder($("#UtilityId"), "0", "Select Utility");
+            applyMobileNativePlaceholder($("#ProjectId"), "0", "Select Project");
+            applyMobileNativePlaceholder($("#ProductId"), "0", "Select Product");
+            $("#InstallerId").append(
+                $('<option></option>').val('0').text('Select Installer/Manager').prop({ hidden: true, selected: true })
+            );
+        }
 
         // Reset date
         var todayDate = new Date();
@@ -1673,6 +1766,9 @@
         // ✅ Hide compare & download buttons
         $("#btnSubmitCompletedInventory").hide();
         $("#btnDownloadMatchedCsv").hide();
+        $("#dynamic-table-Summary_wrapper").show();
+        $("#dynamic-table").closest('div').show(); // This ensures the table's container is shown
+
 
         // ✅ Reset comparison data
         completedSerialSet = new Set();
@@ -1680,6 +1776,7 @@
         lastCompareYellow = [];
         lastCompareRed = [];
 
+        // ✅ Do not hide the table container here.
     });
 
 
@@ -1740,12 +1837,12 @@
                     var count = data.installerList.length;
 
                     if (count > 0) {
+                        var $ins0 = $('<option></option>').val('0').text(isMobileBrowser ? "Select Installer/Manager" : "All Installers/Managers");
+                        if (isMobileBrowser) {
+                            $ins0.prop({ hidden: true, selected: true });
+                        }
+                        $('#InstallerId').append($ins0);
                         $.each(data.installerList, function (index, item) {
-                            if (index == 0) {
-                                $('#InstallerId').append(
-                                    $('<option></option>').val('0').text("All Installers/Managers")
-                                );
-                            }
                             $('#InstallerId').append(
                                 $('<option></option>').val(item.UserId).html(item.UserName)
                             );
@@ -1756,12 +1853,8 @@
                     // Product dropdown
                     $('#ProductId').empty();
                     if (data.ProductList != null) {
+                        appendProjectProductSentinel($('#ProductId'), "Select Product");
                         $.each(data.ProductList, function (index, item) {
-                            if (index == 0) {
-                                $('#ProductId').append(
-                                    $('<option></option>').val('0').html("")
-                                );
-                            }
                             $('#ProductId').append(
                                 $('<option></option>').val(item.Id).html(item.FieldValue)
                             );
@@ -2192,11 +2285,44 @@
             return;
         }
 
+        function applyLocalInstallToGrid(serials) {
+            try {
+                var dt = $('#dynamic-table').DataTable();
+                if (!dt) return;
+
+                var toInstall = new Set((serials || []).map(function (s) { return normalizeSerial(s); }));
+                if (toInstall.size === 0) return;
+
+                dt.rows().every(function () {
+                    var d = this.data();
+                    var s = normalizeSerial(d.SerialNumber);
+                    if (!s) return;
+
+                    if (toInstall.has(s)) {
+                        // move in-hand -> installed in UI without removing row
+                        d.InstalledQty = 1;
+                        d.InHandQty = 0;
+                        this.data(d);
+                    }
+                });
+
+                dt.draw(false);
+                highlightRows();
+            } catch (e) {
+                // fallback: if anything goes wrong, old behavior would reload
+                console.log("applyLocalInstallToGrid failed", e);
+            }
+        }
+
         $.confirm({
             title: "Confirm",
             content: "Install matched inventory?",
             buttons: {
                 yes: function () {
+                    var installingSerials = completedInventoryItems
+                        .filter(x => lastCompareGreen.includes(x.serialNumber))
+                        .map(x => x.serialNumber);
+
                     $.ajax({
                         url: '/Admin/InventryStockReport/InstallMatchedInventory',
                         type: 'POST',
@@ -2208,8 +2334,16 @@
                         },
                         success: function (res) {
                             if (res.success) {
-                                toastr.success("Inventory installed successfully");
-                                LoadDatatable();
+                                var msg = "Inventory installed. Installed: " + (res.installed || 0)
+                                    + ", Skipped: " + (res.skipped || 0)
+                                    + ", Errors: " + (res.errors || 0);
+                                toastr.success(msg);
+                                if (res.errors && res.errorList && res.errorList.length) {
+                                    console.log("Install errors:", res.errorList);
+                                }
+                                // Do NOT reload report after install; reload can hide rows if proc filters in-hand=0.
+                                // Instead update the existing grid rows in-place.
+                                applyLocalInstallToGrid(installingSerials);
                             } else {
                                 toastr.error(res.message);
                             }

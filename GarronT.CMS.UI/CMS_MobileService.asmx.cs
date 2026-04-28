@@ -17,7 +17,9 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Security.AccessControl;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using System.Web.Script.Serialization;
@@ -2968,6 +2970,238 @@ namespace GarronT.CMS.UI
                 log.Info("ERROR  ex.StackTrace - " + (ex.StackTrace != null ? ex.StackTrace : ""));
                 log.Info("ERROR ex.InnerException.Message - " + (ex.InnerException.Message != null ? ex.InnerException.Message : ""));
             }
+        }
+
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public void GetProjectUserList(long ProjectId)
+        {
+            try
+            {
+                JavaScriptSerializer s = new JavaScriptSerializer();
+                s.MaxJsonLength = 2147483644;
+                log.Info("WEB Service Get Project User List Started at - " + DateTime.Now.ToString());
+                MobileDAL mobileDal = new MobileDAL();
+                /*var result = mobileDal.getAccountAssignedStatus(InstallerId, UploadExcelId);
+                Context.Response.ContentType = "application/json";
+                Context.Response.Write(s.Serialize(new { status = "Success", assignedStatus = result }));*/
+
+                List<UsersSmallModel> userList = new List<UsersSmallModel>();
+                if (ProjectId > 0)
+                {
+                    using (UserRoleDAL obj = new UserRoleDAL())
+                    {
+                        userList = obj.GeInstallerListCurrentProject(ProjectId).OrderBy(a => a.UserName).ToList();
+                    }
+                }
+                Context.Response.ContentType = "application/json";
+                //Context.Response.Write(s.Serialize(new { status = "Success", projectUserList = userList }));
+                Context.Response.Write(s.Serialize(userList));
+                log.Info("WEB Service Get Project User List Ended at - " + DateTime.Now.ToString());
+            }
+            catch (Exception ex)
+            {
+                setJsonReponse(4, "Fail", ex.Message);
+                log.Info("WEB Service Get Account  ERROR at " + DateTime.Now.ToString());
+                log.Info("ERROR  ex.Message - " + (ex.Message != null ? ex.Message : ""));
+                log.Info("ERROR  ex.StackTrace - " + (ex.StackTrace != null ? ex.StackTrace : ""));
+                log.Info("ERROR ex.InnerException.Message - " + (ex.InnerException.Message != null ? ex.InnerException.Message : ""));
+            }
+        }
+
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public void ViewReconcileDetailInventory(long UserId, long ProjectId)
+        {
+            JavaScriptSerializer s = new JavaScriptSerializer();
+            s.MaxJsonLength = 2147483644;
+
+            log.Info("WEB Service ViewReconcileDetailInventory Started at - " + DateTime.Now.ToString());
+
+            try
+            {
+                if (UserId == 0)
+                {
+                    setJsonReponse(4, "Error", "Missing UserId field in request string.");
+                }
+                else if (ProjectId == 0)
+                {
+
+                    setJsonReponse(4, "Error", "Missing Project Id field in request string");
+                    return;
+                }
+                else
+                {
+                    List<PROC_InstallStockDetailReport_Result> ReportData = new List<PROC_InstallStockDetailReport_Result>();
+                    //List<InstallerStockReportSummaryBO> SummeryReportData = new List<InstallerStockReportSummaryBO>();
+                    List<ReconcileDetail> inventoryDetail = new List<ReconcileDetail>();
+                    InventoryDAL inventoryDal = new InventoryDAL();
+                    ReportData = inventoryDal.GetReconcileInventoryReport(ProjectId, UserId);
+                    List<long> productList = new List<long>();
+                    inventoryDetail = ReportData.Where(o => o.InHandQty > 0).Select(o => new ReconcileDetail { ProductName = o.ProductName, AMP = o.SerialNumber, Quantity = o.InHandQty }).ToList();
+
+                    Context.Response.ContentType = "application/json";
+                    Context.Response.Write(s.Serialize(inventoryDetail));
+                    inventoryDal.Dispose();
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                setJsonReponse(4, "Fail", ex.Message);
+                log.Info("WEB Service  ViewReconcileDetailInventory ERROR at " + DateTime.Now.ToString());
+                log.Info("ERROR  ex.Message - " + (ex.Message != null ? ex.Message : ""));
+                log.Info("ERROR  ex.StackTrace - " + (ex.StackTrace != null ? ex.StackTrace : ""));
+                log.Info("ERROR  ex.InnerException.Message - " + (ex.InnerException.Message != null ? ex.InnerException.Message : ""));
+            }
+
+        }
+
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public void SendMailForMissingInventory(string jsonDataParam)
+        {
+            try
+            {
+                JavaScriptSerializer s = new JavaScriptSerializer();
+                s.MaxJsonLength = 2147483644;
+                log.Info("WEB Service SendMailForMissingInventory Started at - " + DateTime.Now.ToString());
+                if (string.IsNullOrEmpty(jsonDataParam))
+                {
+                    setJsonReponse(4, "Error", "Missing parameter jsonDataParam.");
+                }
+                else
+                {
+                    MissingInventoryBO objMissingInventoryBO = new MissingInventoryBO();
+                    objMissingInventoryBO = s.Deserialize<MissingInventoryBO>(jsonDataParam);
+                    long projectId = objMissingInventoryBO.ProjectId;
+                    long userId = objMissingInventoryBO.UserId;
+                    List<String> mailto = new List<String>();
+                    List<String> mailcc = new List<String>(); // ✅ yaha declare karo
+
+                    if (projectId == 10135 || projectId == 10136)
+                    {
+                        mailto.Add("jpicard@scope-services.com");
+                        mailto.Add("mhopkins@scope-services.com");
+                        // mailto.Add("bjaime@scope-services.com");
+                        mailto.Add("jchrist@scope-services.com");
+
+                        mailcc.Add("garron@cmsmeter.com");
+                        mailcc.Add("kunal.sharma@snssystem.com");
+                        mailcc.Add("yogendra.rajpoot@snssystem.com");
+                    }
+                    else
+                    {
+                        mailto.Add("garron@cmsmeter.com");
+                    }
+                    /*CompassEntities db = new CompassEntities();
+                    //  string Subject = (db.tblSkipReasonMasters.Where(n => n.SkipId == reOpenId).FirstOrDefault().SkipReason);
+                    var UserFirstName = (db.tblUsers.Where(n => n.UserID == userId).FirstOrDefault().FirstName);
+                    var UserLastName = (db.tblUsers.Where(n => n.UserID == userId).FirstOrDefault().LastName);
+                    var UserName = UserFirstName + " " + UserLastName;
+                    var ProjectName = (db.tblProjects.Where(n => n.ProjectId == projectId).FirstOrDefault().ProjectName);
+                    //List<String> CCEmailTo = objReportDAL.CCEmailTo();
+                    if (objMissingInventoryBO.MissingInventoryList != null)
+                    {
+                        foreach (var item in objMissingInventoryBO.MissingInventoryList)
+                        {
+                            var productName = item.ProductName;
+                            var serialNum = item.SerialNumber;
+                            var quantity = item.Quantity;
+                        }
+                    }*/
+                    Task.Factory.StartNew(() =>
+                    {
+                        //mailto.Add(UserEmailId);
+                        // mailto.Add("vishal.takawle@kairee.in");
+                        // CCEmailTo.Add("bharat.magdum@kairee.in");
+                        new GarronT.CMS.Model.clsMail().SendMail(mailto, mailcc, getMaliBody(objMissingInventoryBO), "Missing Inventory Alert!");
+                    });
+                    Context.Response.ContentType = "application/json";
+                    Context.Response.Write(s.Serialize(new { status = "Success", sendMailResult = "Mail sent successfully." }));
+
+                }
+            }
+            catch (Exception ex)
+            {
+                setJsonReponse(4, "Fail", ex.Message);
+                log.Info("WEB Service Get Account  ERROR at " + DateTime.Now.ToString());
+                log.Info("ERROR  ex.Message - " + (ex.Message != null ? ex.Message : ""));
+                log.Info("ERROR  ex.StackTrace - " + (ex.StackTrace != null ? ex.StackTrace : ""));
+                log.Info("ERROR ex.InnerException.Message - " + (ex.InnerException.Message != null ? ex.InnerException.Message : ""));
+            }
+            log.Info("WEB Service SendMailForMissingInventory Method Exit - " + DateTime.Now.ToString());
+        }
+
+        public string getMaliBody(MissingInventoryBO missingInventoryBO)
+        {
+            DateTime dtserverdate = new CommonFunctions().ServerDate();
+            StringBuilder sb = new StringBuilder();
+            CompassEntities db = new CompassEntities();
+            long projectId = missingInventoryBO.ProjectId;
+            long userId = missingInventoryBO.UserId;
+
+            var UserFirstName = (db.tblUsers.Where(n => n.UserID == userId).FirstOrDefault().FirstName);
+            var UserLastName = (db.tblUsers.Where(n => n.UserID == userId).FirstOrDefault().LastName);
+            var UserName = UserFirstName + " " + UserLastName;
+            var ProjectName = (db.tblProjects.Where(n => n.ProjectId == projectId).FirstOrDefault().ProjectName);
+
+            sb.Append("<body  style='padding: 10px 0px 0px 10px;background: #f8f8fb; font-family:Times New Roman; font-size:14px;'>");
+
+            /*sb.Append("Dear ");
+            if (InstallerName != null)
+            {
+                sb.Append(" " + InstallerName.FirstName + " ,<br/>");
+            }
+            else
+            {
+                sb.Append(",<br/>");
+            }*/
+            //sb.Append("<br/><br/>");
+            sb.Append("  <p style='font-size:15px;'>Missing Inventory report from Data Depot....!!!</p>");
+            sb.Append("<br/> <p >This is to inform you that user " + UserName + " have missing inventory in project " + ProjectName + ". Please check below details.</p><br/>");
+            sb.Append("<div style='background: #e6e1e1; width:30%;'><table style='width:100%; border:2px; padding: 0px 0px 0px 0px; border-collapse: collapse;'>" +
+                            "<thead><tr>" +
+                                "<td style='border:1px solid black;'><b>Product Name </b></td>" +
+                                "<td style='border:1px solid black; text-align:center;'><b>Serial Number</b></td>" +
+                                "<td style='border:1px solid black; text-align:center;'><b>Quantity</b></td>" +
+                            "</tr></thead>");
+            if (missingInventoryBO.MissingInventoryList != null)
+            {
+                sb.Append("<tbody>");
+                foreach (var item in missingInventoryBO.MissingInventoryList)
+                {
+                    var productName = item.ProductName;
+                    var serialNum = item.SerialNumber;
+                    var quantity = item.Quantity;
+                    sb.Append("<tr>" +
+                              "<td style='border:1px solid black;'>" + productName + "</td>" +
+                              "<td style='border:1px solid black; text-align:center;'>" + serialNum + "</td>" +
+                              "<td style='border:1px solid black; text-align:center;'>" + quantity + "</td>" +
+                              "</tr>");
+                }
+                sb.Append("</tbody>");
+            }
+            sb.Append("</table></div><br /><br/>");
+            sb.Append("Thank You,<br/>Data Depot Team.<br>" +
+              "<p style='text-align:center;'> <a href='https://www.datadepotonline.com/' title='' rel='home'>" +
+              "<img src='https://www.datadepotonline.com/images/logo_03_2.png' title='Data Depot' alt='' style='height:100px; width:200px;'>" +
+              "</a> </p>" +
+              "<p style='text-align:center; font-size:13px;'>You are receiving this notification because you are registered with Data Depot ©"
+              + DateTime.Now.ToString("yyyy") + " Data Depot </p> <br>");
+            sb.Append("<p style='text-align:center; color:red; font-size:15px;'>*** This Email is system generated. Please do not reply to this email ID." +
+                "For any queries please contact Data Depot Team. ***</p>");
+
+            sb.Append("<p style='text-align:center; color:red; font-size:13px;'>This message (including any attachments) contains confidential information" +
+                "intended for a specific individual and purpose and is protected by law." +
+            "If you are not the intended recipient, you should delete this message." +
+            " Any disclosure, copying or distribution of this message, or the taking of any action based on it, is strictly prohibited.</p>");
+
+
+            sb.Append("</body>");
+            string MailBody = sb.ToString();
+            return MailBody;
         }
     }
 }
