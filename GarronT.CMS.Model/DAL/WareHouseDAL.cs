@@ -53,25 +53,48 @@ namespace GarronT.CMS.Model.DAL
         }
 
 
-        public List<WarehouseBO> GetAllRecord(bool Status)
+        public List<WarehouseBO> GetAllRecord(bool Status, List<long> projectIds, long userId)
         {
+            CompassEntities db = new CompassEntities();
 
-            CompassEntities objCompassEntities = new CompassEntities();
+            if (projectIds == null) projectIds = new List<long>();
 
-            var objWarehouseBO = objCompassEntities.WarehouseMasters.Where(o =>
-                       o.Active == (Status ? 1 : 0)).Select(o =>
-                           new WarehouseBO
-                           {
-                               WarehouseId = o.Id,
-                               WarehouseName = o.WarehouseName,
-                               WarehouseLocation = o.WarehouseLocation,
-                               CityName = o.TblCityMaster.CityName,
-                               StateName = o.tblStateMaster.StateName
-                           }).ToList();
+            var warehouses = (from w in db.WarehouseMasters
+                              join ih in db.InwardHeaders
+                                   on w.Id equals ih.FKWarehouseId into whJoin
+                              from ih in whJoin.DefaultIfEmpty()   // 🔥 left join
+                              where w.Active == (Status ? 1 : 0)
+                              && (
+                                    // 🔥 Condition 1: Project me use hua ho
+                                    (ih != null && ih.Active == 1
+                                        && ih.FKProjectId.HasValue
+                                        && projectIds.Contains(ih.FKProjectId.Value))
 
-            return objWarehouseBO;
+                                    // 🔥 Condition 2: User ne create kiya ho
+                                    || w.CreatedBy == userId
+                                 )
+                              select new
+                              {
+                                  w.Id,
+                                  w.WarehouseName,
+                                  w.WarehouseLocation,
+                                  CityName = w.TblCityMaster.CityName,
+                                  StateName = w.tblStateMaster.StateName
+                              })
+                              .ToList()
+                              .GroupBy(x => x.Id)
+                              .Select(g => new WarehouseBO
+                              {
+                                  WarehouseId = g.First().Id,
+                                  WarehouseName = g.First().WarehouseName,
+                                  WarehouseLocation = g.First().WarehouseLocation,
+                                  CityName = g.First().CityName,
+                                  StateName = g.First().StateName
+                              })
+                              .ToList();
+
+            return warehouses;
         }
-
 
 
         public WarehouseBO GetRecord(long WarehouseId)

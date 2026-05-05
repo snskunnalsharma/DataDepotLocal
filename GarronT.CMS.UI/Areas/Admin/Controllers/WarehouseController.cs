@@ -30,16 +30,25 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         }
 
         //GetAllData
+      
         [HttpGet]
         public ActionResult GetAllData(bool Status)
         {
-            StatusMessage statusMessage = new StatusMessage();
+            long userId = new UserDetails().GetUserId(User.Identity.GetUserId());
 
-            WareHouseDAL objWareHouseDAL = new WareHouseDAL();
-            List<WarehouseBO> objList = objWareHouseDAL.GetAllRecord(Status);
+            CompassEntities db = new CompassEntities();
+
+            var projectIds = db.TblProjectInstallers
+                               .Where(x => x.tblUsers_UserID == userId && x.Active == 1)
+                               .Select(x => x.ProjectID)
+                               .ToList();
+
+            WareHouseDAL obj = new WareHouseDAL();
+
+            var objList = obj.GetAllRecord(Status, projectIds, userId);
+
             return Json(new { objList }, JsonRequestBehavior.AllowGet);
         }
-
 
 
         [HttpGet]

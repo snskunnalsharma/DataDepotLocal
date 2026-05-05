@@ -232,6 +232,8 @@
     <Compile Include="BO\ExportReportBO.cs" />
     <Compile Include="BO\FormTypeModel.cs" />
     <Compile Include="BO\InstallerStockReportSummaryBO.cs" />
+    <Compile Include="BO\INVInstallerReportRowBO.cs" />
+    <Compile Include="BO\INVInstallerReportUpsertBO.cs" />
     <Compile Include="BO\MovementReportBO.cs" />
     <Compile Include="BO\PermissionBo.cs" />
     <Compile Include="BO\ProductMasterBO.cs" />
@@ -431,6 +433,7 @@
     <Compile Include="LowInventoryAlert.cs">
       <DependentUpon>Compass.tt</DependentUpon>
     </Compile>
+    <Compile Include="Missing_Inventory.cs" />
     <Compile Include="OutwardDetail.cs">
       <DependentUpon>Compass.tt</DependentUpon>
     </Compile>

@@ -581,6 +581,34 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             return decimal.TryParse(v.Trim(), out d) ? d : 0;
         }
 
+        private DateTime? ToDateSafe(string v)
+        {
+            if (string.IsNullOrWhiteSpace(v)) return null;
+            DateTime dt;
+            return DateTime.TryParse(v.Trim(), out dt) ? (DateTime?)dt : null;
+        }
+
+        private string ExtractHeaderValue(string text, params string[] keys)
+        {
+            // Keep for backward compatibility, but we no longer override WorkOrderId/Status from header.
+            // (Fields now come from Excel/CSV columns.)
+            if (string.IsNullOrWhiteSpace(text) || keys == null || keys.Length == 0) return "";
+            var upper = text.ToUpperInvariant();
+            foreach (var k in keys)
+            {
+                if (string.IsNullOrWhiteSpace(k)) continue;
+                var key = k.Trim().ToUpperInvariant();
+                var idx = upper.IndexOf(key, StringComparison.OrdinalIgnoreCase);
+                if (idx < 0) continue;
+
+                var after = text.Substring(idx + key.Length);
+                after = after.TrimStart(' ', ':', '-', '\t');
+                if (!string.IsNullOrWhiteSpace(after))
+                    return after.Trim();
+            }
+            return "";
+        }
+
 
         private List<string> ReadFromCsv(HttpPostedFileBase file)
         {
@@ -991,6 +1019,15 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 public string SerialNumber { get; set; }
                 public string TechnicianName { get; set; }
                 public string InstallerEmail { get; set; }   // ✅ ADD THIS
+                // INVInstallerReport fields (read from uploaded compare file)
+                public DateTime? CompletionDate { get; set; }
+                public string InstallerName { get; set; }
+                public string WorkOrderId { get; set; }
+                public string ServiceAddress { get; set; }
+                public decimal? Latitude { get; set; }
+                public decimal? Longitude { get; set; }
+                public string Status { get; set; }
+                public string ProjectName { get; set; }
             
         }
 
@@ -999,6 +1036,9 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             public List<CompletedInventorySerialItem> SerialItems { get; set; } = new List<CompletedInventorySerialItem>();
 
             //public Dictionary<string, decimal> ProductQty { get; set; } = new Dictionary<string, decimal>();
+            // File-level header values kept but not used for report save anymore
+            public string HeaderWorkOrderId { get; set; }
+            public string HeaderStatus { get; set; }
         }
 
         private CompletedInventoryPayload ReadCompletedInventoryFromFile(HttpPostedFileBase file)
@@ -1029,6 +1069,16 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
                 int idxSerial = -1;
                 int idxEmail = -1;
+                int idxCompletionDate = -1;
+                int idxInstallerName = -1;
+                int idxWorkOrderId = -1;
+                int idxServiceAddress = -1;
+                int idxLatitude = -1;
+                int idxLongitude = -1;
+                int idxProvidedLatitude = -1;
+                int idxProvidedLongitude = -1;
+                int idxStatus = -1;
+                int idxProjectName = -1;
                 string fileLevelInstallerEmail = ExtractEmail(headerLine);
 
                 for (int i = 0; i < headers.Length; i++)
@@ -1040,6 +1090,29 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
                     if (key.Contains("INSTALLER") || key.Contains("EMAIL"))
                         idxEmail = i;
+
+                    if (key.Contains("COMPLETIONDATE") || (key.Contains("COMPLETION") && key.Contains("DATE")))
+                        idxCompletionDate = i;
+                    if (key.Contains("INSTALLERNAME") || (key.Contains("INSTALLER") && key.Contains("NAME")))
+                        idxInstallerName = i;
+                    // Work Order Id: prefer explicit "WORK ORDER ID" style headers
+                    if (key == "WORKORDERID" || key == "WORKORDER" || key.Contains("WORKORDERID"))
+                        idxWorkOrderId = i;
+                    if (key.Contains("SERVICEADDRESS") || (key.Contains("SERVICE") && key.Contains("ADDRESS")) || key.EndsWith("ADDRESS"))
+                        idxServiceAddress = i;
+                    if (key.Contains("PROVIDED") && key.Contains("LATITUDE"))
+                        idxProvidedLatitude = i;
+                    if (key.Contains("PROVIDED") && key.Contains("LONGITUDE"))
+                        idxProvidedLongitude = i;
+                    if (idxProvidedLatitude < 0 && key.Contains("LATITUDE"))
+                        idxLatitude = i;
+                    if (idxProvidedLongitude < 0 && key.Contains("LONGITUDE"))
+                        idxLongitude = i;
+                    // Status: prefer explicit STATUS column
+                    if (key == "STATUS")
+                        idxStatus = i;
+                    if (key.Contains("PROJECTNAME") || (key.Contains("PROJECT") && key.Contains("NAME")))
+                        idxProjectName = i;
                 }
 
                 if (idxSerial == -1)
@@ -1055,7 +1128,6 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
                     string serial = (cols.Length > idxSerial) ? NormalizeSerialValue(cols[idxSerial]) : "";
                     string email = (idxEmail >= 0 && cols.Length > idxEmail) ? ExtractEmail(cols[idxEmail]) : "";
-
                     // fallback: if file carries one installer email in metadata/cell text
                     if (string.IsNullOrWhiteSpace(email) && !string.IsNullOrWhiteSpace(fileLevelInstallerEmail))
                         email = fileLevelInstallerEmail;
@@ -1076,7 +1148,19 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         ProductName = "",
                         SerialNumber = serial,
                         TechnicianName = "",
-                        InstallerEmail = email
+                        InstallerEmail = email,
+                        CompletionDate = (idxCompletionDate >= 0 && cols.Length > idxCompletionDate) ? ToDateSafe(cols[idxCompletionDate]) : null,
+                        InstallerName = (idxInstallerName >= 0 && cols.Length > idxInstallerName) ? (cols[idxInstallerName] ?? "").Trim() : "",
+                        WorkOrderId = (idxWorkOrderId >= 0 && cols.Length > idxWorkOrderId) ? (cols[idxWorkOrderId] ?? "").Trim() : "",
+                        ServiceAddress = (idxServiceAddress >= 0 && cols.Length > idxServiceAddress) ? (cols[idxServiceAddress] ?? "").Trim() : "",
+                        Latitude = (idxProvidedLatitude >= 0 && cols.Length > idxProvidedLatitude)
+                            ? (decimal?)ToDecimalSafe(cols[idxProvidedLatitude])
+                            : ((idxLatitude >= 0 && cols.Length > idxLatitude) ? (decimal?)ToDecimalSafe(cols[idxLatitude]) : null),
+                        Longitude = (idxProvidedLongitude >= 0 && cols.Length > idxProvidedLongitude)
+                            ? (decimal?)ToDecimalSafe(cols[idxProvidedLongitude])
+                            : ((idxLongitude >= 0 && cols.Length > idxLongitude) ? (decimal?)ToDecimalSafe(cols[idxLongitude]) : null),
+                        Status = (idxStatus >= 0 && cols.Length > idxStatus) ? (cols[idxStatus] ?? "").Trim() : "",
+                        ProjectName = (idxProjectName >= 0 && cols.Length > idxProjectName) ? (cols[idxProjectName] ?? "").Trim() : ""
                     });
                 }
             }
@@ -1099,6 +1183,16 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 int headerRow = -1;
                 int idxSerial = -1;
                 int idxEmail = -1;
+                int idxCompletionDate = -1;
+                int idxInstallerName = -1;
+                int idxWorkOrderId = -1;
+                int idxServiceAddress = -1;
+                int idxLatitude = -1;
+                int idxLongitude = -1;
+                int idxProvidedLatitude = -1;
+                int idxProvidedLongitude = -1;
+                int idxStatus = -1;
+                int idxProjectName = -1;
                 string fileLevelInstallerEmail = "";
                 bool foundBest = false;
 
@@ -1114,16 +1208,52 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                     {
                         int serialColTemp = -1;
                         int emailColTemp = -1;
+                        int completionDateColTemp = -1;
+                        int installerNameColTemp = -1;
+                        int workOrderIdColTemp = -1;
+                        int serviceAddressColTemp = -1;
+                        int latitudeColTemp = -1;
+                        int longitudeColTemp = -1;
+                        int providedLatitudeColTemp = -1;
+                        int providedLongitudeColTemp = -1;
+                        int statusColTemp = -1;
+                        int projectNameColTemp = -1;
 
                         for (int c = 1; c <= colCount; c++)
                         {
                             string key = NormalizeHeaderKey(ws.Cells[r, c].Text);
+                            string cellText = ws.Cells[r, c].Text ?? "";
+
+                            // Do not read WorkOrderId/Status from header text; these come from columns now.
 
                             if (IsMeterOrErtHeader(key))
                                 serialColTemp = c;
 
                             if (key.Contains("INSTALLER") || key.Contains("EMAIL"))
                                 emailColTemp = c;
+
+                            if (key.Contains("COMPLETIONDATE") || (key.Contains("COMPLETION") && key.Contains("DATE")))
+                                completionDateColTemp = c;
+                            if (key.Contains("INSTALLERNAME") || (key.Contains("INSTALLER") && key.Contains("NAME")))
+                                installerNameColTemp = c;
+                            // Work Order Id: prefer explicit "WORK ORDER ID" style headers
+                            if (key == "WORKORDERID" || key == "WORKORDER" || key.Contains("WORKORDERID"))
+                                workOrderIdColTemp = c;
+                            if (key.Contains("SERVICEADDRESS") || (key.Contains("SERVICE") && key.Contains("ADDRESS")) || key.EndsWith("ADDRESS"))
+                                serviceAddressColTemp = c;
+                            if (key.Contains("PROVIDED") && key.Contains("LATITUDE"))
+                                providedLatitudeColTemp = c;
+                            if (key.Contains("PROVIDED") && key.Contains("LONGITUDE"))
+                                providedLongitudeColTemp = c;
+                            if (providedLatitudeColTemp <= 0 && key.Contains("LATITUDE"))
+                                latitudeColTemp = c;
+                            if (providedLongitudeColTemp <= 0 && key.Contains("LONGITUDE"))
+                                longitudeColTemp = c;
+                            // Status: prefer explicit STATUS column
+                            if (key == "STATUS")
+                                statusColTemp = c;
+                            if (key.Contains("PROJECTNAME") || (key.Contains("PROJECT") && key.Contains("NAME")))
+                                projectNameColTemp = c;
 
                             if (string.IsNullOrWhiteSpace(fileLevelInstallerEmail))
                             {
@@ -1142,6 +1272,16 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                                 headerRow = r;
                                 idxSerial = serialColTemp;
                                 idxEmail = emailColTemp;
+                                idxCompletionDate = completionDateColTemp;
+                                idxInstallerName = installerNameColTemp;
+                                idxWorkOrderId = workOrderIdColTemp;
+                                idxServiceAddress = serviceAddressColTemp;
+                                idxLatitude = latitudeColTemp;
+                                idxLongitude = longitudeColTemp;
+                                idxProvidedLatitude = providedLatitudeColTemp;
+                                idxProvidedLongitude = providedLongitudeColTemp;
+                                idxStatus = statusColTemp;
+                                idxProjectName = projectNameColTemp;
                                 foundBest = true;
                                 break;
                             }
@@ -1153,6 +1293,16 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                                 headerRow = r;
                                 idxSerial = serialColTemp;
                                 idxEmail = -1;
+                                idxCompletionDate = completionDateColTemp;
+                                idxInstallerName = installerNameColTemp;
+                                idxWorkOrderId = workOrderIdColTemp;
+                                idxServiceAddress = serviceAddressColTemp;
+                                idxLatitude = latitudeColTemp;
+                                idxLongitude = longitudeColTemp;
+                                idxProvidedLatitude = providedLatitudeColTemp;
+                                idxProvidedLongitude = providedLongitudeColTemp;
+                                idxStatus = statusColTemp;
+                                idxProjectName = projectNameColTemp;
                             }
                         }
                     }
@@ -1193,7 +1343,19 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         ProductName = "",
                         SerialNumber = serial,
                         TechnicianName = "",
-                        InstallerEmail = email
+                        InstallerEmail = email,
+                        CompletionDate = (idxCompletionDate > 0) ? ToDateSafe(targetSheet.Cells[r, idxCompletionDate].Text) : null,
+                        InstallerName = (idxInstallerName > 0) ? (targetSheet.Cells[r, idxInstallerName].Text ?? "").Trim() : "",
+                        WorkOrderId = (idxWorkOrderId > 0) ? (targetSheet.Cells[r, idxWorkOrderId].Text ?? "").Trim() : "",
+                        ServiceAddress = (idxServiceAddress > 0) ? (targetSheet.Cells[r, idxServiceAddress].Text ?? "").Trim() : "",
+                        Latitude = (idxProvidedLatitude > 0)
+                            ? (decimal?)ToDecimalSafe(targetSheet.Cells[r, idxProvidedLatitude].Text)
+                            : ((idxLatitude > 0) ? (decimal?)ToDecimalSafe(targetSheet.Cells[r, idxLatitude].Text) : null),
+                        Longitude = (idxProvidedLongitude > 0)
+                            ? (decimal?)ToDecimalSafe(targetSheet.Cells[r, idxProvidedLongitude].Text)
+                            : ((idxLongitude > 0) ? (decimal?)ToDecimalSafe(targetSheet.Cells[r, idxLongitude].Text) : null),
+                        Status = (idxStatus > 0) ? (targetSheet.Cells[r, idxStatus].Text ?? "").Trim() : "",
+                        ProjectName = (idxProjectName > 0) ? (targetSheet.Cells[r, idxProjectName].Text ?? "").Trim() : ""
                     });
                 }
             }
@@ -1218,8 +1380,28 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
                 var serials = JsonConvert.DeserializeObject<List<CompletedInventorySerialItem>>(serialList ?? "[]") ?? new List<CompletedInventorySerialItem>();
 
+                // Prefer taking full row details from the uploaded file already stored in Session (more reliable than JS payload).
+                var sessionPayload = Session["CompletedInventory_" + projectId] as CompletedInventoryPayload;
+                // WorkOrderId/Status come from file columns (not header)
+
+                string NormalizeSerialKey(string v)
+                {
+                    return (v ?? "").Trim().Replace(".", "").Replace(" ", "").ToUpperInvariant();
+                }
+
+                var fileBySerial = (sessionPayload?.SerialItems ?? new List<CompletedInventorySerialItem>())
+                    .Where(x => x != null && !string.IsNullOrWhiteSpace(x.SerialNumber))
+                    .GroupBy(x => NormalizeSerialKey(x.SerialNumber))
+                    .Select(g => g.First())
+                    .ToDictionary(g => NormalizeSerialKey(g.SerialNumber), g => g);
+
                 using (var db = new CompassEntities())
                 {
+                    // Always take ProjectName from selected projectId
+                    string selectedProjectName = db.tblProjects
+                        .Where(p => p.ProjectId == projectId)
+                        .Select(p => p.ProjectName)
+                        .FirstOrDefault() ?? "";
                     var master = db.tblProjectFieldDataMasters
                         .Where(x => x.Active == 1)
                         .OrderByDescending(x => x.ID)
@@ -1241,10 +1423,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                             g => g.First().UserID
                         );
 
-                    string Normalize(string v)
-                    {
-                        return (v ?? "").Trim().Replace(".", "").Replace(" ", "").ToUpperInvariant();
-                    }
+                    string Normalize(string v) => NormalizeSerialKey(v);
 
                     var unique = serials
                         .Where(x => x != null && !string.IsNullOrWhiteSpace(x.SerialNumber))
@@ -1253,6 +1432,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         .ToList();
 
                     int installed = 0, skipped = 0, errors = 0;
+                    int invReportSaved = 0;
                     var errorList = new List<string>();
 
                     foreach (var item in unique)
@@ -1264,10 +1444,36 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                             continue;
                         }
 
+                        // Enrich item fields from uploaded file payload (if present).
+                        var key = NormalizeSerialKey(serial);
+                        if (fileBySerial.ContainsKey(key))
+                        {
+                            var fromFile = fileBySerial[key];
+                            // Keep InstallerName from UI datatable (sent as TechnicianName/InstallerName) if present;
+                            // otherwise take from file.
+                            item.CompletionDate = item.CompletionDate ?? fromFile.CompletionDate;
+                            item.WorkOrderId = string.IsNullOrWhiteSpace(item.WorkOrderId) ? fromFile.WorkOrderId : item.WorkOrderId;
+                            item.ServiceAddress = string.IsNullOrWhiteSpace(item.ServiceAddress) ? fromFile.ServiceAddress : item.ServiceAddress;
+                            item.Latitude = item.Latitude ?? fromFile.Latitude;
+                            item.Longitude = item.Longitude ?? fromFile.Longitude;
+                            item.Status = string.IsNullOrWhiteSpace(item.Status) ? fromFile.Status : item.Status;
+                            item.ProjectName = selectedProjectName;
+                            if (string.IsNullOrWhiteSpace(item.InstallerEmail))
+                                item.InstallerEmail = fromFile.InstallerEmail;
+                            if (string.IsNullOrWhiteSpace(item.InstallerName))
+                                item.InstallerName = fromFile.InstallerName;
+                        }
+                        else
+                        {
+                            // Ensure project name even when file row missing
+                            item.ProjectName = selectedProjectName;
+                        }
+
+                        // WorkOrderId/Status are taken from file columns; no header override.
+
                         long installerUserId = userId;
 
                         string installerEmail = (item.InstallerEmail ?? "").Trim().ToUpperInvariant();
-
                         if (!string.IsNullOrEmpty(installerEmail) && userMapByEmail.ContainsKey(installerEmail))
                         {
                             installerUserId = userMapByEmail[installerEmail];
@@ -1277,6 +1483,145 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         {
                             dal.MoveInventoryToInstalled(projectId, installerUserId, serial, masterId);
                             installed++;
+
+                            // Save matched serial details into INVInstallerReport (from uploaded file)
+                            try
+                            {
+                                DateTime now = DateTime.Now;
+                                string serialNorm = (serial ?? "").Trim();
+                                string installerNameFinal = (!string.IsNullOrWhiteSpace(item.TechnicianName) ? item.TechnicianName : item.InstallerName) ?? "";
+
+                                // Upsert using raw SQL (edmx may not have operation_date even if DB has it)
+                                string projectIdStr = projectId.ToString();
+                                int affected = db.Database.ExecuteSqlCommand(@"
+                                                                                    IF EXISTS (
+                                                                                        SELECT 1 
+                                                                                        FROM dbo.INVInstallerReport 
+                                                                                        WHERE project_id = @p0 
+                                                                                          AND serial_number = @p1
+                                                                                    )
+                                                                                    BEGIN
+                                                                                        UPDATE dbo.INVInstallerReport
+                                                                                        SET completion_date = @p2,
+                                                                                            installer_name = @p3,
+                                                                                            work_order_id = @p4,
+                                                                                            service_address = @p5,
+                                                                                            latitude = @p6,
+                                                                                            longitude = @p7,
+                                                                                            status = @p8,
+                                                                                            project_name = @p9,
+                                                                                            updated_at = @p10,
+                                                                                            operation_date = @p11
+                                                                                        WHERE project_id = @p0 
+                                                                                          AND serial_number = @p1;
+                                                                                    END
+                                                                                    ELSE
+                                                                                    BEGIN
+                                                                                        INSERT INTO dbo.INVInstallerReport
+                                                                                        (
+                                                                                            project_id,
+                                                                                            completion_date,
+                                                                                            installer_name,
+                                                                                            work_order_id,
+                                                                                            serial_number,
+                                                                                            service_address,
+                                                                                            latitude,
+                                                                                            longitude,
+                                                                                            status,
+                                                                                            project_name,
+                                                                                            created_at,
+                                                                                            updated_at,
+                                                                                            operation_date
+                                                                                        )
+                                                                                        VALUES
+                                                                                        (
+                                                                                            @p0,
+                                                                                            @p2,
+                                                                                            @p3,
+                                                                                            @p4,
+                                                                                            @p1,
+                                                                                            @p5,
+                                                                                            @p6,
+                                                                                            @p7,
+                                                                                            @p8,
+                                                                                            @p9,
+                                                                                            @p10,
+                                                                                            @p10,
+                                                                                            @p11
+                                                                                        );
+                                                                                    END
+                                                                                    ",
+                                    projectIdStr,
+                                    serialNorm,
+                                    (object)(item.CompletionDate.HasValue ? (object)item.CompletionDate.Value : DBNull.Value),
+                                    (object)installerNameFinal,
+                                    (object)(item.WorkOrderId ?? ""),
+                                    (object)(item.ServiceAddress ?? ""),
+                                    (object)(item.Latitude.HasValue ? (object)item.Latitude.Value : DBNull.Value),
+                                    (object)(item.Longitude.HasValue ? (object)item.Longitude.Value : DBNull.Value),
+                                    (object)(item.Status ?? ""),
+                                    (object)(item.ProjectName ?? ""),
+                                    now,
+                                    now
+                                );
+                                if (affected > 0) invReportSaved++;
+                            }
+                            catch (Exception opDateEx)
+                            {
+                                // Fallback: DB without operation_date column
+                                DateTime now2 = DateTime.Now;
+                                string serialNorm2 = (serial ?? "").Trim();
+                                string installerNameFinal2 = (!string.IsNullOrWhiteSpace(item.TechnicianName) ? item.TechnicianName : item.InstallerName) ?? "";
+                                try
+                                {
+                                    string projectIdStr2 = projectId.ToString();
+                                    int affected2 = db.Database.ExecuteSqlCommand(@"
+IF EXISTS (SELECT 1 FROM dbo.INVInstallerReport WHERE project_id = @p0 AND serial_number = @p1)
+BEGIN
+    UPDATE dbo.INVInstallerReport
+    SET completion_date = @p2,
+        installer_name = @p3,
+        work_order_id = @p4,
+        service_address = @p5,
+        latitude = @p6,
+        longitude = @p7,
+        status = @p8,
+        project_name = @p9,
+        updated_at = @p10
+    WHERE project_id = @p0 AND serial_number = @p1;
+END
+ELSE
+BEGIN
+    DECLARE @newId BIGINT;
+    SELECT @newId = ISNULL(MAX(id), 0) + 1
+    FROM dbo.INVInstallerReport WITH (UPDLOCK, HOLDLOCK);
+
+    INSERT INTO dbo.INVInstallerReport
+    (id, project_id, completion_date, installer_name, work_order_id, serial_number, service_address, latitude, longitude, status, project_name, created_at, updated_at)
+    VALUES
+    (@newId, @p0, @p2, @p3, @p4, @p1, @p5, @p6, @p7, @p8, @p9, @p10, @p10);
+END
+",
+                                    projectIdStr2,
+                                    serialNorm2,
+                                    (object)(item.CompletionDate.HasValue ? (object)item.CompletionDate.Value : DBNull.Value),
+                                    (object)installerNameFinal2,
+                                    (object)(item.WorkOrderId ?? ""),
+                                    (object)(item.ServiceAddress ?? ""),
+                                    (object)(item.Latitude.HasValue ? (object)item.Latitude.Value : DBNull.Value),
+                                    (object)(item.Longitude.HasValue ? (object)item.Longitude.Value : DBNull.Value),
+                                    (object)(item.Status ?? ""),
+                                    (object)(item.ProjectName ?? ""),
+                                    now2
+                                );
+                                    if (affected2 > 0) invReportSaved++;
+                                }
+                                catch (Exception fallbackEx)
+                                {
+                                    // bubble up meaningful error so UI can show it
+                                    throw new Exception("INVInstallerReport save failed (op_date err: " + opDateEx.Message + "). Fallback err: " + fallbackEx.Message);
+                                }
+                            }
                         }
                         catch (Exception itemEx)
                         {
@@ -1285,7 +1630,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         }
                     }
 
-                    return Json(new { success = true, installed, skipped, errors, errorList });
+                    return Json(new { success = true, installed, skipped, errors, invReportSaved, errorList });
                 }
             }
             catch (Exception ex)

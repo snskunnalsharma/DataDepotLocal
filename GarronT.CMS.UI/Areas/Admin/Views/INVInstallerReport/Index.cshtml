@@ -3,11 +3,28 @@
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
-@Html.Hidden("urlGetProject", Url.Action("GetProject", "INVInstallerReport"))
-@Html.Hidden("urlGetInstallers", Url.Action("GetInstallers", "INVInstallerReport"))
-@Html.Hidden("urlGetINVInstallerReportData", Url.Action("GetINVInstallerReportData", "INVInstallerReport"))
+@Html.Hidden("urlGetProject", Url.Action("GetProject", "INVInstallerReport", new { area = "Admin" }))
+@Html.Hidden("urlGetInstallers", Url.Action("GetInstallers", "INVInstallerReport", new { area = "Admin" }))
+@Html.Hidden("urlGetINVInstallerReportData", Url.Action("GetINVInstallerReportData", "INVInstallerReport", new { area = "Admin" }))
 
 <style>
+    /* Fix heading overlap with first filter row */
+    .rep_panel .panel-heading.rep_header {
+        padding: 10px 15px !important;
+        line-height: 20px !important;
+        position: relative;
+        z-index: 2;
+    }
+
+    .rep_panel .panel-body {
+        padding-top: 8px;
+    }
+
+    /* Ensure chosen dropdowns fit their columns */
+    #main-content .chosen-container {
+        width: 100% !important;
+    }
+
     @@media (min-width:375px) {
         .dataTables_length > label {
             white-space: normal;
@@ -26,6 +43,12 @@
         #main-content .panel-body select,
         #main-content .panel-body input[type="text"],
         #main-content .panel-body button.btn {
+            font-size: 13px !important;
+        }
+
+        /* Datepicker input text size */
+        #txtFromDate,
+        #txtToDate {
             font-size: 13px !important;
         }
 
@@ -53,7 +76,7 @@
 <section id="main-content">
     <section class="wrapper site-min-height">
         <section class="panel rep_panel">
-            <header class="panel-heading rep_header" style="background: #80B2DF; color: #fff;">
+            <header class="panel-heading rep_header" style="background: #80B2DF; color: #fff; margin-top:45px !important ">
                 INV Installer Report
                 <span class="tools pull-right">
                     <a class="fa fa-chevron-down clickdive" href="javascript:;" style="color: #fff; padding-right:10px;"></a>
@@ -62,15 +85,26 @@
 
             <div class="panel-body">
                 <div class="row mbot05">
-                    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6 col-xxs-12 sm-mbot1 xs-mbot1 xxs-mbot2">
+                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 col-xxs-12 sm-mbot1 xs-mbot1 xxs-mbot2">
                         @Html.DropDownList("UtilityId", (IEnumerable<SelectListItem>)ViewBag.UtilityListItem, new { @class = "form-control chosen-select", @data_placeholder = "Select Utility", @title = "Select Utility" })
                     </div>
-                    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6 col-xxs-12 sm-mbot1 xs-mbot1 xxs-mbot2">
+                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 col-xxs-12 sm-mbot1 xs-mbot1 xxs-mbot2">
                         @Html.DropDownList("ProjectId", (List<SelectListItem>)ViewBag.ProjectList, new { @class = "form-control chosen-select", @data_placeholder = "Select Project", @title = "Select Project" })
                     </div>
-                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 col-xxs-12 sm-mbot1 xs-mbot1 xxs-mbot2">
+
+                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 col-xxs-12 nopadding sm-mbot1 xs-mbot1 xxs-mbot2">
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 col-xxs-6 lg-nopaddingright md-nopaddingright">
+                            <input type="text" readonly name="FromDate" placeholder="From Date" id="txtFromDate" class="inputclass form-control date_form_nw" value="" />
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 col-xxs-6 lg-nopaddingright md-nopaddingright">
+                            <input type="text" readonly name="ToDate" placeholder="To Date" id="txtToDate" value="" class="inputclass form-control date_form_nw1" />
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 col-xxs-12 sm-mbot1 xs-mbot1 xxs-mbot2">
                         @Html.DropDownList("InstallerId", (List<SelectListItem>)ViewBag.InstallerList, new { @class = "form-control chosen-select", @data_placeholder = "Select Installer", @title = "Select Installer" })
                     </div>
+
                 </div>
 
                 <div class="row mbot05">
@@ -86,6 +120,7 @@
                             <table id="dynamic-table" class="display table table-bordered table-striped dataTable">
                                 <thead>
                                     <tr>
+                                        <th>Operation Date</th>
                                         <th>Completion Date</th>
                                         <th>Installer Name</th>
                                         <th>Work Order Id</th>
@@ -105,6 +140,9 @@
         </section>
     </section>
 </section>
+
+<link href="~/Scripts/js/jquery-ui.css" rel="stylesheet" />
+<script src="~/Scripts/js/jquery-ui.js"></script>
 
 <script>
     (function () {
@@ -147,11 +185,31 @@
         }
 
         function initTable() {
+            if ($.fn.DataTable.isDataTable('#dynamic-table')) {
+                $('#dynamic-table').DataTable().clear().destroy();
+                $('#dynamic-table').empty();
+                $('#dynamic-table').append(
+                    '<thead><tr>'
+                    + '<th>Operation Date</th>'
+                    + '<th>Completion Date</th>'
+                    + '<th>Installer Name</th>'
+                    + '<th>Work Order Id</th>'
+                    + '<th>Serial Number</th>'
+                    + '<th>Service Address</th>'
+                    + '<th>Latitude</th>'
+                    + '<th>Longitude</th>'
+                    + '<th>Status</th>'
+                    + '<th>Project Name</th>'
+                    + '</tr></thead>'
+                );
+            }
+
             $('#dynamic-table').DataTable({
                 language: { emptyTable: "No Data To Show" },
                 sDom: '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
                 data: [],
                 columns: [
+                    { data: "OperationDate" },
                     { data: "CompletionDate" },
                     { data: "InstallerName" },
                     { data: "WorkOrderId" },
@@ -237,15 +295,23 @@
             }
 
             var installerId = $("#InstallerId").val() || '0';
+            var txtFromDate = $("#txtFromDate").val();
+            var txtToDate = $("#txtToDate").val();
+            var searchText = '';
+            try {
+                var dt = $('#dynamic-table').DataTable();
+                searchText = (dt && typeof dt.search === 'function') ? (dt.search() || '') : '';
+            } catch (e) { }
+
             waitingDialog.show('Loading Please Wait...');
             $.ajax({
                 type: 'POST',
                 url: $('#urlGetINVInstallerReportData').val(),
-                data: { projectId: projectId, installerId: installerId, search: '' },
+                data: { projectId: projectId, installerId: installerId, search: searchText, txtFromDate: txtFromDate, txtToDate: txtToDate },
                 success: function (res) {
                     waitingDialog.hide();
                     if (!res || res.success !== true) {
-                        toastr.error("Unable to load report", "Notification");
+                        toastr.error((res && res.message) ? res.message : "Unable to load report", "Notification");
                         return;
                     }
                     var dt = $('#dynamic-table').DataTable();
@@ -253,9 +319,14 @@
                     dt.rows.add(res.rows || []);
                     dt.draw();
                 },
-                error: function () {
+                error: function (xhr) {
                     waitingDialog.hide();
-                    toastr.error("something seems wrong", "Notification");
+                    var msg = "something seems wrong";
+                    try {
+                        if (xhr && xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
+                        else if (xhr && xhr.responseText) msg = xhr.responseText;
+                    } catch (e) { }
+                    toastr.error(msg, "Notification");
                 }
             });
         }
@@ -264,6 +335,11 @@
             $("#UtilityId").val('0').trigger('chosen:updated');
             clearDropdown($('#ProjectId'), "Select Project");
             clearDropdown($('#InstallerId'), "Select Installer");
+            var todayDate = new Date();
+            try {
+                $("#txtFromDate").datepicker("setDate", todayDate);
+                $("#txtToDate").datepicker("setDate", todayDate);
+            } catch (e) { }
             var dt = $('#dynamic-table').DataTable();
             dt.clear().draw();
         }
@@ -280,6 +356,36 @@
                 applyMobileNativePlaceholder($("#InstallerId"), "0", "Select Installer");
             }
             initTable();
+
+            // Date pickers (same behavior as Inventory Stock Report)
+            var todayDate = new Date();
+            try {
+                $("#txtFromDate").datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    onSelect: function () {
+                        var date = $("#txtFromDate").val();
+                        if ($.trim(date) !== "") {
+                            var newDate1 = new Date(date);
+                            $("#txtToDate").datepicker('option', 'minDate', newDate1);
+                        }
+                    },
+                    dateFormat: 'M-dd-yy'
+                }).datepicker("setDate", todayDate);
+
+                $("#txtToDate").datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    onSelect: function () {
+                        var date = $("#txtToDate").val();
+                        if ($.trim(date) !== "") {
+                            var newDate1 = new Date(date);
+                            $("#txtFromDate").datepicker('option', 'maxDate', newDate1);
+                        }
+                    },
+                    dateFormat: 'M-dd-yy'
+                }).datepicker("setDate", todayDate);
+            } catch (e) { }
 
             $('#UtilityId').on('change', function () {
                 loadProjects($(this).val());

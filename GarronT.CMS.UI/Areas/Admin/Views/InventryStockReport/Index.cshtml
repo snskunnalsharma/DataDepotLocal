@@ -2065,12 +2065,18 @@
             },
 
             onOpen: function () {
-                this.$buttons.find('button').css({
-                    'font-size': '13px',
-                    'padding': '5px 0',
-                    'width': '100px',
-                    'text-align': 'center'
-                });
+                try {
+                    if (this.$buttons && this.$buttons.find) {
+                        this.$buttons.find('button').css({
+                            'font-size': '13px',
+                            'padding': '5px 0',
+                            'width': '100px',
+                            'text-align': 'center'
+                        });
+                    }
+                } catch (e) {
+                    // ignore jquery-confirm internal variations
+                }
             }
         });
     }
@@ -2323,21 +2329,41 @@
                         .filter(x => lastCompareGreen.includes(x.serialNumber))
                         .map(x => x.serialNumber);
 
+                    // Build minimal payload: serial + installer name from grid.
+                    // Other columns (completion date, WO, address, lat/long, status, project name)
+                    // are fetched server-side from Session uploaded file payload by serial.
+                    function getInstallerNameFromGrid(serial) {
+                        var dt = $('#dynamic-table').DataTable();
+                        var normalized = normalizeSerial(serial);
+                        var technician = "";
+
+                        dt.rows().every(function () {
+                            var d = this.data();
+                            if (normalizeSerial(d.SerialNumber) === normalized) {
+                                technician = (d.UserName || "").toString();
+                            }
+                        });
+
+                        return (technician || "").trim();
+                    }
+
+                    var installPayload = (lastCompareGreen || []).map(function (s) {
+                        return {
+                            SerialNumber: normalizeSerial(s),
+                            TechnicianName: getInstallerNameFromGrid(s)
+                        };
+                    });
+
                     $.ajax({
                         url: '/Admin/InventryStockReport/InstallMatchedInventory',
                         type: 'POST',
                         data: {
                             projectId: $("#ProjectId").val(),
-                            serialList: JSON.stringify(
-                                completedInventoryItems.filter(x => lastCompareGreen.includes(x.serialNumber))
-                            )
+                            serialList: JSON.stringify(installPayload)
                         },
                         success: function (res) {
                             if (res.success) {
-                                var msg = "Inventory installed. Installed: " + (res.installed || 0)
-                                    + ", Skipped: " + (res.skipped || 0)
-                                    + ", Errors: " + (res.errors || 0);
-                                toastr.success(msg);
+                                toastr.success("Inventory installed successfully");
                                 if (res.errors && res.errorList && res.errorList.length) {
                                     console.log("Install errors:", res.errorList);
                                 }

@@ -65,8 +65,8 @@ namespace TNMPUploadUtility
                                 "OLD METER FINAL READ",
                                 "NEW METER NUMBER",
                                 "NEW METER READING",
-                                "NEW REGISTER READ",
                                 "OLD FINAL REGISTER READ",
+                                "NEW REGISTER READ",
                                 "OLD METER RADIO NUMBER",
                                 "NEW METER RADIO",
                                 "LOCATION/GPS"
@@ -113,14 +113,14 @@ namespace TNMPUploadUtility
                             finalDt.Columns.Add("Cycle & Route");
                             finalDt.Columns.Add("Location");
                             finalDt.Columns.Add("Address");
-                            finalDt.Columns.Add("Removed Meter");
+                            finalDt.Columns.Add("OLD Meter");
                             finalDt.Columns.Add("Remove Read");
                             finalDt.Columns.Add("MAKE");
                             finalDt.Columns.Add("PRODUCT DESCRIPTION");
                             finalDt.Columns.Add("New Meter");
                             finalDt.Columns.Add("Set Read");
-                            finalDt.Columns.Add("NEW REGISTER READ");
                             finalDt.Columns.Add("OLD FINAL REGISTER READ");
+                            finalDt.Columns.Add("NEW REGISTER READ");
                             finalDt.Columns.Add("OLD ERT");
                             finalDt.Columns.Add("NEW ERT");
                             finalDt.Columns.Add("Latitude & Longitude");
@@ -194,8 +194,8 @@ namespace TNMPUploadUtility
                                     "",                              // PRODUCT DESCRIPTION (filled below)
                                     newMeter,                        // New Meter
                                     setRead,                         // Set Read
+                                   oldFinalRegisterRead,            // OLD FINAL REGISTER READ
                                     newRegisterRead,                 // NEW REGISTER READ
-                                    oldFinalRegisterRead,            // OLD FINAL REGISTER READ
                                     row["OLD METER RADIO NUMBER"],   // OLD ERT
                                     row["NEW METER RADIO"],          // NEW ERT
                                     gpsValue                          // GPS
@@ -386,7 +386,7 @@ namespace TNMPUploadUtility
 
             using (var db = new CompassEntities())
             {
-                db.Database.CommandTimeout = 600;
+                db.Database.CommandTimeout = 0; // 🔥 Unlimited timeout
 
                 for (int offset = 0; offset < serials.Count; offset += batchSize)
                 {

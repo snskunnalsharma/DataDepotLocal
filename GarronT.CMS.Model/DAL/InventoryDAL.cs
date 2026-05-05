@@ -129,6 +129,110 @@ namespace GarronT.CMS.Model.DAL
             }
         }
 
+        public List<INVInstallerReportRowBO> GetINVInstallerReportRows(long projectId, long installerId, string search, string fromDate, string toDate)
+        {
+            using (var db = new CompassEntities())
+            {
+                string installerName = null;
+                string installerUserName = null;
+
+                if (installerId > 0)
+                {
+                    installerName = db.tblUsers
+                        .Where(u => u.UserID == installerId)
+                        .Select(u => ((u.FirstName ?? "") + " " + (u.LastName ?? "")).Trim())
+                        .FirstOrDefault();
+
+                    installerUserName = db.tblUsers
+                        .Where(u => u.UserID == installerId)
+                        .Select(u => u.UserName)
+                        .FirstOrDefault();
+
+                    if (string.IsNullOrWhiteSpace(installerName))
+                        installerName = installerUserName;
+                }
+
+                var pProjectId = new SqlParameter("@projectId", projectId);
+                var pInstallerName = new SqlParameter("@installerName", (object)installerName ?? DBNull.Value);
+                var pInstallerUserName = new SqlParameter("@installerUserName", (object)installerUserName ?? DBNull.Value);
+                var pSearch = new SqlParameter("@search", (object)(search ?? ""));
+
+                // ✅ DATE PARSING (SAFE)
+                DateTime? fromDt = null;
+                DateTime? toDt = null;
+
+                try
+                {
+                    if (!string.IsNullOrWhiteSpace(fromDate))
+                        fromDt = Convert.ToDateTime(fromDate);
+
+                    if (!string.IsNullOrWhiteSpace(toDate))
+                        toDt = Convert.ToDateTime(toDate);
+                }
+                catch { }
+
+                var pFromDate = new SqlParameter("@fromDate", SqlDbType.DateTime)
+                {
+                    Value = (object)fromDt ?? DBNull.Value
+                };
+
+                var pToDate = new SqlParameter("@toDate", SqlDbType.DateTime)
+                {
+                    Value = (object)toDt ?? DBNull.Value
+                };
+
+                // ✅ FINAL SQL (SIMPLE + FAST)
+                string sql = @"
+SELECT
+    ISNULL(CONVERT(varchar(20), operation_date, 120), '') AS OperationDate,
+    ISNULL(CONVERT(varchar(20), completion_date, 120), '') AS CompletionDate,
+    ISNULL(installer_name, '') AS InstallerName,
+    ISNULL(work_order_id, '') AS WorkOrderId,
+    ISNULL(serial_number, '') AS SerialNumber,
+    ISNULL(service_address, '') AS ServiceAddress,
+    ISNULL(CONVERT(varchar(50), latitude), '') AS Latitude,
+    ISNULL(CONVERT(varchar(50), longitude), '') AS Longitude,
+    ISNULL(status, '') AS Status,
+    ISNULL(project_name, '') AS ProjectName
+
+FROM dbo.INVInstallerReport WITH (NOLOCK)
+
+WHERE project_id = @projectId
+
+AND (
+    @fromDate IS NULL OR @toDate IS NULL OR
+    (
+        operation_date >= @fromDate
+        AND operation_date < DATEADD(day, 1, @toDate)
+    )
+)
+
+AND (
+    ((@installerName IS NULL OR @installerName = '') AND (@installerUserName IS NULL OR @installerUserName = ''))
+    OR (@installerName IS NOT NULL AND @installerName <> '' AND installer_name LIKE '%' + @installerName + '%')
+    OR (@installerUserName IS NOT NULL AND @installerUserName <> '' AND installer_name LIKE '%' + @installerUserName + '%')
+)
+
+AND (
+    @search IS NULL OR @search = '' OR
+    installer_name LIKE '%' + @search + '%' OR
+    work_order_id LIKE '%' + @search + '%' OR
+    serial_number LIKE '%' + @search + '%' OR
+    service_address LIKE '%' + @search + '%' OR
+    status LIKE '%' + @search + '%' OR
+    project_name LIKE '%' + @search + '%'
+)
+
+ORDER BY operation_date DESC, completion_date DESC, id DESC
+";
+
+                return db.Database.SqlQuery<INVInstallerReportRowBO>(
+                    sql,
+                    pProjectId, pInstallerName, pInstallerUserName, pSearch, pFromDate, pToDate
+                ).ToList();
+            }
+        }
+
 
 
 
@@ -3381,6 +3485,27 @@ namespace GarronT.CMS.Model.DAL
                 if (stock == null)
                     throw new Exception("Stock not found for serial: " + serial);
 
+                // If caller didn't provide userId (0), fallback to latest outward AllocatedTo for this stock.
+                // This keeps AllocatedTo populated correctly in reports.
+                long allocatedToFinal = userId;
+                if (allocatedToFinal <= 0)
+                {
+                    allocatedToFinal = db.OutwardDetails
+                        .Where(x => x.FKStockDetailsID == stock.Id && x.Active == 1 && x.AllocatedTo > 0)
+                        .OrderByDescending(x => x.Id)
+                        .Select(x => (long?)x.AllocatedTo)
+                        .FirstOrDefault() ?? 0;
+
+                    if (allocatedToFinal <= 0)
+                    {
+                        allocatedToFinal = db.OutwardDetails
+                            .Where(x => x.FKStockDetailsID == stock.Id && x.AllocatedTo > 0)
+                            .OrderByDescending(x => x.Id)
+                            .Select(x => (long?)x.AllocatedTo)
+                            .FirstOrDefault() ?? 0;
+                    }
+                }
+
                 // 2️⃣ Get outward record
                 var outward = db.OutwardDetails
                     .Where(x =>
@@ -3391,7 +3516,8 @@ namespace GarronT.CMS.Model.DAL
 
                 // For inventory stock report, outward must point to the correct installer.
                 // If missing (or allocated to a different installer), create a new outward row.
-                if (outward == null || outward.AllocatedTo != userId)
+                // NOTE: don't create a new outward just because allocatedToFinal is 0.
+                if (outward == null || (allocatedToFinal > 0 && outward.AllocatedTo != allocatedToFinal))
                 {
                     long? requestDetailId = null;
 
@@ -3436,7 +3562,7 @@ namespace GarronT.CMS.Model.DAL
                     {
                         FKStockDetailsID = stock.Id,
                         FKInventoryMobileStockRequestDetailId = requestDetailId.Value,
-                        AllocatedTo = userId,
+                        AllocatedTo = allocatedToFinal > 0 ? allocatedToFinal : userId,
                         AllocatedQty = 1,
                         InstalledQty = 0,
                         TransferredQty = 0,
@@ -3446,7 +3572,7 @@ namespace GarronT.CMS.Model.DAL
                         AllStockUtilized = false,
                         MobileResponse = 0,
                         Active = 1,
-                        CreatedBy = userId,
+                        CreatedBy = userId > 0 ? userId : (allocatedToFinal > 0 ? allocatedToFinal : userId),
                         CreatedOn = DateTime.Now
                     };
 
@@ -3552,7 +3678,8 @@ namespace GarronT.CMS.Model.DAL
                 }
 
                 // 8️⃣ Update outward
-                outward.AllocatedTo = userId;
+                if (allocatedToFinal > 0)
+                    outward.AllocatedTo = allocatedToFinal;
                 if (outward.AllocatedQty <= 0)
                     outward.AllocatedQty = 1;
                 outward.InstalledQty = 1;
@@ -3561,7 +3688,7 @@ namespace GarronT.CMS.Model.DAL
                 outward.RemovedQty = 0;
                 outward.AllStockUtilized = true;
                 outward.ModifiedOn = DateTime.Now;
-                outward.ModifiedBy = userId;
+                outward.ModifiedBy = userId > 0 ? userId : (allocatedToFinal > 0 ? allocatedToFinal : userId);
 
                 // 9️⃣ Update stock
                 stock.IsAllocated = true;

@@ -83,15 +83,26 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public ActionResult GetINVInstallerReportData(long projectId, long installerId, string search)
+        public ActionResult GetINVInstallerReportData(long projectId, long installerId, string search, string txtFromDate, string txtToDate)
         {
-            var rows = new InventoryDAL().GetINVInstallerReportRows(projectId, installerId, search);
-
-            return Json(new
+            try
             {
-                success = true,
-                rows
-            });
+                var rows = new InventoryDAL().GetINVInstallerReportRows(projectId, installerId, search, txtFromDate, txtToDate);
+
+                return Json(new
+                {
+                    success = true,
+                    rows
+                });
+            }
+            catch (System.Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
         }
     }
 }

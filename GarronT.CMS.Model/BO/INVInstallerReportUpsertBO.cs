@@ -14,6 +14,8 @@ namespace GarronT.CMS.Model.BO
         public string Longitude { get; set; }
         public string Status { get; set; }
         public string ProjectName { get; set; }
+        public DateTime? OperationDate { get; set; }
+
     }
 }
 

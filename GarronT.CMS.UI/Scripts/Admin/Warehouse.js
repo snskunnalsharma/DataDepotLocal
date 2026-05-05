@@ -17,30 +17,42 @@
 function GetUser() {
     debugger;
     var urlGetUserList = $('#urlGetUserList').val();
+
     $.ajax({
         type: 'GET',
         url: urlGetUserList,
         async: false,
         success: function (data) {
             debugger;
-            $("#UserHeader").removeClass("ddlHeader").text("Select User")
+
+            $("#UserHeader").removeClass("ddlHeader").text("Select User");
             $("#User_SelectAll").prop("checked", false);
             $('#ulUser').empty();
 
             $.each(data, function (index, item) {
-
-                $('#ulUser').append($('<li></li>').attr("Id", item.UserId).val(item.UserId).addClass("liUser active-result").html(item.UserFullName));
-
+                $('#ulUser').append(
+                    $('<li></li>')
+                        .attr("Id", item.UserId)
+                        .val(item.UserId)
+                        .addClass("liUser active-result")
+                        .html(item.UserFullName)
+                );
             });
 
-            //spinner.stop(target);
+            // 🔥 SEARCH FIX (यही important add)
+            $('.chosen-search input').off('keyup').on('keyup', function () {
+                var value = $(this).val().toLowerCase();
+
+                $('#ulUser li').filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+            });
+
         },
         error: function (error) {
-            console.log(error)
-
+            console.log(error);
         }
     });
-    //spinner.stop(target);
 }
 
 function BindDataTable(checkBStatus) {
@@ -135,6 +147,7 @@ $('#btnAddWarehouse').click(function () {
 
                 $("#StateId").chosen({ no_results_text: "Oops, nothing found!" });
                 $("#CityId").chosen({ no_results_text: "Oops, nothing found!" });
+                GetUser();
             }
             else {
                 var $toast = toastr["error"](data.returnMessage, "Notification !");
@@ -464,7 +477,19 @@ function ActiveDeactivateFunction(id, makeActive) {
         }
     });
 }
+$(document).on('keyup', '.chosen-search input', function () {
+    var value = $(this).val().toLowerCase();
 
+    $('#ulUser li').each(function () {
+        var text = $(this).text().toLowerCase();
+
+        if (text.indexOf(value) > -1) {
+            $(this).show();
+        } else {
+            $(this).hide();
+        }
+    });
+});
 //#
 
 

@@ -3170,16 +3170,25 @@ namespace GarronT.CMS.UI
             if (missingInventoryBO.MissingInventoryList != null)
             {
                 sb.Append("<tbody>");
-                foreach (var item in missingInventoryBO.MissingInventoryList)
+                if (missingInventoryBO.MissingInventoryList.Count() == 0)
                 {
-                    var productName = item.ProductName;
-                    var serialNum = item.SerialNumber;
-                    var quantity = item.Quantity;
                     sb.Append("<tr>" +
-                              "<td style='border:1px solid black;'>" + productName + "</td>" +
-                              "<td style='border:1px solid black; text-align:center;'>" + serialNum + "</td>" +
-                              "<td style='border:1px solid black; text-align:center;'>" + quantity + "</td>" +
+                                  "<td colspan='3' style='border:1px solid black; text-align:center;'>No missing inventory was found. </td>" +
                               "</tr>");
+                }
+                else
+                {
+                    foreach (var item in missingInventoryBO.MissingInventoryList)
+                    {
+                        var productName = item.ProductName;
+                        var serialNum = item.SerialNumber;
+                        var quantity = item.Quantity;
+                        sb.Append("<tr>" +
+                                  "<td style='border:1px solid black;'>" + productName + "</td>" +
+                                  "<td style='border:1px solid black; text-align:center;'>" + serialNum + "</td>" +
+                                  "<td style='border:1px solid black; text-align:center;'>" + quantity + "</td>" +
+                                  "</tr>");
+                    }
                 }
                 sb.Append("</tbody>");
             }

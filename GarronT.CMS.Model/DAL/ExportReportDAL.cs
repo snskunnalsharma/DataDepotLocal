@@ -60,12 +60,20 @@ namespace GarronT.CMS.Model.DAL
         public List<FormTypeModel> GetFormTypeList()
         {
             CompassEntities CompassEntities = new CompassEntities();
-            var data = CompassEntities.tblFormTypes.AsNoTracking().Where(o => o.Active == 1 && o.ID <= 2).AsEnumerable().
-                Select(o => new FormTypeModel
+
+            var data = CompassEntities.tblFormTypes
+                .AsNoTracking()
+                .Where(o => o.Active == 1 &&
+                       (o.FormType == "Auditor Form" ||
+                        o.FormType == "Installer Form" ||
+                        o.FormType == "Completion Form"))
+                .Select(o => new FormTypeModel
                 {
                     ID = o.ID,
                     FormType = o.FormType,
-                }).OrderBy(o => o.FormType).ToList();
+                })
+                .OrderBy(o => o.FormType)
+                .ToList();
 
             return data;
         }
@@ -512,7 +520,7 @@ namespace GarronT.CMS.Model.DAL
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Connection = sqlConnection1;
                 // Export stored proc can be heavy for large date ranges
-                cmd.CommandTimeout = 300;
+                cmd.CommandTimeout = 0;
                 cmd.Parameters.Add("@FormTypeId", formTypeId);
                 cmd.Parameters.Add("@projectId", projectId);
                 cmd.Parameters.Add("@FromDate", fromDate);
