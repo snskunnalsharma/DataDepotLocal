@@ -250,6 +250,112 @@ namespace GarronT.CMS.Model.BO
             return list;
         }
 
+        public List<InventorySourceChildBO> GetUsersInRoleByProjectIds(string roleName, List<long> projectIds)
+        {
+            if (string.IsNullOrWhiteSpace(roleName) || projectIds == null || projectIds.Count == 0)
+            {
+                return new List<InventorySourceChildBO>();
+            }
+
+            using (var db = new CompassEntities())
+            {
+                var roleUserIds = db.aspnet_UsersInRoles(roleName)
+                    .Where(x => x.HasValue)
+                    .Select(x => x.Value)
+                    .ToList();
+
+                if (roleUserIds.Count == 0)
+                {
+                    return new List<InventorySourceChildBO>();
+                }
+
+                var roleUserSet = new HashSet<long>(roleUserIds);
+
+                var mappedUserIds = db.TblProjectInstallers
+                    .Where(x => x.Active == 1 && projectIds.Contains(x.ProjectID))
+                    .Select(x => x.tblUsers_UserID)
+                    .Distinct()
+                    .ToList()
+                    .Where(id => roleUserSet.Contains(id))
+                    .ToList();
+
+                if (mappedUserIds.Count == 0)
+                {
+                    return new List<InventorySourceChildBO>();
+                }
+
+                return db.tblUsers
+                    .Where(u => u.Active == 1 && mappedUserIds.Contains(u.UserID))
+                    .Select(u => new InventorySourceChildBO
+                    {
+                        ChildId = u.UserID,
+                        ChildName = u.FirstName
+                    })
+                    .OrderBy(x => x.ChildName)
+                    .ToList();
+            }
+        }
+
+        public List<InventorySourceChildBO> GetManagersByUserManagerMappingForProjects(List<long> projectIds)
+        {
+            if (projectIds == null || projectIds.Count == 0)
+            {
+                return new List<InventorySourceChildBO>();
+            }
+
+            using (var db = new CompassEntities())
+            {
+                // All users assigned to these projects
+                var projectUserIds = db.TblProjectInstallers
+                    .Where(x => x.Active == 1 && projectIds.Contains(x.ProjectID))
+                    .Select(x => x.tblUsers_UserID)
+                    .Distinct()
+                    .ToList()
+                    .ToList();
+
+                if (projectUserIds.Count == 0)
+                {
+                    return new List<InventorySourceChildBO>();
+                }
+
+                // Source A: users in "Manager" role that are mapped to these projects
+                var managerRoleUserIds = db.aspnet_UsersInRoles("Manager")
+                    .Where(x => x.HasValue)
+                    .Select(x => x.Value)
+                    .ToList();
+
+                var managerRoleSet = new HashSet<long>(managerRoleUserIds);
+                var managerIdsFromProjectMapping = projectUserIds.Where(id => managerRoleSet.Contains(id)).ToList();
+
+                // Source B: managers derived from tblUsers.ManagerId of users assigned to these projects
+                var managerIdsFromUserMapping = db.tblUsers
+                    .Where(x => x.Active == 1 && projectUserIds.Contains(x.UserID) && x.ManagerId.HasValue)
+                    .Select(x => x.ManagerId.Value)
+                    .Distinct()
+                    .ToList();
+
+                var finalManagerIds = managerIdsFromProjectMapping
+                    .Union(managerIdsFromUserMapping)
+                    .Distinct()
+                    .ToList();
+
+                if (finalManagerIds.Count == 0)
+                {
+                    return new List<InventorySourceChildBO>();
+                }
+
+                return db.tblUsers
+                    .Where(x => x.Active == 1 && finalManagerIds.Contains(x.UserID))
+                    .Select(x => new InventorySourceChildBO
+                    {
+                        ChildId = x.UserID,
+                        ChildName = x.FirstName
+                    })
+                    .OrderBy(x => x.ChildName)
+                    .ToList();
+            }
+        }
+
         public List<tblUser> GetUserByID(int ID)
         {
             var list = new List<tblUser>();
@@ -971,8 +1077,23 @@ namespace GarronT.CMS.Model.BO
                         Obj.ModifiedOn = DateTime.Now;
 
                     }
+                    else
+                    {
+                        Obj = new AspNetUserRolePermission();
+                        Obj.FKAspNetPermissionId = (int)permissionID;
+                        Obj.UserId = item.UserId;
+                        Obj.AddOperation = item.RoleAddChecked;
+                        Obj.ViewOperation = item.RoleViewChecked;
+                        Obj.EditOperation = item.RoleEditChecked;
+                        Obj.DeleteOperation = item.RoleDeleteChecked;
+                        Obj.Active = true;
+                        Obj.CreatedBy = currentUserId;
+                        Obj.CreatedOn = DateTime.Now;
+                        database.AspNetUserRolePermissions.Add(Obj);
+                    }
+                    database.SaveChanges();
                 }
-                database.SaveChanges();
+                
 
                 varResult = true;
 

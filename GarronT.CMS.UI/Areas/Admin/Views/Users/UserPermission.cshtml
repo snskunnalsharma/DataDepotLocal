@@ -1628,18 +1628,24 @@
             beforeSend: function () {
                 waitingDialog.show('Loading Please Wait...');
             },
-            complete: function (data) {
-                if (data.statusText == "OK") {
-                    var $toast = toastr["success"]("Record Updated", "Success Notification");
+            success: function (data) {
+                if (data && data.result === true) {
+                    toastr["success"](data.resultMessage || "Record Updated", "Success Notification");
+                } else {
+                    toastr["error"]((data && data.resultMessage) ? data.resultMessage : "Unable to update record", "Error Notification");
                 }
-                else {
-                    var $toast = toastr["error"]("Unable to Update record", "Error Notification");
-                }
-                waitingDialog.hide();
             },
-            success: function (data, textStatus, jqXHR) {
-                // alert("success")
-                // $('#PermissionsTable').html(data);
+            error: function (xhr) {
+                var msg = "Unable to update record";
+                if (xhr && xhr.responseJSON && xhr.responseJSON.resultMessage) {
+                    msg = xhr.responseJSON.resultMessage;
+                } else if (xhr && xhr.responseText) {
+                    msg = xhr.responseText;
+                }
+                toastr["error"](msg, "Error Notification");
+            },
+            complete: function () {
+                waitingDialog.hide();
             }
         });
     });

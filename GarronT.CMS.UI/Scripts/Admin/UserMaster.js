@@ -907,16 +907,29 @@ try {
 
     }
 
-    function BindManagerList() {
+    function BindManagerList(projectIds, selectedManagerId) {
 
         
         var urlManager = $('#urlGetManagerList').val();
+        var postData = { "RoleName": "Manager" };
+        var editUserId = $('#EditUserID').val();
+        if (editUserId != undefined && editUserId != null && editUserId != "") {
+            postData.UserId = editUserId;
+        }
+
+        if (projectIds != undefined && projectIds != null && projectIds.length != undefined && projectIds.length > 0) {
+            var urlFiltered = $('#urlGetManagerListByProjects').val();
+            if (urlFiltered != undefined && urlFiltered != null && urlFiltered != "") {
+                urlManager = urlFiltered;
+                postData.ProjectIds = projectIds.join(',');
+            }
+        }
 
         $.ajax({
 
             type: 'POST',
             async: false,
-            data: { "RoleName": "Manager" },
+            data: postData,
 
             url: urlManager,
 
@@ -936,6 +949,9 @@ try {
 
                 });
 
+                if (selectedManagerId != undefined && selectedManagerId != null && selectedManagerId != "") {
+                    $('#ManagerId').val(selectedManagerId);
+                }
                 $('#ManagerId').trigger("chosen:updated");
             },
             error: function (error) {
@@ -1969,7 +1985,7 @@ try {
                     // checkinstallerroleselect()     Commented by sominath
                     $('.InstallerRoleDiv').show();    // Modify by sominath
 
-                    CheckAssignedProjects(UserID)
+                    CheckAssignedProjects(UserID, msg.modelData.ManagerId)
                     // $("#ddlPrimaryRole").multiselect('rebuild');
                 }
                 else {
@@ -2276,79 +2292,41 @@ try {
     // #endregion
 
 
-    function CheckAssignedProjects(UserID) {
-
+    function CheckAssignedProjects(UserID, selectedManagerId) {
         var urlCheckAssignedProjects = $('#urlCheckAssignedProjects').val();
         $.ajax({
             type: 'GET',
             url: urlCheckAssignedProjects,
-            //beforeSend: function () {
-            //    waitingDialog.show('Loading Please Wait...');
-            //},
-            //complete: function () {
-            //    waitingDialog.hide();
-            //},
             data: { id: UserID },
             success: function (msg) {
                 $("#ProjectsassignedDiv").hide();
+                var allProjectIds = [];
+                try {
+                    var projectIds = $.map(msg, function (x) { return x.project_Id; });
+                    allProjectIds = projectIds;
+                } catch (e) {
+                    console.log(e);
+                }
+
+                // Ensure manager list is refreshed for this user;
+                var managerToSelect = selectedManagerId;
+                if (managerToSelect == undefined || managerToSelect == null || managerToSelect == "") {
+                    managerToSelect = $('#ManagerId').val();
+                }
+
+                // Bind manager list for all projects assigned
+                BindManagerList(allProjectIds, managerToSelect);
 
                 if (msg.length > 0) {
                     var count = 0;
                     var $div;
                     $("#InstallerProjectDiv").empty();
 
-                    //$.each(msg, function (index, item) {
-                    //    $("#ProjectsassignedDiv").show();
-                    //    if (count == 0) {
-                    //        $div = $("<div>", { class: "form-group col-lg-12 col-sm-12 col-xs-12 usr_mob" });
-
-                    //        var $label = $("<label>", {
-                    //            text: item.projectName, class: "col-lg-4", style: "margin-left: -7%;margin-right: 26%;"
-                    //        });
-
-                    //        var $innerdiv = $("<div>", { id: "", class: "col-lg-6 col-sm-6 serviceInnerDiv" });
-
-                    //        $($innerdiv).append($label);
-
-                    //        $($div).append($innerdiv);
-
-                    //        if (index === msg.length - 1) {
-
-                    //            $("#InstallerProjectDiv").append($div);
-                    //        }
-
-                    //        count++;
-
-                    //        return true;
-                    //    }
-                    //    if (count == 1) {
-
-                    //        var $label1 = $("<label>", {
-                    //            text: item.projectName, class: "col-lg-4", style: "margin-left: -7%;margin-right: 26%;"
-                    //        });
-
-                    //        var $innerdiv1 = $("<div>", { id: "", class: "col-lg-6 col-sm-6 serviceInnerDiv" });
-
-
-
-                    //        $($innerdiv1).append($label1);
-
-
-                    //        //$($div).append($innerdiv);
-                    //        $($div).append($innerdiv1);
-                    //        $("#InstallerProjectDiv").append($div);
-                    //        count = 0;
-
-                    //    }
-                    //})
-
                     $.each(msg, function (index, item) {
                         $("#ProjectsassignedDiv").show();
                         if (count == 0) {
                             $div = $("<tr>", {});
 
-                            //var $label = $("<label>", {
-                            //    text: item.projectName, class: "col-lg-4 ", style: "margin-left: -7%;margin-right: 26%;"
                             var $label = $("<span>", {
                                 text: item.projectName, class: "", style: ""
                             });
@@ -2361,7 +2339,7 @@ try {
                             $($div).append($innerdiv);
 
                             if (index === msg.length - 1) {
-                                $($div).append($innerdivempty)
+                                $($div).append($innerdivempty);
                                 $("#InstallerProjectDiv").append($div);
                             }
 
@@ -2377,12 +2355,8 @@ try {
 
                             var $innerdiv1 = $("<td>", {});
 
-
-
                             $($innerdiv1).append($label1);
 
-
-                            //$($div).append($innerdiv);
                             $($div).append($innerdiv1);
                             $("#InstallerProjectDiv").append($div);
                             count = 0;
@@ -2395,17 +2369,11 @@ try {
                     });
                 }
 
-
             },
-
-
             error: function (error) {
-                console.log(error)
-                //alert("something seems wrong");
+                console.log(error);
             }
-
         });
-
     }
 
 

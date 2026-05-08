@@ -155,6 +155,60 @@ namespace GarronT.CMS.UI.Areas.Global.Controllers
                     .Where(x => x.ViewOperation || x.AddOperation || x.EditOperation || x.DeleteOperation)
                     .ToList();
 
+                // Apply per-user overrides (AspNetUserRolePermissions) - these are set from User Permission screen.
+                var userOverrides = obj.AspNetUserRolePermissions
+                    .Where(x => x.Active == true && x.UserId == Activeuser.UserID)
+                    .Select(x => new
+                    {
+                        PermissionId = (long)x.FKAspNetPermissionId,
+                        x.ViewOperation,
+                        x.AddOperation,
+                        x.EditOperation,
+                        x.DeleteOperation
+                    })
+                    .ToList();
+
+                if (userOverrides != null && userOverrides.Count > 0)
+                {
+                    // Convert role-effective list to dictionary for override/merge.
+                    var dict = effectiveByPermission.ToDictionary(
+                        x => x.PermissionId,
+                        x => new
+                        {
+                            x.PermissionId,
+                            x.ViewOperation,
+                            x.AddOperation,
+                            x.EditOperation,
+                            x.DeleteOperation
+                        });
+
+                    foreach (var ov in userOverrides)
+                    {
+                        // Override means: if any op is true -> allow with those ops; if all false -> deny (remove).
+                        var allow = ov.ViewOperation || ov.AddOperation || ov.EditOperation || ov.DeleteOperation;
+                        if (allow)
+                        {
+                            dict[ov.PermissionId] = new
+                            {
+                                PermissionId = ov.PermissionId,
+                                ViewOperation = ov.ViewOperation,
+                                AddOperation = ov.AddOperation,
+                                EditOperation = ov.EditOperation,
+                                DeleteOperation = ov.DeleteOperation
+                            };
+                        }
+                        else
+                        {
+                            if (dict.ContainsKey(ov.PermissionId))
+                            {
+                                dict.Remove(ov.PermissionId);
+                            }
+                        }
+                    }
+
+                    effectiveByPermission = dict.Values.ToList();
+                }
+
                 var allowedPermissionIds = effectiveByPermission.Select(x => x.PermissionId).ToList();
                 var PermissionList1 = obj.AspNetPermissions.Where(p => allowedPermissionIds.Contains(p.Permission_Id)).ToList();
 

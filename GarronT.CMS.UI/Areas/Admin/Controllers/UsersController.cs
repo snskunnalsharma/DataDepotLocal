@@ -1367,6 +1367,55 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             return Json(objInventorySourceChildBOList, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpPost]
+        public ActionResult GetManagerListByProjects(string RoleName, string ProjectIds, long? UserId)
+        {
+            try
+            {
+                // Remove the 'eligibleProjects' condition to allow for all projects
+                var providedProjectIds = (ProjectIds ?? string.Empty)
+                    .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(x =>
+                    {
+                        long v;
+                        return long.TryParse(x.Trim(), out v) ? (long?)v : null;
+                    })
+                    .Where(x => x.HasValue)
+                    .Select(x => x.Value)
+                    .Distinct()
+                    .ToList();
+
+                var userProjectIds = new List<long>();
+                if (UserId.HasValue && UserId.Value > 0)
+                {
+                    userProjectIds = new UserDAL()
+                        .CheckAssignedProjects((int)UserId.Value)
+                        .Select(x => x.project_Id)
+                        .Distinct()
+                        .ToList();
+                }
+
+                // Now we include managers derived from ALL projects assigned to the user context, as well as provided projects
+                var finalProjectIds = providedProjectIds;
+                if (userProjectIds.Count > 0)
+                {
+                    finalProjectIds = providedProjectIds
+                        .Union(userProjectIds)
+                        .Distinct()
+                        .ToList();
+                }
+
+                // Managers = users in "Manager" role mapped to these projects via TblProjectInstallers
+                var list = new UserDAL().GetManagersByUserManagerMappingForProjects(finalProjectIds);
+                return Json(list, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex);
+                return Json(new List<InventorySourceChildBO>(), JsonRequestBehavior.AllowGet);
+            }
+        }
+
 
         public ActionResult GetSuperVisorList(long ManagerId)
         {
@@ -1436,14 +1485,14 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 }
                 catch (Exception ex)
                 {
-                    return Json(new { result = false, resultMessage = "Save failed. Please try again!" }, JsonRequestBehavior.AllowGet);
+                    return Json(new { result = false, resultMessage = "Save failed. Please try again! => " + ex.Message }, JsonRequestBehavior.AllowGet);
                 }
 
 
             }
             else
             {
-                return Json(new { result = false, resultMessage = "Save failed. Please try again!" }, JsonRequestBehavior.AllowGet);
+                return Json(new { result = false, resultMessage = "Save failed. Please try again!!" }, JsonRequestBehavior.AllowGet);
             }
 
         }

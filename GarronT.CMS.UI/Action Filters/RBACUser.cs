@@ -45,6 +45,68 @@ public class RBACUser
                     if (!this.IsSysAdmin)
                         this.IsSysAdmin = _role.IsSysAdmin == null ? false : _role.IsSysAdmin.Value;
                 }
+
+                // Apply user-level permission overrides (AspNetUserRolePermissions)
+                // These are used by User Permission screen; RBAC checks PermissionDescription strings.
+                try
+                {
+                    Guid aspNetGuid;
+                    if (Guid.TryParse(_user.Id, out aspNetGuid))
+                    {
+                        var tblUserId = _data.tblUsers
+                            .Where(x => x.aspnet_UserId == aspNetGuid && x.Active == 1)
+                            .Select(x => x.UserID)
+                            .FirstOrDefault();
+
+                        if (tblUserId > 0)
+                        {
+                            var userPerms = _data.AspNetUserRolePermissions
+                                .Where(x => x.Active == true && x.UserId == tblUserId)
+                                .Select(x => new
+                                {
+                                    PermissionId = x.FKAspNetPermissionId,
+                                    Allow = x.ViewOperation || x.AddOperation || x.EditOperation || x.DeleteOperation
+                                })
+                                .ToList();
+
+                            if (userPerms != null && userPerms.Count > 0)
+                            {
+                                // Current role-granted permissions
+                                var granted = new HashSet<long>(
+                                    this.Roles.SelectMany(r => r.Permissions).Select(p => p.Permission_Id));
+
+                                foreach (var up in userPerms)
+                                {
+                                    if (up.Allow)
+                                    {
+                                        granted.Add(up.PermissionId);
+                                    }
+                                    else
+                                    {
+                                        granted.Remove(up.PermissionId);
+                                    }
+                                }
+
+                                var permDescriptions = _data.AspNetPermissions
+                                    .Where(p => granted.Contains(p.Permission_Id))
+                                    .Select(p => new RolePermission
+                                    {
+                                        Permission_Id = p.Permission_Id,
+                                        PermissionDescription = p.PermissionDescription
+                                    })
+                                    .ToList();
+
+                                // Replace with a single effective permission set
+                                this.Roles.Clear();
+                                this.Roles.Add(new UserRole { Role_Id = "EFFECTIVE", RoleName = "EFFECTIVE", Permissions = permDescriptions });
+                            }
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    // Swallow to avoid breaking auth pipeline on permission override failures
+                }
             }
         }
     }
