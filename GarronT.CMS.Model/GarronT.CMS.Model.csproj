@@ -1006,6 +1006,7 @@
     <Compile Include="WarehouseMaster.cs">
       <DependentUpon>Compass.tt</DependentUpon>
     </Compile>
+    <Compile Include="WarehouseTransfer.cs" />
     <Compile Include="WarehouseUserRelation.cs">
       <DependentUpon>Compass.tt</DependentUpon>
     </Compile>

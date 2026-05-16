@@ -150,6 +150,7 @@ namespace GarronT.CMS.Model
         public virtual DbSet<TblTNMPExportReportUtilityHistory> TblTNMPExportReportUtilityHistories { get; set; }
         public virtual DbSet<TblUnAllocatedSkipHistory> TblUnAllocatedSkipHistories { get; set; }
         public IEnumerable<object> Users { get; internal set; }
+        public virtual DbSet<WarehouseTransfer> WarehouseTransfers { get; set; }
 
         public virtual int SP_DeleteFormSectionRelations(Nullable<long> formId)
         {

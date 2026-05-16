@@ -87,9 +87,7 @@ $("#btnSearch").click(function () {
     debugger;
     var serialNumber = $("#txtSerialNumber").val();
     var value1 = $("#UtilityId option:selected").val();
-
     var value2 = $("#ProjectId option:selected").val();
-
 
     if (value1 === null || value1 === undefined || value1 === "0") {
         var $toast = toastr["error"]("Please select utility", "Notification");
@@ -101,8 +99,6 @@ $("#btnSearch").click(function () {
         var $toast = toastr["error"]("Please enter serial number", "Notification");
     }
     else {
-
-
         waitingDialog.show('Please Wait...');
         var urlgetReportData = $('#urlgetReportData').val();
         $.ajax({
@@ -114,23 +110,19 @@ $("#btnSearch").click(function () {
                 debugger;
                 waitingDialog.hide();
                 if (data.StatusMessage.Success == true) {
-                    BindData(data.reportdata)
+                    BindData(data.reportdata); // Pass the fetched data to the DataTable
                 }
                 else {
                     var $toast = toastr["error"](data.StatusMessage.Message, "Notification !");
                 }
-
             },
             error: function () {
                 waitingDialog.hide();
                 var $toast = toastr["error"]("something seems wrong", "Notification");
             }
-
-
         })
     }
-
-})
+});
 
 
 $("#btnReset").click(function () {
@@ -168,8 +160,9 @@ function BindData(varData) {
      // "aaSorting": [[3, "asc"]],
      "aoColumns": [
 
-                   { "mData": "SerialNumber" },
-                   { "mData": "StockStatus" },
+                    { "mData": "SerialNumber" },
+                    { "mData": "StockStatus" },
+                     { "mData": "UserName" },
                    { "mData": "Location" },
                    { "mData": "StockMovementDateString" },
                    { "mData": "LatLong" },

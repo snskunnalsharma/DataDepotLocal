@@ -20,7 +20,9 @@ namespace GarronT.CMS.Model.BO
         public string WarehouseName { get; set; }
 
         /// <summary>Destination warehouse for warehouse transfer screens (optional).</summary>
+        public long FromWarehouseId { get; set; }
         public long ToWarehouseId { get; set; }
+
 
         public string SerialNumber { get; set; }
         [StringLength(250, ErrorMessage = "Product Description must be at least {2} and max {1} characters long.", MinimumLength = 1)]

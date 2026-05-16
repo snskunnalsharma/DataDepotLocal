@@ -122,7 +122,7 @@ $('#ProjectId').change(function () {
     $('#FromWarehouseId').empty().trigger('chosen:updated');
     $('#ToWarehouseId').empty().trigger('chosen:updated');
     $('#ProductId').empty().trigger('chosen:updated');
-    var value = $("#ProjectId option:selected")
+    var value = $("#ProjectId option:selected");
 
     waitingDialog.show('Please Wait Loading Contacts...');
     var urlGetWarehouseAndProduct = $('#urlGetWarehouseAndProduct').val();
@@ -134,22 +134,39 @@ $('#ProjectId').change(function () {
 
             $('#FromWarehouseId').empty();
             $('#ToWarehouseId').empty();
-            if (data.WarehouseList != null) {
+
+            if (data.WarehouseList != null && data.WarehouseList.length > 0) {
+                // Add placeholder option
                 appendSentinelOptionVal0($('#FromWarehouseId'), "From Warehouse");
                 appendSentinelOptionVal0($('#ToWarehouseId'), "To Warehouse");
+
+                // Append warehouses
                 $.each(data.WarehouseList, function (index, item) {
                     $('#FromWarehouseId').append($('<option></option>').val(item.WarehouseId).html(item.WarehouseName));
                     $('#ToWarehouseId').append($('<option></option>').val(item.WarehouseId).html(item.WarehouseName));
                 });
+
+                // ✅ Default selection for desktop
+                $('#FromWarehouseId').val(data.WarehouseList[0].WarehouseId).trigger('chosen:updated');
+                $('#ToWarehouseId').val(data.WarehouseList[1] ? data.WarehouseList[1].WarehouseId : data.WarehouseList[0].WarehouseId).trigger('chosen:updated');
+
+                // ✅ Default selection for mobile
+                if (isMobileBrowser) {
+                    $('#FromWarehouseId').val(data.WarehouseList[0].WarehouseId);
+                    $('#ToWarehouseId').val(data.WarehouseList[1] ? data.WarehouseList[1].WarehouseId : data.WarehouseList[0].WarehouseId);
+                }
+
             } else if (isMobileBrowser) {
                 appendSentinelOptionVal0($('#FromWarehouseId'), "From Warehouse");
                 appendSentinelOptionVal0($('#ToWarehouseId'), "To Warehouse");
             }
+
             $('#FromWarehouseId').trigger('chosen:updated');
             $('#ToWarehouseId').trigger('chosen:updated');
 
+            // Product List
             $('#ProductId').empty();
-            if (data.ProductList != null) {
+            if (data.ProductList != null && data.ProductList.length > 0) {
                 appendSentinelOptionVal0($('#ProductId'), "Select Product");
                 $.each(data.ProductList, function (index, item) {
                     $('#ProductId').append($('<option></option>').val(item.Id).html(item.FieldValue));
@@ -936,66 +953,49 @@ function EditUploadedRecord(recordId) {
 }
 
 $('#btnSave').click(function () {
-    
-    var warehouseId = $('#FromWarehouseId').val();
-
-    if (warehouseId === '0' || warehouseId === '') {
-        var $toast = toastr["error"]("Please, select from warehouse", "Notification");
-        return;
-    }
+    var fromWarehouseId = $('#FromWarehouseId').val();
+    console.log("DEBUG FromWarehouseId:", fromWarehouseId); // check karo
     var toWarehouseId = $('#ToWarehouseId').val();
-    if (toWarehouseId === '0' || toWarehouseId === '') {
-        var $toast = toastr["error"]("Please, select to warehouse", "Notification");
-        return;
-    }
-    if (warehouseId === toWarehouseId) {
-        var $toast = toastr["error"]("From warehouse and To warehouse must be different.", "Notification");
-        return;
-    }
+    var projectId = $('#ProjectId').val();
 
-    var tableRow = $("#inventryReceiveDiv").children().find('table').children('tbody').children('tr')
-    if (tableRow.length == 1 && tableRow.children().attr("class") == "dataTables_empty") {
-        var $toast = toastr["error"]("Please, Add products", "Notification");
-        return;
-    }
-    waitingDialog.show('Please Wait...');
-    var urlSaveInventryList = $('#urlSaveInventryList').val();
+    // Validation
+    if (!fromWarehouseId || fromWarehouseId === '0') { toastr.error("Select From Warehouse"); return; }
+    if (!toWarehouseId || toWarehouseId === '0') { toastr.error("Select To Warehouse"); return; }
+    if (fromWarehouseId === toWarehouseId) { toastr.error("From and To Warehouse must be different"); return; }
+
+    var transferList = [];
+    $('#dynamic-table tbody tr').each(function () {
+        var serialNumber = $(this).find('input.serialNumber').val();
+        var productId = $(this).find('input[id^="hndProductId"]').val();
+
+        if (serialNumber) {
+            transferList.push({
+                SerialNumber: serialNumber,
+                ProductId: parseInt(productId),
+                FromWarehouseId: parseInt(fromWarehouseId),
+                ToWarehouseId: parseInt(toWarehouseId),
+                ProjectId: parseInt(projectId)
+            });
+        }
+    });
+
+    // Call controller
     $.ajax({
-        type: 'GET',
-        url: urlSaveInventryList,
-        async: true,
-        data: { fromWarehouseId: warehouseId, toWarehouseId: toWarehouseId },
-        success: function (data) {
-            waitingDialog.hide();
-            if (data.status == true) {
-                var $toast = toastr["success"](data.resultMessage, "Success Notification !");
-                $('#FromWarehouseId').val("").prop("disabled", false).trigger('chosen:updated');
-                $('#ToWarehouseId').val("").prop("disabled", false).trigger('chosen:updated');
-                resetData()
-                $('#dynamic-table').dataTable().fnClearTable();
-                ResetAllTempData();
-                
-                if (data.inwardHeaderId && parseInt(data.inwardHeaderId, 10) > 0) {
-                    var viewUploadedRecords = $('#urlViewUpload').val()
-                    location.href = viewUploadedRecords + "/" + data.inwardHeaderId
-                }
+        type: 'POST',
+        url: $('#urlWarehouseTransferSave').val(),
+        contentType: 'application/json',
+        data: JSON.stringify({ transferList: transferList, projectId: parseInt(projectId) }),
+        success: function (resp) {
+            if (resp.success) {
+                toastr.success("WarehouseTransfer saved successfully!");
+            } else {
+                toastr.error(resp.message || "Error saving WarehouseTransfer");
             }
-            else {
-                var $toast = toastr["error"](data.resultMessage, "Notification !");
-            }
-
         },
         error: function () {
-            waitingDialog.hide();
-            var $toast = toastr["error"]("something seems wrong", "Notification");
+            toastr.error("Error saving WarehouseTransfer");
         }
-
-
-    })
-
-
-
-
+    });
 });
 
 $('#btnCancelSave').click(function () {
@@ -1122,6 +1122,30 @@ function BindDataTable(varData) {
 
 
 }
+function loadWarehouses(projectId) {
+    $.ajax({
+        url: $('#urlGetWarehouseAndProduct').val(),
+        type: 'GET',
+        data: { ProjectId: projectId },
+        success: function (data) {
+            $('#FromWarehouseId').empty();
+            $('#ToWarehouseId').empty();
 
+            $.each(data.WarehouseList, function (i, w) {
+                $('#FromWarehouseId').append('<option value="' + w.WarehouseId + '">' + w.WarehouseName + '</option>');
+                $('#ToWarehouseId').append('<option value="' + w.WarehouseId + '">' + w.WarehouseName + '</option>');
+            });
+
+            // **Default select first warehouse**
+            if (data.WarehouseList.length > 0) {
+                $('#FromWarehouseId').val(data.WarehouseList[0].FKWarehouseId || data.WarehouseList[0].Id).trigger('chosen:updated');
+                $('#ToWarehouseId').val(data.WarehouseList[1] ? (data.WarehouseList[1].FKWarehouseId || data.WarehouseList[1].Id) : data.WarehouseList[0].Id).trigger('chosen:updated');
+            }
+        },
+        error: function () {
+            toastr.error("Error loading warehouses");
+        }
+    });
+}
 
 

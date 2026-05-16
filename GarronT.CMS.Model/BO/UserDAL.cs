@@ -780,27 +780,48 @@ namespace GarronT.CMS.Model.BO
 
         public List<StateVM> GetActiveStateRecords(long customerId)
         {
-            CompassEntities CompassEntities = new CompassEntities();
-            //List<StateVM> objSubMenuesBo = (from b in CompassEntities.tblStateMasters
-            //                                select new StateVM
-            //                                {
-            //                                    StateID = b.StateId,
-            //                                    StateName = b.StateName
-            //                                }).OrderBy(t => t.StateName).ToList();
-            List<StateVM> objSubMenuesBo = new List<StateVM>();
-            var Customerlist = CompassEntities.TblStateCityLogoes.Where(o => o.Active == 1 && o.FK_CustomerId == customerId).Select(o => o.FK_StateId).Distinct().ToList();
-
-            if (Customerlist != null)
+            using (CompassEntities CompassEntities = new CompassEntities())
             {
-                objSubMenuesBo = CompassEntities.tblStateMasters.Where(o => Customerlist.Contains(o.StateId)).Select(o => new StateVM
-                                  {
-                                      StateID = o.StateId,
-                                      StateName = o.StateName
-                                  }).OrderBy(o => o.StateName).ToList();
+                List<StateVM> objSubMenuesBo = new List<StateVM>();
+
+                // User Master Add/Edit form se customerId = 0 aata hai
+                // Is case me all states show karna hai
+                if (customerId <= 0)
+                {
+                    objSubMenuesBo = CompassEntities.tblStateMasters
+                        .Select(o => new StateVM
+                        {
+                            StateID = o.StateId,
+                            StateName = o.StateName
+                        })
+                        .OrderBy(o => o.StateName)
+                        .ToList();
+
+                    return objSubMenuesBo;
+                }
+
+                // Existing customer-wise logic same rakha hai
+                var Customerlist = CompassEntities.TblStateCityLogoes
+                    .Where(o => o.Active == 1 && o.FK_CustomerId == customerId)
+                    .Select(o => o.FK_StateId)
+                    .Distinct()
+                    .ToList();
+
+                if (Customerlist != null && Customerlist.Count > 0)
+                {
+                    objSubMenuesBo = CompassEntities.tblStateMasters
+                        .Where(o => Customerlist.Contains(o.StateId))
+                        .Select(o => new StateVM
+                        {
+                            StateID = o.StateId,
+                            StateName = o.StateName
+                        })
+                        .OrderBy(o => o.StateName)
+                        .ToList();
+                }
+
+                return objSubMenuesBo;
             }
-
-
-            return objSubMenuesBo;
         }
 
 
@@ -824,16 +845,49 @@ namespace GarronT.CMS.Model.BO
 
         public List<CityVM> GetActiveCityRecords(long stateId, long customerId)
         {
-            var list = new List<CityVM>();
-            CompassEntities CompassEntities = new CompassEntities();
-
-            var Customerlist = CompassEntities.TblStateCityLogoes.Where(o => o.Active == 1 && o.FK_StateId == stateId && o.FK_CustomerId == customerId).Select(o => o.FK_CityId).Distinct().ToList();
-
-            if (Customerlist != null)
+            using (CompassEntities CompassEntities = new CompassEntities())
             {
-                list = CompassEntities.TblCityMasters.Where(o => o.StateId == stateId && Customerlist.Contains(o.CityId)).Select(x => new CityVM { CityID = x.CityId, CityName = x.CityName }).ToList();
+                List<CityVM> list = new List<CityVM>();
+
+                // User Master Add/Edit form se customerId = 0 aata hai
+                // Is case me selected state ki all cities show karni hain
+                if (customerId <= 0)
+                {
+                    list = CompassEntities.TblCityMasters
+                        .Where(o => o.StateId == stateId)
+                        .Select(x => new CityVM
+                        {
+                            CityID = x.CityId,
+                            CityName = x.CityName
+                        })
+                        .OrderBy(x => x.CityName)
+                        .ToList();
+
+                    return list;
+                }
+
+                // Existing customer-wise logic same rakha hai
+                var Customerlist = CompassEntities.TblStateCityLogoes
+                    .Where(o => o.Active == 1 && o.FK_StateId == stateId && o.FK_CustomerId == customerId)
+                    .Select(o => o.FK_CityId)
+                    .Distinct()
+                    .ToList();
+
+                if (Customerlist != null && Customerlist.Count > 0)
+                {
+                    list = CompassEntities.TblCityMasters
+                        .Where(o => o.StateId == stateId && Customerlist.Contains(o.CityId))
+                        .Select(x => new CityVM
+                        {
+                            CityID = x.CityId,
+                            CityName = x.CityName
+                        })
+                        .OrderBy(x => x.CityName)
+                        .ToList();
+                }
+
+                return list;
             }
-            return list;
         }
 
 
@@ -929,44 +983,71 @@ namespace GarronT.CMS.Model.BO
             userName = "";
             CompassEntities database1 = new CompassEntities();
             UserAspNetPermissionVM AspNetPermissionVM = new UserAspNetPermissionVM();
+
             try
             {
                 var userDetail = database1.tblUsers.Where(o => o.UserID == UserId).FirstOrDefault();
+
+                if (userDetail == null)
+                {
+                    return AspNetPermissionVM;
+                }
+
                 userName = userDetail.FirstName;
+
                 var UserRoleList = database1.ASPNET_GetUserRoles(userDetail.UserID).ToList();
 
-                string MaxRoleId = UserRoleList.Where(o => o.Name == "Manager").Select(o => o.RoleId).FirstOrDefault();
-                if (string.IsNullOrEmpty(MaxRoleId))
-                {
-                    MaxRoleId = UserRoleList.Where(o => o.Name == "Field Supervisor").Select(o => o.RoleId).FirstOrDefault();
-                }
-                if (string.IsNullOrEmpty(MaxRoleId))
-                {
-                    MaxRoleId = UserRoleList.Where(o => o.Name == "Installer").Select(o => o.RoleId).FirstOrDefault();
-                }
-                if (string.IsNullOrEmpty(MaxRoleId))
-                {
-                    MaxRoleId = UserRoleList.Where(o => o.Name == "Auditor").Select(o => o.RoleId).FirstOrDefault();
-                }
-                if (string.IsNullOrEmpty(MaxRoleId))
-                {
-                    MaxRoleId = UserRoleList.Where(o => o.Name == "Warehouse Manager").Select(o => o.RoleId).FirstOrDefault();
-                }
-                if (string.IsNullOrEmpty(MaxRoleId))
-                {
-                    MaxRoleId = UserRoleList.Where(o => o.Name == "Reporter").Select(o => o.RoleId).FirstOrDefault();
-                }
+                bool isInvManagerUser = UserRoleList.Any(o => o.Name == "INV Manager");
 
-                if (string.IsNullOrEmpty(MaxRoleId))
-                {
-                    MaxRoleId = UserRoleList.Where(o => o.Name == "Customer").Select(o => o.RoleId).FirstOrDefault();
-                }
+                string MaxRoleId = "";
 
-                if (string.IsNullOrEmpty(MaxRoleId))
+                /*
+                 * INV Manager ke case me sirf INV Manager role permission dikhani hai.
+                 * Baaki roles ke liye old priority same rakhi hai.
+                 */
+                if (isInvManagerUser)
                 {
-                    MaxRoleId = UserRoleList.Where(o => o.Name == "IT Access").Select(o => o.RoleId).FirstOrDefault();
+                    MaxRoleId = UserRoleList.Where(o => o.Name == "INV Manager").Select(o => o.RoleId).FirstOrDefault();
                 }
+                else
+                {
+                    MaxRoleId = UserRoleList.Where(o => o.Name == "Manager").Select(o => o.RoleId).FirstOrDefault();
 
+                    if (string.IsNullOrEmpty(MaxRoleId))
+                    {
+                        MaxRoleId = UserRoleList.Where(o => o.Name == "Field Supervisor").Select(o => o.RoleId).FirstOrDefault();
+                    }
+
+                    if (string.IsNullOrEmpty(MaxRoleId))
+                    {
+                        MaxRoleId = UserRoleList.Where(o => o.Name == "Installer").Select(o => o.RoleId).FirstOrDefault();
+                    }
+
+                    if (string.IsNullOrEmpty(MaxRoleId))
+                    {
+                        MaxRoleId = UserRoleList.Where(o => o.Name == "Auditor").Select(o => o.RoleId).FirstOrDefault();
+                    }
+
+                    if (string.IsNullOrEmpty(MaxRoleId))
+                    {
+                        MaxRoleId = UserRoleList.Where(o => o.Name == "Warehouse Manager").Select(o => o.RoleId).FirstOrDefault();
+                    }
+
+                    if (string.IsNullOrEmpty(MaxRoleId))
+                    {
+                        MaxRoleId = UserRoleList.Where(o => o.Name == "Reporter").Select(o => o.RoleId).FirstOrDefault();
+                    }
+
+                    if (string.IsNullOrEmpty(MaxRoleId))
+                    {
+                        MaxRoleId = UserRoleList.Where(o => o.Name == "Customer").Select(o => o.RoleId).FirstOrDefault();
+                    }
+
+                    if (string.IsNullOrEmpty(MaxRoleId))
+                    {
+                        MaxRoleId = UserRoleList.Where(o => o.Name == "IT Access").Select(o => o.RoleId).FirstOrDefault();
+                    }
+                }
 
                 List<AspNetPermission> _permissions = database1.AspNetPermissions
                                   .OrderBy(wn => wn.Permission_Id)
@@ -980,8 +1061,13 @@ namespace GarronT.CMS.Model.BO
                                  .OrderBy(wn => wn.Name)
                                  .Include(a => a.AspNetRolePermissions)
                                  .ToList();
+
                 List<AccessPermissionBo> objAccessPermissionBo = new List<AccessPermissionBo>();
-                var ObjList = database1.AspNetRolePermissions.Where(o => o.Role_Id == MaxRoleId).ToList();
+
+                var ObjList = database1.AspNetRolePermissions
+                    .Where(o => o.Role_Id == MaxRoleId)
+                    .ToList();
+
                 foreach (var item in ObjList)
                 {
                     var Obj = new AccessPermissionBo();
@@ -1006,30 +1092,78 @@ namespace GarronT.CMS.Model.BO
 
                 List<UserAccessPermissionBo> objUserAccessPermissionBo = new List<UserAccessPermissionBo>();
 
-                var ObjList1 = database1.AspNetUserRolePermissions.Where(o => o.Active == true && o.UserId == UserId).ToList();
-                foreach (var item in ObjList1)
+                var ObjList1 = database1.AspNetUserRolePermissions
+                    .Where(o => o.Active == true && o.UserId == UserId)
+                    .ToList();
+
+                /*
+                 * INV Manager ke liye:
+                 * Sirf INV Manager global role permission se checked show karna hai.
+                 * Old Manager/Installer local permissions ko ignore karna hai.
+                 *
+                 * Normal roles ke liye:
+                 * Local permission available hai to local values show hongi,
+                 * missing hai to global permission fallback show hoga.
+                 */
+                foreach (var rolePermission in ObjList)
                 {
+                    var localPermission = ObjList1
+                        .Where(o => o.FKAspNetPermissionId == rolePermission.Permission_Id)
+                        .FirstOrDefault();
+
                     var Obj = new UserAccessPermissionBo();
-                    Obj.RoleAddChecked = item.AddOperation;
-                    Obj.RoleViewChecked = item.ViewOperation;
-                    Obj.RoleEditChecked = item.EditOperation;
-                    Obj.RoleDeleteChecked = item.DeleteOperation;
-                    Obj.PermissionID = item.FKAspNetPermissionId.ToString();
+
+                    if (!isInvManagerUser && localPermission != null)
+                    {
+                        Obj.RoleAddChecked = localPermission.AddOperation;
+                        Obj.RoleViewChecked = localPermission.ViewOperation;
+                        Obj.RoleEditChecked = localPermission.EditOperation;
+                        Obj.RoleDeleteChecked = localPermission.DeleteOperation;
+                        Obj.PermissionID = localPermission.FKAspNetPermissionId.ToString();
+                    }
+                    else
+                    {
+                        Obj.RoleAddChecked = rolePermission.AddOperation;
+                        Obj.RoleViewChecked = rolePermission.ViewOperation;
+                        Obj.RoleEditChecked = rolePermission.EditOperation;
+                        Obj.RoleDeleteChecked = rolePermission.DeleteOperation;
+                        Obj.PermissionID = rolePermission.Permission_Id.ToString();
+                    }
+
                     objUserAccessPermissionBo.Add(Obj);
                 }
 
+                /*
+                 * Local-only permissions sirf non-INV roles ke liye add karni hain.
+                 * INV Manager ke case me old Manager/Installer local permissions show nahi karni.
+                 */
+                if (!isInvManagerUser)
+                {
+                    foreach (var localOnlyPermission in ObjList1)
+                    {
+                        bool alreadyAdded = objUserAccessPermissionBo
+                            .Any(o => o.PermissionID == localOnlyPermission.FKAspNetPermissionId.ToString());
+
+                        if (!alreadyAdded)
+                        {
+                            var Obj = new UserAccessPermissionBo();
+                            Obj.RoleAddChecked = localOnlyPermission.AddOperation;
+                            Obj.RoleViewChecked = localOnlyPermission.ViewOperation;
+                            Obj.RoleEditChecked = localOnlyPermission.EditOperation;
+                            Obj.RoleDeleteChecked = localOnlyPermission.DeleteOperation;
+                            Obj.PermissionID = localOnlyPermission.FKAspNetPermissionId.ToString();
+
+                            objUserAccessPermissionBo.Add(Obj);
+                        }
+                    }
+                }
 
                 AspNetPermissionVM.AspNetPermissionList = _permissions;
                 AspNetPermissionVM.ObjAccessPermissionBoList = objAccessPermissionBo;
-
                 AspNetPermissionVM.objUserAccessPermissionBo = objUserAccessPermissionBo;
-
                 AspNetPermissionVM.AspNetRoleList = _role;
                 AspNetPermissionVM.UpdatePermission = false;
                 AspNetPermissionVM.UpdateMessage = "";
-
-              
-
             }
             catch (Exception ex)
             {
@@ -1115,77 +1249,123 @@ namespace GarronT.CMS.Model.BO
 
         public void AddUserPermission(long UserId, int currentUserId)
         {
-
-            CompassEntities database = new CompassEntities();
-
-            var UserRoleList = database.ASPNET_GetUserRoles(UserId).ToList();
-            /*Set user role priority*/
-            string MaxRoleId = UserRoleList.Where(o => o.Name == "Manager").Select(o => o.RoleId).FirstOrDefault();
-            if (string.IsNullOrEmpty(MaxRoleId))
+            try
             {
-                MaxRoleId = UserRoleList.Where(o => o.Name == "Field Supervisor").Select(o => o.RoleId).FirstOrDefault();
+                using (CompassEntities database = new CompassEntities())
+                {
+                    var UserRoleList = database.ASPNET_GetUserRoles(UserId).ToList();
+
+                    /* Set user role priority */
+                    string MaxRoleId = UserRoleList.Where(o => o.Name == "Manager").Select(o => o.RoleId).FirstOrDefault();
+
+                    if (string.IsNullOrEmpty(MaxRoleId))
+                    {
+                        MaxRoleId = UserRoleList.Where(o => o.Name == "INV Manager").Select(o => o.RoleId).FirstOrDefault();
+                    }
+
+                    if (string.IsNullOrEmpty(MaxRoleId))
+                    {
+                        MaxRoleId = UserRoleList.Where(o => o.Name == "Field Supervisor").Select(o => o.RoleId).FirstOrDefault();
+                    }
+
+                    if (string.IsNullOrEmpty(MaxRoleId))
+                    {
+                        MaxRoleId = UserRoleList.Where(o => o.Name == "Installer").Select(o => o.RoleId).FirstOrDefault();
+                    }
+
+                    if (string.IsNullOrEmpty(MaxRoleId))
+                    {
+                        MaxRoleId = UserRoleList.Where(o => o.Name == "Auditor").Select(o => o.RoleId).FirstOrDefault();
+                    }
+
+                    if (string.IsNullOrEmpty(MaxRoleId))
+                    {
+                        MaxRoleId = UserRoleList.Where(o => o.Name == "Warehouse Manager").Select(o => o.RoleId).FirstOrDefault();
+                    }
+
+                    if (string.IsNullOrEmpty(MaxRoleId))
+                    {
+                        MaxRoleId = UserRoleList.Where(o => o.Name == "Reporter").Select(o => o.RoleId).FirstOrDefault();
+                    }
+
+                    if (string.IsNullOrEmpty(MaxRoleId))
+                    {
+                        MaxRoleId = UserRoleList.Where(o => o.Name == "Customer").Select(o => o.RoleId).FirstOrDefault();
+                    }
+
+                    if (string.IsNullOrEmpty(MaxRoleId))
+                    {
+                        MaxRoleId = UserRoleList.Where(o => o.Name == "IT Access").Select(o => o.RoleId).FirstOrDefault();
+                    }
+
+                    if (string.IsNullOrEmpty(MaxRoleId))
+                    {
+                        return;
+                    }
+
+                    /*
+                     * Safety:
+                     * Agar kisi reason se user permission pehle se bani ho,
+                     * to duplicate active records avoid karne ke liye inactive kar do.
+                     */
+                    var oldUserPermissions = database.AspNetUserRolePermissions
+                        .Where(o => o.UserId == UserId)
+                        .ToList();
+
+                    foreach (var oldPermission in oldUserPermissions)
+                    {
+                        oldPermission.Active = false;
+                        oldPermission.ModifiedBy = currentUserId;
+                        oldPermission.ModifiedOn = DateTime.Now;
+                    }
+
+                    /*
+                     * Global role permissions se local user permissions copy/sync karo.
+                     */
+                    var CurrentRolePermissionList = database.AspNetRolePermissions
+                        .Where(o => o.Role_Id == MaxRoleId)
+                        .ToList();
+
+                    foreach (var rolePermission in CurrentRolePermissionList)
+                    {
+                        var userPermission = oldUserPermissions
+                            .Where(o => o.FKAspNetPermissionId == rolePermission.Permission_Id)
+                            .FirstOrDefault();
+
+                        if (userPermission != null)
+                        {
+                            userPermission.ViewOperation = rolePermission.ViewOperation;
+                            userPermission.AddOperation = rolePermission.AddOperation;
+                            userPermission.EditOperation = rolePermission.EditOperation;
+                            userPermission.DeleteOperation = rolePermission.DeleteOperation;
+                            userPermission.Active = true;
+                            userPermission.ModifiedBy = currentUserId;
+                            userPermission.ModifiedOn = DateTime.Now;
+                        }
+                        else
+                        {
+                            userPermission = new AspNetUserRolePermission();
+                            userPermission.FKAspNetPermissionId = rolePermission.Permission_Id;
+                            userPermission.UserId = UserId;
+                            userPermission.ViewOperation = rolePermission.ViewOperation;
+                            userPermission.AddOperation = rolePermission.AddOperation;
+                            userPermission.EditOperation = rolePermission.EditOperation;
+                            userPermission.DeleteOperation = rolePermission.DeleteOperation;
+                            userPermission.Active = true;
+                            userPermission.CreatedBy = currentUserId;
+                            userPermission.CreatedOn = DateTime.Now;
+
+                            database.AspNetUserRolePermissions.Add(userPermission);
+                        }
+                    }
+
+                    database.SaveChanges();
+                }
             }
-            if (string.IsNullOrEmpty(MaxRoleId))
+            catch (Exception ex)
             {
-                MaxRoleId = UserRoleList.Where(o => o.Name == "Installer").Select(o => o.RoleId).FirstOrDefault();
-            }
-            if (string.IsNullOrEmpty(MaxRoleId))
-            {
-                MaxRoleId = UserRoleList.Where(o => o.Name == "Auditor").Select(o => o.RoleId).FirstOrDefault();
-            }
-            if (string.IsNullOrEmpty(MaxRoleId))
-            {
-                MaxRoleId = UserRoleList.Where(o => o.Name == "Warehouse Manager").Select(o => o.RoleId).FirstOrDefault();
-            }
-            if (string.IsNullOrEmpty(MaxRoleId))
-            {
-                MaxRoleId = UserRoleList.Where(o => o.Name == "Reporter").Select(o => o.RoleId).FirstOrDefault();
-            }
-
-            if (string.IsNullOrEmpty(MaxRoleId))
-            {
-                MaxRoleId = UserRoleList.Where(o => o.Name == "Customer").Select(o => o.RoleId).FirstOrDefault();
-            }
-
-            if (string.IsNullOrEmpty(MaxRoleId))
-            {
-                MaxRoleId = UserRoleList.Where(o => o.Name == "IT Access").Select(o => o.RoleId).FirstOrDefault();
-            }
-
-            var ObjNewPermissionList = database.AspNetRolePermissions.Select(o =>
-                                         new AccessPermissionBo
-                                         {
-                                             PermissionID = o.Permission_Id.ToString(),
-                                             RoleID = o.Role_Id,
-                                             RoleAddChecked = o.AddOperation,
-                                             RoleEditChecked = o.EditOperation,
-                                             RoleDeleteChecked = o.DeleteOperation,
-                                             RoleViewChecked = o.ViewOperation
-                                         }).ToList();
-
-            /*Get user existing role permissions*/
-            var CurrentUserPermissionList = ObjNewPermissionList.Where(o => o.RoleID == MaxRoleId).ToList();
-
-            foreach (var item2 in CurrentUserPermissionList)
-            {
-
-                /*If add permission given*/
-
-                var abcItem = new AspNetUserRolePermission();
-                abcItem.FKAspNetPermissionId = int.Parse(item2.PermissionID);
-                abcItem.UserId = UserId;
-                abcItem.AddOperation = item2.RoleAddChecked;
-                abcItem.DeleteOperation = item2.RoleDeleteChecked;
-                abcItem.EditOperation = item2.RoleEditChecked;
-                abcItem.ViewOperation = item2.RoleViewChecked;
-                abcItem.Active = true;
-                abcItem.CreatedBy = currentUserId;
-                abcItem.CreatedOn = DateTime.Now;
-                database.AspNetUserRolePermissions.Add(abcItem);
-                database.SaveChanges();
-
-
-
+                System.Diagnostics.Debug.WriteLine("AddUserPermission Error: " + ex.Message);
+                // Do not throw, otherwise create user notification/redirect can break.
             }
         }
 
@@ -1193,130 +1373,215 @@ namespace GarronT.CMS.Model.BO
 
         public void UpdateUserPermission(long UserId, int currentUserId)
         {
-            CompassEntities database = new CompassEntities();
-
-
-
-            var UserRoleList = database.ASPNET_GetUserRoles(UserId).ToList();
-            /*Set user role priority*/
-            string MaxRoleId = UserRoleList.Where(o => o.Name == "Manager").Select(o => o.RoleId).FirstOrDefault();
-            if (string.IsNullOrEmpty(MaxRoleId))
+            try
             {
-                MaxRoleId = UserRoleList.Where(o => o.Name == "Field Supervisor").Select(o => o.RoleId).FirstOrDefault();
-            }
-            if (string.IsNullOrEmpty(MaxRoleId))
-            {
-                MaxRoleId = UserRoleList.Where(o => o.Name == "Installer").Select(o => o.RoleId).FirstOrDefault();
-            }
-            if (string.IsNullOrEmpty(MaxRoleId))
-            {
-                MaxRoleId = UserRoleList.Where(o => o.Name == "Auditor").Select(o => o.RoleId).FirstOrDefault();
-            }
-            if (string.IsNullOrEmpty(MaxRoleId))
-            {
-                MaxRoleId = UserRoleList.Where(o => o.Name == "Warehouse Manager").Select(o => o.RoleId).FirstOrDefault();
-            }
-            if (string.IsNullOrEmpty(MaxRoleId))
-            {
-                MaxRoleId = UserRoleList.Where(o => o.Name == "Reporter").Select(o => o.RoleId).FirstOrDefault();
-            }
-
-            if (string.IsNullOrEmpty(MaxRoleId))
-            {
-                MaxRoleId = UserRoleList.Where(o => o.Name == "Customer").Select(o => o.RoleId).FirstOrDefault();
-            }
-
-            if (string.IsNullOrEmpty(MaxRoleId))
-            {
-                MaxRoleId = UserRoleList.Where(o => o.Name == "IT Access").Select(o => o.RoleId).FirstOrDefault();
-            }
-
-
-            /*Get user existing role permissions*/
-            var UserAccessList = database.AspNetUserRolePermissions.Where(o => o.Active == true && o.UserId == UserId).ToList();
-
-            var CurrentRolePermissionList = database.AspNetRolePermissions.Where(o => o.Role_Id == MaxRoleId).Select(o =>
-                  new AccessPermissionBo
-                  {
-                      PermissionID = o.Permission_Id.ToString(),
-                      RoleID = o.Role_Id,
-                      RoleAddChecked = o.AddOperation,
-                      RoleEditChecked = o.EditOperation,
-                      RoleDeleteChecked = o.DeleteOperation,
-                      RoleViewChecked = o.ViewOperation
-                  }).ToList();
-
-            foreach (var item2 in CurrentRolePermissionList)
-            {
-                /*
-                 * Check user permission 1 by 1 per form.
-                 * Compare with old list & if the permission seems updated then check status for user & update.                              
-                 */
-
-                var abcItem = UserAccessList.Where(o => o.FKAspNetPermissionId.ToString() == item2.PermissionID).FirstOrDefault();
-
-
-                if (abcItem != null)
+                using (CompassEntities database = new CompassEntities())
                 {
+                    var UserRoleList = database.ASPNET_GetUserRoles(UserId).ToList();
 
-                    /*Compare if changes found then only update the record else not required to update*/
-                    if (abcItem.AddOperation != item2.RoleAddChecked
-                        || abcItem.DeleteOperation != item2.RoleDeleteChecked
-                        || abcItem.EditOperation != item2.RoleEditChecked
-                        || abcItem.ViewOperation != item2.RoleViewChecked)
+                    bool isInvManagerUser = UserRoleList.Any(o => o.Name == "INV Manager");
+
+                    /*
+                     * Normal role priority old behavior ke according rakhi hai.
+                     * Sirf INV Manager user ke case me INV Manager ko force priority milegi.
+                     */
+                    string MaxRoleId = "";
+
+                    if (isInvManagerUser)
                     {
+                        MaxRoleId = UserRoleList
+                            .Where(o => o.Name == "INV Manager")
+                            .Select(o => o.RoleId)
+                            .FirstOrDefault();
+                    }
+                    else
+                    {
+                        MaxRoleId = UserRoleList.Where(o => o.Name == "Manager").Select(o => o.RoleId).FirstOrDefault();
 
-                        /*If add permission given*/
-                        if (abcItem.AddOperation != item2.RoleAddChecked)
+                        if (string.IsNullOrEmpty(MaxRoleId))
                         {
-                            abcItem.AddOperation = item2.RoleAddChecked;
+                            MaxRoleId = UserRoleList.Where(o => o.Name == "Field Supervisor").Select(o => o.RoleId).FirstOrDefault();
                         }
 
-                        /*If delete permission given*/
-                        if (abcItem.DeleteOperation != item2.RoleDeleteChecked)
+                        if (string.IsNullOrEmpty(MaxRoleId))
                         {
-                            abcItem.DeleteOperation = item2.RoleDeleteChecked;
+                            MaxRoleId = UserRoleList.Where(o => o.Name == "Installer").Select(o => o.RoleId).FirstOrDefault();
                         }
 
-                        /*If edit permission given*/
-                        if (abcItem.EditOperation != item2.RoleEditChecked)
+                        if (string.IsNullOrEmpty(MaxRoleId))
                         {
-                            abcItem.EditOperation = item2.RoleEditChecked;
+                            MaxRoleId = UserRoleList.Where(o => o.Name == "Auditor").Select(o => o.RoleId).FirstOrDefault();
                         }
 
-                        /*If view permission given*/
-                        if (abcItem.ViewOperation != item2.RoleViewChecked)
+                        if (string.IsNullOrEmpty(MaxRoleId))
                         {
-                            abcItem.ViewOperation = item2.RoleViewChecked;
+                            MaxRoleId = UserRoleList.Where(o => o.Name == "Warehouse Manager").Select(o => o.RoleId).FirstOrDefault();
                         }
 
-                        abcItem.ModifiedBy = currentUserId;
-                        abcItem.ModifiedOn = DateTime.Now;
-                        database.SaveChanges();
+                        if (string.IsNullOrEmpty(MaxRoleId))
+                        {
+                            MaxRoleId = UserRoleList.Where(o => o.Name == "Reporter").Select(o => o.RoleId).FirstOrDefault();
+                        }
+
+                        if (string.IsNullOrEmpty(MaxRoleId))
+                        {
+                            MaxRoleId = UserRoleList.Where(o => o.Name == "Customer").Select(o => o.RoleId).FirstOrDefault();
+                        }
+
+                        if (string.IsNullOrEmpty(MaxRoleId))
+                        {
+                            MaxRoleId = UserRoleList.Where(o => o.Name == "IT Access").Select(o => o.RoleId).FirstOrDefault();
+                        }
                     }
 
+                    if (string.IsNullOrEmpty(MaxRoleId))
+                    {
+                        return;
+                    }
 
-                }
-                else
-                {
-                    /*If add permission given*/
+                    /*
+                     * SPECIAL CASE ONLY FOR INV Manager:
+                     * Jab user ko edit karke INV Manager banaya jaye,
+                     * to old Manager/Installer/other role ki local permissions inactive hongi
+                     * aur sirf INV Manager global permissions local me active/checked hongi.
+                     */
+                    if (isInvManagerUser)
+                    {
+                        var userAccessList = database.AspNetUserRolePermissions
+                            .Where(o => o.UserId == UserId)
+                            .ToList();
 
-                    abcItem = new AspNetUserRolePermission();
-                    abcItem.FKAspNetPermissionId = int.Parse(item2.PermissionID);
-                    abcItem.UserId = UserId;
-                    abcItem.AddOperation = item2.RoleAddChecked;
-                    abcItem.DeleteOperation = item2.RoleDeleteChecked;
-                    abcItem.EditOperation = item2.RoleEditChecked;
-                    abcItem.ViewOperation = item2.RoleViewChecked;
-                    abcItem.Active = true;
-                    abcItem.CreatedBy = currentUserId;
-                    abcItem.CreatedOn = DateTime.Now;
-                    database.AspNetUserRolePermissions.Add(abcItem);
-                    database.SaveChanges();
+                        foreach (var oldPermission in userAccessList)
+                        {
+                            oldPermission.Active = false;
+                            oldPermission.ModifiedBy = currentUserId;
+                            oldPermission.ModifiedOn = DateTime.Now;
+                        }
+
+                        var invRolePermissionList = database.AspNetRolePermissions
+                            .Where(o => o.Role_Id == MaxRoleId)
+                            .ToList();
+
+                        foreach (var rolePermission in invRolePermissionList)
+                        {
+                            var userPermission = userAccessList
+                                .Where(o => o.FKAspNetPermissionId == rolePermission.Permission_Id)
+                                .FirstOrDefault();
+
+                            if (userPermission != null)
+                            {
+                                userPermission.ViewOperation = rolePermission.ViewOperation;
+                                userPermission.AddOperation = rolePermission.AddOperation;
+                                userPermission.EditOperation = rolePermission.EditOperation;
+                                userPermission.DeleteOperation = rolePermission.DeleteOperation;
+                                userPermission.Active = true;
+                                userPermission.ModifiedBy = currentUserId;
+                                userPermission.ModifiedOn = DateTime.Now;
+                            }
+                            else
+                            {
+                                userPermission = new AspNetUserRolePermission();
+                                userPermission.FKAspNetPermissionId = rolePermission.Permission_Id;
+                                userPermission.UserId = UserId;
+                                userPermission.ViewOperation = rolePermission.ViewOperation;
+                                userPermission.AddOperation = rolePermission.AddOperation;
+                                userPermission.EditOperation = rolePermission.EditOperation;
+                                userPermission.DeleteOperation = rolePermission.DeleteOperation;
+                                userPermission.Active = true;
+                                userPermission.CreatedBy = currentUserId;
+                                userPermission.CreatedOn = DateTime.Now;
+
+                                database.AspNetUserRolePermissions.Add(userPermission);
+                            }
+                        }
+
+                        database.SaveChanges();
+                        return;
+                    }
+
+                    /*
+                     * OLD NORMAL LOGIC FOR ALL OTHER ROLES:
+                     * Baaki roles ke liye existing behavior same rakha hai.
+                     */
+                    var UserAccessList = database.AspNetUserRolePermissions
+                        .Where(o => o.Active == true && o.UserId == UserId)
+                        .ToList();
+
+                    var CurrentRolePermissionList = database.AspNetRolePermissions
+                        .Where(o => o.Role_Id == MaxRoleId)
+                        .Select(o => new AccessPermissionBo
+                        {
+                            PermissionID = o.Permission_Id.ToString(),
+                            RoleID = o.Role_Id,
+                            RoleAddChecked = o.AddOperation,
+                            RoleEditChecked = o.EditOperation,
+                            RoleDeleteChecked = o.DeleteOperation,
+                            RoleViewChecked = o.ViewOperation
+                        })
+                        .ToList();
+
+                    foreach (var item2 in CurrentRolePermissionList)
+                    {
+                        var abcItem = UserAccessList
+                            .Where(o => o.FKAspNetPermissionId.ToString() == item2.PermissionID)
+                            .FirstOrDefault();
+
+                        if (abcItem != null)
+                        {
+                            if (abcItem.AddOperation != item2.RoleAddChecked
+                                || abcItem.DeleteOperation != item2.RoleDeleteChecked
+                                || abcItem.EditOperation != item2.RoleEditChecked
+                                || abcItem.ViewOperation != item2.RoleViewChecked)
+                            {
+                                if (abcItem.AddOperation != item2.RoleAddChecked)
+                                {
+                                    abcItem.AddOperation = item2.RoleAddChecked;
+                                }
+
+                                if (abcItem.DeleteOperation != item2.RoleDeleteChecked)
+                                {
+                                    abcItem.DeleteOperation = item2.RoleDeleteChecked;
+                                }
+
+                                if (abcItem.EditOperation != item2.RoleEditChecked)
+                                {
+                                    abcItem.EditOperation = item2.RoleEditChecked;
+                                }
+
+                                if (abcItem.ViewOperation != item2.RoleViewChecked)
+                                {
+                                    abcItem.ViewOperation = item2.RoleViewChecked;
+                                }
+
+                                abcItem.ModifiedBy = currentUserId;
+                                abcItem.ModifiedOn = DateTime.Now;
+                                database.SaveChanges();
+                            }
+                        }
+                        else
+                        {
+                            abcItem = new AspNetUserRolePermission();
+                            abcItem.FKAspNetPermissionId = int.Parse(item2.PermissionID);
+                            abcItem.UserId = UserId;
+                            abcItem.AddOperation = item2.RoleAddChecked;
+                            abcItem.DeleteOperation = item2.RoleDeleteChecked;
+                            abcItem.EditOperation = item2.RoleEditChecked;
+                            abcItem.ViewOperation = item2.RoleViewChecked;
+                            abcItem.Active = true;
+                            abcItem.CreatedBy = currentUserId;
+                            abcItem.CreatedOn = DateTime.Now;
+
+                            database.AspNetUserRolePermissions.Add(abcItem);
+                            database.SaveChanges();
+                        }
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("UpdateUserPermission Error: " + ex.Message);
+            }
         }
-
 
 
     }

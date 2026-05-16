@@ -47,6 +47,22 @@
           <Property Name="created_at" Type="datetime" />
           <Property Name="updated_at" Type="datetime" />
         </EntityType>
+        <EntityType Name="WarehouseTransfer">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SerialNumber" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="FromWarehouseId" Type="bigint" Nullable="false" />
+          <!-- changed from int -->
+          <Property Name="ToWarehouseId" Type="bigint" Nullable="false" />
+          <!-- changed from int -->
+          <Property Name="TransferDate" Type="datetime" Nullable="false" />
+          <Property Name="TransferredByUserId" Type="bigint" Nullable="false" />
+          <!-- changed from int -->
+          <Property Name="ProjectId" Type="bigint" Nullable="false" />
+          <Property Name="CreatedOn" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="Appointment">
           <Key>
             <PropertyRef Name="AppointmentID" />
@@ -3739,6 +3755,7 @@
           <EntitySet Name="__MigrationHistory" EntityType="Self.__MigrationHistory" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Missing_Inventory" EntityType="Self.Missing_Inventory" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="INVInstallerReport" EntityType="Self.INVInstallerReport" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="WarehouseTransfer" EntityType="Self.WarehouseTransfer" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Appointment" EntityType="Self.Appointment" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetPermissions" EntityType="Self.AspNetPermissions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetRolePermissions" EntityType="Self.AspNetRolePermissions" Schema="dbo" store:Type="Tables" />
@@ -4266,6 +4283,7 @@
           <EntitySet Name="C__MigrationHistory" EntityType="CompassModel.C__MigrationHistory" />
           <EntitySet Name="Missing_Inventory" EntityType="CompassModel.Missing_Inventory" />
           <EntitySet Name="INVInstallerReport" EntityType="CompassModel.INVInstallerReport" />
+          <EntitySet Name="WarehouseTransfer" EntityType="CompassModel.WarehouseTransfer" />
           <EntitySet Name="AspNetUserClaims" EntityType="CompassModel.AspNetUserClaim" />
           <EntitySet Name="AspNetUserLogins" EntityType="CompassModel.AspNetUserLogin" />
           <EntitySet Name="AspNetUsers" EntityType="CompassModel.AspNetUser" />
@@ -10108,6 +10126,22 @@
           <Property Name="created_at" Type="DateTime" />
           <Property Name="updated_at" Type="DateTime" />
         </EntityType>
+        <EntityType Name="WarehouseTransfer">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SerialNumber" Type="String" MaxLength="50" Nullable="false" />
+          <Property Name="FromWarehouseId" Type="Int64" Nullable="false" />
+          <!-- changed from Int32 -->
+          <Property Name="ToWarehouseId" Type="Int64" Nullable="false" />
+          <!-- changed from Int32 -->
+          <Property Name="TransferDate" Type="DateTime" Nullable="false" />
+          <Property Name="TransferredByUserId" Type="Int64" Nullable="false" />
+          <!-- changed from Int32 -->
+          <Property Name="ProjectId" Type="Int64" Nullable="false" />
+          <Property Name="CreatedOn" Type="DateTime" Nullable="false" />
+        </EntityType>
         <Association Name="FK_TblUnAllocatedSkipHistory_TblProjectFieldData">
           <End Type="CompassModel.TblProjectFieldData" Role="TblProjectFieldData" Multiplicity="0..1" />
           <End Type="CompassModel.TblUnAllocatedSkipHistory" Role="TblUnAllocatedSkipHistory" Multiplicity="*" />
@@ -10181,6 +10215,20 @@
                 <ScalarProperty Name="project_name" ColumnName="project_name" />
                 <ScalarProperty Name="created_at" ColumnName="created_at" />
                 <ScalarProperty Name="updated_at" ColumnName="updated_at" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="WarehouseTransfer">
+            <EntityTypeMapping TypeName="CompassModel.WarehouseTransfer">
+              <MappingFragment StoreEntitySet="WarehouseTransfer">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="SerialNumber" ColumnName="SerialNumber" />
+                <ScalarProperty Name="FromWarehouseId" ColumnName="FromWarehouseId" />
+                <ScalarProperty Name="ToWarehouseId" ColumnName="ToWarehouseId" />
+                <ScalarProperty Name="TransferDate" ColumnName="TransferDate" />
+                <ScalarProperty Name="TransferredByUserId" ColumnName="TransferredByUserId" />
+                <ScalarProperty Name="ProjectId" ColumnName="ProjectId" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

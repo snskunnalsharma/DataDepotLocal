@@ -1727,8 +1727,6 @@ try {
 
     var BindRoles
     function Edit(UserID) {
-        
-
 
         var urlGetData = $('#urlGetData').val();
 
@@ -1743,79 +1741,123 @@ try {
             },
             data: { id: UserID },
             success: function (msg) {
-                
 
-                // RemoveErrorClass();
+                if (!msg || !msg.modelData) {
+                    toastr["error"]("User details not found.", "Error Notification");
+                    return;
+                }
+
+                var m = msg.modelData;
+
+                // First fill basic user details before dropdown/ajax logic
+                $("#txtUserId").val(m.UserId || '');
+                $("#txtLogInId").val(m.UserName || m.LogInId || '');
+                $("#txtEmail").val(m.Email || '');
+                $("#txtMobileNo").val(m.MobileNo || '');
+                $("#txtUserAddress").val(m.Address || '');
+                $("#txtUserFullName").val(m.FirstName || m.UserFullName || '');
+                $("#txtPassword").val(m.Password || '');
+                $("#txtConfirmPassword").val(m.Password || '');
+                $("#txtZip").val(m.ZipCode || '');
+                $("#txtHomePhoneNumber").val(m.HomePhoneNumber || '');
+                $("#txtJobType").val(m.JobType || '');
+
                 TmpListRemove(0);
-                GetState()
-                BindCity(msg.modelData.StateID)
-                GetRole();
-                GetVehicleMakeList()
-                $("#txtUserId").val(msg.modelData.UserId);
-                $("#txtLogInId").val(msg.modelData.UserName);
-                $("#txtEmail").val(msg.modelData.Email);
-                $("#txtMobileNo").val(msg.modelData.MobileNo);
-                $("#txtUserAddress").val(msg.modelData.Address);
-                //$("#txtUserFullName").val(msg.modelData.FirstName);
-                $("#txtUserFullName").val(msg.modelData.FirstName);
-                $("#txtPassword").val(msg.modelData.Password);
-                $("#txtConfirmPassword").val(msg.modelData.Password);
 
-                //new added 
-                $('#ddlState').find('option[value=' + msg.modelData.StateID + ']').attr('selected', 'selected');
-
-                $('#ddlCity').find('option[value=' + msg.modelData.CityID + ']').attr('selected', 'selected');
-
-                $('#ddlGender').find('option[value=' + msg.modelData.Gender + ']').attr('selected', 'selected');
-                $('#ddlGender').trigger('chosen:updated');
-
-                //Image             
-                ChangePreviewLogo(msg.modelData.InstallerImage);
-                ChangevehiclePreviewLogo(msg.modelData.ImageofVehicle)
-
-                BindUserFormTypeByUserID(msg.modelData.UserId)
-
-                $("#txtZip").val(msg.modelData.ZipCode);
-
-
-                $("#txtHomePhoneNumber").val(msg.modelData.HomePhoneNumber);
-                if (msg.modelData.VehicleMake != null && msg.modelData.VehicleMake != "") {
-                    $('#ddlVehicleMake').find('option[value=' + msg.modelData.VehicleMake + ']').attr('selected', 'selected');
-                    $('#ddlVehicleMake').trigger("change");
-                }
-                if (msg.modelData.VehicleModel != null && msg.modelData.VehicleMake != "") {
-                    $('#ddlVehicleModel').find('option[value=' + msg.modelData.VehicleModel + ']').attr('selected', 'selected');
+                try {
+                    GetState();
+                } catch (e) {
+                    console.log("GetState error:", e);
                 }
 
-                $("#txtYear").val(msg.modelData.VehicleYear);
-                $("#txtLicensePlateNumber").val(msg.modelData.VehicleLicensePlateNumber);
-                $("#txtVehicle").val(msg.modelData.Vehicle);
-                $("#txtColor").val(msg.modelData.VehicleColor);
-                // $("#txtImageofVehicle").val(msg.modelData.ImageofVehicle);
-                $("#txtJobType").val(msg.modelData.JobType);
+                // State and City selected value bind
+                if (m.StateID != undefined && m.StateID != null && m.StateID != "" && m.StateID != "0") {
 
-                if (msg.modelData.ManagerId != undefined) {
+                    $('#ddlState').val(m.StateID).trigger('chosen:updated');
 
-                    $('#ManagerId').find('option[value=' + msg.modelData.ManagerId + ']').attr('selected', 'selected').trigger('chosen:updated');
-                }
-                SetFieldSupervisorDropdown();
-                if (msg.modelData.FieldSupervisorId != undefined) {
-                                       
-                    $('#FieldSupervisorId').find('option[value=' + msg.modelData.FieldSupervisorId + ']').attr('selected', 'selected').trigger('chosen:updated');
+                    try {
+                        BindCity(m.StateID);
+                    } catch (e) {
+                        console.log("BindCity error:", e);
+                    }
+
+                    $('#ddlState').val(m.StateID).trigger('chosen:updated');
                 }
 
-
-                if (msg.modelData.ManagerApprovalRequired != undefined) {
-                    $('#ManagerApprovalRequired').val(msg.modelData.ManagerApprovalRequired)
-                }
-                else {
-                    $('#ManagerApprovalRequired').val(2);
+                if (m.CityID != undefined && m.CityID != null && m.CityID != "" && m.CityID != "0") {
+                    $('#ddlCity').val(m.CityID).trigger('chosen:updated');
                 }
 
+                if (m.Gender != undefined && m.Gender != null && m.Gender != "") {
+                    $('#ddlGender').val(m.Gender).trigger('chosen:updated');
+                }
 
+                try {
+                    GetRole();
+                } catch (e) {
+                    console.log("GetRole error:", e);
+                }
+
+                try {
+                    GetVehicleMakeList();
+                } catch (e) {
+                    console.log("GetVehicleMakeList error:", e);
+                }
+
+                try {
+                    ChangePreviewLogo(m.InstallerImage || '');
+                } catch (e) {
+                    console.log("ChangePreviewLogo error:", e);
+                }
+
+                try {
+                    ChangevehiclePreviewLogo(m.ImageofVehicle || '');
+                } catch (e) {
+                    console.log("ChangevehiclePreviewLogo error:", e);
+                }
+
+                try {
+                    BindUserFormTypeByUserID(m.UserId);
+                } catch (e) {
+                    console.log("BindUserFormTypeByUserID error:", e);
+                }
+
+                if (m.VehicleMake != null && m.VehicleMake != "") {
+                    $('#ddlVehicleMake').val(m.VehicleMake).trigger("change").trigger('chosen:updated');
+                }
+
+                if (m.VehicleModel != null && m.VehicleModel != "") {
+                    $('#ddlVehicleModel').val(m.VehicleModel).trigger('chosen:updated');
+                }
+
+                $("#txtYear").val(m.VehicleYear || '');
+                $("#txtLicensePlateNumber").val(m.VehicleLicensePlateNumber || '');
+                $("#txtVehicle").val(m.Vehicle || '');
+                $("#txtColor").val(m.VehicleColor || '');
+
+                if (m.ManagerApprovalRequired != undefined && m.ManagerApprovalRequired != null) {
+                    $('#ManagerApprovalRequired').val(m.ManagerApprovalRequired).trigger('chosen:updated');
+                } else {
+                    $('#ManagerApprovalRequired').val(2).trigger('chosen:updated');
+                }
+
+                if (m.ManagerId != undefined && m.ManagerId != null && m.ManagerId != "") {
+                    $('#ManagerId').val(m.ManagerId).trigger('chosen:updated');
+                }
+
+                try {
+                    SetFieldSupervisorDropdown();
+                } catch (e) {
+                    console.log("SetFieldSupervisorDropdown error:", e);
+                }
+
+                if (m.FieldSupervisorId != undefined && m.FieldSupervisorId != null && m.FieldSupervisorId != "") {
+                    $('#FieldSupervisorId').val(m.FieldSupervisorId).trigger('chosen:updated');
+                }
 
                 $('.chosen-select').trigger('chosen:updated');
-                if (msg.ServiceRatesList.length > 0) {
+
+                if (msg.ServiceRatesList && msg.ServiceRatesList.length > 0) {
                     var count = 0;
                     var $div;
                     $("#servicesDiv").empty();
@@ -1823,29 +1865,33 @@ try {
                     $.each(msg.ServiceRatesList, function (index, item) {
 
                         if (count == 0) {
-                            //$div = $("<div>", { class: "form-group col-lg-12 col-sm-12 col-xs-12 usr_mob" });
-
                             $div = $("<div>", { class: "form-group " });
 
                             var $ServiceID = $("<input>", { name: item.ID, type: "hidden", value: item.ID, class: "hndserviceID" });
 
                             var $label = $("<label>", {
-                                text: item.ServiceName, class: "col-lg-2 col-sm-1 control-label-1 ", style: "margin-left: -7%;margin-right:2%;margin-bottom:3%;width:42%;white-space:normal; "
+                                text: item.ServiceName,
+                                class: "col-lg-2 col-sm-1 control-label-1 ",
+                                style: "margin-left: -7%;margin-right:2%;margin-bottom:3%;width:42%;white-space:normal; "
                             });
 
-                            var $input = $("<input>", { id: item.ServiceID, value: item.ServiceRates, type: "text", maxlength: "50", style: "text-align:right", class: "col-lg-4 col-sm-5 Decimal-Only serviceinput" });
+                            var $input = $("<input>", {
+                                id: item.ServiceID,
+                                value: item.ServiceRates,
+                                type: "text",
+                                maxlength: "50",
+                                style: "text-align:right",
+                                class: "col-lg-4 col-sm-5 Decimal-Only serviceinput"
+                            });
 
                             var $select = $("<select>", { id: "", class: "" });
+
                             if (item.RatesUnit == "%") {
                                 var $option1 = $("<option>", { text: "$", value: "$", class: "" });
                                 var $option2 = $("<option>", { text: "%", selected: "selected", value: "%", class: "" });
                             } else {
-                                var $option1 = $("<option>", {
-                                    text: "$", selected: "selected", value: "$", class: ""
-                                });
-                                var $option2 = $("<option>", {
-                                    text: "%", value: "%", class: ""
-                                });
+                                var $option1 = $("<option>", { text: "$", selected: "selected", value: "$", class: "" });
+                                var $option2 = $("<option>", { text: "%", value: "%", class: "" });
                             }
 
                             var $innerdiv1 = $("<div>", { id: "", class: "col-lg-1 col-sm-0" });
@@ -1854,8 +1900,6 @@ try {
                             $($select).append($option1).append($option2);
                             $($innerdiv).append($ServiceID);
                             $($innerdiv).append($label);
-
-
                             $($innerdiv).append($input);
                             $($innerdiv).append($select);
 
@@ -1863,22 +1907,30 @@ try {
                             $($div).append($innerdiv);
 
                             if (index === msg.ServiceRatesList.length - 1) {
-
                                 $("#servicesDiv").append($div);
                             }
 
                             count++;
-
                             return true;
                         }
+
                         if (count == 1) {
                             var $ServiceID1 = $("<input>", { name: item.ID, type: "hidden", value: item.ID, class: "hndserviceID" });
 
                             var $label1 = $("<label>", {
-                                text: item.ServiceName, class: "col-lg-2 col-sm-1 control-label-1 ", style: "margin-left: -7%;margin-right: 2%;margin-bottom:3%;width:42%;white-space:normal;"
+                                text: item.ServiceName,
+                                class: "col-lg-2 col-sm-1 control-label-1 ",
+                                style: "margin-left: -7%;margin-right: 2%;margin-bottom:3%;width:42%;white-space:normal;"
                             });
 
-                            var $input1 = $("<input>", { id: item.ServiceID, type: "text", value: item.ServiceRates, maxlength: "50", style: "text-align:right", class: "col-lg-4 col-sm-6 Decimal-Only serviceinput" });
+                            var $input1 = $("<input>", {
+                                id: item.ServiceID,
+                                type: "text",
+                                value: item.ServiceRates,
+                                maxlength: "50",
+                                style: "text-align:right",
+                                class: "col-lg-4 col-sm-6 Decimal-Only serviceinput"
+                            });
 
                             var $select1 = $("<select>", { id: "", class: "" });
 
@@ -1886,76 +1938,51 @@ try {
                                 var $option11 = $("<option>", { text: "$", value: "$", class: "" });
                                 var $option12 = $("<option>", { text: "%", selected: "selected", value: "%", class: "" });
                             } else {
-                                var $option11 = $("<option>", {
-                                    text: "$", selected: "selected", value: "$", class: ""
-                                });
-                                var $option12 = $("<option>", {
-                                    text: "%", value: "%", class: ""
-                                });
+                                var $option11 = $("<option>", { text: "$", selected: "selected", value: "$", class: "" });
+                                var $option12 = $("<option>", { text: "%", value: "%", class: "" });
                             }
+
                             var $innerdiv2 = $("<div>", { id: "", class: "col-lg-1 col-sm-0" });
                             var $innerdiv1 = $("<div>", { id: "", class: "col-lg-5 col-sm-6 serviceInnerDiv" });
 
                             $($select1).append($option11).append($option12);
-
 
                             $($innerdiv1).append($ServiceID1);
                             $($innerdiv1).append($label1);
                             $($innerdiv1).append($input1);
                             $($innerdiv1).append($select1);
 
-
-                            //$($div).append($innerdiv);
                             $($div).append($innerdiv1);
                             $($div).append($innerdiv2);
                             $("#servicesDiv").append($div);
                             count = 0;
-
                         }
-
-
-
-                    })
-
-                    //  $(".chosen-select").chosen({
-                    //disable_search: true, no_results_text: "Oops, nothing found!", width: 155
-                    //});
+                    });
                 }
 
-
-
-
-                if (msg.ModelCD.length > 0) {
+                if (msg.ModelCD && msg.ModelCD.length > 0) {
 
                     $.each(msg.ModelCD, function (index, item) {
 
-                        $("#ddlPrimaryRole").multiselect().find(":checkbox[value='" + item.Id + "']").attr("checked", "checked")
+                        $("#ddlPrimaryRole").multiselect().find(":checkbox[value='" + item.Id + "']").attr("checked", "checked");
                         $("#ddlPrimaryRole option[value='" + item.Id + "']").attr("selected", 1);
 
-
-
-                        $("#ulRole").find("li[id='" + item.Id + "']").addClass("ui-selected click-selected highlighted")
-
+                        $("#ulRole").find("li[id='" + item.Id + "']").addClass("ui-selected click-selected highlighted");
                     });
 
-                    selectRole()
+                    selectRole();
 
+                    var objroleList = [];
 
-
-                    //
-                    var objroleList = []
-
-                    $('#ulRole li.highlighted').map(function (i, el) { objroleList.push($("#" + $(el)[0].id).text()); });
-
-
-
+                    $('#ulRole li.highlighted').map(function (i, el) {
+                        objroleList.push($("#" + $(el)[0].id).text());
+                    });
 
                     if (objroleList != undefined && objroleList.length > 0 && (objroleList.indexOf("Field Supervisor") > -1 || objroleList.indexOf("Manager") > -1)) {
 
                         if (objroleList.indexOf("Field Supervisor") > -1) {
                             $('#ManagerId').prop('disabled', false).trigger("chosen:updated");
                             $('#FieldSupervisorId').val('0').attr("selected", "selected").prop('disabled', true).trigger("chosen:updated");
-
                         }
 
                         if (objroleList.indexOf("Manager") > -1) {
@@ -1968,55 +1995,28 @@ try {
 
                         $('#ManagerApprovalRequired').prop('disabled', false).trigger("chosen:updated");
                         $('#ManagerId').prop('disabled', false).trigger("chosen:updated");
-                      
                         $('#FieldSupervisorId').prop('disabled', false).trigger("chosen:updated");
-
                     }
                     else {
-
                         $('#ManagerId').val('0').attr("selected", "selected").prop('disabled', true).trigger("chosen:updated");
                         $('#FieldSupervisorId').val('0').attr("selected", "selected").prop('disabled', true).trigger("chosen:updated");
                     }
 
+                    $('.InstallerRoleDiv').show();
 
-
-
-
-                    // checkinstallerroleselect()     Commented by sominath
-                    $('.InstallerRoleDiv').show();    // Modify by sominath
-
-                    CheckAssignedProjects(UserID, msg.modelData.ManagerId)
-                    // $("#ddlPrimaryRole").multiselect('rebuild');
+                    CheckAssignedProjects(UserID, m.ManagerId);
                 }
-                else {
-                    // GetRole();
-                    // $("#ddlPrimaryRole").multiselect("refresh");
-
-                }
-
-               
 
                 count = msg.TCount + 1;
                 TmpListRemove(0);
 
-
                 var PrimaryRole = $('#ddlPrimaryRole option:selected');
-
-
             },
 
-
             error: function (error) {
-                console.log(error)
-                //alert("something seems wrong");
+                console.log(error);
             }
-
         });
-
-
-        // spinner.stop(target);
-
-        //$('#ddlCountry').val(BindCon).attr("selected", "selected");
     }
 
 
@@ -2056,78 +2056,105 @@ try {
 
         var urlStateData = $('#StateListUrl').val();
 
+        $('#ddlState').empty();
+        $('#ddlState').append($('<option></option>').val('').html(''));
+        $('#ddlState').trigger('chosen:updated');
+
         $.ajax({
             type: 'POST',
             url: urlStateData,
+            data: {
+                customerId: 0
+            },
             async: false,
+            dataType: "json",
             success: function (data) {
 
+                if (!Array.isArray(data)) {
+                    console.log("GetState returned non-JSON response:", data);
+                    toastr["error"]("State list access permission missing.", "Error Notification");
+                    return;
+                }
 
                 $('#ddlState').empty();
+                $('#ddlState').append($('<option></option>').val('').html(''));
 
                 StateData = data;
 
                 $.each(data, function (index, item) {
-                    if (index == 0) {
-                        $('#ddlState').append(
-                          $('<option></option>').val("").html(""));
-                    }
-
                     $('#ddlState').append(
-                           $('<option></option>').val(item.StateID).html(item.StateName)
-                     );
+                        $('<option></option>').val(item.StateID).html(item.StateName)
+                    );
                 });
 
-                $('.chosen-select').trigger('chosen:updated');
+                $('#ddlState').trigger('chosen:updated');
             },
-            error: function (error) {
-                console.log(error)
-                //alert("something seems wrong");
+            error: function (xhr) {
+                console.log("GetState error:", xhr);
+                toastr["error"]("Unable to load state list.", "Error Notification");
             }
-
         });
-
     }
 
 
     $('#ddlState').change(function () {
 
         var stateid = $('#ddlState option:selected').val();
-        if (stateid != undefined && stateid != "0") {
 
-            BindCity(stateid)
-
+        if (stateid != undefined && stateid != null && stateid != "" && stateid != "0") {
+            BindCity(stateid);
+        } else {
+            $('#ddlCity').empty();
+            $('#ddlCity').append($('<option></option>').val('').html(''));
+            $('#ddlCity').trigger('chosen:updated');
         }
-
-    })
+    });
 
     function BindCity(stateid) {
+
         var urlCityData = $('#CityByStateIDListUrl').val();
+
+        $('#ddlCity').empty();
+        $('#ddlCity').append($('<option></option>').val('').html(''));
+        $('#ddlCity').trigger('chosen:updated');
+
+        if (stateid == undefined || stateid == null || stateid == "" || stateid == "0") {
+            return;
+        }
+
         $.ajax({
             type: 'GET',
+            url: urlCityData,
             data: {
-                "stateId": stateid,
-                "cityName": ''
+                stateId: stateid,
+                customerId: 0,
+                cityName: ''
             },
             async: false,
-            url: urlCityData,
+            dataType: "json",
             success: function (data) {
 
-                $('#ddlCity').empty();
-                $.each(data, function (index, item) {
-                    if (index == 0) {
-                        $('#ddlCity').append(
-                          $('<option></option>').val('').html(""));
-                    }
+                if (!Array.isArray(data)) {
+                    console.log("BindCity returned non-JSON response:", data);
+                    toastr["error"]("City list access permission missing.", "Error Notification");
+                    return;
+                }
 
+                $('#ddlCity').empty();
+                $('#ddlCity').append($('<option></option>').val('').html(''));
+
+                $.each(data, function (index, item) {
                     $('#ddlCity').append(
-                           $('<option></option>').val(item.CityID).html(item.CityName)
-                     );
+                        $('<option></option>').val(item.CityID).html(item.CityName)
+                    );
                 });
 
-                $('.chosen-select').trigger('chosen:updated');
+                $('#ddlCity').trigger('chosen:updated');
             },
-
+            error: function (xhr) {
+                console.log("BindCity error:", xhr);
+                toastr["error"]("Unable to load city list.", "Error Notification");
+            }
         });
     }
 
@@ -2835,7 +2862,7 @@ try {
 
 
     function checkinstallerroleselect() {
-        debugger
+        
 
         $('.InstallerRoleDiv').show();
         ClearInstaller()

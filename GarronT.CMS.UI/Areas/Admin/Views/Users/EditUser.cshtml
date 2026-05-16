@@ -19,8 +19,8 @@
 @*@Html.Hidden("urlEditData", Url.Action("Create", "Users"))*@
 @Html.Hidden("EditUserDetails", Url.Action("EditUserDetails", "Users"))
 
-@Html.Hidden("StateListUrl", Url.Action("GetStateList", "Customer"))
-@Html.Hidden("CityByStateIDListUrl", Url.Action("GetCityList", "Customer"))
+@Html.Hidden("StateListUrl", Url.Action("GetStateList", "Users"))
+@Html.Hidden("CityByStateIDListUrl", Url.Action("GetCityListByID", "Users"))
 
 @Html.Hidden("ServicesListUrl", Url.Action("GetServicesList", "Services"))
 

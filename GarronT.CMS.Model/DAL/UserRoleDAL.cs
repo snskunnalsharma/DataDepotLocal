@@ -49,21 +49,22 @@ namespace GarronT.CMS.Model.DAL
             try
             {
                 CompassEntities objTollFreeWidgetEntities = new CompassEntities();
+
                 List<UserRoleModel> objRolesBo = (from b in objTollFreeWidgetEntities.AspNetRoles
+                                                  where b.IsSysAdmin != true
+                                                  orderby b.SortingNumber
                                                   select new UserRoleModel
                                                   {
                                                       Id = b.Id,
                                                       Name = b.Name
-                                                  }).OrderBy(t => t.Name).ToList();
+                                                  }).ToList();
 
                 return objRolesBo;
             }
             catch (Exception)
             {
-
                 throw;
             }
-
         }
 
         /// <summary>

@@ -192,22 +192,104 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
             try
             {
-                list = new UserRoleDAL().GetAllRoles();
+                using (CompassEntities db = new CompassEntities())
+                {
+                    long currentUserId = (long)new UserDetails().GetUserId(User.Identity.GetUserId());
 
+                    var currentUserRoles = db.ASPNET_GetUserRoles(currentUserId)
+                        .Select(o => o.Name)
+                        .ToList();
+
+                    bool isAdminLogin = currentUserRoles.Contains("Admin");
+                    bool isManagerLogin = currentUserRoles.Contains("Manager");
+
+                    if (isAdminLogin)
+                    {
+                        // Admin login: sab roles dikhne chahiye, including Admin
+                        list = db.AspNetRoles
+                            .OrderBy(o =>
+                                o.Name == "Admin" ? 0 :
+                                o.Name == "Manager" ? 1 :
+                                o.Name == "INV Manager" ? 2 :
+                                o.Name == "Field Supervisor" ? 3 :
+                                o.Name == "Installer" ? 4 :
+                                o.Name == "Auditor" ? 5 :
+                                o.Name == "Warehouse Manager" ? 6 :
+                                o.Name == "Reporter" ? 7 :
+                                o.Name == "IT Access" ? 8 :
+                                o.Name == "Customer" ? 9 :
+                                99)
+                            .Select(o => new UserRoleModel
+                            {
+                                Id = o.Id,
+                                Name = o.Name
+                            })
+                            .ToList();
+                    }
+                    else if (isManagerLogin)
+                    {
+                        // Manager login: Manager ko in additional roles dikhne chahiye
+                        List<string> allowedRolesForManager = new List<string>
+                {
+                    "Manager",
+                    "INV Manager",
+                    "Warehouse Manager",
+                    "Installer",
+                    "Field Supervisor"
+                };
+
+                        list = db.AspNetRoles
+                            .Where(o => allowedRolesForManager.Contains(o.Name))
+                            .OrderBy(o =>
+                                o.Name == "Manager" ? 1 :
+                                o.Name == "INV Manager" ? 2 :
+                                o.Name == "Warehouse Manager" ? 3 :
+                                o.Name == "Installer" ? 4 :
+                                o.Name == "Field Supervisor" ? 5 :
+                                99)
+                            .Select(o => new UserRoleModel
+                            {
+                                Id = o.Id,
+                                Name = o.Name
+                            })
+                            .ToList();
+                    }
+                    else
+                    {
+                        // Non-admin (non-manager) login: sirf ye roles show honge
+                        List<string> allowedRolesForOthers = new List<string>
+                {
+                    "INV Manager",
+                    "Warehouse Manager",
+                    "Installer",
+                    "Field Supervisor"
+                };
+
+                        list = db.AspNetRoles
+                            .Where(o => allowedRolesForOthers.Contains(o.Name))
+                            .OrderBy(o =>
+                                o.Name == "INV Manager" ? 1 :
+                                o.Name == "Warehouse Manager" ? 2 :
+                                o.Name == "Installer" ? 3 :
+                                o.Name == "Field Supervisor" ? 4 :
+                                99)
+                            .Select(o => new UserRoleModel
+                            {
+                                Id = o.Id,
+                                Name = o.Name
+                            })
+                            .ToList();
+                    }
+                }
             }
             catch (Exception ex)
             {
-
-                //throw ex;
-                log.Info("User Controller  GetRoleList ERROR at " + DateTime.Now.ToString());
-                log.Info("User Controller  GetRoleList ERROR  ex.Message - " + ex.Message);
-
-                log.Info("User Controller  GetRoleList ERROR  ex.InnerException.Message - " + Convert.ToString(ex.InnerException.Message));
-
-
+                log.Info("User Controller GetRoleList ERROR at " + DateTime.Now.ToString());
+                log.Info("User Controller GetRoleList ERROR ex.Message - " + ex.Message);
+                log.Info("User Controller GetRoleList ERROR ex.InnerException.Message - " + Convert.ToString(ex.InnerException));
             }
-            return Json(list, JsonRequestBehavior.AllowGet);
 
+            return Json(list, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
@@ -1256,13 +1338,13 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
 
         #region Code to create ID Card added by sominath
-        public ActionResult GetStateList(long customerId)
+        [AllowAnonymous]
+        public ActionResult GetStateList(long? customerId)
         {
             List<StateVM> objList1 = new List<StateVM>();
             UserDAL obj = new UserDAL();
 
-            objList1 = obj.GetActiveStateRecords(customerId);
-
+            objList1 = obj.GetActiveStateRecords(customerId ?? 0);
 
             return Json(objList1, JsonRequestBehavior.AllowGet);
         }
@@ -1279,12 +1361,13 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             return Json(objList1, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult GetCityListByID(long stateId, long customerId)
+        [AllowAnonymous]
+        public ActionResult GetCityListByID(long stateId, long? customerId)
         {
             List<CityVM> objList1 = new List<CityVM>();
             UserDAL obj = new UserDAL();
-            objList1 = obj.GetActiveCityRecords(stateId, customerId);
 
+            objList1 = obj.GetActiveCityRecords(stateId, customerId ?? 0);
 
             return Json(objList1, JsonRequestBehavior.AllowGet);
         }
@@ -1339,32 +1422,78 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
         public ActionResult GetManagerList(string RoleName)
         {
-
             CompassEntities objCompassEntities = new CompassEntities();
-            // RoleName = "Manager";
 
-            List<InventorySourceChildBO> objInventorySourceChildBOList = new List<InventorySourceChildBO>();
-            var manager = new ApplicationDbContext.UserManager();
-
-            var UseNames = manager.GetUsersInRole(RoleName);
-
-            if (UseNames != null)
+            try
             {
-                foreach (var item in UseNames)
+                if (string.IsNullOrWhiteSpace(RoleName))
                 {
-                    var record = objCompassEntities.tblUsers.Where(o => o.Active == 1 && o.aspnet_UserId.ToString() == item.Id.ToString()).
-                        Select(o => new InventorySourceChildBO { ChildId = o.UserID, ChildName = o.FirstName }).FirstOrDefault();
-                    if (record != null)
-                    {
-                        objInventorySourceChildBOList.Add(record);
-                    }
+                    RoleName = "Manager";
                 }
-                objInventorySourceChildBOList = objInventorySourceChildBOList.OrderBy(o => o.ChildName).ToList();
+
+                long currentUserId = (long)new UserDetails().GetUserId(User.Identity.GetUserId());
+
+                var currentUserRoles = objCompassEntities
+                    .ASPNET_GetUserRoles(currentUserId)
+                    .Select(o => o.Name)
+                    .ToList();
+
+                // Admin ko sab managers dikhne chahiye
+                if (currentUserRoles.Contains("Admin"))
+                {
+                    List<InventorySourceChildBO> objInventorySourceChildBOList = new List<InventorySourceChildBO>();
+
+                    var manager = new ApplicationDbContext.UserManager();
+                    var UseNames = manager.GetUsersInRole(RoleName);
+
+                    if (UseNames != null)
+                    {
+                        foreach (var item in UseNames)
+                        {
+                            var record = objCompassEntities.tblUsers
+                                .Where(o => o.Active == 1 && o.aspnet_UserId.ToString() == item.Id.ToString())
+                                .Select(o => new InventorySourceChildBO
+                                {
+                                    ChildId = o.UserID,
+                                    ChildName = o.FirstName
+                                })
+                                .FirstOrDefault();
+
+                            if (record != null)
+                            {
+                                objInventorySourceChildBOList.Add(record);
+                            }
+                        }
+                    }
+
+                    objInventorySourceChildBOList = objInventorySourceChildBOList
+                        .OrderBy(o => o.ChildName)
+                        .ToList();
+
+                    return Json(objInventorySourceChildBOList, JsonRequestBehavior.AllowGet);
+                }
+
+                // Non-admin user ko sirf uske assigned projects ke managers dikhne chahiye
+                var currentUserProjectIds = new UserDAL()
+                    .CheckAssignedProjects((int)currentUserId)
+                    .Select(x => x.project_Id)
+                    .Distinct()
+                    .ToList();
+
+                var filteredManagerList = new UserDAL()
+                    .GetManagersByUserManagerMappingForProjects(currentUserProjectIds);
+
+                return Json(filteredManagerList, JsonRequestBehavior.AllowGet);
             }
-
-            objCompassEntities.Dispose();
-
-            return Json(objInventorySourceChildBOList, JsonRequestBehavior.AllowGet);
+            catch (Exception ex)
+            {
+                log.Error(ex);
+                return Json(new List<InventorySourceChildBO>(), JsonRequestBehavior.AllowGet);
+            }
+            finally
+            {
+                objCompassEntities.Dispose();
+            }
         }
 
         [HttpPost]

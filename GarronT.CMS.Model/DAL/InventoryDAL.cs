@@ -183,48 +183,20 @@ namespace GarronT.CMS.Model.DAL
 
                 // ✅ FINAL SQL (SIMPLE + FAST)
                 string sql = @"
-SELECT
-    ISNULL(CONVERT(varchar(20), operation_date, 120), '') AS OperationDate,
-    ISNULL(CONVERT(varchar(20), completion_date, 120), '') AS CompletionDate,
-    ISNULL(installer_name, '') AS InstallerName,
-    ISNULL(work_order_id, '') AS WorkOrderId,
-    ISNULL(serial_number, '') AS SerialNumber,
-    ISNULL(service_address, '') AS ServiceAddress,
-    ISNULL(CONVERT(varchar(50), latitude), '') AS Latitude,
-    ISNULL(CONVERT(varchar(50), longitude), '') AS Longitude,
-    ISNULL(status, '') AS Status,
-    ISNULL(project_name, '') AS ProjectName
+
+SELECTISNULL(CONVERT(varchar(20), operation_date, 120), '') AS OperationDate,ISNULL(CONVERT(varchar(20), completion_date, 120), '') AS CompletionDate,ISNULL(installer_name, '') AS InstallerName,ISNULL(work_order_id, '') AS WorkOrderId,ISNULL(serial_number, '') AS SerialNumber,ISNULL(service_address, '') AS ServiceAddress,ISNULL(CONVERT(varchar(50), latitude), '') AS Latitude,ISNULL(CONVERT(varchar(50), longitude), '') AS Longitude,ISNULL(status, '') AS Status,ISNULL(project_name, '') AS ProjectName
 
 FROM dbo.INVInstallerReport WITH (NOLOCK)
 
 WHERE project_id = @projectId
 
-AND (
-    @fromDate IS NULL OR @toDate IS NULL OR
-    (
-        operation_date >= @fromDate
-        AND operation_date < DATEADD(day, 1, @toDate)
-    )
-)
+AND (@fromDate IS NULL OR @toDate IS NULL OR(operation_date >= @fromDateAND operation_date < DATEADD(day, 1, @toDate)))
 
-AND (
-    ((@installerName IS NULL OR @installerName = '') AND (@installerUserName IS NULL OR @installerUserName = ''))
-    OR (@installerName IS NOT NULL AND @installerName <> '' AND installer_name LIKE '%' + @installerName + '%')
-    OR (@installerUserName IS NOT NULL AND @installerUserName <> '' AND installer_name LIKE '%' + @installerUserName + '%')
-)
+AND (((@installerName IS NULL OR @installerName = '') AND (@installerUserName IS NULL OR @installerUserName = ''))OR (@installerName IS NOT NULL AND @installerName <> '' AND installer_name LIKE '%' + @installerName + '%')OR (@installerUserName IS NOT NULL AND @installerUserName <> '' AND installer_name LIKE '%' + @installerUserName + '%'))
 
-AND (
-    @search IS NULL OR @search = '' OR
-    installer_name LIKE '%' + @search + '%' OR
-    work_order_id LIKE '%' + @search + '%' OR
-    serial_number LIKE '%' + @search + '%' OR
-    service_address LIKE '%' + @search + '%' OR
-    status LIKE '%' + @search + '%' OR
-    project_name LIKE '%' + @search + '%'
-)
+AND (@search IS NULL OR @search = '' ORinstaller_name LIKE '%' + @search + '%' ORwork_order_id LIKE '%' + @search + '%' ORserial_number LIKE '%' + @search + '%' ORservice_address LIKE '%' + @search + '%' ORstatus LIKE '%' + @search + '%' ORproject_name LIKE '%' + @search + '%')
 
-ORDER BY operation_date DESC, completion_date DESC, id DESC
-";
+ORDER BY operation_date DESC, completion_date DESC, id DESC";
 
                 return db.Database.SqlQuery<INVInstallerReportRowBO>(
                     sql,
@@ -315,17 +287,30 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC
 
         public List<WarehouseBO> GetWareHouseList(long ProjectId)
         {
-            CompassEntities CompassEntities = new CompassEntities();
+            CompassEntities db = new CompassEntities();
 
-            List<long> ObjList = CompassEntities.ProjectWarehouseRelations.Where(o => o.Active == 1 && o.FKProjectId == ProjectId).Select(o => o.FKWarehouseId).ToList();
+            // 1️⃣ Get all active warehouse IDs for this project
+            List<long> warehouseIds = db.ProjectWarehouseRelations
+                .Where(r => r.Active == 1 && r.FKProjectId == ProjectId)
+                .Select(r => r.FKWarehouseId)
+                .ToList();
 
-            List<WarehouseBO> data = CompassEntities.WarehouseMasters.Where(a => a.Active == 1 && ObjList.Contains(a.Id)).Select(o =>
-                                       new WarehouseBO
-                                       {
-                                           WarehouseId = o.Id,
-                                           WarehouseName = o.WarehouseLocation + ", " + o.WarehouseName + ", " + o.TblCityMaster.CityName + ", " + o.tblStateMaster.StateName
-                                       }).OrderBy(a => a.WarehouseName).ToList();
-            return data;
+            // 2️⃣ Fetch warehouse details
+            List<WarehouseBO> warehouses = db.WarehouseMasters
+                .Where(w => w.Active == 1 && warehouseIds.Contains(w.Id))
+                .Select(w => new WarehouseBO
+                {
+                    WarehouseId = w.Id,
+                    WarehouseName = w.WarehouseLocation + ", " + w.WarehouseName + ", " + w.TblCityMaster.CityName + ", " + w.tblStateMaster.StateName
+                })
+                .OrderBy(w => w.WarehouseName)
+                .ToList();
+
+            // 3️⃣ Ensure at least an empty list is returned
+            if (warehouses == null)
+                warehouses = new List<WarehouseBO>();
+
+            return warehouses;
         }
 
 
@@ -2090,7 +2075,7 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC
                     DR["Type"] = item.Type;
                     DR["Size"] = item.Size;
                     DR["IsSerialNumber"] = item.SerialNumberRequired;
-                    DR["SerialNumber"] = item.SerialNumberRequired? (object)item.SerialNumber: DBNull.Value;
+                    DR["SerialNumber"] = item.SerialNumberRequired ? (object)item.SerialNumber : DBNull.Value;
                     DR["TotalQty"] = item.Quantity;
                     DR["GenerateBarcode"] = item.GenerateBarcode ? 1 : 0;
                     DR["BarCodeFilePath"] = item.GenerateBarcode ? item.WebUrlOfBarcodeFile : "";
@@ -2522,7 +2507,8 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC
                 // Merge two list data get in common records in a list
                 reportData = (from op in openinginventoryreportData
                               join o in tempReportData
-                                  on op.ProductName equals o.ProductName where op.UserId == o.UserId
+                                  on op.ProductName equals o.ProductName
+                              where op.UserId == o.UserId
                               select new InstallerStockReportSummaryBO
                               {
                                   UserId = o.UserId,
@@ -2547,7 +2533,7 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC
                     var itemToRemove2 = openinginventoryreportData.Single(p => p.ProductName == pro.ProductName && p.UserId == pro.UserId);
                     openinginventoryreportData.Remove(itemToRemove2);
                 }
-                
+
                 foreach (var o in tempReportData)
                 {
                     reportData.Add(new InstallerStockReportSummaryBO
@@ -3149,8 +3135,8 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC
                         Account = a.Account,
                         Street = a.Street,
 
-                // 🔥 IMPORTANT: override ProjectName
-                ProjectName = projectName
+                    // 🔥 IMPORTANT: override ProjectName
+                    ProjectName = projectName
                     }).ToList();
             }
             catch (Exception ex)
@@ -3735,7 +3721,56 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC
 
         }
 
-    }
+        // InventoryDAL
+        public bool SaveWarehouseTransfer(long projectId, List<ProductMasterBO> transferList, long currentUserId, out string message)
+        {
+            bool result = false;
+            message = "";
 
+            try
+            {
+                using (CompassEntities db = new CompassEntities())
+                {
+                    foreach (var item in transferList)
+                    {
+                        WarehouseTransfer wt = new WarehouseTransfer
+                        {
+                            SerialNumber = item.SerialNumber,
+                            FromWarehouseId = item.FromWarehouseId, // keep long
+                            ToWarehouseId = item.ToWarehouseId, // keep long
+                            ProjectId = projectId,
+                            TransferredByUserId = currentUserId, // now long
+                            TransferDate = DateTime.Now,
+                            CreatedOn = DateTime.Now
+                        };
+
+                        db.WarehouseTransfers.Add(wt);
+
+                        var stock = db.StockDetails.FirstOrDefault(s =>
+                            s.SerialNumber == item.SerialNumber &&
+                            s.FKProjectId == projectId &&
+                            s.Active == 1);
+
+                        if (stock != null)
+                        {
+                            stock.FKWarehouseId = item.ToWarehouseId; // keep long
+                        }
+                    }
+
+                    db.SaveChanges();
+                    message = "Warehouse transfer saved successfully.";
+                    result = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                message = "Error: " + ex.Message;
+                result = false;
+            }
+
+            return result;
+        }
+
+    }
 
 }

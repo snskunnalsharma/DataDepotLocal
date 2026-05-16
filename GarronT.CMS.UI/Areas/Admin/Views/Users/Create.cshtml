@@ -1,11 +1,13 @@
 ﻿@{
+
     ViewBag.Title = "User Master";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
+
 @Html.Hidden("urlRoleList", Url.Action("GetRoleList", "Users"))
 @Html.Hidden("TmpListClearUrl", Url.Action("TmpListClear", "Users"))
 @Html.Hidden("TmpListRemoveUrl", Url.Action("TmpListRemove", "Users"))
-)
+
 @Html.Hidden("UrlStateList", Url.Action("GetStateList", "Users"))
 @Html.Hidden("urlActivateRecord", Url.Action("Activate", "Users"))
 @Html.Hidden("urlDeActivateRecord", Url.Action("Deactivate", "Users"))
@@ -17,21 +19,19 @@
 @Html.Hidden("urlGetManagerListByProjects", Url.Action("GetManagerListByProjects", "Users"))
 @Html.Hidden("urlGetSuperVisorList", Url.Action("GetSuperVisorList", "Users"))
 
-
 @Html.Hidden("UrlUserList", Url.Action("GetUserList", "Users"))
 
 @Html.Hidden("urlEditData", Url.Action("Create1", "Users"))
 @Html.Hidden("EditUserDetails", Url.Action("EditUserDetails", "Users"))
 
-@Html.Hidden("StateListUrl", Url.Action("GetStateList", "Customer"))
-@Html.Hidden("CityByStateIDListUrl", Url.Action("GetCityList", "Customer"))
+@Html.Hidden("StateListUrl", Url.Action("GetStateList", "Users"))
+@Html.Hidden("CityByStateIDListUrl", Url.Action("GetCityListByID", "Users"))
 
 @Html.Hidden("ServicesListUrl", Url.Action("GetServicesList", "Services"))
 
 @Html.Hidden("urlGetFormTypeList", Url.Action("GetFormTypeList", "Users"))
 
 @Html.Hidden("urlLogoupload", Url.Action("Logoupload", "Users"))
-
 @Html.Hidden("urlLogouploadVehicle", Url.Action("LogouploadVehicle", "Users"))
 @Html.Hidden("WebURL", System.Configuration.ConfigurationManager.AppSettings["WebURL"])
 @Html.Hidden("UserForm", (object)ViewBag.Form)
@@ -42,14 +42,14 @@
 @Html.Hidden("urlGetVehicleModelList", Url.Action("GetVehicleModelList", "Users"))
 
 @Html.Hidden("urlBindUserFormTypeByUserID", Url.Action("GetUserFormTypeList", "Users"))
-
 <style type="text/css">
-     .multiselect {
-         width: 167px !important;
-     }
 
-     label {
-     }
+    .multiselect {
+        width: 167px !important;
+    }
+
+    label {
+    }
 
     .password-container {
         position: relative;
@@ -59,74 +59,118 @@
         position: absolute;
         top: 6%;
         right: 24px;
-       // transform: translateY(-50%);
+        // transform: translateY(-50%);
         cursor: pointer;
     }
-     .form-horizontal .control-label {
-         text-align: justify !important;
-         font-weight: unset;
-         font-size: 13px;
-     }
-     label.error {
-         padding-left:0px;
-     }
-     .chosen-select {
 
-     }
+    .form-horizontal .control-label {
+        text-align: justify !important;
+        font-weight: unset;
+        font-size: 13px;
+    }
+
+    label.error {
+        padding-left: 0px;
+    }
+
+    .chosen-select {
+    }
 
 
-     .chosen-results .ui-selected {
-         background-color: #3875d7;
-         background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, #3875d7), color-stop(90%, #2a62bc));
-         background-image: -webkit-linear-gradient(#3875d7 20%, #2a62bc 90%);
-         background-image: -moz-linear-gradient(#3875d7 20%, #2a62bc 90%);
-         background-image: -o-linear-gradient(#3875d7 20%, #2a62bc 90%);
-         background-image: linear-gradient(#3875d7 20%, #2a62bc 90%);
-         color: #fff;
-     }
+    .chosen-results .ui-selected {
+        background-color: #3875d7;
+        background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, #3875d7), color-stop(90%, #2a62bc));
+        background-image: -webkit-linear-gradient(#3875d7 20%, #2a62bc 90%);
+        background-image: -moz-linear-gradient(#3875d7 20%, #2a62bc 90%);
+        background-image: -o-linear-gradient(#3875d7 20%, #2a62bc 90%);
+        background-image: linear-gradient(#3875d7 20%, #2a62bc 90%);
+        color: #fff;
+    }
 
-     .chosen-results .ui-selecting {
-         background-color: #3875d7;
-         background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, #3875d7), color-stop(90%, #2a62bc));
-         background-image: -webkit-linear-gradient(#3875d7 20%, #2a62bc 90%);
-         background-image: -moz-linear-gradient(#3875d7 20%, #2a62bc 90%);
-         background-image: -o-linear-gradient(#3875d7 20%, #2a62bc 90%);
-         background-image: linear-gradient(#3875d7 20%, #2a62bc 90%);
-         color: #fff;
-     }
+    .chosen-results .ui-selecting {
+        background-color: #3875d7;
+        background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, #3875d7), color-stop(90%, #2a62bc));
+        background-image: -webkit-linear-gradient(#3875d7 20%, #2a62bc 90%);
+        background-image: -moz-linear-gradient(#3875d7 20%, #2a62bc 90%);
+        background-image: -o-linear-gradient(#3875d7 20%, #2a62bc 90%);
+        background-image: linear-gradient(#3875d7 20%, #2a62bc 90%);
+        color: #fff;
+    }
 
-     .chosen-results {
-         list-style-type: none;
-         margin: 0;
-         padding: 0;
-         width: 100%;
-     }
-     /*.accordion-toggle  :active {
+    .chosen-results {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+    }
+    /*.accordion-toggle  :active {
          background-color: #d9edf7;
      }*/
 
-    .cre_citybox  .chosen-drop{
-       max-height: 14em !important;
-     }
-    .chosen-container .chosen-results{
-            max-height: 8em !important;
+    .cre_citybox .chosen-drop {
+        max-height: 14em !important;
     }
-    .nm_txt{width:98%;}
-    .mail_txt{width:98%;}
-    .adddr_txt{width:98%;}
-    .zip_txt{width:98%;}
-    .phon_txt{width:98%;}
-    .mob_txt{width:98%;}
-    .log_txt{width:98%;}
-    .pswd_txt{width:98%;}
-    .repswd_txt{width:98%;}
-    .job_txt{width:98%;}
 
-    .yr_txt{width:98%;}
-    .lic_txt{ width:98%; margin-top: 3%; }
-    .col_txt{ width:98%;margin-top: 3%; }
+    .chosen-container .chosen-results {
+        max-height: 8em !important;
+    }
+
+    .nm_txt {
+        width: 98%;
+    }
+
+    .mail_txt {
+        width: 98%;
+    }
+
+    .adddr_txt {
+        width: 98%;
+    }
+
+    .zip_txt {
+        width: 98%;
+    }
+
+    .phon_txt {
+        width: 98%;
+    }
+
+    .mob_txt {
+        width: 98%;
+    }
+
+    .log_txt {
+        width: 98%;
+    }
+
+    .pswd_txt {
+        width: 98%;
+    }
+
+    .repswd_txt {
+        width: 98%;
+    }
+
+    .job_txt {
+        width: 98%;
+    }
+
+    .yr_txt {
+        width: 98%;
+    }
+
+    .lic_txt {
+        width: 98%;
+        margin-top: 3%;
+    }
+
+    .col_txt {
+        width: 98%;
+        margin-top: 3%;
+    }
 </style>
 <style type="text/css">
+
 
     @@media only screen and (min-width:430px) and (max-width:767px) {
         .control-label {
@@ -183,9 +227,11 @@
 
         .edt_rle {
         }
-        .edt-lic{
-            margin-top:1%;
+
+        .edt-lic {
+            margin-top: 1%;
         }
+
         .job_txt {
         }
 
@@ -194,21 +240,24 @@
 
         .model_txt {
         }
-        .edt-yr{
-            margin-top:1%;
 
+        .edt-yr {
+            margin-top: 1%;
         }
+
         .yr_txt {
-                margin-bottom: 0%;
-                margin-top: 1%;
+            margin-bottom: 0%;
+            margin-top: 1%;
         }
 
         .lic_txt {
-             margin-top:1%;
+            margin-top: 1%;
         }
-         .col_txt {
-             margin-top: 0%;
+
+        .col_txt {
+            margin-top: 0%;
         }
+
         .veh_txt {
         }
 
@@ -242,582 +291,651 @@
         .job_txt {
             margin-top: 2%;
         }
-        .edt_modlab{
-             padding-top:2%;
-             padding-bottom:1%;
-        }
-        .sel-make{
-            padding-top:2%;
-             padding-bottom:1%;
-        }
-         .wrapper {
-                margin-bottom: 8%;
 
-                }
-              .cre_citybox  .chosen-drop{
-                  max-height: 14em !important;
-                  margin-bottom: 18%;
-                }
-               .chosen-container .chosen-results{
-                       max-height: 6em !important;
-               }
-               .control-label-1{
-                  width: 100% !important;
+        .edt_modlab {
+            padding-top: 2%;
+            padding-bottom: 1%;
+        }
 
-               }
+        .sel-make {
+            padding-top: 2%;
+            padding-bottom: 1%;
+        }
+
+        .wrapper {
+            margin-bottom: 8%;
+        }
+
+        .cre_citybox .chosen-drop {
+            max-height: 14em !important;
+            margin-bottom: 18%;
+        }
+
+        .chosen-container .chosen-results {
+            max-height: 6em !important;
+        }
+
+        .control-label-1 {
+            width: 100% !important;
+        }
     }
-        /********************************** IPHONE 5S PORTRAIT***************/
-        @@media (max-width:320px) {
-            .iconic-input {
-                /*margin-left: 61%;
+    /********************************** IPHONE 5S PORTRAIT***************/
+    @@media (max-width:320px) {
+        .iconic-input {
+            /*margin-left: 61%;
                 margin-top: -44%;*/
-            }
-
-            .edt_usr_modal {
-                margin-left: -15%;
-                width: 100%;
-                margin-top: -20%;
-            }
-
-            .modal-backdrop.in {
-                height: 118% !important;
-            }
-
-            .usr_header {
-            }
-
-            .usr_nm {
-                margin-bottom: 5px !important;
-                margin-left: -17% !important;
-                margin-top: -6%;
-            }
-
-            .usr_pswd {
-                margin-bottom: 0 !important;
-                margin-left: -17% !important;
-                margin-top: -2%;
-            }
-
-            .usr_addr {
-                margin-bottom: 0% !important;
-                margin-left: -17% !important;
-                margin-top: -2%;
-            }
-
-            .usr_mob {
-                margin-bottom: 0% !important;
-                margin-left: -17% !important;
-                margin-top: -2%;
-            }
-             /*Label class name*/
-            .edt_nm {
-                  margin-left: 5% !important;
-            }
-
-            .edt_log {
-                   margin-left: 5%;
-                    padding-top: 1%;
-            }
-            .edt_Gender{
-                 margin-left: 5% !important;
-                  padding-top: 3%;
-            }
-            .edt_pswd {
-                    margin-left: 5%;
-                     padding-top: 1%;
-            }
-
-            .edt_repswd {
-                   margin-left: 5%;
-                    padding-top:1%;
-                    width: 10%;
-            }
-
-            .edt_addr {
-                margin-left: 5%;
-                padding-top: 1%;
-            }
-            .edt_State{
-                 margin-left: 5%;
-                  padding-top: 2%;
-            }
-            .edt_City{
-                 margin-left: 5%;
-                 padding-top: 1%;
-            }
-            .edt_email {
-                margin-left: 5%;
-                 padding-top: 1%;
-
-            }
-            .edt_Zip{
-                margin-left: 5%;
-                 padding-top: 1%;
-            }
-            .edt_mob {
-                padding-top: 1%;
-                 margin-left: 5%;
-            }
-            .edt_HomePhone{
-                 margin-left: 5%;
-                 padding-top: 1%;
-            }
-            .edt_rle {
-                 margin-left: 5%;
-                padding-top: 1%;
-            }
-            .edt_job{
-                  margin-left: 5%;
-                padding-top: 2%;
-            }
-            .edt_frmtyp {
-                margin-left: 5%;
-                padding-top: 1%;
-            }
-            .edt_mklab{
-                margin-left: 5%;
-                padding-top: 1%;
-            }
-             .edt_modlab{
-                margin-left: 5%;
-                padding-top: 1%;
-            }
-             .edt-yr{
-                  margin-left: 5%;
-                padding-top: 1%;
-             }
-             .edt-lic{
-                  margin-left: 5%;
-                padding-top: 1%;
-             }
-              .edt-color{
-                  margin-left: 5%;
-                padding-top: 1%;
-             }
-            .allocation_usr {
-                width: 76% !important;
-            }
-
-            .open > .dropdown-menu {
-                width: 148% !important;
-            }
-
-            allocation_m > .dropdown-menu {
-                position: relative !important;
-            }
-            /*Search icon*/
-            .input-group-addon1 {
-                margin-left: 0% !important;
-            }
-            /*Deactivate pop up for user*/
-            .usr_deact_mter {
-                margin-left: -28%;
-                margin-right: -26%;
-            }
-             /*.container{
-                overflow:auto;
-            }*/
-             .wrapper {
-                margin-bottom: 9%;
-                overflow: auto;
-                height:auto;
-                }
-             .cre_citybox  .chosen-drop{
-                /*max-height: 11em !important;*/
-                overflow-y: auto;
-                margin-bottom: 12% !important;
-                overflow-x: hidden;
-                }
-               .chosen-container .chosen-results{
-                       /*max-height: 8em !important;*/
-                        /*overflow:hidden !important;*/
-                       margin-bottom: 1% !important;
-               }
-               .control-label-1{
-                  width: 100% !important;
-                   margin-left:-5% !important;
-               }
-               .lic_txt {
-             margin-top: 0%;
-            }
-                .col_txt {
-                     margin-top: 0%;
-                }
         }
 
-        @@media only screen and (min-width:321px) and (max-width:359px) {
-             /*.container{
+        .edt_usr_modal {
+            margin-left: -15%;
+            width: 100%;
+            margin-top: -20%;
+        }
+
+        .modal-backdrop.in {
+            height: 118% !important;
+        }
+
+        .usr_header {
+        }
+
+        .usr_nm {
+            margin-bottom: 5px !important;
+            margin-left: -17% !important;
+            margin-top: -6%;
+        }
+
+        .usr_pswd {
+            margin-bottom: 0 !important;
+            margin-left: -17% !important;
+            margin-top: -2%;
+        }
+
+        .usr_addr {
+            margin-bottom: 0% !important;
+            margin-left: -17% !important;
+            margin-top: -2%;
+        }
+
+        .usr_mob {
+            margin-bottom: 0% !important;
+            margin-left: -17% !important;
+            margin-top: -2%;
+        }
+        /*Label class name*/
+        .edt_nm {
+            margin-left: 5% !important;
+        }
+
+        .edt_log {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_Gender {
+            margin-left: 5% !important;
+            padding-top: 3%;
+        }
+
+        .edt_pswd {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_repswd {
+            margin-left: 5%;
+            padding-top: 1%;
+            width: 10%;
+        }
+
+        .edt_addr {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_State {
+            margin-left: 5%;
+            padding-top: 2%;
+        }
+
+        .edt_City {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_email {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_Zip {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_mob {
+            padding-top: 1%;
+            margin-left: 5%;
+        }
+
+        .edt_HomePhone {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_rle {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_job {
+            margin-left: 5%;
+            padding-top: 2%;
+        }
+
+        .edt_frmtyp {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_mklab {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_modlab {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt-yr {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt-lic {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt-color {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .allocation_usr {
+            width: 76% !important;
+        }
+
+        .open > .dropdown-menu {
+            width: 148% !important;
+        }
+
+        allocation_m > .dropdown-menu {
+            position: relative !important;
+        }
+        /*Search icon*/
+        .input-group-addon1 {
+            margin-left: 0% !important;
+        }
+        /*Deactivate pop up for user*/
+        .usr_deact_mter {
+            margin-left: -28%;
+            margin-right: -26%;
+        }
+        /*.container{
                 overflow:auto;
             }*/
-            .adv-table .dataTables_length select {
-                width: 82% !important;
-            }
+        .wrapper {
+            margin-bottom: 9%;
+            overflow: auto;
+            height: auto;
+        }
 
-            div.dataTables_length label {
-                white-space: normal !important;
-            }
+        .cre_citybox .chosen-drop {
+            /*max-height: 11em !important;*/
+            overflow-y: auto;
+            margin-bottom: 12% !important;
+            overflow-x: hidden;
+        }
 
-            .iconic-input {
-                margin-left: 3%;
-            }
+        .chosen-container .chosen-results {
+            /*max-height: 8em !important;*/
+            /*overflow:hidden !important;*/
+            margin-bottom: 1% !important;
+        }
 
-            .edt_usr_modal {
-                margin-left: 0;
-                width: 82% !important;
-                margin-bottom: 6px;
-                height: 33em;
-                overflow-y: scroll;
-            }
+        .control-label-1 {
+            width: 100% !important;
+            margin-left: -5% !important;
+        }
 
-            .usr_header {
-                position: static;
-                z-index: 9999999;
-                width: 100%;
-            }
+        .lic_txt {
+            margin-top: 0%;
+        }
 
-            .usr_modal_body {
-                /*height: 33em;
+        .col_txt {
+            margin-top: 0%;
+        }
+    }
+
+    @@media only screen and (min-width:321px) and (max-width:359px) {
+        /*.container{
+                overflow:auto;
+            }*/
+        .adv-table .dataTables_length select {
+            width: 82% !important;
+        }
+
+        div.dataTables_length label {
+            white-space: normal !important;
+        }
+
+        .iconic-input {
+            margin-left: 3%;
+        }
+
+        .edt_usr_modal {
+            margin-left: 0;
+            width: 82% !important;
+            margin-bottom: 6px;
+            height: 33em;
+            overflow-y: scroll;
+        }
+
+        .usr_header {
+            position: static;
+            z-index: 9999999;
+            width: 100%;
+        }
+
+        .usr_modal_body {
+            /*height: 33em;
                 overflow-y: scroll;*/
-            }
+        }
 
-            .usr_nm {
-                /*margin-bottom: 5px !important;
+        .usr_nm {
+            /*margin-bottom: 5px !important;
             margin-left: -17% !important;
             margin-top: -6%;*/
-            }
-
-            .usr_pswd {
-                /*margin-bottom: 0 !important;
-            margin-left: -17% !important;
-            margin-top: -2%;*/
-            }
-
-            .usr_addr {
-                /*margin-bottom: 0% !important;
-            margin-left: -17% !important;
-            margin-top: -2%;*/
-            }
-
-            .usr_mob {
-                /*margin-bottom: 0% !important;
-            margin-left: -17% !important;
-            margin-top: -2%;*/
-            }
-            /*Label class name*/
-            .edt_nm {
-                  margin-left: 5% !important;
-            }
-
-            .edt_log {
-                   margin-left: 5%;
-                    padding-top: 1%;
-            }
-            .edt_Gender{
-                 margin-left: 5% !important;
-                  padding-top: 3%;
-            }
-            .edt_pswd {
-                    margin-left: 5%;
-                     padding-top: 1%;
-            }
-
-            .edt_repswd {
-                   margin-left: 5%;
-                    padding-top:1%;
-                    width: 10%;
-            }
-
-            .edt_addr {
-                margin-left: 5%;
-                padding-top: 1%;
-            }
-            .edt_State{
-                 margin-left: 5%;
-                  padding-top: 1%;
-            }
-            .edt_City{
-                 margin-left: 5%;
-                 padding-top: 1%;
-            }
-            .edt_email {
-                margin-left: 5%;
-                 padding-top: 1%;
-
-            }
-            .edt_Zip{
-                margin-left: 5%;
-                 padding-top: 1%;
-            }
-            .edt_mob {
-                padding-top: 1%;
-                 margin-left: 5%;
-            }
-            .edt_HomePhone{
-                 margin-left: 5%;
-                 padding-top: 1%;
-            }
-            .edt_rle {
-                 margin-left: 5%;
-                padding-top: 1%;
-            }
-            .edt_job{
-                  margin-left: 5%;
-                padding-top: 1%;
-            }
-            .edt_frmtyp {
-                margin-left: 5%;
-                padding-top: 1%;
-            }
-            .edt_mklab{
-                margin-left: 5%;
-                padding-top: 1%;
-            }
-             .edt_modlab{
-                margin-left: 5%;
-                padding-top: 1%;
-            }
-              .edt-yr{
-                  margin-left: 5%;
-                padding-top: 1%;
-             }
-             .edt-lic{
-                  margin-left: 5%;
-                padding-top: 1%;
-             }
-              .edt-color{
-                  margin-left: 5%;
-                padding-top: 1%;
-             }
-            .allocation_usr {
-                width: 76% !important;
-            }
-
-            .open > .dropdown-menu {
-                width: 184% !important;
-            }
-
-            allocation_m > .dropdown-menu {
-                position: relative !important;
-            }
-            /*Search icon*/
-            .input-group-addon1 {
-                margin-left: -75% !important;
-            }
-            /*Deactivate pop up for user*/
-            .usr_deact_mter {
-            }
-
-            .cmxform .form-group label.error {
-                padding-left: 0;
-                white-space: normal;
-                text-align: left;
-            }
-            .wrapper {
-                margin-bottom: 8%;
-                overflow: auto;
-                }
-             .cre_citybox  .chosen-drop{
-                  max-height: 14em !important;
-                }
-               .chosen-container .chosen-results{
-                       max-height: 8em !important;
-               }
-                .control-label-1{
-                  width: 100% !important;
-                   margin-left:-5% !important;
-               }
-                .lic_txt {
-                    margin-top: 0%;
-                }
-                 .col_txt {
-                     margin-top: 0%;
-                }
         }
-        /*****************************************iphone 6s portrait*******************************/
-        @@media only screen and (min-width:360px) and (max-width:429px) {
-            /*.container{
+
+        .usr_pswd {
+            /*margin-bottom: 0 !important;
+            margin-left: -17% !important;
+            margin-top: -2%;*/
+        }
+
+        .usr_addr {
+            /*margin-bottom: 0% !important;
+            margin-left: -17% !important;
+            margin-top: -2%;*/
+        }
+
+        .usr_mob {
+            /*margin-bottom: 0% !important;
+            margin-left: -17% !important;
+            margin-top: -2%;*/
+        }
+        /*Label class name*/
+        .edt_nm {
+            margin-left: 5% !important;
+        }
+
+        .edt_log {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_Gender {
+            margin-left: 5% !important;
+            padding-top: 3%;
+        }
+
+        .edt_pswd {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_repswd {
+            margin-left: 5%;
+            padding-top: 1%;
+            width: 10%;
+        }
+
+        .edt_addr {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_State {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_City {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_email {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_Zip {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_mob {
+            padding-top: 1%;
+            margin-left: 5%;
+        }
+
+        .edt_HomePhone {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_rle {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_job {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_frmtyp {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_mklab {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_modlab {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt-yr {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt-lic {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt-color {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .allocation_usr {
+            width: 76% !important;
+        }
+
+        .open > .dropdown-menu {
+            width: 184% !important;
+        }
+
+        allocation_m > .dropdown-menu {
+            position: relative !important;
+        }
+        /*Search icon*/
+        .input-group-addon1 {
+            margin-left: -75% !important;
+        }
+        /*Deactivate pop up for user*/
+        .usr_deact_mter {
+        }
+
+        .cmxform .form-group label.error {
+            padding-left: 0;
+            white-space: normal;
+            text-align: left;
+        }
+
+        .wrapper {
+            margin-bottom: 8%;
+            overflow: auto;
+        }
+
+        .cre_citybox .chosen-drop {
+            max-height: 14em !important;
+        }
+
+        .chosen-container .chosen-results {
+            max-height: 8em !important;
+        }
+
+        .control-label-1 {
+            width: 100% !important;
+            margin-left: -5% !important;
+        }
+
+        .lic_txt {
+            margin-top: 0%;
+        }
+
+        .col_txt {
+            margin-top: 0%;
+        }
+    }
+    /*****************************************iphone 6s portrait*******************************/
+    @@media only screen and (min-width:360px) and (max-width:429px) {
+        /*.container{
                 overflow:auto;
             }*/
-            .adv-table .dataTables_length select {
-                width: 82% !important;
-            }
+        .adv-table .dataTables_length select {
+            width: 82% !important;
+        }
 
-            .iconic-input {
-                margin-left: 3%;
-            }
+        .iconic-input {
+            margin-left: 3%;
+        }
 
-            div.dataTables_length label {
-                white-space: normal !important;
-            }
+        div.dataTables_length label {
+            white-space: normal !important;
+        }
 
-            .edt_usr_modal {
-                margin-left: 0;
-                width: 82% !important;
-                margin-bottom: 6px;
-                height: 33em;
-                overflow-y: scroll;
-            }
+        .edt_usr_modal {
+            margin-left: 0;
+            width: 82% !important;
+            margin-bottom: 6px;
+            height: 33em;
+            overflow-y: scroll;
+        }
 
-            .usr_header {
-                position: static;
-                z-index: 9999999;
-                width: 100%;
-            }
+        .usr_header {
+            position: static;
+            z-index: 9999999;
+            width: 100%;
+        }
 
-            .usr_modal_body {
-                /*height: 33em;
+        .usr_modal_body {
+            /*height: 33em;
                 overflow-y: scroll;*/
-            }
-
-            .usr_nm {
-                margin-bottom: 5px !important;
-                margin-left: -17% !important;
-                margin-top: -6%;
-            }
-
-            .usr_pswd {
-                margin-bottom: 0 !important;
-                margin-left: -17% !important;
-                margin-top: -2%;
-            }
-
-            .usr_addr {
-                margin-bottom: 0% !important;
-                margin-left: -17% !important;
-                margin-top: -2%;
-            }
-
-            .usr_mob {
-                margin-bottom: 0% !important;
-                margin-left: -17% !important;
-                margin-top: -2%;
-            }
-            /*Label class name*/
-            .edt_nm {
-                  margin-left: 5% !important;
-            }
-
-            .edt_log {
-                   margin-left: 5%;
-                    padding-top: 1%;
-            }
-            .edt_Gender{
-                 margin-left: 5% !important;
-                  padding-top: 3%;
-            }
-            .edt_pswd {
-                    margin-left: 5%;
-                     padding-top: 1%;
-            }
-
-            .edt_repswd {
-                   margin-left: 5%;
-                    padding-top:1%;
-                    width: 10%;
-            }
-
-            .edt_addr {
-                margin-left: 5%;
-                padding-top: 1%;
-            }
-            .edt_State{
-                 margin-left: 5%;
-                  padding-top: 2%;
-            }
-            .edt_City{
-                 margin-left: 5%;
-                 padding-top: 2%;
-            }
-            .edt_email {
-                margin-left: 5%;
-                 padding-top: 1%;
-
-            }
-            .edt_Zip{
-                margin-left: 5%;
-                 padding-top: 1%;
-            }
-            .edt_mob {
-                padding-top: 1%;
-                 margin-left: 5%;
-            }
-            .edt_HomePhone{
-                 margin-left: 5%;
-                 padding-top: 1%;
-            }
-            .edt_rle {
-                 margin-left: 5%;
-                padding-top: 1%;
-            }
-            .edt_job{
-                  margin-left: 5%;
-                padding-top: 2%;
-            }
-            .edt_frmtyp {
-                margin-left: 5%;
-                padding-top: 1%;
-            }
-             .edt_mklab{
-                margin-left: 5%;
-                padding-top: 1%;
-            }
-             .edt_modlab{
-                margin-left: 5%;
-                padding-top: 1%;
-            }
-             .edt-yr{
-                  margin-left: 5%;
-                padding-top: 1%;
-             }
-             .edt-lic{
-                  margin-left: 5%;
-                padding-top: 1%;
-             }
-             .edt-color{
-                  margin-left: 5%;
-                padding-top: 1%;
-             }
-            .allocation_usr {
-                width: 76% !important;
-            }
-
-            .open > .dropdown-menu {
-                width: 184% !important;
-            }
-
-            allocation_m > .dropdown-menu {
-                position: relative !important;
-            }
-            /*Search icon*/
-            .input-group-addon1 {
-                margin-left: -75% !important;
-            }
-            /*Deactivate pop up for user*/
-            .usr_deact_mter {
-            }
-           .wrapper {
-                margin-bottom: 8%;
-                overflow: auto;
-                }
-              .cre_citybox  .chosen-drop{
-                  max-height: 14em !important;
-                }
-               .chosen-container .chosen-results{
-                       max-height: 8em !important;
-               }
-               .control-label-1{
-                  width: 100% !important;
-                  margin-left:-5% !important;
-               }
-               .lic_txt {
-             margin-top: 0%;
-        }
-         .col_txt {
-             margin-top: 0%;
-        }
         }
 
-        /*@@media only screen and (min-width:421px) and (max-width:500px) {
+        .usr_nm {
+            margin-bottom: 5px !important;
+            margin-left: -17% !important;
+            margin-top: -6%;
+        }
+
+        .usr_pswd {
+            margin-bottom: 0 !important;
+            margin-left: -17% !important;
+            margin-top: -2%;
+        }
+
+        .usr_addr {
+            margin-bottom: 0% !important;
+            margin-left: -17% !important;
+            margin-top: -2%;
+        }
+
+        .usr_mob {
+            margin-bottom: 0% !important;
+            margin-left: -17% !important;
+            margin-top: -2%;
+        }
+        /*Label class name*/
+        .edt_nm {
+            margin-left: 5% !important;
+        }
+
+        .edt_log {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_Gender {
+            margin-left: 5% !important;
+            padding-top: 3%;
+        }
+
+        .edt_pswd {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_repswd {
+            margin-left: 5%;
+            padding-top: 1%;
+            width: 10%;
+        }
+
+        .edt_addr {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_State {
+            margin-left: 5%;
+            padding-top: 2%;
+        }
+
+        .edt_City {
+            margin-left: 5%;
+            padding-top: 2%;
+        }
+
+        .edt_email {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_Zip {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_mob {
+            padding-top: 1%;
+            margin-left: 5%;
+        }
+
+        .edt_HomePhone {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_rle {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_job {
+            margin-left: 5%;
+            padding-top: 2%;
+        }
+
+        .edt_frmtyp {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_mklab {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt_modlab {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt-yr {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt-lic {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .edt-color {
+            margin-left: 5%;
+            padding-top: 1%;
+        }
+
+        .allocation_usr {
+            width: 76% !important;
+        }
+
+        .open > .dropdown-menu {
+            width: 184% !important;
+        }
+
+        allocation_m > .dropdown-menu {
+            position: relative !important;
+        }
+        /*Search icon*/
+        .input-group-addon1 {
+            margin-left: -75% !important;
+        }
+        /*Deactivate pop up for user*/
+        .usr_deact_mter {
+        }
+
+        .wrapper {
+            margin-bottom: 8%;
+            overflow: auto;
+        }
+
+        .cre_citybox .chosen-drop {
+            max-height: 14em !important;
+        }
+
+        .chosen-container .chosen-results {
+            max-height: 8em !important;
+        }
+
+        .control-label-1 {
+            width: 100% !important;
+            margin-left: -5% !important;
+        }
+
+        .lic_txt {
+            margin-top: 0%;
+        }
+
+        .col_txt {
+            margin-top: 0%;
+        }
+    }
+
+    /*@@media only screen and (min-width:421px) and (max-width:500px) {
             .edt_usr_modal {
                 margin-left: -10%;
                 width: 118%;
@@ -906,8 +1024,8 @@
                 white-space: normal;
             }
         }*/
-        /*****************************Ihone 5s landscape************************************/
-        /*@@media only screen and (min-width:501px)and (max-width:599px) {
+    /*****************************Ihone 5s landscape************************************/
+    /*@@media only screen and (min-width:501px)and (max-width:599px) {
             .deactivated_records {
                 padding-left: 29% !important;
             }
@@ -1057,7 +1175,7 @@
                 white-space: normal;
             }
         }*/
-        /***************************** IPHONE 6S Landscape **********************************/
+    /***************************** IPHONE 6S Landscape **********************************/
     @@media only screen and (min-width:651px)and (max-width:767px) {
         /*.deactivated_records {
                 padding-left: 34.5%;
@@ -1141,912 +1259,1040 @@
                 margin-left: 26%;
                 width: 79%;
             }*/
-        }
-
-        @@media only screen and (min-width:768px) and (max-width:798px) {
-            .edt_usr_modal {
-            }
-
-            .control-label {
-                /*padding-left: 8%;*/
-                width: 16% !important;
-            }
-            /****Fields class *****/
-            .nm_txt {
-                width: 60%;
-                margin-bottom: 2%;
-            }
-
-            .log_txt {
-                width: 60%;
-                margin-bottom: 2%;
-            }
-
-            .pswd_txt {
-                width: 60%;
-                margin-bottom: 2%;
-            }
-
-            .repswd_txt {
-                width: 60%;
-                margin-bottom: 2%;
-            }
-
-            .adddr_txt {
-                width: 60%;
-                margin-bottom: 2%;
-            }
-
-            .mail_txt {
-                width: 60%;
-                margin-bottom: 2%;
-            }
-
-            .mob_txt {
-                width: 60%;
-                margin-bottom: 2%;
-            }
-
-            .zip_txt {
-                width: 60%;
-                margin-bottom: 2%;
-            }
-
-            .phon_txt {
-                width: 60%;
-                margin-bottom: 2%;
-            }
-
-            .rle_txt {
-                margin-bottom: 2%;
-            }
-
-            .job_txt {
-                width: 60%;
-                margin-bottom: 2%;
-            }
-            .yr_txt{
-                width: 60%;
-                margin-bottom: 2%;
-            }
-            .lic_txt{
-                 width: 60%;
-                margin-bottom: 2%;
-            }
-            .col_txt{
-                 width: 60%;
-
-            }
-            .form_typ {
-                white-space: normal;
-            }
-            /*Label class name*/
-            .edt_nm {
-            }
-
-            .edt_log {
-            }
-
-            .edt_pswd {
-            }
-
-            .edt_repswd {
-            }
-
-            .edt_addr {
-            }
-
-            .edt_email {
-            }
-
-            .edt_mob {
-            }
-
-            .edt_rle {
-            }
-            .edt_mklab{
-
-            }
-            .edt_modlab{
-                margin-top:2%;
-            }
-            .sel-make{
-                margin-top:2%;
-                margin-bottom:1%;
-            }
-            .edt-lic{
-
-            }
-            .edt-color{
-                 margin-top:1%;
-            }
-            .col_txt{
-                margin-top:2%;
-            }
-
-            .allocation_usr {
-                margin-bottom: 2%;
-            }
-
-            .cre_genderbox > .chosen-container {
-                max-width: 60%;
-                margin-bottom: 2%;
-            }
-
-            .cre_statebox > .chosen-container {
-                max-width: 60%;
-                margin-bottom: 2%;
-            }
-
-            .cre_citybox > .chosen-container {
-                max-width: 60%;
-                margin-bottom: 2%;
-            }
-
-            .input-group-addon1 {
-                margin-left: -75% !important;
-            }
-
-            .usr_deact_mter {
-            }
-            .serviceinput{
-                width:30%;
-            }
-            .usrserv-2{
-                margin-left:-23% !important;
-            }
-              .wrapper {
-                margin-bottom: 8%;
-               height:auto;
-                }
-              .cre_citybox  .chosen-drop{
-                  max-height: 14em !important;
-                }
-               .chosen-container .chosen-results{
-                       max-height: 6em !important;
-               }
-        }
-
-        @@media only screen and (min-width:799px) and (max-width:850px) {
-            .edt_usr_modal {
-
-            }
-
-            .usr_nm {
-            }
-
-            .usr_pswd {
-            }
-
-            .usr_addr {
-            }
-
-            .usr_mob {
-            }
-
-            .nm_txt {
-            }
-
-            .log_txt {
-            }
-
-            .pswd_txt {
-            }
-
-            .repswd_txt {
-            }
-
-            .adddr_txt {
-            }
-
-            .mail_txt {
-            }
-
-            .mob_txt {
-            }
-
-            .rle_txt {
-            }
-            /*Label class name*/
-            .edt_nm {
-                padding-left: 2%;
-            }
-
-            .edt_log {
-                padding-left: 0.6%;
-            }
-            .edt_Gender{
-                padding-left: 1.6%;
-            }
-            .edt_pswd {
-            }
-
-            .edt_repswd {
-                padding-left: 1%;
-            }
-
-            .edt_addr {
-                padding-left: 0.4%;
-            }
-            .edt_Zip{
-               padding-left: 4.6%;
-            }
-            .edt_email {
-               padding-left: 1%;
-            }
-            .edt_State{
-                padding-left: 3.2%;
-            }
-            .edt_City{
-                padding-left: 4.4%;
-            }
-            .edt_HomePhone{
-                padding-left:2.2%;
-            }
-            .edt_mob {
-                margin-left: -1%;
-                margin-right: 1%;
-            }
-
-            .edt_rle {
-                    padding-left: 3.4%;
-            }
-            .edt_job{
-                padding-left: 1%;
-            }
-            .edt_frmtyp{
-                margin-left: -1%;
-                margin-right: 1%;
-            }
-            .allocation_usr {
-                margin-left: 42%;
-                margin-top: -14%;
-                width: 55% !important;
-            }
-
-                .allocation_usr > .multiselect {
-
-                }
-
-            .open > .dropdown-menu {
-            }
-
-            .input-group-addon1 {
-                margin-left: -75% !important;
-            }
-
-            .usr_deact_mter {
-            }
-            .wrapper {
-                margin-bottom: 8%;
-               height:auto;
-                }
-              .cre_citybox  .chosen-drop{
-                  max-height: 14em !important;
-                }
-               .chosen-container .chosen-results{
-                       max-height: 6em !important;
-               }
-        }
-        @@media only screen and (min-width:851px) and (max-width:919px){
-             .wrapper {
-                margin-bottom: 8% !important;
-               height:auto;
-                }
-              .cre_citybox  .chosen-drop{
-                  max-height: 14em !important;
-                }
-               .chosen-container .chosen-results{
-                       max-height: 6em !important;
-               }
-                 .edt_nm {
-                    margin-left: -7%;
-                    margin-right: 0.2%;
-                }
-                .edt-div{
-                   /*width: 45%;
-                   margin-right: -3%;*/
-                   width: 24%;
-                   margin-right: -3%;
-                   margin-left: -1%;
-                }
-                .nm_txt{
-                        margin-left: -14%;
-                }
-                .mail-div{
-                    width: 24%;
-                    margin-right: -3%;
-                }
-                .edt_email{
-                    /*margin-left: -1%;
-                    padding-left: 0.5%;*/
-                   margin-right: 0.5%;
-                }
-                .mail_txt{
-                    margin-left: -10%;
-                }
-                .edt_Gender{
-
-                }
-                .cre_genderbox{
-                           margin-left: -3.2%;
-                           width: 24%;
-                }
-                .edt_addr {
-                     margin-left: -8%;
-                    margin-right: 0.1%;
-                }
-                .addr-div{
-                    margin-left: -2.7%;
-                    width: 24%;
-                }
-                .edt_State{
-                   margin-left: 0%;
-                    padding-left: 1.6%;
-                }
-                .cre_statebox{
-                       margin-left: -1.9%;
-                        width: 24%;
-                }
-                .edt_City{
-                   margin-left: -2%;
-                    padding-left: 3%;
-                }
-                .cre_citybox{
-                       margin-left: -2%;
-                       width: 24%;
-                }
-                .edt_Zip{
-                        margin-left: -9%;
-                        padding-left: 5%;
-                }
-                .zip-div{
-                    margin-left: -2.3%;
-                    width: 24%;
-                }
-
-                .edt_HomePhone{
-                   margin-left: 0%;
-                }
-                .hm-div{
-                   margin-left: -2%;
-                    width: 24%;
-                }
-
-                .edt_mob{
-                    margin-left: -1%;
-                    white-space: normal !important;
-                }
-                .mob-div{
-                       margin-left: -2.7%;
-                       width: 24%;
-                }
-
-                .edt_log{
-                    margin-left: -9%;
-                    margin-right: -3%;
-                    padding-left: 0.6%;
-                }
-                .log-div{
-                    margin-left: -2.2%;
-                    width: 24%;
-                }
-                .edt_pswd{
-                    margin-left: -1.6%;
-                }
-                .psswd-div{
-                    margin-left: -0.3%;
-                    width: 24%;
-                }
-
-                .edt_repswd{
-                        margin-left: -2%;
-                }
-                .repsswd-div{
-                    margin-left: -2%;
-                    width: 24%;
-                }
-                .edt_rle {
-                   margin-left: -7%;
-                    margin-right: -2%;
-                }
-                .edt_job{
-                    margin-left: -1%;
-                }
-                .jb-div{
-                    margin-left: -1%;
-                    width: 24%;
-                }
-                .edt_frmtyp{
-                    margin-left: -2%;
-                    white-space: normal !important;
-                }
-                .edt_mklab{
-                        margin-left: -8%;
-                }
-                .edt_modlab{
-
-                }
-                .edt-yr{
-                    margin-left: -3%;
-                }
-                .yr-div{
-                        width: 24%;
-                        margin-left: -3%;
-                }
-                .edt-lic{
-                    margin-left: -8%;
-                }
-                .lic-div{
-                    margin-left: -2%;
-                    width: 24%;
-                }
-                .edt-color{
-
-                }
-                .col-div{
-                    margin-left: -2%;
-                    width: 24%;
-                }
-        }
-
-         @@media only screen and (min-width:920px) and (max-width:967px){
-             .wrapper {
-                margin-bottom: 8%;
-               height:auto;
-                }
-              .cre_citybox  .chosen-drop{
-                  max-height: 14em !important;
-                }
-               .chosen-container .chosen-results{
-                       max-height: 6em !important;
-               }
-                 .edt_nm {
-                    margin-left: -5%;
-                    margin-right: 1%;
-                }
-                .edt-div{
-                   width: 25%;
-                   margin-right: -3%;
-                   margin-left: -1%;
-                }
-                .nm_txt{
-                        margin-left: -14%;
-                }
-                .mail-div{
-                    width: 25%;
-                    margin-right: -3%;
-                }
-                .edt_email{
-                   margin-right: 1%;
-                }
-                .mail_txt{
-                    margin-left: -10%;
-                }
-                .edt_Gender{
-                       margin-left: 2%;
-                         margin-right: 1%;
-                }
-                .cre_genderbox{
-                              margin-left: -2%;
-                            width: 25%;
-                            margin-right: -10%;
-                }
-                .edt_addr {
-                     margin-left: -7%;
-                     margin-right: -1%;
-                }
-                .addr-div{
-                  margin-left: 0%;
-                    width: 25%;
-                }
-                .edt_State{
-                   margin-left: 0%;
-                    padding-left: 1.6%;
-                }
-                .cre_statebox{
-                       margin-left: -1%;
-                        width: 25%;
-                }
-                .edt_City{
-                      margin-left: 0%;
-                        padding-left: 4%;
-                        margin-right: 1%;
-                }
-                .cre_citybox{
-                       margin-left: -1%;
-                        width: 25%;
-                }
-                .edt_Zip{
-                        margin-left: -8%;
-                        padding-left: 5%;
-                }
-                .zip-div{
-                    margin-left: 0%;
-                    width: 25%;
-                }
-
-                .edt_HomePhone{
-                   margin-left: 0%;
-                }
-                .hm-div{
-                   margin-left: -1%;
-                    width: 25%;
-                }
-
-                .edt_mob{
-                   margin-left: 1%;
-                    white-space: normal !important;
-                    margin-right: 1%;
-                }
-                .mob-div{
-                       margin-left: -2%;
-                       width: 25%;
-                }
-
-                .edt_log{
-                    margin-left: -8%;
-                    margin-right: 0%;
-                    padding-left: 1.5%;
-                }
-                .log-div{
-                    margin-left: 0%;
-                    width: 25%;
-                }
-                .edt_pswd{
-                    margin-left: -1.6%;
-                }
-                .psswd-div{
-                    margin-left: 0.6%;
-                    width: 25%;
-                }
-
-                .edt_repswd{
-                       margin-left: 0%;
-                        padding-left: 1%;
-                        margin-right: 1%;
-                }
-                .repsswd-div{
-                   margin-left: -1%;
-                    width: 25%;
-                }
-                .edt_rle {
-                   margin-left: -5%;
-                    margin-right: -2%;
-                }
-                .edt_job{
-                    margin-left: 0%;
-                }
-                .jb-div{
-                    margin-left: -1%;
-                    width: 25%;
-                }
-                .edt_frmtyp{
-                       margin-left: 2%;
-                        white-space: normal !important;
-                        margin-right: -1%;
-                }
-                .edt_mklab{
-                        margin-left: -5%;
-                }
-                .edt_modlab{
-
-                }
-                .edt-yr{
-                    margin-left: -3%;
-                }
-                .yr-div{
-                        width: 25%;
-                        margin-left: -3%;
-                }
-                .edt-lic{
-                    margin-left: -5%;
-                }
-                .lic-div{
-                    margin-left: -1%;
-                    width: 25%;
-                }
-                .edt-color{
-
-                }
-                .col-div{
-                    margin-left: -1%;
-                    width: 25%;
-                }
-        }
-
-         @@media only screen and (min-width:968px) and (max-width:1023px){
-             .wrapper {
-                margin-bottom: 8%;
-               height:auto;
-                }
-              .cre_citybox  .chosen-drop{
-                  max-height: 14em !important;
-                }
-               .chosen-container .chosen-results{
-                       max-height: 6em !important;
-               }
-                 .edt_nm {
-                    margin-left: -3%;
-                    margin-right: 0.2%;
-                }
-                .edt-div{
-                   width: 25%;
-                   /*margin-left: -1%;*/
-                   margin-right: -3%;
-                }
-                .nm_txt{
-                        margin-left: -14%;
-                }
-                .mail-div{
-                    width: 25%;
-                    margin-right: -3%;
-                }
-                .edt_email{
-                    /*margin-left: -1%;
-                    padding-left: 0.5%;*/
-                   margin-right: 0.5%;
-                }
-                .mail_txt{
-                    margin-left: -10%;
-                }
-                .edt_Gender{
-                           margin-right: 2%;
-                }
-                .cre_genderbox{
-                           margin-left: -3.2%;
-                           width: 25%;
-                }
-                .edt_addr {
-                    margin-left: -5%;
-                    margin-right: 2%;
-                }
-                .addr-div{
-                    margin-left: -2.7%;
-                    width: 25%;
-                }
-                .edt_State{
-                   margin-left: 0%;
-                    padding-left: 1.6%;
-                }
-                .cre_statebox{
-                       margin-left: -1.9%;
-                        width: 25%;
-                }
-                .edt_City{
-                   margin-left: -2%;
-                    padding-left: 3%;
-                }
-                .cre_citybox{
-                       /*margin-left: -2%;*/
-                       width: 25%;
-                }
-                .edt_Zip{
-                        margin-left: -6%;
-                        margin-right: 3%;
-                        padding-left: 5%;
-                }
-                .zip-div{
-                    margin-left: -2.7%;
-                    width: 25%;
-                }
-
-                .edt_HomePhone{
-                   margin-left: 0%;
-                }
-                .hm-div{
-                   margin-left: -2%;
-                    width: 25%;
-                }
-
-                .edt_mob{
-                    margin-left: -1%;
-                    white-space: normal !important;
-                }
-                .mob-div{
-                       margin-left: -1%;
-                       width: 25%;
-                }
-
-                .edt_log{
-                        margin-left: -5%;
-                        margin-right: 1%;
-                        padding-left: 0%;
-                }
-                .log-div{
-                    margin-left: -1.5%;
-                    width: 25%;
-                }
-                .edt_pswd{
-                    margin-left: -1.6%;
-                }
-                .psswd-div{
-                    margin-left: -0.3%;
-                    width: 25%;
-                }
-
-                .edt_repswd{
-                        margin-left: -1%;
-                }
-                .repsswd-div{
-                   margin-left: -1%;
-                    width: 25%;
-                }
-                .edt_rle {
-                   margin-left: -4%;
-                    margin-right: -2%;
-                    padding-left: 2%;
-                }
-                .edt_job{
-                        margin-left: 0%;
-                        margin-right: 0%;
-                }
-                .jb-div{
-                    margin-left: -1.5%;
-                    width: 25%;
-                }
-                .edt_frmtyp{
-                    margin-left: 0%;
-                    white-space: normal !important;
-                    margin-right: -2%;
-                }
-                .edt_mklab{
-                       margin-left: -3%;
-                }
-                .edt_modlab{
-
-                }
-                .edt-yr{
-                    margin-left: -3%;
-                }
-                .yr-div{
-                        width: 25%;
-                        margin-left: 0%;
-                }
-                .edt-lic{
-                    margin-left: -3%;
-                }
-                .lic-div{
-                    margin-left: -2%;
-                    width: 25%;
-                }
-                .edt-color{
-
-                }
-                .col-div{
-                    margin-left: -2%;
-                    width: 25%;
-                }
-        }
-        @@media only screen and (min-width:1024px) and (max-width:1100px) {
-            .edt_usr_modal {
-            }
-
-            .usr_nm {
-            }
-
-            .usr_pswd {
-            }
-
-            .usr_addr {
-            }
-
-            .usr_mob {
-            }
-            /****Fields class *****/
-            .nm_txt {
-            }
-
-            .log_txt {
-            }
-
-            .pswd_txt {
-            }
-
-            .repswd_txt {
-            }
-
-            .adddr_txt {
-            }
-
-            .mail_txt {
-            }
-
-            .mob_txt {
-            }
-
-            .rle_txt {
-            }
-            /*Label class name*/
-            .edt_nm {
-            }
-
-            .edt_log {
-            }
-
-            .edt_pswd {
-            }
-
-            .edt_repswd {
-            }
-
-            .edt_addr {
-            }
-
-            .edt_email {
-            }
-
-            .edt_mob {
-            }
-
-            .edt_rle {
-            }
-
-            .allocation_usr {
-            }
-
-                .allocation_usr > .multiselect {
-                    /*width:100% !important;*/
-                }
-
-            .iconic-input {
-                margin-left: 8%;
-                margin-right: -6%;
-            }
-
-            .input-group-addon1 {
-                margin-left: -75% !important;
-            }
-            /*Deactivate pop up for user*/
-            .usr_deact_mter {
-            }
-
-
-            .edt_State {
-            }
-
-            .edt_City {
-            }
-
-            .edt_Zip {
-            }
-
-            .edt_Gender {
-            }
-
-            .edt_HomePhone {
-            }
-
-            .edt_rle {
-            }
-             .wrapper {
-                height: 44em !important;
-                }
-             .cre_citybox  .chosen-drop{
-                  max-height: 14em !important;
-                }
-               .chosen-container .chosen-results{
-                       max-height: 6em !important;
-               }
-        }
-
-        @@media only screen and (min-width:1101px) and (max-width:1280px) {
-            .wrapper {
-                margin-bottom: 8%;
-               height:auto;
-                }
-              .cre_citybox  .chosen-drop{
-                  max-height: 14em !important;
-                }
-               .chosen-container .chosen-results{
-                       max-height: 6em !important;
-               }
-
     }
 
+    @@media only screen and (min-width:768px) and (max-width:798px) {
+        .edt_usr_modal {
+        }
 
+        .control-label {
+            /*padding-left: 8%;*/
+            width: 16% !important;
+        }
+        /****Fields class *****/
+        .nm_txt {
+            width: 60%;
+            margin-bottom: 2%;
+        }
+
+        .log_txt {
+            width: 60%;
+            margin-bottom: 2%;
+        }
+
+        .pswd_txt {
+            width: 60%;
+            margin-bottom: 2%;
+        }
+
+        .repswd_txt {
+            width: 60%;
+            margin-bottom: 2%;
+        }
+
+        .adddr_txt {
+            width: 60%;
+            margin-bottom: 2%;
+        }
+
+        .mail_txt {
+            width: 60%;
+            margin-bottom: 2%;
+        }
+
+        .mob_txt {
+            width: 60%;
+            margin-bottom: 2%;
+        }
+
+        .zip_txt {
+            width: 60%;
+            margin-bottom: 2%;
+        }
+
+        .phon_txt {
+            width: 60%;
+            margin-bottom: 2%;
+        }
+
+        .rle_txt {
+            margin-bottom: 2%;
+        }
+
+        .job_txt {
+            width: 60%;
+            margin-bottom: 2%;
+        }
+
+        .yr_txt {
+            width: 60%;
+            margin-bottom: 2%;
+        }
+
+        .lic_txt {
+            width: 60%;
+            margin-bottom: 2%;
+        }
+
+        .col_txt {
+            width: 60%;
+        }
+
+        .form_typ {
+            white-space: normal;
+        }
+        /*Label class name*/
+        .edt_nm {
+        }
+
+        .edt_log {
+        }
+
+        .edt_pswd {
+        }
+
+        .edt_repswd {
+        }
+
+        .edt_addr {
+        }
+
+        .edt_email {
+        }
+
+        .edt_mob {
+        }
+
+        .edt_rle {
+        }
+
+        .edt_mklab {
+        }
+
+        .edt_modlab {
+            margin-top: 2%;
+        }
+
+        .sel-make {
+            margin-top: 2%;
+            margin-bottom: 1%;
+        }
+
+        .edt-lic {
+        }
+
+        .edt-color {
+            margin-top: 1%;
+        }
+
+        .col_txt {
+            margin-top: 2%;
+        }
+
+        .allocation_usr {
+            margin-bottom: 2%;
+        }
+
+        .cre_genderbox > .chosen-container {
+            max-width: 60%;
+            margin-bottom: 2%;
+        }
+
+        .cre_statebox > .chosen-container {
+            max-width: 60%;
+            margin-bottom: 2%;
+        }
+
+        .cre_citybox > .chosen-container {
+            max-width: 60%;
+            margin-bottom: 2%;
+        }
+
+        .input-group-addon1 {
+            margin-left: -75% !important;
+        }
+
+        .usr_deact_mter {
+        }
+
+        .serviceinput {
+            width: 30%;
+        }
+
+        .usrserv-2 {
+            margin-left: -23% !important;
+        }
+
+        .wrapper {
+            margin-bottom: 8%;
+            height: auto;
+        }
+
+        .cre_citybox .chosen-drop {
+            max-height: 14em !important;
+        }
+
+        .chosen-container .chosen-results {
+            max-height: 6em !important;
+        }
+    }
+
+    @@media only screen and (min-width:799px) and (max-width:850px) {
+        .edt_usr_modal {
+        }
+
+        .usr_nm {
+        }
+
+        .usr_pswd {
+        }
+
+        .usr_addr {
+        }
+
+        .usr_mob {
+        }
+
+        .nm_txt {
+        }
+
+        .log_txt {
+        }
+
+        .pswd_txt {
+        }
+
+        .repswd_txt {
+        }
+
+        .adddr_txt {
+        }
+
+        .mail_txt {
+        }
+
+        .mob_txt {
+        }
+
+        .rle_txt {
+        }
+        /*Label class name*/
+        .edt_nm {
+            padding-left: 2%;
+        }
+
+        .edt_log {
+            padding-left: 0.6%;
+        }
+
+        .edt_Gender {
+            padding-left: 1.6%;
+        }
+
+        .edt_pswd {
+        }
+
+        .edt_repswd {
+            padding-left: 1%;
+        }
+
+        .edt_addr {
+            padding-left: 0.4%;
+        }
+
+        .edt_Zip {
+            padding-left: 4.6%;
+        }
+
+        .edt_email {
+            padding-left: 1%;
+        }
+
+        .edt_State {
+            padding-left: 3.2%;
+        }
+
+        .edt_City {
+            padding-left: 4.4%;
+        }
+
+        .edt_HomePhone {
+            padding-left: 2.2%;
+        }
+
+        .edt_mob {
+            margin-left: -1%;
+            margin-right: 1%;
+        }
+
+        .edt_rle {
+            padding-left: 3.4%;
+        }
+
+        .edt_job {
+            padding-left: 1%;
+        }
+
+        .edt_frmtyp {
+            margin-left: -1%;
+            margin-right: 1%;
+        }
+
+        .allocation_usr {
+            margin-left: 42%;
+            margin-top: -14%;
+            width: 55% !important;
+        }
+
+            .allocation_usr > .multiselect {
+            }
+
+        .open > .dropdown-menu {
+        }
+
+        .input-group-addon1 {
+            margin-left: -75% !important;
+        }
+
+        .usr_deact_mter {
+        }
+
+        .wrapper {
+            margin-bottom: 8%;
+            height: auto;
+        }
+
+        .cre_citybox .chosen-drop {
+            max-height: 14em !important;
+        }
+
+        .chosen-container .chosen-results {
+            max-height: 6em !important;
+        }
+    }
+
+    @@media only screen and (min-width:851px) and (max-width:919px) {
+        .wrapper {
+            margin-bottom: 8% !important;
+            height: auto;
+        }
+
+        .cre_citybox .chosen-drop {
+            max-height: 14em !important;
+        }
+
+        .chosen-container .chosen-results {
+            max-height: 6em !important;
+        }
+
+        .edt_nm {
+            margin-left: -7%;
+            margin-right: 0.2%;
+        }
+
+        .edt-div {
+            /*width: 45%;
+                   margin-right: -3%;*/
+            width: 24%;
+            margin-right: -3%;
+            margin-left: -1%;
+        }
+
+        .nm_txt {
+            margin-left: -14%;
+        }
+
+        .mail-div {
+            width: 24%;
+            margin-right: -3%;
+        }
+
+        .edt_email {
+            /*margin-left: -1%;
+                    padding-left: 0.5%;*/
+            margin-right: 0.5%;
+        }
+
+        .mail_txt {
+            margin-left: -10%;
+        }
+
+        .edt_Gender {
+        }
+
+        .cre_genderbox {
+            margin-left: -3.2%;
+            width: 24%;
+        }
+
+        .edt_addr {
+            margin-left: -8%;
+            margin-right: 0.1%;
+        }
+
+        .addr-div {
+            margin-left: -2.7%;
+            width: 24%;
+        }
+
+        .edt_State {
+            margin-left: 0%;
+            padding-left: 1.6%;
+        }
+
+        .cre_statebox {
+            margin-left: -1.9%;
+            width: 24%;
+        }
+
+        .edt_City {
+            margin-left: -2%;
+            padding-left: 3%;
+        }
+
+        .cre_citybox {
+            margin-left: -2%;
+            width: 24%;
+        }
+
+        .edt_Zip {
+            margin-left: -9%;
+            padding-left: 5%;
+        }
+
+        .zip-div {
+            margin-left: -2.3%;
+            width: 24%;
+        }
+
+        .edt_HomePhone {
+            margin-left: 0%;
+        }
+
+        .hm-div {
+            margin-left: -2%;
+            width: 24%;
+        }
+
+        .edt_mob {
+            margin-left: -1%;
+            white-space: normal !important;
+        }
+
+        .mob-div {
+            margin-left: -2.7%;
+            width: 24%;
+        }
+
+        .edt_log {
+            margin-left: -9%;
+            margin-right: -3%;
+            padding-left: 0.6%;
+        }
+
+        .log-div {
+            margin-left: -2.2%;
+            width: 24%;
+        }
+
+        .edt_pswd {
+            margin-left: -1.6%;
+        }
+
+        .psswd-div {
+            margin-left: -0.3%;
+            width: 24%;
+        }
+
+        .edt_repswd {
+            margin-left: -2%;
+        }
+
+        .repsswd-div {
+            margin-left: -2%;
+            width: 24%;
+        }
+
+        .edt_rle {
+            margin-left: -7%;
+            margin-right: -2%;
+        }
+
+        .edt_job {
+            margin-left: -1%;
+        }
+
+        .jb-div {
+            margin-left: -1%;
+            width: 24%;
+        }
+
+        .edt_frmtyp {
+            margin-left: -2%;
+            white-space: normal !important;
+        }
+
+        .edt_mklab {
+            margin-left: -8%;
+        }
+
+        .edt_modlab {
+        }
+
+        .edt-yr {
+            margin-left: -3%;
+        }
+
+        .yr-div {
+            width: 24%;
+            margin-left: -3%;
+        }
+
+        .edt-lic {
+            margin-left: -8%;
+        }
+
+        .lic-div {
+            margin-left: -2%;
+            width: 24%;
+        }
+
+        .edt-color {
+        }
+
+        .col-div {
+            margin-left: -2%;
+            width: 24%;
+        }
+    }
+
+    @@media only screen and (min-width:920px) and (max-width:967px) {
+        .wrapper {
+            margin-bottom: 8%;
+            height: auto;
+        }
+
+        .cre_citybox .chosen-drop {
+            max-height: 14em !important;
+        }
+
+        .chosen-container .chosen-results {
+            max-height: 6em !important;
+        }
+
+        .edt_nm {
+            margin-left: -5%;
+            margin-right: 1%;
+        }
+
+        .edt-div {
+            width: 25%;
+            margin-right: -3%;
+            margin-left: -1%;
+        }
+
+        .nm_txt {
+            margin-left: -14%;
+        }
+
+        .mail-div {
+            width: 25%;
+            margin-right: -3%;
+        }
+
+        .edt_email {
+            margin-right: 1%;
+        }
+
+        .mail_txt {
+            margin-left: -10%;
+        }
+
+        .edt_Gender {
+            margin-left: 2%;
+            margin-right: 1%;
+        }
+
+        .cre_genderbox {
+            margin-left: -2%;
+            width: 25%;
+            margin-right: -10%;
+        }
+
+        .edt_addr {
+            margin-left: -7%;
+            margin-right: -1%;
+        }
+
+        .addr-div {
+            margin-left: 0%;
+            width: 25%;
+        }
+
+        .edt_State {
+            margin-left: 0%;
+            padding-left: 1.6%;
+        }
+
+        .cre_statebox {
+            margin-left: -1%;
+            width: 25%;
+        }
+
+        .edt_City {
+            margin-left: 0%;
+            padding-left: 4%;
+            margin-right: 1%;
+        }
+
+        .cre_citybox {
+            margin-left: -1%;
+            width: 25%;
+        }
+
+        .edt_Zip {
+            margin-left: -8%;
+            padding-left: 5%;
+        }
+
+        .zip-div {
+            margin-left: 0%;
+            width: 25%;
+        }
+
+        .edt_HomePhone {
+            margin-left: 0%;
+        }
+
+        .hm-div {
+            margin-left: -1%;
+            width: 25%;
+        }
+
+        .edt_mob {
+            margin-left: 1%;
+            white-space: normal !important;
+            margin-right: 1%;
+        }
+
+        .mob-div {
+            margin-left: -2%;
+            width: 25%;
+        }
+
+        .edt_log {
+            margin-left: -8%;
+            margin-right: 0%;
+            padding-left: 1.5%;
+        }
+
+        .log-div {
+            margin-left: 0%;
+            width: 25%;
+        }
+
+        .edt_pswd {
+            margin-left: -1.6%;
+        }
+
+        .psswd-div {
+            margin-left: 0.6%;
+            width: 25%;
+        }
+
+        .edt_repswd {
+            margin-left: 0%;
+            padding-left: 1%;
+            margin-right: 1%;
+        }
+
+        .repsswd-div {
+            margin-left: -1%;
+            width: 25%;
+        }
+
+        .edt_rle {
+            margin-left: -5%;
+            margin-right: -2%;
+        }
+
+        .edt_job {
+            margin-left: 0%;
+        }
+
+        .jb-div {
+            margin-left: -1%;
+            width: 25%;
+        }
+
+        .edt_frmtyp {
+            margin-left: 2%;
+            white-space: normal !important;
+            margin-right: -1%;
+        }
+
+        .edt_mklab {
+            margin-left: -5%;
+        }
+
+        .edt_modlab {
+        }
+
+        .edt-yr {
+            margin-left: -3%;
+        }
+
+        .yr-div {
+            width: 25%;
+            margin-left: -3%;
+        }
+
+        .edt-lic {
+            margin-left: -5%;
+        }
+
+        .lic-div {
+            margin-left: -1%;
+            width: 25%;
+        }
+
+        .edt-color {
+        }
+
+        .col-div {
+            margin-left: -1%;
+            width: 25%;
+        }
+    }
+
+    @@media only screen and (min-width:968px) and (max-width:1023px) {
+        .wrapper {
+            margin-bottom: 8%;
+            height: auto;
+        }
+
+        .cre_citybox .chosen-drop {
+            max-height: 14em !important;
+        }
+
+        .chosen-container .chosen-results {
+            max-height: 6em !important;
+        }
+
+        .edt_nm {
+            margin-left: -3%;
+            margin-right: 0.2%;
+        }
+
+        .edt-div {
+            width: 25%;
+            /*margin-left: -1%;*/
+            margin-right: -3%;
+        }
+
+        .nm_txt {
+            margin-left: -14%;
+        }
+
+        .mail-div {
+            width: 25%;
+            margin-right: -3%;
+        }
+
+        .edt_email {
+            /*margin-left: -1%;
+                    padding-left: 0.5%;*/
+            margin-right: 0.5%;
+        }
+
+        .mail_txt {
+            margin-left: -10%;
+        }
+
+        .edt_Gender {
+            margin-right: 2%;
+        }
+
+        .cre_genderbox {
+            margin-left: -3.2%;
+            width: 25%;
+        }
+
+        .edt_addr {
+            margin-left: -5%;
+            margin-right: 2%;
+        }
+
+        .addr-div {
+            margin-left: -2.7%;
+            width: 25%;
+        }
+
+        .edt_State {
+            margin-left: 0%;
+            padding-left: 1.6%;
+        }
+
+        .cre_statebox {
+            margin-left: -1.9%;
+            width: 25%;
+        }
+
+        .edt_City {
+            margin-left: -2%;
+            padding-left: 3%;
+        }
+
+        .cre_citybox {
+            /*margin-left: -2%;*/
+            width: 25%;
+        }
+
+        .edt_Zip {
+            margin-left: -6%;
+            margin-right: 3%;
+            padding-left: 5%;
+        }
+
+        .zip-div {
+            margin-left: -2.7%;
+            width: 25%;
+        }
+
+        .edt_HomePhone {
+            margin-left: 0%;
+        }
+
+        .hm-div {
+            margin-left: -2%;
+            width: 25%;
+        }
+
+        .edt_mob {
+            margin-left: -1%;
+            white-space: normal !important;
+        }
+
+        .mob-div {
+            margin-left: -1%;
+            width: 25%;
+        }
+
+        .edt_log {
+            margin-left: -5%;
+            margin-right: 1%;
+            padding-left: 0%;
+        }
+
+        .log-div {
+            margin-left: -1.5%;
+            width: 25%;
+        }
+
+        .edt_pswd {
+            margin-left: -1.6%;
+        }
+
+        .psswd-div {
+            margin-left: -0.3%;
+            width: 25%;
+        }
+
+        .edt_repswd {
+            margin-left: -1%;
+        }
+
+        .repsswd-div {
+            margin-left: -1%;
+            width: 25%;
+        }
+
+        .edt_rle {
+            margin-left: -4%;
+            margin-right: -2%;
+            padding-left: 2%;
+        }
+
+        .edt_job {
+            margin-left: 0%;
+            margin-right: 0%;
+        }
+
+        .jb-div {
+            margin-left: -1.5%;
+            width: 25%;
+        }
+
+        .edt_frmtyp {
+            margin-left: 0%;
+            white-space: normal !important;
+            margin-right: -2%;
+        }
+
+        .edt_mklab {
+            margin-left: -3%;
+        }
+
+        .edt_modlab {
+        }
+
+        .edt-yr {
+            margin-left: -3%;
+        }
+
+        .yr-div {
+            width: 25%;
+            margin-left: 0%;
+        }
+
+        .edt-lic {
+            margin-left: -3%;
+        }
+
+        .lic-div {
+            margin-left: -2%;
+            width: 25%;
+        }
+
+        .edt-color {
+        }
+
+        .col-div {
+            margin-left: -2%;
+            width: 25%;
+        }
+    }
+
+    @@media only screen and (min-width:1024px) and (max-width:1100px) {
+        .edt_usr_modal {
+        }
+
+        .usr_nm {
+        }
+
+        .usr_pswd {
+        }
+
+        .usr_addr {
+        }
+
+        .usr_mob {
+        }
+        /****Fields class *****/
+        .nm_txt {
+        }
+
+        .log_txt {
+        }
+
+        .pswd_txt {
+        }
+
+        .repswd_txt {
+        }
+
+        .adddr_txt {
+        }
+
+        .mail_txt {
+        }
+
+        .mob_txt {
+        }
+
+        .rle_txt {
+        }
+        /*Label class name*/
+        .edt_nm {
+        }
+
+        .edt_log {
+        }
+
+        .edt_pswd {
+        }
+
+        .edt_repswd {
+        }
+
+        .edt_addr {
+        }
+
+        .edt_email {
+        }
+
+        .edt_mob {
+        }
+
+        .edt_rle {
+        }
+
+        .allocation_usr {
+        }
+
+            .allocation_usr > .multiselect {
+                /*width:100% !important;*/
+            }
+
+        .iconic-input {
+            margin-left: 8%;
+            margin-right: -6%;
+        }
+
+        .input-group-addon1 {
+            margin-left: -75% !important;
+        }
+        /*Deactivate pop up for user*/
+        .usr_deact_mter {
+        }
+
+
+        .edt_State {
+        }
+
+        .edt_City {
+        }
+
+        .edt_Zip {
+        }
+
+        .edt_Gender {
+        }
+
+        .edt_HomePhone {
+        }
+
+        .edt_rle {
+        }
+
+        .wrapper {
+            height: 44em !important;
+        }
+
+        .cre_citybox .chosen-drop {
+            max-height: 14em !important;
+        }
+
+        .chosen-container .chosen-results {
+            max-height: 6em !important;
+        }
+    }
+
+    @@media only screen and (min-width:1101px) and (max-width:1280px) {
+        .wrapper {
+            margin-bottom: 8%;
+            height: auto;
+        }
+
+        .cre_citybox .chosen-drop {
+            max-height: 14em !important;
+        }
+
+        .chosen-container .chosen-results {
+            max-height: 6em !important;
+        }
+    }
 </style>
-
 
 <div id="loading">
     <div id="loadingcontent">
@@ -2056,13 +2302,9 @@
     </div>
 </div>
 
-
-
 <!-- page start-->
-
 <section id="main-content">
     <section class="wrapper">
-
         <div class="row">
             <div class="col-sm-12">
                 <section class="panel">
@@ -2105,25 +2347,18 @@
                                                                 <a href="#" class="btn btn-danger fileupload-exists btnRemoveimage" data-dismiss="fileupload"><i class="fa fa-trash"></i> Remove</a>
                                                             </div>
                                                         </div>
-
                                                     </div>
                                                 </div>
-
                                                 <div class="form-group">
                                                     <div class="col-lg-1 col-md-4 col-sm-0"> </div>
-
                                                     <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_nm" style="text-align:right !important"> Name  <span style="color: red">*</span></label>
                                                     <div class="col-lg-2 col-md-4 col-sm-10 edt-div">
                                                         <input type="text" name="UserFullName" maxlength="200" id="txtuserfullname" class="inputclass form-control characterOnly nm_txt" />
-
                                                     </div>
-
                                                     <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_email" style="text-align:right !important">Email id <span style="color: red">*</span></label>
-
                                                     <div class="col-lg-2 col-md-4 col-sm-10 mail-div">
                                                         <input type="text" name="Email" id="txtEmail" class="inputclass form-control mail_txt" />
                                                     </div>
-
 
                                                     <label for="name" class=" col-lg-1 col-md-2 col-sm-2 control-label edt_Gender" style="text-align:right !important">Gender</label>
                                                     <div class="col-lg-2 col-md-4 col-sm-10 cre_genderbox">
@@ -2135,50 +2370,38 @@
                                                     </div>
                                                     <div class="col-lg-2 col-md-4 col-sm-12"></div>
                                                 </div>
-
                                                 <div class="form-group">
                                                     <div class="col-lg-1 col-md-4 col-sm-12"> </div>
                                                     <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_addr" style="text-align:right !important">Address </label>
-
                                                     <div class="col-lg-2 col-md-4 col-sm-10 addr-div">
                                                         <input type="text" name="Address" id="txtUserAddress" maxlength="200" class="inputclass form-control adddr_txt" />
-
                                                     </div>
                                                     <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_State" style="text-align:right !important">State <span style="color: red">*</span></label>
                                                     <div class="col-lg-2 col-md-4 col-sm-10 cre_statebox">
                                                         <select data-placeholder="Select State" id="ddlState" name="StateID" class="form-control chosen-select " style="width: 100%"></select>
                                                     </div>
-
                                                     <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_City " style="text-align:right !important">City <span style="color: red">*</span></label>
                                                     <div class="col-lg-2 col-md-4 col-sm-10 cre_citybox">
                                                         <select id="ddlCity" name="CityID" data-placeholder="Select City" class="form-control chosen-select" style="width: 100%"></select>
-
                                                     </div>
                                                     <div class="col-lg-2 col-md-4 col-sm-12"></div>
                                                 </div>
-
                                                 <div class="form-group">
                                                     <div class="col-lg-1 col-md-4 col-sm-12"> </div>
                                                     <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_Zip" style="text-align:right !important">Zip</label>
-
                                                     <div class="col-lg-2 col-md-4 col-sm-10 zip-div">
                                                         <input type="text" name="ZipCode" id="txtZip" maxlength="15" ondrag="return false" ondrop="return false" oncopy="return false;" onpaste="return false;" class="inputclass numericOnly form-control zip_txt" />
-
                                                     </div>
-
                                                     <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_HomePhone" style="text-align:right !important">Phone </label>
                                                     <div class="col-lg-2 col-md-4 col-sm-10 hm-div">
                                                         <input type="text" name="HomePhoneNumber" onpaste="return false;" id="txtHomePhoneNumber" maxlength="15" class="inputclass form-control phon_txt Numeric-Only" />
-
                                                     </div>
-
                                                     <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_mob" style="text-align:right !important">Mobile No.<span style="color: red">*</span> </label>
                                                     <div class="col-lg-2 col-md-4 col-sm-10 mob-div">
                                                         <input type="text" name="MobileNo" id="txtMobileNo" onpaste="return false;" maxlength="15" class="inputclass form-control mob_txt Numeric-Only" />
                                                     </div>
                                                     <div class="col-lg-2 col-md-4 col-sm-12"></div>
                                                 </div>
-
                                                 <div class="form-group">
                                                     <div class="col-lg-1 col-md-4 col-sm-12"> </div>
                                                     <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_log" style="text-align:right !important">Login Id <span style="color: red">*</span></label>
@@ -2186,28 +2409,22 @@
                                                         <input type="hidden" name="UserId" id="txtUserId" />
                                                         <input type="text" name="LogInId" id="txtLogInId" maxlength="200" class="inputclass form-control log_txt" />
 
-
                                                     </div>
-
                                                     <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_pswd" style="text-align:right !important">Password<span style="color: red;">*</span></label>
                                                     <div class="col-lg-2 col-md-4 col-sm-10 psswd-div">
                                                         <input type="password" name="Password" id="txtPassword" onpaste="return false;" maxlength="50" class="inputclass form-control pswd_txt" /> <br />
-                                                         <i class="fa fa-eye password-icon" id="showPassword"></i>                                                    
+                                                        <i class="fa fa-eye password-icon" id="showPassword"></i>
                                                     </div>
-
                                                     <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_repswd" style="white-space: normal; text-align: right !important;">Confirm<span style="color: red;">*</span> Password </label>
                                                     <div class="col-lg-2 col-md-4 col-sm-10 repsswd-div">
                                                         <input type="password" name="Confirmpassword" id="txtConfirmPassword" onpaste="return false;" maxlength="50" class="inputclass form-control repswd_txt" /><br />
-                                                         <i class="fa fa-eye password-icon" id="showConfirmPassword" style=" top:4px !important"></i>                                                    
+                                                        <i class="fa fa-eye password-icon" id="showConfirmPassword" style=" top:4px !important"></i>
                                                     </div>
                                                     <div class="col-lg-2 col-md-4 col-sm-12"></div>
                                                 </div>
 
-
                                                 <div class="form-group">
-
                                                     <div class="col-lg-1 col-md-4 col-sm-12"> </div>
-
                                                     <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_rle" style="text-align:right !important">Role <span style="color: red">*</span></label>
                                                     <div id="divRole" class="col-lg-2 col-sm-10 cre_citybox">
                                                         <div class="chosen-container chosen-container-single " title="" id="ddlRole_chosen">
@@ -2218,19 +2435,15 @@
                                                                     <label style="margin-left: 7px;" class="col-lg-2">
                                                                         <input type="checkbox" style="zoom:1.2;" class="chbSelectAll" id="Role_SelectAll" autocomplete="off" value=" "><span>Select All</span>
                                                                     </label>
-
                                                                 </div>
                                                                 <ul id="ulRole" class="chosen-results " style=""></ul>
                                                             </div>
                                                         </div>
                                                     </div>
-
                                                     <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_job" style="text-align:right !important">Job Type </label>
                                                     <div class="col-lg-2 col-md-4 col-sm-10 jb-div">
                                                         <input type="text" name="JobType" id="txtJobType" maxlength="200" class="inputclass form-control job_txt" />
                                                     </div>
-
-
 
                                                     <label for="name" class="col-lg-1 col-md-2 col-sm-2 edt_frmtyp control-label " style="text-align:right !important">Form Type <span style="color: red">*</span></label>
                                                     <div id="divFormType" class="col-lg-2 col-sm-10 cre_citybox">
@@ -2242,7 +2455,6 @@
                                                                     <label style="margin-left: 7px;" class="col-lg-2">
                                                                         <input type="checkbox" style="zoom:1.2;" class="chbSelectAll" id="FormType_SelectAll" autocomplete="off" value=" "><span>Select All</span>
                                                                     </label>
-
                                                                 </div>
                                                                 <ul id="ulFormType" class="chosen-results " style=""></ul>
                                                             </div>
@@ -2250,21 +2462,16 @@
                                                     </div>
                                                 </div>
 
-
                                                 <div class="form-group">
                                                     <div class="col-lg-1 col-md-4 col-sm-12"> </div>
                                                     <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_City " style="text-align:right !important">Manager</label>
                                                     <div class="col-lg-2 col-md-4 col-sm-10 cre_citybox">
                                                         <select id="ManagerId" name="ManagerId" data-placeholder="Select Manager" class="form-control chosen-select" style="width: 100%"></select>
-
                                                     </div>
-
                                                     <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_City " style="text-align:right !important">Field Supervisor </label>
                                                     <div class="col-lg-2 col-md-4 col-sm-10 cre_citybox">
                                                         <select id="FieldSupervisorId" name="FieldSupervisorId" data-placeholder="Select Field Supervisor" class="form-control chosen-select" style="width: 100%"></select>
-
                                                     </div>
-
                                                     <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_City " style="text-align:right !important">Transfer Approval</label>
                                                     <div class="col-lg-2 col-md-4 col-sm-10 cre_citybox">
                                                         <select id="ManagerApprovalRequired" name="ManagerApprovalRequired" data-placeholder="Select" class="form-control chosen-select" style="width: 100%">
@@ -2274,7 +2481,6 @@
                                                         </select>
                                                     </div>
                                                 </div>
-
                                             </form>
                                         </div>
                                     </div>
@@ -2316,12 +2522,10 @@
                                                     <div class="col-lg-2 col-md-4 col-sm-10 cre_statebox">
                                                         <select data-placeholder="Select Make" id="ddlVehicleMake" name="VehicleMake" class="form-control chosen-select"></select>
                                                     </div>
-
                                                     <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt_modlab" style="text-align:right !important">Model</label>
                                                     <div class="col-lg-2 col-md-4 col-sm-10 sel-make cre_statebox">
                                                         <select data-placeholder="Select Model" id="ddlVehicleModel" name="VehicleModel" class="form-control chosen-select"></select>
                                                     </div>
-
                                                     <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt-yr" style="text-align:right !important">Year  </label>
                                                     <div class="col-lg-2 col-md-4 col-sm-10 yr-div">
                                                         <input type="text" name="VehicleYear" id="txtYear" maxlength="200" class="inputclass form-control yr_txt Numeric-Only" />
@@ -2333,18 +2537,14 @@
                                                     <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt-lic" style="text-align:right !important">Licence  </label>
                                                     <div class="col-lg-2 col-md-4 col-sm-10 lic-div">
                                                         <input type="text" name="VehicleLicensePlateNumber" id="txtLicensePlateNumber" maxlength="200" class="inputclass form-control lic_txt" />
-
                                                     </div>
-
 
                                                     <label for="name" class="col-lg-1 col-md-2 col-sm-2 control-label edt-color" style="text-align:right !important">Color </label>
                                                     <div class="col-lg-2 col-md-4 col-sm-10 col-div">
                                                         <input type="text" name="VehicleColor" id="txtColor" maxlength="200" class="inputclass form-control col_txt" />
-
                                                     </div>
                                                     <div class="col-lg-2 col-md-4 col-sm-10"></div>
                                                 </div>
-
                                             </form>
                                         </div>
                                     </div>
@@ -2362,7 +2562,6 @@
                                             <form id="" class="form-horizontal form-top" role="form">
                                                 <div id="servicesDiv">
                                                     <div class="row">
-
                                                     </div>
                                                 </div>
                                             </form>
@@ -2372,10 +2571,8 @@
                             </div>
                             <!--collapse end-->
 
-
                         </div>
                     </div>
-
                     <div class="modal-footer">
                         <button id="btnSave" class="btn btn-success" type="button">Save</button>
                         <a class="btn btn-danger" target="_self" href="@Url.Action("index", "Users", new { area = "Admin" })">
@@ -2389,22 +2586,18 @@
         </div>
     </section>
 </section>
-
 <script src='@Url.Content("~/Scripts/Admin/UserMaster.js")'></script>
-
 <link href="~/Scripts/js/style.css" rel="stylesheet" />
 <link href="~/Scripts/js/jquery-ui.css" rel="stylesheet" />
 <script src="~/Scripts/js/jquery-ui.js"></script>
 <script src="~/Scripts/js/fieldChooser.js"></script>
 <link href="~/Content/MSTS/admin/css/bootstrap-multiselect.css" rel="stylesheet" />
 <script src="~/Content/MSTS/admin/js/bootstrap-multiselect.js"></script>
-
 <script>
     //$(function () {
     //    $("#accordion").accordion();
     //});
 </script>
-
 <link href="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.css")" rel="stylesheet" />
 <script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.jquery.min.js")"></script>
 <script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.proto.min.js")"></script>

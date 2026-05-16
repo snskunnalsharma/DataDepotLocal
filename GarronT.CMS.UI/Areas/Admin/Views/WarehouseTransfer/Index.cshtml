@@ -2,22 +2,27 @@
     ViewBag.Title = "Warehouse Transfer";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
-@Html.Hidden("urlGetProductData", Url.Action("GetProductData", "WarehouseTransfer"))
-@Html.Hidden("urlAddInventry", Url.Action("AddInventry", "WarehouseTransfer"))
-@Html.Hidden("urlEditInventry", Url.Action("EditInventry", "WarehouseTransfer"))
 
-@Html.Hidden("urlSaveInventryList", Url.Action("SaveInventryList", "WarehouseTransfer"))
+<!-- Hidden fields for all AJAX URLs -->
+<form id="frmWarehouseTransfer" style="display:none;">
+    @Html.Hidden("urlGetProductData", Url.Action("GetProductData", "WarehouseTransfer"))
+    @Html.Hidden("urlAddInventry", Url.Action("AddInventry", "WarehouseTransfer"))
+    @Html.Hidden("urlEditInventry", Url.Action("EditInventry", "WarehouseTransfer"))
+    @Html.Hidden("urlSaveInventryList", Url.Action("SaveInventryList", "WarehouseTransfer"))
 
-@Html.Hidden("urlIndex", Url.Action("Index", "WarehouseTransfer"))
+    @Html.Hidden("urlIndex", Url.Action("Index", "WarehouseTransfer"))
+    @Html.Hidden("urlDeleteInventry", Url.Action("DeleteInventry", "WarehouseTransfer"))
+    @Html.Hidden("urlInsertSerialNumber", Url.Action("InsertSerialNumber", "WarehouseTransfer"))
+    @Html.Hidden("urlResetAllData", Url.Action("ResetAllData", "WarehouseTransfer"))
+    @Html.Hidden("urlViewUploadRecords", Url.Action("ViewUploadRecords", "ViewUploadRecords"))
 
-@Html.Hidden("urlDeleteInventry", Url.Action("DeleteInventry", "WarehouseTransfer"))
-@Html.Hidden("urlInsertSerialNumber", Url.Action("InsertSerialNumber", "WarehouseTransfer"))
-@Html.Hidden("urlResetAllData", Url.Action("ResetAllData", "WarehouseTransfer"))
-@Html.Hidden("urlViewUploadRecords", Url.Action("ViewUploadRecords", "ViewUploadRecords"))
+    @Html.Hidden("urlGetProject", Url.Action("GetProject", "WarehouseTransfer"))
+    @Html.Hidden("urlGetWarehouseAndProduct", Url.Action("GetWarehouseAndProduct", "WarehouseTransfer"))
+    @Html.Hidden("urlViewUpload", Url.Action("ViewUpload", "WarehouseTransfer"))
 
-@Html.Hidden("urlGetProject", Url.Action("GetProject", "WarehouseTransfer"))
-@Html.Hidden("urlGetWarehouseAndProduct", Url.Action("GetWarehouseAndProduct", "WarehouseTransfer"))
-@Html.Hidden("urlViewUpload", Url.Action("ViewUpload", "WarehouseTransfer"))
+    <!-- NEW: Hidden field for WarehouseTransfer Save controller -->
+    @Html.Hidden("urlWarehouseTransferSave", Url.Action("SaveWarehouseTransfer", "WarehouseTransfer"))
+</form>
 
 <style>
     @@media (min-width:375px) {
@@ -55,7 +60,6 @@
         #main-content .panel-body button.btn {
             font-size: 13px !important;
         }
-
         /* Fix DataTables length/search overlap on small screens */
         #main-content .dataTables_wrapper .dataTables_length,
         #main-content .dataTables_wrapper .dataTables_filter {
@@ -70,10 +74,10 @@
             margin-top: 6px !important;
         }
 
-        #main-content .dataTables_wrapper .dataTables_filter input {
-            width: 100% !important;
-            box-sizing: border-box !important;
-        }
+            #main-content .dataTables_wrapper .dataTables_filter input {
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
     }
 
     @@media (min-width:1200px) {
@@ -1317,5 +1321,7 @@
 @Scripts.Render("~/bundles/jquery-confirm_js")
 
 
-<script src="@Url.Content("~/Scripts/Admin/WarehouseTransfer.js")"></script>
+<script src="/Scripts/jquery-3.6.0.min.js"></script>
+<!-- WarehouseTransfer JS -->
+<script src="/Scripts/Admin/WarehouseTransfer.js" type="text/javascript"></script>
 

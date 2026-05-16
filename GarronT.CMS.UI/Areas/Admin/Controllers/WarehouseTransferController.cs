@@ -182,9 +182,25 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         public ActionResult GetWarehouseAndProduct(long ProjectId)
         {
             InventoryDAL objInventoryDAL = new InventoryDAL();
-            List<WarehouseBO> data = objInventoryDAL.GetWareHouseList(ProjectId);
-            List<CommonDropDownClass> data1 = objInventoryDAL.GetProductList(ProjectId);
-            return base.Json(new { WarehouseList = data, ProductList = data1 }, JsonRequestBehavior.AllowGet);
+
+            // 1️⃣ Get warehouses for project
+            List<WarehouseBO> warehouses = objInventoryDAL.GetWareHouseList(ProjectId);
+
+            // 2️⃣ Get products for project
+            List<CommonDropDownClass> products = objInventoryDAL.GetProductList(ProjectId);
+
+            // 3️⃣ Ensure both lists are not null
+            if (warehouses == null)
+                warehouses = new List<WarehouseBO>();
+            if (products == null)
+                products = new List<CommonDropDownClass>();
+
+            // 4️⃣ Return JSON
+            return Json(new
+            {
+                WarehouseList = warehouses,
+                ProductList = products
+            }, JsonRequestBehavior.AllowGet);
         }
 
 
@@ -736,6 +752,29 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             TempData.Remove("WarehouseTransferModelList");
 
             return Json(true, JsonRequestBehavior.AllowGet);
+        }
+
+        // Controller
+        [HttpPost]
+        public ActionResult SaveWarehouseTransfer(List<ProductMasterBO> transferList, long projectId)
+        {
+            string message = "";
+            bool success = false;
+            try
+            {
+                // Keep as long
+                long currentUserId = new UserDetails().GetUserId(User.Identity.GetUserId());
+                InventoryDAL dal = new InventoryDAL();
+
+                // Call DAL method updated to accept long
+                success = dal.SaveWarehouseTransfer(projectId, transferList, currentUserId, out message);
+            }
+            catch (Exception ex)
+            {
+                message = "Error: " + ex.Message;
+            }
+
+            return Json(new { success, message }, JsonRequestBehavior.AllowGet);
         }
     }
 }

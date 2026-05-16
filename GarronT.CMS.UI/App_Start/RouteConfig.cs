@@ -73,6 +73,8 @@ namespace GarronT.CMS.UI
             //);
 
             // routes.AppendTrailingSlash = true;
+
+
         }
     }
 }

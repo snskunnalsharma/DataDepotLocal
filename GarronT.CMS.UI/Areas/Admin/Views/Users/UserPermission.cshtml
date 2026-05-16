@@ -1136,33 +1136,44 @@
                                 <div class="table-responsive">
                                     <table id="PermissionTable" style="" class="table table-advance table-condensed table-hover table-bordered ">
 
-
                                         <thead>
                                         <th>
                                             Permission
                                         </th>
                                         @{
+                                            var obj = (GarronT.CMS.Model.BO.UserAspNetPermissionVM)Model;
 
-                        var obj = (GarronT.CMS.Model.BO.UserAspNetPermissionVM)Model;
-                        foreach (GarronT.CMS.Model.AspNetRole role in obj.AspNetRoleList.Where(a => a.IsSysAdmin != true).ToList())
-                        {
-                            <th style="text-align:center">
-                                <div class="RName">@role.Name</div>
+                                            var orderedRoleList = obj.AspNetRoleList
+                                                .Where(a => a.IsSysAdmin != true)
+                                                .OrderBy(a =>
+                                                    a.Name == "Manager" ? 1 :
+                                                    a.Name == "INV Manager" ? 2 :
+                                                    a.Name == "Warehouse Manager" ? 3 :
+                                                    a.Name == "Installer" ? 4 :
+                                                    a.Name == "Reporter" ? 5 :
+                                                    a.Name == "IT Access" ? 6 :
+                                                    a.Name == "Customer" ? 7 :
+                                                    99)
+                                                .ToList();
 
-                                <table class="table-bordered">
-                                    <thead>
-                                    <th style="width:3%;text-align:center;"><i class="fa fa-eye"></i></th>
-                                    <th style="width:3%;text-align:center;"><i class="fa fa-plus"></i></th>
-                                    <th style="width:3%;text-align:center;"><i class="fa fa-pencil"></i></th>
-                                    <th style="width:5%;text-align:center;"><i class="fa fa-trash"></i></th>
-                                    </thead>
+                                            foreach (GarronT.CMS.Model.AspNetRole role in orderedRoleList)
+                                            {
+                                                <th style="text-align:center">
+                                                    <div class="RName">@role.Name</div>
 
-                                </table>
-                            </th>
-                        }
-
+                                                    <table class="table-bordered">
+                                                        <thead>
+                                                            <tr>
+                                                                <th style="width:3%;text-align:center;"><i class="fa fa-eye"></i></th>
+                                                                <th style="width:3%;text-align:center;"><i class="fa fa-plus"></i></th>
+                                                                <th style="width:3%;text-align:center;"><i class="fa fa-pencil"></i></th>
+                                                                <th style="width:5%;text-align:center;"><i class="fa fa-trash"></i></th>
+                                                            </tr>
+                                                        </thead>
+                                                    </table>
+                                                </th>
+                                            }
                                         }
-
                                         </thead>
                                         @foreach (GarronT.CMS.Model.AspNetPermission item in Model.AspNetPermissionList)
                                         {
@@ -1220,11 +1231,10 @@
                                             if (item.PermissionName == "Inventory Upload" || item.PermissionName == "Inventory Receive")
                                             {
                                                 <tr class="members">
-
                                                     <td permissionid="@item.Permission_Id" permissionname="@item.PermissionDescription" name="Permission">
                                                         @item.PermissionName
                                                     </td>
-                                                    @foreach (GarronT.CMS.Model.AspNetRole AspNetRole in Model.AspNetRoleList.Where(a => a.IsSysAdmin != true).ToList())
+                                                    @foreach (GarronT.CMS.Model.AspNetRole AspNetRole in orderedRoleList)
                                                     {
 
                                                         var RolePermissionData = Model.ObjAccessPermissionBoList.Where(a => a.PermissionID == item.Permission_Id.ToString()).FirstOrDefault();
@@ -1261,18 +1271,16 @@
                                                         </td>
 
                                                     }
-
                                                 </tr>
 
                                             }
                                             else if (item.PermissionName == "Alert Master")
                                             {
                                                 <tr class="members">
-
                                                     <td permissionid="@item.Permission_Id" permissionname="@item.PermissionDescription" name="Permission">
                                                         @item.PermissionName
                                                     </td>
-                                                    @foreach (GarronT.CMS.Model.AspNetRole AspNetRole in Model.AspNetRoleList.Where(a => a.IsSysAdmin != true).ToList())
+                                                    @foreach (GarronT.CMS.Model.AspNetRole AspNetRole in orderedRoleList)
                                                     {
 
                                                         var RolePermissionData = Model.ObjAccessPermissionBoList.Where(a => a.PermissionID == item.Permission_Id.ToString()).FirstOrDefault();
@@ -1309,18 +1317,16 @@
                                                         </td>
 
                                                     }
-
                                                 </tr>
 
                                             }
                                             else if (item.PermissionName == "Installer Allocation")
                                             {
                                                 <tr class="members">
-
                                                     <td permissionid="@item.Permission_Id" permissionname="@item.PermissionDescription" name="Permission">
                                                         @item.PermissionName
                                                     </td>
-                                                    @foreach (GarronT.CMS.Model.AspNetRole AspNetRole in Model.AspNetRoleList.Where(a => a.IsSysAdmin != true).ToList())
+                                                    @foreach (GarronT.CMS.Model.AspNetRole AspNetRole in orderedRoleList)
                                                     {
 
                                                         var RolePermissionData = Model.ObjAccessPermissionBoList.Where(a => a.PermissionID == item.Permission_Id.ToString()).FirstOrDefault();
@@ -1359,18 +1365,16 @@
                                                         </td>
 
                                                     }
-
                                                 </tr>
 
                                             }
                                             else if (item.PermissionName == "View Stock Request" || item.PermissionName == "Installer Report" || item.PermissionName == "Auditor Report")
                                             {
                                                 <tr class="members">
-
                                                     <td permissionid="@item.Permission_Id" permissionname="@item.PermissionDescription" name="Permission">
                                                         @item.PermissionName
                                                     </td>
-                                                    @foreach (GarronT.CMS.Model.AspNetRole AspNetRole in Model.AspNetRoleList.Where(a => a.IsSysAdmin != true).ToList())
+                                                    @foreach (GarronT.CMS.Model.AspNetRole AspNetRole in orderedRoleList)
                                                     {
 
                                                         var RolePermissionData = Model.ObjAccessPermissionBoList.Where(a => a.PermissionID == item.Permission_Id.ToString()).FirstOrDefault();
@@ -1407,7 +1411,6 @@
                                                         </td>
 
                                                     }
-
                                                 </tr>
                                             }
                                             else if (item.PermissionName == "Project Status" || item.PermissionName == "Dashboard" ||
@@ -1416,11 +1419,10 @@
                                                                 item.PermissionName == "INV Installer Report" || item.PermissionName == "Skip History Report")
                                             {
                                                 <tr class="members">
-
                                                     <td permissionid="@item.Permission_Id" permissionname="@item.PermissionDescription" name="Permission">
                                                         @item.PermissionName
                                                     </td>
-                                                    @foreach (GarronT.CMS.Model.AspNetRole AspNetRole in Model.AspNetRoleList.Where(a => a.IsSysAdmin != true).ToList())
+                                                    @foreach (GarronT.CMS.Model.AspNetRole AspNetRole in orderedRoleList)
                                                     {
 
                                                         var RolePermissionData = Model.ObjAccessPermissionBoList.Where(a => a.PermissionID == item.Permission_Id.ToString()).FirstOrDefault();
@@ -1457,18 +1459,16 @@
                                                         </td>
 
                                                     }
-
                                                 </tr>
                                             }
                                             else
                                             {
 
                                                 <tr class="members">
-
                                                     <td permissionid="@item.Permission_Id" permissionname="@item.PermissionDescription" name="Permission">
                                                         @item.PermissionName
                                                     </td>
-                                                    @foreach (GarronT.CMS.Model.AspNetRole AspNetRole in Model.AspNetRoleList.Where(a => a.IsSysAdmin != true).ToList())
+                                                    @foreach (GarronT.CMS.Model.AspNetRole AspNetRole in orderedRoleList)
                                                     {
 
                                                         var RolePermissionData = Model.ObjAccessPermissionBoList.Where(a => a.PermissionID == item.Permission_Id.ToString()).FirstOrDefault();
@@ -1508,7 +1508,6 @@
                                                         </td>
 
                                                     }
-
                                                 </tr>
 
                                             }
