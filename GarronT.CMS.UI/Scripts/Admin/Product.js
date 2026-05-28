@@ -12,6 +12,7 @@ function BindDataTable(checkBStatus) {
 
     var urlBindTblData = $("#urlGetAllData").val();
     waitingDialog.show('Please Wait...');
+
     $.ajax({
         url: urlBindTblData,
         contentType: "application/json; charset=utf-8",
@@ -20,63 +21,53 @@ function BindDataTable(checkBStatus) {
         type: 'GET',
         success: function (data) {
             waitingDialog.hide();
-            oTable = $('#dynamic-table').dataTable(
-            {
+
+            oTable = $('#dynamic-table').dataTable({
                 "bDestroy": true,
                 "bserverSide": true,
                 "bDeferRender": true,
                 "oLanguage": {
                     "sLengthMenu": '_MENU_ Records per page'
                 },
-
                 "aaData": data.objList,
                 "aoColumns": [
-                               { "mData": "UtilityName" },
-                               { "mData": "CategoryName" },
-                               { "mData": "ProductName" },
-                               { "mData": "ProductPartNumber" },
-                               { "mData": "ProductUPCCode" },
-                               { "mData": "Make" },
-                               { "mData": "Type" },
-                               { "mData": "Size" },
-                                { "mData": "strSerialNumberTracking" },
-                                 { "mData": "strConsumableProduct" },
-                               { "bSearchable": false, "mData": null },
+                    { "mData": "UtilityName" },
+                    { "mData": "CategoryName" },
+                    { "mData": "ProductName" },
+                    { "mData": "ProductPartNumber" },
+                    { "mData": "ProductUPCCode" },
+                    { "mData": "Make" },
+                    { "mData": "Type" },
+                    { "mData": "Size" },
+                    { "mData": "strSerialNumberTracking" },
+                    { "mData": "strConsumableProduct" },
+                    { "bSearchable": false, "mData": null }
                 ],
                 "aoColumnDefs": [
-                                {
-                                    "mRender": function (data, type, full, row) {
-                                        if (checkBStatus) {
-                                            return '<a id="' + full.Id + '" onclick="EditRecord(' + full.Id + ');" class="btn btn-primary btn-xs" role="button" alt="Edit" title="Edit"><i class="fa fa-pencil"></i></a>' +
-                                                '<a data-backdrop="static" data-toggle="modal" id=' + full.Id + ' onclick="Deactivate(' + full.Id + ' );" class="btn btn-danger btn-xs" role="button" alt="Deactivate" title="Deactivate"><i class="fa fa-ban"></i></a>';
-                                        }
-                                        else {
-                                            return '<a data-toggle="modal" data-backdrop="static" id=' + full.Id + ' onclick="Activate(' + full.Id + ');"  class="btn btn-success btn-xs" role="button" alt="Activate" title="Activate"><i class="fa fa-check"></i></a>';
-                                        }
-                                    },
-                                    "aTargets": [10]
-                                }
-                                //,
-                                //{
-                                //    "mRender": function (data, type, full, row) {
-                                //        if (full.BarcodeRequired === true) {
-                                //            return 'Yes';
-                                //        } else {
-                                //            return 'No';
-                                //        }
-                                //    },
-                                //    "aTargets": [1]
-                                //},
-                ],
+                    {
+                        "mRender": function (data, type, full, row) {
+                            if (checkBStatus) {
+                                return '<a id="' + full.Id + '" onclick="EditRecord(' + full.Id + ');" class="btn btn-primary btn-xs" role="button" alt="Edit" title="Edit"><i class="fa fa-pencil"></i></a>' +
+                                    '<a data-backdrop="static" data-toggle="modal" id=' + full.Id + ' onclick="Deactivate(' + full.Id + ' );" class="btn btn-danger btn-xs" role="button" alt="Deactivate" title="Deactivate"><i class="fa fa-ban"></i></a>';
+                            }
+                            else {
+                                return '<a data-toggle="modal" data-backdrop="static" id=' + full.Id + ' onclick="Activate(' + full.Id + ');" class="btn btn-success btn-xs" role="button" alt="Activate" title="Activate"><i class="fa fa-check"></i></a>';
+                            }
+                        },
+                        "aTargets": [10]
+                    }
+                ]
+            });
 
-            }
-        ), $('.dataTables_filter input').attr('maxlength', 50);
+            $('.dataTables_filter input').attr('maxlength', 50);
+        },
+        error: function (request, status, error) {
+            waitingDialog.hide();
 
+            console.log("GetAllData Error:", request.responseText);
+            toastr["error"]("Product data loading failed. Please check server error.", "Notification !");
         }
     });
-
-
-
 }
 
 $('#chkShowDeactivate').change(function () {

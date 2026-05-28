@@ -33,16 +33,37 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
 
         //GetAllData
+        //GetAllData
         [HttpGet]
         public ActionResult GetAllData(bool Status)
         {
-            StatusMessage statusMessage = new StatusMessage();
+            try
+            {
+                InventoryMasterDAL objInventoryMasterDAL = new InventoryMasterDAL();
 
-            InventoryMasterDAL objInventoryMasterDAL = new InventoryMasterDAL();
-            List<ProductMasterBO> objList = objInventoryMasterDAL.GetAllRecord(Status);
-            return Json(new { objList }, JsonRequestBehavior.AllowGet);
+                long currentUserId = new UserDetails().GetUserId(User.Identity.GetUserId());
+
+                bool isAdmin = User.IsInRole("Admin");
+
+                List<ProductMasterBO> objList = objInventoryMasterDAL.GetAllRecord(
+                    Status,
+                    currentUserId,
+                    isAdmin
+                );
+
+                return Json(new { objList }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    objList = new List<ProductMasterBO>(),
+                    success = false,
+                    message = ex.Message,
+                    innerMessage = ex.InnerException != null ? ex.InnerException.Message : ""
+                }, JsonRequestBehavior.AllowGet);
+            }
         }
-
 
 
         [HttpGet]

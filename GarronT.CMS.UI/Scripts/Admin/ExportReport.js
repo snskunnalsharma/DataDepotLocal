@@ -13,6 +13,19 @@
     var actualDate = new Date(); // convert to actual date
     var newDate = new Date(actualDate.getFullYear(), actualDate.getMonth() + 1, actualDate.getDate());
 
+    function reloadINVCompletionFieldsIfNeeded() {
+        var projectId = $("#ddlProject").val();
+        var formTypeId = $("#ddlformtype").val();
+
+        // Only for INVInstallerReport based Completion Form projects
+        if ((projectId == "10135" || projectId == "10136") && formTypeId == "14") {
+            $("#ddlformtype").trigger("change");
+        }
+
+        // Baaki projects ke liye kuch nahi karna.
+        // Existing flow same rahega.
+    }
+
     $('#datepicker1').datepicker({
         changeMonth: true,
         changeYear: true,
@@ -20,11 +33,13 @@
         showButtonPanel: true,
         dateFormat: 'M-dd-yy',
         onSelect: function (selectedDate) {
-            //$("#datepicker1").datepicker("option", "minDate", selectedDate);
             var dt = new Date(selectedDate);
             dt.setDate(dt.getDate());
+
             $("#datepicker2").datepicker("option", "minDate", dt);
 
+            // Only Project 10135/10136 + Completion Form par source fields reload honge
+            reloadINVCompletionFieldsIfNeeded();
         }
     }).datepicker("setDate", actualDate);
 
@@ -33,14 +48,16 @@
         changeMonth: true,
         changeYear: true,
         defaultDate: actualDate,
-
         showButtonPanel: true,
         dateFormat: 'M-dd-yy',
         onSelect: function (selectedDate) {
-            // $("#datepicker").datepicker("option", "maxDate", selectedDate);
             var dt = new Date(selectedDate);
             dt.setDate(dt.getDate());
+
             $("#datepicker1").datepicker("option", "maxDate", dt);
+
+            // Only Project 10135/10136 + Completion Form par source fields reload honge
+            reloadINVCompletionFieldsIfNeeded();
         }
     }).datepicker("setDate", actualDate);
 
@@ -177,7 +194,7 @@ $("#btnSave").click(function () {
 });
 
 $("#btnExport").click(function () {
-    alert();
+    //alert();
     //debugger;
     var Formdata = $("#ddlformtype").val();
     var projectId = $("#ddlProject").val();
@@ -449,7 +466,7 @@ $('#ddlformtype').change(function () {
         $.ajax({
             type: 'GET',
             url: urlGetFieldList,
-            data: { projectId: Project, formTypeId: fromtype },
+            data: { projectId: Project, formTypeId: fromtype, fromDate: $("#datepicker1").val(), toDate: $("#datepicker2").val()},
             //async: true,
             beforeSend: function () {
                 // waitingDialog.show('Loading Please Wait...');
@@ -704,5 +721,12 @@ $('#ddlform').change(function () {
 });
 
 
+function reloadINVCompletionFieldsIfNeeded() {
+    var projectId = $("#ddlProject").val();
+    var formTypeId = $("#ddlformtype").val();
 
+    if ((projectId == "10135" || projectId == "10136") && formTypeId == "14") {
+        $("#ddlformtype").trigger("change");
+    }
+}
 

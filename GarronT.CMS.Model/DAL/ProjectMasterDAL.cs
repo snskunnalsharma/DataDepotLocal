@@ -1517,78 +1517,54 @@ namespace GarronT.CMS.Model.DAL
                     }
                     else
                     {
-                        foreach (var item in objMeterSizeList)
+                        // Convert selected service IDs once
+                        var selectedServiceIds = objMeterSizeList.Select(long.Parse).ToList();
+
+                        // Fetch only selected services for this project
+                        var newobj = (from mf in CompassEntities.TblProjectMasterFieldRelations.ToList()
+                                      join sr in CompassEntities.tblServices.ToList() on mf.MasterFieldID.ToString().ToUpper() equals sr.ID.ToString().ToUpper()
+                                      where mf.ProjectID == projectId && mf.MasterTableName == "tblService" && mf.Active == 1 && sr.Active == 1 && mf.IsAdditionalService == false && mf.BasePrice > Convert.ToDecimal(0)
+                                      select new RadioMeterpayratedetail
+                                      {
+                                          ServiceId = (sr.ID).ToString(),
+                                          ServiceName = sr.Service,
+                                          BasePay = (decimal)mf.BasePrice,
+                                          MeterSizeId = 0,
+                                          MeterSize = "",
+                                          MeterTypeId = 0,
+                                          MeterType = ""
+                                      }).Distinct().ToList();
+
+                        // Save each selected service to tblMeterPays
+                        foreach (var _iten in newobj)
                         {
-                            long mid = long.Parse(item);
-                            //var obj = CompassEntities.tblMeterPays.AsEnumerable().Where(o => o.FK_Project_Id == projectId && o.FK_MeterSize_Id == long.Parse(item)).FirstOrDefault();
-                            var newobj = (from pm in CompassEntities.ProductMasters
-                                          join vw in CompassEntities.VW_GetProductData on pm.PartNumber equals vw.PartNumber
-                                          join ps in CompassEntities.ProjectServiceProductRelations on pm.Id equals ps.FKProductId
-                                          where pm.MeterSizeId == mid && ps.FKProjectID == projectId
-                                          && pm.Active == 1 && ps.Active == 1
-                                          select new Meterpayratedetail
-                                          {
-                                              MeterSizeId = (long)pm.MeterSizeId,
-                                              MeterSize = vw.MeterSize,
-                                              MeterTypeId = (long)pm.MeterTypeId,
-                                              MeterType = vw.MeterType
-                                          }).Distinct().ToList();
+                            var exist = CompassEntities.tblMeterPays
+                                         .FirstOrDefault(o => o.FK_Project_Id == projectId && o.MeterDisplayName == _iten.ServiceName);
 
-                            if (newobj != null)
+                            if (exist == null)
                             {
-                                foreach (var _iten in newobj)
+                                exist = new tblMeterPay
                                 {
-                                    var exist = CompassEntities.tblMeterPays.AsEnumerable().Where(o => o.FK_Project_Id == projectId && o.FK_MeterSize_Id == _iten.MeterSizeId && o.FK_MeterType_Id == _iten.MeterTypeId).FirstOrDefault();
-                                    if (exist == null)
-                                    {
-                                        exist = new tblMeterPay();
-                                        exist.FK_Project_Id = projectId;
-                                        exist.FK_MeterSize_Id = _iten.MeterSizeId;
-                                        exist.FK_MeterType_Id = _iten.MeterTypeId;
-                                        exist.MeterSize = _iten.MeterSize;
-                                        exist.MeterType = _iten.MeterType;
-                                        exist.MeterDisplayName = _iten.MeterSize + " " + _iten.MeterType + " Meters";
-                                        exist.Description = "";   // don't required description
-                                        exist.Pay = 0;            // defualt set 0 and then set meter pay rete next page
-                                        exist.Active = 1;
-                                        exist.CreatedBy = userId;
-                                        exist.CreatedOn = new CommonFunctions().ServerDate();
-                                        CompassEntities.tblMeterPays.Add(exist);
-                                        CompassEntities.SaveChanges();
-                                    }
-                                    else
-                                    {
-                                        exist.ModifiedBy = userId;
-                                        exist.Active = 1;
-                                        exist.ModifiedOn = new CommonFunctions().ServerDate();
-                                        CompassEntities.SaveChanges();
-                                    }
-                                }
-
+                                    FK_Project_Id = projectId,
+                                    MeterDisplayName = _iten.ServiceName,
+                                    Description = _iten.ServiceId,
+                                    Pay = _iten.BasePay,
+                                    Active = 1,
+                                    CreatedBy = userId,
+                                    CreatedOn = new CommonFunctions().ServerDate()
+                                };
+                                CompassEntities.tblMeterPays.Add(exist);
                             }
-                            /* if (obj == null)
-                             {
-                                 obj = new tblMeterPay();
-                                 obj.FK_Project_Id = projectId;
-                                 obj.FK_MeterSize_Id = long.Parse(item);
-                                 obj.Description = "";   // don't required description
-                                 obj.Pay = 0;            // defualt set 0 and then set meter pay rete next page
-                                 obj.Active = 1;
-                                 obj.CreatedBy = userId;
-                                 obj.CreatedOn = new CommonFunctions().ServerDate();
-                                 CompassEntities.tblMeterPays.Add(obj);
-                                 CompassEntities.SaveChanges();
-                             }
-                             else
-                             {
-                                 obj.ModifiedBy = userId;
-                                 obj.Active = 1;
-                                 obj.ModifiedOn = new CommonFunctions().ServerDate();
-                                 CompassEntities.SaveChanges();
-                             }*/
+                            else
+                            {
+                                exist.ModifiedBy = userId;
+                                exist.Active = 1;
+                                exist.ModifiedOn = new CommonFunctions().ServerDate();
+                            }
+
+                            CompassEntities.SaveChanges();
                         }
                     }
-                    
                 }
                 //
                 returnMessage = CommonFunctions.strRecordCreated;

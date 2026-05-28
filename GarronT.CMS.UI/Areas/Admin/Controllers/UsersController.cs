@@ -522,8 +522,19 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
 
                     var ExistingRoleresult = manager.FindById(g.ToString());
+                    bool isRoleChangedForPermission = false;
                     if (ExistingRoleresult != null)
                     {
+                        List<string> existingRoleIdsForPermission = ExistingRoleresult.Roles
+                                                                                    .Select(a => a.RoleId)
+                                                                                    .OrderBy(a => a)
+                                                                                    .ToList();
+
+                        List<string> newRoleIdsForPermission = UserViewModel.objroleList != null
+                            ? UserViewModel.objroleList.OrderBy(a => a).ToList()
+                            : new List<string>();
+
+                         isRoleChangedForPermission = !existingRoleIdsForPermission.SequenceEqual(newRoleIdsForPermission);
                         List<string> roleIds = ExistingRoleresult.Roles.Select(a => a.RoleId).ToList();
                         if (roleIds != null)
                         {
@@ -824,7 +835,11 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                                 }
                             }
 
-                            new UserDAL().UpdateUserPermission(UserId, currentUserId);
+                            if (isRoleChangedForPermission)
+                            {
+                                long targetUserId = UserViewModel.UserModel.UserId;
+                                new UserDAL().UpdateUserPermission(targetUserId, currentUserId);
+                            }
                         }
 
                     }

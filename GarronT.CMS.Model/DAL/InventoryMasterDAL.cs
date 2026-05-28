@@ -41,37 +41,93 @@ namespace GarronT.CMS.Model.DAL
         }
 
 
-        public List<ProductMasterBO> GetAllRecord(bool Status)
+        public List<ProductMasterBO> GetAllRecord(bool Status, long currentUserId, bool isAdmin)
         {
+            using (CompassEntities objCompassEntities = new CompassEntities())
+            {
+                var productQuery = objCompassEntities.ProductMasters
+                    .Where(o => o.Active == (Status ? 1 : 0));
 
-            CompassEntities objCompassEntities = new CompassEntities();
+                if (!isAdmin)
+                {
+                    List<long> allowedProductIds = GetAllowedProductIdsByUserProjects(currentUserId);
 
+                    if (allowedProductIds == null || allowedProductIds.Count == 0)
+                    {
+                        return new List<ProductMasterBO>();
+                    }
 
-            var objProductMasterBO = objCompassEntities.ProductMasters.AsEnumerable().Where(o =>
-                       o.Active == (Status ? 1 : 0)).Select(o =>
-                           new ProductMasterBO
-                           {
-                               Id = o.Id,
-                               ProductName = o.ProductName,
-                               ProductUPCCode = o.UPCCode,
-                               ProductPartNumber = o.PartNumber,
-                               CategoryName = o.Category.CategoryName,
-                               UtilityName = objCompassEntities.UtilityMasters.Where(o1 => o1.Id == o.UtilityId).Select(o1 => o1.UtilityName).FirstOrDefault(),
-                               // strConsumableProduct = o.Consumables == false ? "No" : "Yes",
-                               strConsumableProduct = o.SerialNumberRequired == true ? "No" : "Yes",
-                               strSerialNumberTracking = o.SerialNumberRequired == false ? "No" : "Yes",
-                               Size = o.MeterSizeId != null ? o.tblMeterSize.MeterSize : "",
-                               Make = o.MeterMakeId != null ? o.tblMeterMake.Make : "",
-                               Type = o.MeterTypeId != null ? o.tblMeterType.MeterType : "",
-                           }).ToList();
+                    productQuery = productQuery.Where(o => allowedProductIds.Contains(o.Id) || o.CreatedBy == currentUserId);
+                }
 
+                var objProductMasterBO = productQuery
+                    .Select(o => new ProductMasterBO
+                    {
+                        Id = o.Id,
+                        ProductName = o.ProductName,
+                        ProductUPCCode = o.UPCCode,
+                        ProductPartNumber = o.PartNumber,
+                        CategoryName = o.Category.CategoryName,
 
+                        UtilityName = objCompassEntities.UtilityMasters
+                            .Where(o1 => o1.Id == o.UtilityId)
+                            .Select(o1 => o1.UtilityName)
+                            .FirstOrDefault(),
 
-            return objProductMasterBO;
+                        strConsumableProduct = o.SerialNumberRequired == true ? "No" : "Yes",
+                        strSerialNumberTracking = o.SerialNumberRequired == false ? "No" : "Yes",
+
+                        Size = o.MeterSizeId != null ? o.tblMeterSize.MeterSize : "",
+                        Make = o.MeterMakeId != null ? o.tblMeterMake.Make : "",
+                        Type = o.MeterTypeId != null ? o.tblMeterType.MeterType : ""
+                    })
+                    .ToList();
+
+                return objProductMasterBO;
+            }
         }
+        private List<long> GetAllowedProductIdsByUserProjects(long currentUserId)
+        {
+            List<long> productIds = new List<long>();
 
+            using (CompassEntities objCompassEntities = new CompassEntities())
+            {
+                string connectionString = objCompassEntities.Database.Connection.ConnectionString;
 
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    con.Open();
 
+                    string query = @"
+                SELECT DISTINCT 
+                    PSPR.FKProductId AS ProductId
+                FROM ProjectServiceProductRelation PSPR
+                INNER JOIN TblProjectInstaller TPI
+                    ON TPI.ProjectID = PSPR.FKProjectID
+                WHERE 
+                    TPI.tblUsers_UserID = @UserId
+                    AND PSPR.Active = 1
+                    AND TPI.Active = 1
+                    AND PSPR.FKProductId IS NOT NULL
+            ";
+
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@UserId", currentUserId);
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                productIds.Add(Convert.ToInt64(reader["ProductId"]));
+                            }
+                        }
+                    }
+                }
+            }
+
+            return productIds;
+        }
         public ProductMasterBO GetRecord(long Id)
         {
 

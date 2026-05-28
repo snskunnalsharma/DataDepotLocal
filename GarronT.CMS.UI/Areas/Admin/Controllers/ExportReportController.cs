@@ -115,7 +115,13 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             using (ExportReportDAL exportReportDAL = new ExportReportDAL())
             {
                 long currentUserId = new UserDetails().GetUserId(User.Identity.GetUserId());
-                var data = exportReportDAL.GetFieldsOnFormType(formTypeId, projectId, int.Parse(currentUserId.ToString()));
+
+                var data = exportReportDAL.GetFieldsOnFormType(
+                    formTypeId,
+                    projectId,
+                    int.Parse(currentUserId.ToString())
+                );
+
                 return base.Json(data, JsonRequestBehavior.AllowGet);
             }
         }
@@ -648,6 +654,25 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 else if (formTypeId == 1)
                 {
                     DataTable dt = AllAuditRecordDataTable(formTypeId, projectId, visitStatus, _fromDate, _toDate, latlongRequired, mediaRequired, out columnNameList1, currentUserId);
+                    if (dt != null && dt.Rows.Count > 0)
+                    {
+                        TempData["ExportDataList"] = dt;
+                        return Json(new { status = true }, JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        return Json(new { status = false, ErrorMessage = "No data available for selected date range." }, JsonRequestBehavior.AllowGet);
+                    }
+                }
+                else if (formTypeId == 14 && (projectId == 10135 || projectId == 10136))
+                {
+                    DataTable dt = exportReportDAL.GetINVInstallerReportExportData(
+                                                                                     formTypeId,
+                                                                                     projectId,
+                                                                                     _fromDate,
+                                                                                     _toDate
+                                                                                 );
+
                     if (dt != null && dt.Rows.Count > 0)
                     {
                         TempData["ExportDataList"] = dt;

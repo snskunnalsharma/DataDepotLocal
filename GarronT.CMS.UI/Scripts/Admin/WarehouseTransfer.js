@@ -1,4 +1,4 @@
-﻿var oTable;
+var oTable;
 var serialNumberRequired = false;
 var isMobileBrowser = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
@@ -146,15 +146,9 @@ $('#ProjectId').change(function () {
                     $('#ToWarehouseId').append($('<option></option>').val(item.WarehouseId).html(item.WarehouseName));
                 });
 
-                // ✅ Default selection for desktop
-                $('#FromWarehouseId').val(data.WarehouseList[0].WarehouseId).trigger('chosen:updated');
-                $('#ToWarehouseId').val(data.WarehouseList[1] ? data.WarehouseList[1].WarehouseId : data.WarehouseList[0].WarehouseId).trigger('chosen:updated');
-
-                // ✅ Default selection for mobile
-                if (isMobileBrowser) {
-                    $('#FromWarehouseId').val(data.WarehouseList[0].WarehouseId);
-                    $('#ToWarehouseId').val(data.WarehouseList[1] ? data.WarehouseList[1].WarehouseId : data.WarehouseList[0].WarehouseId);
-                }
+                // Removed auto-selection to require manual selection
+                $('#FromWarehouseId').prop('selectedIndex', 0);
+                $('#ToWarehouseId').prop('selectedIndex', 0);
 
             } else if (isMobileBrowser) {
                 appendSentinelOptionVal0($('#FromWarehouseId'), "From Warehouse");
@@ -965,8 +959,9 @@ $('#btnSave').click(function () {
 
     var transferList = [];
     $('#dynamic-table tbody tr').each(function () {
-        var serialNumber = $(this).find('input.serialNumber').val();
-        var productId = $(this).find('input[id^="hndProductId"]').val();
+        // Find the hidden fields in this specific row
+        var serialNumber = $(this).find('input[id="hndSerialNumber"]').val();
+        var productId = $(this).find('input[id="hndProductId"]').val();
 
         if (serialNumber) {
             transferList.push({
@@ -988,6 +983,9 @@ $('#btnSave').click(function () {
         success: function (resp) {
             if (resp.success) {
                 toastr.success("WarehouseTransfer saved successfully!");
+                setTimeout(function () {
+                    window.location.reload();
+                }, 1000);
             } else {
                 toastr.error(resp.message || "Error saving WarehouseTransfer");
             }
@@ -1149,3 +1147,167 @@ function loadWarehouses(projectId) {
 }
 
 
+
+var searchResults = [];
+
+$(document).on('click', '#btnSearch', function () {
+    var projectId = $('#ProjectId').val();
+    var fromWarehouseId = $('#FromWarehouseId').val();
+    var toWarehouseId = $('#ToWarehouseId').val();
+    var searchTerm = $('#txtBarcode').val().trim();
+
+    if ((!projectId || projectId == "0") && (!fromWarehouseId || fromWarehouseId == "0")) {
+        toastr.error("Please select Project or From Warehouse to search.");
+        return;
+    }
+
+    if (!fromWarehouseId || fromWarehouseId == "0") {
+        toastr.error("Please select From Warehouse.");
+        return;
+    }
+
+    if (!toWarehouseId || toWarehouseId == "0") {
+        toastr.error("Please select To Warehouse.");
+        return;
+    }
+
+    if (fromWarehouseId == toWarehouseId) {
+        toastr.error("From Warehouse and To Warehouse must be different.");
+        return;
+    }
+
+    if (!searchTerm) {
+        toastr.error("Please enter Search Term.");
+        return;
+    }
+
+    waitingDialog.show('Please Wait Loading Inventory...');
+
+    $.ajax({
+        type: "POST",
+        url: "/Admin/WarehouseTransfer/GetInventoryBySearchTerm",
+        data: {
+            projectId: projectId && projectId != "0" ? projectId : 0,
+            warehouseId: fromWarehouseId,
+            toWarehouseId: toWarehouseId,
+            searchTerm: searchTerm
+        },
+        success: function (response) {
+            waitingDialog.hide();
+
+            if (response.success) {
+                searchResults = response.data || [];
+
+                var html = "";
+
+                $.each(searchResults, function (i, item) {
+                    html += "<tr>";
+                    html += "<td><input type='checkbox' class='chkResultItem' data-id='" + i + "' /></td>";
+                    html += "<td>" + (item.ProductName || "") + "</td>";
+                    html += "<td>" + (item.SerialNumber || "") + "</td>";
+                    html += "</tr>";
+                });
+
+                $('#tblSearchResults tbody').html(html);
+                $('#lblTotalFound').text(searchResults.length);
+                $('#lblTotalSelected').text(0);
+                $('#chkSelectAllResults').prop('checked', false);
+
+                if (searchResults.length > 0) {
+                    $('#searchResultModal').modal('show');
+                } else {
+                    toastr.info("No matching records found.");
+                }
+            } else {
+                toastr.error(response.message || "Something went wrong.");
+            }
+        },
+        error: function () {
+            waitingDialog.hide();
+            toastr.error("Error fetching search results.");
+        }
+    });
+});
+$(document).on('click', '#chkSelectAllResults', function () {
+    $('.chkResultItem').prop('checked', this.checked);
+    var count = $('.chkResultItem:checked').length;
+    $('#lblTotalSelected').text(count);
+});
+
+$(document).on('change', '.chkResultItem', function () {
+    var count = $('.chkResultItem:checked').length;
+    $('#lblTotalSelected').text(count);
+    
+    // Update select all checkbox state
+    var allChecked = $('.chkResultItem').length === count;
+    $('#chkSelectAllResults').prop('checked', allChecked);
+});
+
+$(document).on('click', '#btnTransferSelected', function () {
+    var selectedItems = [];
+
+    $('.chkResultItem:checked').each(function () {
+        var index = $(this).attr('data-id');
+        var item = searchResults[index];
+
+        if (item) {
+            selectedItems.push(item);
+        }
+    });
+
+    if (selectedItems.length == 0) {
+        toastr.error("Please select at least one item.");
+        return;
+    }
+
+    var projectId = $('#ProjectId').val();
+    var fromWarehouseId = $('#FromWarehouseId').val();
+    var toWarehouseId = $('#ToWarehouseId').val();
+
+    if (!fromWarehouseId || fromWarehouseId == "0") {
+        toastr.error("Please select From Warehouse.");
+        return;
+    }
+
+    if (!toWarehouseId || toWarehouseId == "0" || toWarehouseId == fromWarehouseId) {
+        toastr.error("Please select a different To Warehouse.");
+        return;
+    }
+
+    waitingDialog.show('Please Wait Loading Serial Numbers....');
+
+    $.ajax({
+        type: "POST",
+        url: "/Admin/WarehouseTransfer/AddBatchInventry",
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        data: JSON.stringify({
+            warehouseId: parseInt(fromWarehouseId),
+            toWarehouseId: parseInt(toWarehouseId),
+            projectId: projectId && projectId != "0" ? parseInt(projectId) : 0,
+            selectedItems: selectedItems
+        }),
+        success: function (response) {
+            waitingDialog.hide();
+
+            if (response.success) {
+                $('#searchResultModal').modal('hide');
+                toastr.success(response.message);
+
+                BindDataTable(response.productModelList || []);
+                CheckDatatableData();
+
+                searchResults = [];
+                $('#tblSearchResults tbody').empty();
+                $('#txtBarcode').val('');
+            } else {
+                toastr.error(response.message || "Something went wrong.");
+            }
+        },
+        error: function (xhr) {
+            waitingDialog.hide();
+            console.log(xhr.responseText);
+            toastr.error("Something went wrong while transferring selected items.");
+        }
+    });
+});

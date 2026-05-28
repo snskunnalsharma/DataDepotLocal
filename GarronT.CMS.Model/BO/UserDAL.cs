@@ -497,6 +497,8 @@ namespace GarronT.CMS.Model.BO
                                                   select b).FirstOrDefault();
                         if (createOrUpdate != null)
                         {
+                            userid = createOrUpdate.UserID;
+
                             // Mapper.DynamicMap<UsersModel, tblUser>(ObjectToCreaetOrUpdate, createOrUpdate);
 
                             createOrUpdate.UserID = ObjectToCreaetOrUpdate.UserId;
@@ -544,7 +546,6 @@ namespace GarronT.CMS.Model.BO
 
 
                         }
-
 
 
 
@@ -1113,7 +1114,7 @@ namespace GarronT.CMS.Model.BO
 
                     var Obj = new UserAccessPermissionBo();
 
-                    if (!isInvManagerUser && localPermission != null)
+                    if (localPermission != null)
                     {
                         Obj.RoleAddChecked = localPermission.AddOperation;
                         Obj.RoleViewChecked = localPermission.ViewOperation;

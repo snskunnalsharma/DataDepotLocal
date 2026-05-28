@@ -394,7 +394,7 @@ function GetWeekDayRangeList() {
     });
 }
 
-$('#btnSearch`').unbind("click").click(function () {
+$('#btnSearch').unbind("click").click(function () {
     searchClick();
 });
 

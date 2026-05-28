@@ -1,4 +1,4 @@
-﻿using GarronT.CMS.Model;
+using GarronT.CMS.Model;
 using GarronT.CMS.Model.BO;
 using GarronT.CMS.Model.DAL;
 using System;
@@ -427,6 +427,76 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
             return Json(new { success, ErrorMessage }, JsonRequestBehavior.AllowGet);
 
+        }
+        [HttpPost]
+        public JsonResult GetInventoryBySearchTerm(long projectId, long warehouseId, string searchTerm)
+        {
+            try
+            {
+                InventoryDAL dal = new InventoryDAL();
+                var data = dal.GetStockDetailsBySearchTerm(projectId, warehouseId, searchTerm);
+                var jsonResult = Json(new { success = true, data = data }, JsonRequestBehavior.AllowGet);
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        public class AddBatchInventoryRequest
+        {
+            public long warehouseId { get; set; }
+            public long toWarehouseId { get; set; }
+            public long projectId { get; set; }
+            public List<ProductMasterBO> selectedItems { get; set; }
+        }
+
+        [HttpPost]
+        public JsonResult AddBatchInventry(AddBatchInventoryRequest request)
+        {
+            try
+            {
+                InventoryDAL dal = new InventoryDAL();
+
+                List<ProductMasterBO> existingList =
+                    TempData["WarehouseTransferModelList"] as List<ProductMasterBO>
+                    ?? new List<ProductMasterBO>();
+
+                bool duplicateFound = false;
+                string duplicateMsg = "";
+
+                dal.AddBatchInventryToTemp(
+                    request.warehouseId,
+                    request.toWarehouseId,
+                    request.projectId,
+                    request.selectedItems,
+                    existingList,
+                    out duplicateFound,
+                    out duplicateMsg
+                );
+
+                TempData["WarehouseTransferModelList"] = existingList;
+                TempData.Keep("WarehouseTransferModelList");
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Selected inventory added successfully.",
+                    productModelList = existingList,
+                    duplicateFound = duplicateFound,
+                    duplicateSerialNumberMsg = duplicateMsg
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
         }
 
 

@@ -147,77 +147,97 @@ namespace GarronT.CMS.Model.DAL
         }
 
         //Working harenow  currently
-        public List<Model_InstalledMeterDetailPayRate> getInstalledMetersDetails(long _ProjectID, int installerid, string WeekRangefromDate, string WeekRangetoDate, SqlConnection con)
+        public List<Model_InstalledMeterDetailPayRate> getInstalledMetersDetails(
+    long _ProjectID, int installerid, string WeekRangefromDate, string WeekRangetoDate, SqlConnection con)
         {
-            // Replace (dm.CreatedOn = pf.visitdatetime) on installer date tiem in bothes queries
-            // Tbl name -> tblProjectFieldDataMaster == dm.CreatedOn
-            // Tbl name -> TblProjectFieldData       == pf.visitdatetime
-            //SqlDataAdapter sdaMeterSizeData = new SqlDataAdapter("select ROW_NUMBER() OVER(ORDER BY (SELECT 1 as bigint)) AS SerianNo,(dm.FieldValue)as MeterSize,CONVERT(varchar, dm.CreatedOn, 101)as CreatedOn,Datename(weekday,dm.CreatedOn) as DayName,FORMAT(dm.CreatedOn,'HH:mm')as Time from uploadedexceldata as up join TblProjectFieldData as pf on up.id = pf.fk_uploadedexceldata_id join tblProjectFieldDataMaster as dm on pf.id = dm.TblProjectFieldData_Id join TblMeterSize as ms on dm.FieldValue = ms.MeterSize WHERE up.FKProjectId = " + _ProjectID + " and(CONVERT(DATE, dm.CreatedOn) between CONVERT(DATE, '" + WeekRangefromDate + "') and CONVERT(DATE, '" + WeekRangetoDate + "')) and dm.InitialFieldName = 'NEW METER SIZE' and dm.CreatedBy = '" + installerid + "' and dm.Active = 1 order by dm.id", con);
             List<Model_InstalledMeterDetailPayRate> objIMDPR = new List<Model_InstalledMeterDetailPayRate>();
-            if (_ProjectID == 10122 || _ProjectID == 10124 || _ProjectID == 10132)
+
+            // Determine which fields to query
+            string[] fieldNames;
+            if (_ProjectID == 10124 || _ProjectID == 10132)
             {
-                string fieldName = _ProjectID == 10124 || _ProjectID == 10132 ? "NEW METER NUMBER" : "NEW METER RADIO";
+                fieldNames = new string[] { "NEW METER NUMBER" };
+            }
+            else if (_ProjectID == 10122)
+            {
+                fieldNames = new string[] { "NEW METER RADIO" };
+            }
+            else
+            {
+                // For all other projects, include both fields
+                fieldNames = new string[] { "WORK COMPLETED" };
+            }
 
-                string sqlQuery = "select ROW_NUMBER() OVER(ORDER BY (SELECT 1 as bigint)) AS SerianNo,(dm.FieldValue) as MeterSize, CONVERT(varchar, pf.visitdatetime, 101) as CreatedOn, Datename(weekday, pf.visitdatetime) as DayName, FORMAT(pf.visitdatetime, 'HH:mm') as Time " +
-                                  "from uploadedexceldata as up " +
-                                  "join TblProjectFieldData as pf on up.id = pf.fk_uploadedexceldata_id " +
-                                  "join tblProjectFieldDataMaster as dm on pf.id = dm.TblProjectFieldData_Id " +
-                                  "WHERE up.FKProjectId = " + _ProjectID + " and " +
-                                  "(CONVERT(DATE, pf.visitdatetime) between CONVERT(DATE, '" + WeekRangefromDate + "') and CONVERT(DATE, '" + WeekRangetoDate + "')) and " +
-                                  "dm.InitialFieldName = '" + fieldName + "' and " +
-                                  "dm.CreatedBy = '" + installerid + "' and pf.CreatedBy = '" + installerid + "' and " +
-                                  "dm.Active = 1 and pf.Active = 1 " +
-                                  "order by dm.id";
+            DataTable dtMeterSizesData = new DataTable();
 
-                SqlDataAdapter sdaMeterSizeData = new SqlDataAdapter(
-                    "select ROW_NUMBER() OVER(ORDER BY (SELECT 1 as bigint)) AS SerianNo, (dm.FieldValue) as MeterSize, CONVERT(varchar, pf.visitdatetime, 101) as CreatedOn, Datename(weekday, pf.visitdatetime) as DayName, FORMAT(pf.visitdatetime, 'HH:mm') as Time, dm.TblProjectFieldData_Id as ProjectFieldDataId " +
-                    "from uploadedexceldata as up " +
-                    "join TblProjectFieldData as pf on up.id = pf.fk_uploadedexceldata_id " +
-                    "join tblProjectFieldDataMaster as dm on pf.id = dm.TblProjectFieldData_Id " +
-                    "WHERE up.FKProjectId = " + _ProjectID + " and " +
-                    "(CONVERT(DATE, pf.visitdatetime) between CONVERT(DATE, '" + WeekRangefromDate + "') and CONVERT(DATE, '" + WeekRangetoDate + "')) and " +
-                    "dm.InitialFieldName = '" + fieldName + "' and " +
-                    "dm.CreatedBy = '" + installerid + "' and pf.CreatedBy = '" + installerid + "' and " +
-                    "dm.Active = 1 and pf.Active = 1 " +
-                    "order by dm.id",
-                    con);
-                DataTable dtMeterSizesData = new DataTable();
-                sdaMeterSizeData.Fill(dtMeterSizesData);
+            foreach (var fieldName in fieldNames)
+            {
+                string sqlQuery = $@"
+            SELECT ROW_NUMBER() OVER(ORDER BY (SELECT 1)) AS SerianNo,
+                   dm.FieldValue AS MeterSize,
+                   CONVERT(varchar, pf.visitdatetime, 101) AS CreatedOn,
+                   DATENAME(weekday, pf.visitdatetime) AS DayName,
+                   FORMAT(pf.visitdatetime,'HH:mm') AS Time,
+                   dm.TblProjectFieldData_Id AS ProjectFieldDataId
+            FROM uploadedexceldata AS up
+            JOIN TblProjectFieldData AS pf ON up.id = pf.fk_uploadedexceldata_id
+            JOIN tblProjectFieldDataMaster AS dm ON pf.id = dm.TblProjectFieldData_Id
+            WHERE up.FKProjectId = {_ProjectID}
+              AND CONVERT(DATE, pf.visitdatetime) BETWEEN CONVERT(DATE, '{WeekRangefromDate}') 
+                                                      AND CONVERT(DATE, '{WeekRangetoDate}')
+              AND dm.InitialFieldName = '{fieldName}'
+              AND dm.CreatedBy = {installerid}
+              AND pf.CreatedBy = {installerid}
+              AND dm.Active = 1
+              AND pf.Active = 1
+            ORDER BY dm.id";
 
-                if (dtMeterSizesData.Rows.Count > 0 )
+                SqlDataAdapter sdaMeterSizeData = new SqlDataAdapter(sqlQuery, con);
+                DataTable tempTable = new DataTable();
+                sdaMeterSizeData.Fill(tempTable);
+
+                // Merge results for both fields
+                dtMeterSizesData.Merge(tempTable);
+            }
+
+            if (dtMeterSizesData.Rows.Count > 0)
+            {
+                var combineData = (from ms in dtMeterSizesData.AsEnumerable()
+                                   select new Model_InstalledMeterDetail
+                                   {
+                                       ProjectId = _ProjectID,
+                                       MeterSize = "",
+                                       MeterType = "",
+                                       CreatedOn = ms.Field<string>("CreatedOn"),
+                                       DayName = ms.Field<string>("DayName"),
+                                       Time = ms.Field<string>("Time"),
+                                       ProjectFieldDataId = ms.Field<long>("ProjectFieldDataId")
+                                   }).ToList();
+
+                CompassEntities objCompassEntities = new CompassEntities();
+
+                foreach (var item in combineData)
                 {
-                    var combineData = (from ms in dtMeterSizesData.AsEnumerable()
-                                     
-                                       select new Model_InstalledMeterDetail
-                                       {
-                                           ProjectId = _ProjectID,
-                                           MeterSize = "",
-                                           MeterType = "",
-                                           CreatedOn = ms.Field<string>("CreatedOn"),
-                                           DayName = ms.Field<string>("DayName"),
-                                           Time = ms.Field<string>("Time"),
-                                           ProjectFieldDataId = ms.Field<long>("ProjectFieldDataId")
-                                       }).ToList();
-                    // Getting meter pay rates
-                    CompassEntities objCompassEntities = new CompassEntities();
-                    objIMDPR = new List<Model_InstalledMeterDetailPayRate>();
+                    var appliedServices = objCompassEntities.tblProjectFieldDataMasters
+                        .Where(o => o.TblProjectFieldData_Id == item.ProjectFieldDataId
+                                    && o.InitialFieldName == "SERVICES"
+                                    && o.Active == 1)
+                        .Select(a => a.FieldValue)
+                        .FirstOrDefault();
 
-                    //get all services
-                    /*string serviceQuery = "select mfr.*, ts.ID as ServiceId, ts.Service as ServiceName from TblProjectMasterFieldRelation mfr join tblService ts on ts.ID = mfr.MasterFieldID where ProjectID=" + _ProjectID + " and MasterTableName='tblService' and mfr.Active=1 and IsAdditionalService=0 and BasePrice > 0";
-                    SqlDataAdapter sdaServiceData = new SqlDataAdapter(serviceQuery, con);
-                    DataTable dtServiceData = new DataTable();
-                    sdaServiceData.Fill(dtServiceData);*/
+                    string[] serviceList = (!string.IsNullOrEmpty(appliedServices)) ? appliedServices.Split('|') : null;
 
-                    foreach (var item in combineData)
+                    if (serviceList != null)
                     {
-                        var appliedServices = objCompassEntities.tblProjectFieldDataMasters.Where(o => o.TblProjectFieldData_Id == item.ProjectFieldDataId && o.InitialFieldName == "SERVICES" && o.Active == 1).Select(a => a.FieldValue).FirstOrDefault();
-                        string[] serviceList = (!string.IsNullOrEmpty(appliedServices) ? appliedServices.Split('|').ToArray() : null);
-                        foreach(var selectedService in serviceList)
+                        foreach (var selectedService in serviceList)
                         {
-                            var payData = objCompassEntities.tblMeterPays.Where(o => o.Description == selectedService && o.Active == 1).FirstOrDefault();
-                            if(payData != null)
+                            var payData = objCompassEntities.tblMeterPays
+                                .Where(o => o.Description == selectedService && o.Active == 1)
+                                .FirstOrDefault();
+
+                            if (payData != null)
                             {
-                                var payOutData = new Model_InstalledMeterDetailPayRate
+                                objIMDPR.Add(new Model_InstalledMeterDetailPayRate
                                 {
                                     ProjectId = _ProjectID,
                                     MeterSize = item.MeterSize,
@@ -227,93 +247,15 @@ namespace GarronT.CMS.Model.DAL
                                     DayName = item.DayName,
                                     Time = item.Time,
                                     Pay = Convert.ToString(payData.Pay)
-                                };
-                                objIMDPR.Add(payOutData);
+                                });
                             }
-                            
-                            /*if (dtServiceData.Rows.Count > 0)
-                            {
-                                try
-                                {
-                                    var payOutData = (from ms in dtServiceData.AsEnumerable()
-                                                      where ms.Field<long>("ServiceId") == int.Parse(selectedService)
-                                                      select new Model_InstalledMeterDetailPayRate
-                                                      {
-                                                          ProjectId = _ProjectID,
-                                                          MeterSize = item.MeterSize,
-                                                          MeterType = item.MeterType,
-                                                          MeterDisplayName = ms.Field<string>("ServiceName"),
-                                                          CreatedOn = item.CreatedOn,
-                                                          DayName = item.DayName,
-                                                          Time = item.Time,
-                                                          Pay = Convert.ToString(ms.Field<Decimal>("BasePrice"))
-                                                      });
-                                    if (payOutData.Count() > 0)
-                                    {
-                                        objIMDPR.Add(payOutData.FirstOrDefault());
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    log.Error("Error in getInstalledMetersDetails Method : ", ex.InnerException);
-                                    
-                                }
-                                
-                            }*/
                         }
-                        
                     }
                 }
             }
-            else
-            {
-                string sqlQuery = "select ROW_NUMBER() OVER(ORDER BY (SELECT 1 as bigint)) AS SerianNo,(dm.FieldValue)as MeterSize,CONVERT(varchar, pf.visitdatetime, 101)as CreatedOn,Datename(weekday,pf.visitdatetime) as DayName,FORMAT(pf.visitdatetime,'HH:mm')as Time from uploadedexceldata as up join TblProjectFieldData as pf on up.id = pf.fk_uploadedexceldata_id join tblProjectFieldDataMaster as dm on pf.id = dm.TblProjectFieldData_Id join TblMeterSize as ms on dm.FieldValue = ms.MeterSize WHERE up.FKProjectId = " + _ProjectID + " and(CONVERT(DATE, pf.visitdatetime) between CONVERT(DATE, '" + WeekRangefromDate + "') and CONVERT(DATE, '" + WeekRangetoDate + "')) and dm.InitialFieldName = 'NEW METER SIZE' and dm.CreatedBy = '" + installerid + "' and pf.CreatedBy = '" + installerid + "' and dm.Active = 1 and pf.Active=1 order by dm.id";
-                SqlDataAdapter sdaMeterSizeData = new SqlDataAdapter("select ROW_NUMBER() OVER(ORDER BY (SELECT 1 as bigint)) AS SerianNo,(dm.FieldValue)as MeterSize,CONVERT(varchar, pf.visitdatetime, 101)as CreatedOn,Datename(weekday,pf.visitdatetime) as DayName,FORMAT(pf.visitdatetime,'HH:mm')as Time from uploadedexceldata as up join TblProjectFieldData as pf on up.id = pf.fk_uploadedexceldata_id join tblProjectFieldDataMaster as dm on pf.id = dm.TblProjectFieldData_Id join TblMeterSize as ms on dm.FieldValue = ms.MeterSize WHERE up.FKProjectId = " + _ProjectID + " and(CONVERT(DATE, pf.visitdatetime) between CONVERT(DATE, '" + WeekRangefromDate + "') and CONVERT(DATE, '" + WeekRangetoDate + "')) and dm.InitialFieldName = 'NEW METER SIZE' and dm.CreatedBy = '" + installerid + "' and pf.CreatedBy = '" + installerid + "' and dm.Active = 1 and pf.Active=1 order by dm.id", con);
-                DataTable dtMeterSizesData = new DataTable();
-                sdaMeterSizeData.Fill(dtMeterSizesData);
 
-                string sqlQuery1 = "select ROW_NUMBER() OVER(ORDER BY (SELECT 1 as bigint)) AS SerianNo,(dm.FieldValue)as MeterType,CONVERT(varchar, pf.visitdatetime, 101)as CreatedOn,Datename(weekday,pf.visitdatetime) as DayName,FORMAT(pf.visitdatetime,'HH:mm')as Time from uploadedexceldata as up join TblProjectFieldData as pf on up.id = pf.fk_uploadedexceldata_id join tblProjectFieldDataMaster as dm on pf.id = dm.TblProjectFieldData_Id join tblMeterType as mt on dm.FieldValue = mt.MeterType WHERE up.FKProjectId = " + _ProjectID + " and(CONVERT(DATE, pf.visitdatetime) between CONVERT(DATE, '" + WeekRangefromDate + "') and CONVERT(DATE, '" + WeekRangetoDate + "')) and dm.InitialFieldName = 'NEW METER TYPE' and dm.CreatedBy = '" + installerid + "' and pf.CreatedBy = '" + installerid + "' and dm.Active = 1 and pf.Active=1 order by dm.id";
-                //SqlDataAdapter sdaMeterTypeData = new SqlDataAdapter("select ROW_NUMBER() OVER(ORDER BY (SELECT 1 as bigint)) AS SerianNo,(dm.FieldValue)as MeterType,CONVERT(varchar, dm.CreatedOn, 101)as CreatedOn,Datename(weekday,dm.CreatedOn) as DayName,FORMAT(dm.CreatedOn,'HH:mm')as Time from uploadedexceldata as up join TblProjectFieldData as pf on up.id = pf.fk_uploadedexceldata_id join tblProjectFieldDataMaster as dm on pf.id = dm.TblProjectFieldData_Id join tblMeterType as mt on dm.FieldValue = mt.MeterType WHERE up.FKProjectId = " + _ProjectID + " and(CONVERT(DATE, dm.CreatedOn) between CONVERT(DATE, '" + WeekRangefromDate + "') and CONVERT(DATE, '" + WeekRangetoDate + "')) and dm.InitialFieldName = 'NEW METER TYPE' and dm.CreatedBy = '" + installerid + "' and dm.Active = 1 order by dm.id", con);
-                SqlDataAdapter sdaMeterTypeData = new SqlDataAdapter("select ROW_NUMBER() OVER(ORDER BY (SELECT 1 as bigint)) AS SerianNo,(dm.FieldValue)as MeterType,CONVERT(varchar, pf.visitdatetime, 101)as CreatedOn,Datename(weekday,pf.visitdatetime) as DayName,FORMAT(pf.visitdatetime,'HH:mm')as Time from uploadedexceldata as up join TblProjectFieldData as pf on up.id = pf.fk_uploadedexceldata_id join tblProjectFieldDataMaster as dm on pf.id = dm.TblProjectFieldData_Id join tblMeterType as mt on dm.FieldValue = mt.MeterType WHERE up.FKProjectId = " + _ProjectID + " and(CONVERT(DATE, pf.visitdatetime) between CONVERT(DATE, '" + WeekRangefromDate + "') and CONVERT(DATE, '" + WeekRangetoDate + "')) and dm.InitialFieldName = 'NEW METER TYPE' and dm.CreatedBy = '" + installerid + "' and pf.CreatedBy = '" + installerid + "' and dm.Active = 1 and pf.Active=1 order by dm.id", con);
-                DataTable dtMeterTypeData = new DataTable();
-                sdaMeterTypeData.Fill(dtMeterTypeData);
-
-                if (dtMeterSizesData.Rows.Count > 0 && dtMeterTypeData.Rows.Count > 0 && dtMeterSizesData.Rows.Count == dtMeterTypeData.Rows.Count)
-                {
-                    var combineData = (from ms in dtMeterSizesData.AsEnumerable()
-                                       join mt in dtMeterTypeData.AsEnumerable()
-                                       on ms.Field<long>("SerianNo") equals mt.Field<long>("SerianNo")
-                                       select new Model_InstalledMeterDetail
-                                       {
-                                           ProjectId = _ProjectID,
-                                           MeterSize = ms.Field<string>("MeterSize"),
-                                           MeterType = mt.Field<string>("MeterType"),
-                                           CreatedOn = ms.Field<string>("CreatedOn"),
-                                           DayName = ms.Field<string>("DayName"),
-                                           Time = ms.Field<string>("Time")
-                                       }).ToList();
-                    // Getting meter pay rates
-                    CompassEntities objCompassEntities = new CompassEntities();
-                    objIMDPR = new List<Model_InstalledMeterDetailPayRate>();
-                    foreach (var item in combineData)
-                    {
-                        var obj = objCompassEntities.tblMeterPays.Where(o => o.FK_Project_Id == item.ProjectId && o.MeterSize == item.MeterSize && o.MeterType == item.MeterType).FirstOrDefault();
-                        objIMDPR.Add(new Model_InstalledMeterDetailPayRate
-                        {
-                            ProjectId = _ProjectID,
-                            MeterSize = item.MeterSize,
-                            MeterType = item.MeterType,
-                            MeterDisplayName = obj.MeterDisplayName,
-                            CreatedOn = item.CreatedOn,
-                            DayName = item.DayName,
-                            Time = item.Time,
-                            Pay = Convert.ToString(obj.Pay)
-                        });
-                    }
-                }
-            }
             return objIMDPR;
-        } 
+        }
         //
 
 
@@ -759,202 +701,135 @@ namespace GarronT.CMS.Model.DAL
 
         #region Mater pay calculation this method
 
-        public List<Get_CTR> InstalledMeterCalculation(List<string> weekDayName, List<Model_InstalledMeterDetailPayRate> objInstalledMeterDetailPayRate, DataTable dt_AllMeterSizeOrPay, ref int totalInstalledMeterInWeek, ref decimal totalPay)
+        public List<Get_CTR> InstalledMeterCalculation(
+            List<string> weekDayName,
+            List<Model_InstalledMeterDetailPayRate> objInstalledMeterDetailPayRate,
+            DataTable dt_AllMeterSizeOrPay,
+            ref int totalInstalledMeterInWeek,
+            ref decimal totalPay)
         {
             try
             {
+                // Step 1: Deduplicate entries by MeterDisplayName + DayName to avoid double counting
+                var distinctMeters = objInstalledMeterDetailPayRate
+      .GroupBy(x => new { x.MeterDisplayName, x.DayName, x.Pay })
+      .Select(g => new { g.Key.MeterDisplayName, g.Key.DayName, g.Key.Pay, MeterCount = g.Count() })
+      .ToList();
+
+                // Step 2: Initialize list for meter size details
                 List<Model_MeterSizeDetail> MeterSizeDetail = new List<Model_MeterSizeDetail>();
 
-                // Datatable set group by week DayName, MeterSizeWithDisplayName, Pay wise    //
-                var groupedWeekDayNameWise = from imdr in objInstalledMeterDetailPayRate.AsEnumerable()
-                                             group imdr by new { DayName = imdr.DayName, MeterSize=imdr.MeterSize, MeterDisplayName = imdr.MeterDisplayName, Pay = imdr.Pay } into groupby
-                                             select new
-                                             {
-                                                 Value = groupby.Key,
-                                                 metercount = groupby.Count()
-                                             };
-
+                // Step 3: Build MeterSizeDetail list for each day
                 foreach (var w in weekDayName)
                 {
-                    string Day = w.ToString();
-                    string meterSize = string.Empty;
-                    string meterDisplayName = string.Empty;
-                    string meterCount = string.Empty;
-                    string pay = string.Empty;
-                    int i = 0;
-                    foreach (var item in groupedWeekDayNameWise.ToList())
+                    string Day = w;
+                    foreach (var item in distinctMeters)
                     {
-                        string dbDay = item.Value.DayName.ToString();
-                        meterSize = string.Empty;
-                        meterCount = string.Empty;
-                        pay = string.Empty;
-                        int dayWiseMeterCount = 0;
-                        if (w.ToString() == dbDay)
+                        if (item.DayName == Day)
                         {
-                            meterSize = item.Value.MeterSize == null ? "" : item.Value.MeterSize.ToString(); // Old code witte on meter size wise 
-                            meterDisplayName = item.Value.MeterDisplayName.ToString();  // but new code MeterDisplayName wise 
-                            meterCount = item.metercount.ToString();
-                            pay = item.Value.Pay.ToString();
-                            dayWiseMeterCount += Convert.ToInt32(meterCount);
-                            MeterSizeDetail.Add(new Model_MeterSizeDetail       // this model add Day, meterSize, meterCount, dayWiseMeterCount
+                            MeterSizeDetail.Add(new Model_MeterSizeDetail
                             {
                                 Day = Day,
-                                MeterSize = meterSize,
-                                MeterDisplayName= meterDisplayName,
-                                MeterCount = meterCount,
-                                TotalInstaledMeter = dayWiseMeterCount,
-                                Pay = pay
+                                MeterDisplayName = item.MeterDisplayName,
+                                MeterCount = item.MeterCount.ToString(),
+                                Pay = item.Pay
                             });
-                            i++;
                         }
                     }
-                    if (i == 0)
-                    {
-                        MeterSizeDetail.Add(new Model_MeterSizeDetail   // this model add Day, meterSize, meterCount, dayWiseMeterCount
-                        {
-                            Day = Day,
-                            MeterSize = meterSize,
-                            MeterDisplayName = meterDisplayName,
-                            MeterCount = meterCount,
-                            TotalInstaledMeter = 0,
-                            Pay = pay
-                        });
-                    }
                 }
 
+                // Step 4: Initialize list for final report
                 List<Get_CTR> CTR_MeterSizeList = new List<Get_CTR>();
-                string __Dis = string.Empty;
-                string Monday = string.Empty;
-                string Tuesday = string.Empty;
-                string Wednesday = string.Empty;
-                string Thursday = string.Empty;
-                string Friday = string.Empty;
-                string Saturday = string.Empty;
-                int total_meter = 0;
-                string _pay = string.Empty;
                 decimal total_Pay = 0m;
+                int total_meter = 0;
+
+                // Step 5: Build row-wise totals
                 foreach (DataRow msize in dt_AllMeterSizeOrPay.Rows)
                 {
-                    //string _msize = msize["MeterSize"].ToString();
-                    string _meterDisplayName = msize["MeterDisplayName"].ToString();
-                    _pay = msize["Pay"].ToString();
-                    var combinedaywise = MeterSizeDetail.Where(o => o.MeterDisplayName == _meterDisplayName);
-                    total_meter = 0;
-                    foreach (var f in combinedaywise)
+                    string meterDisplayName = msize["MeterDisplayName"].ToString();
+                    decimal pay = Convert.ToDecimal(msize["Pay"]);
+
+                    var dayWiseRows = MeterSizeDetail.Where(x => x.MeterDisplayName == meterDisplayName).ToList();
+
+                    int rowTotalMeter = 0;
+                    decimal rowTotalPay = 0;
+
+                    string Monday = "0", Tuesday = "0", Wednesday = "0", Thursday = "0", Friday = "0", Saturday = "0";
+
+                    foreach (var f in dayWiseRows)
                     {
-                        __Dis = _meterDisplayName;
-                        if (f.Day == "Monday")
-                        { Monday = f.MeterCount; }
-                        if (f.Day == "Tuesday")
-                        { Tuesday = f.MeterCount; }
-                        if (f.Day == "Wednesday")
-                        { Wednesday = f.MeterCount; }
-                        if (f.Day == "Thursday")
-                        { Thursday = f.MeterCount; }
-                        if (f.Day == "Friday")
-                        { Friday = f.MeterCount; }
-                        if (f.Day == "Saturday")
-                        { Saturday = f.MeterCount; }
-                        total_meter += Convert.ToInt32(f.MeterCount);
-                    }
-                    if (combinedaywise.Count() > 0)
-                    {
-                        total_Pay += total_meter * (Convert.ToDecimal(_pay));
-                        CTR_MeterSizeList.Add(new Get_CTR           // Store final display meter count records save 
+                        int meterCount = string.IsNullOrEmpty(f.MeterCount) ? 0 : Convert.ToInt32(f.MeterCount);
+                        rowTotalMeter += meterCount;
+                        rowTotalPay += meterCount * pay;
+
+                        switch (f.Day)
                         {
-                            Description = __Dis,
-                            Monday = Monday,
-                            Tuesday = Tuesday,
-                            Wednesday = Wednesday,
-                            Thursday = Thursday,
-                            Friday = Friday,
-                            Saturday = Saturday,
-                            TotalWorkInWeek = Convert.ToString(total_meter),
-                            Pay = "$ " + _pay,
-                            Total = "$ " + Convert.ToString(total_meter * (Convert.ToDecimal(_pay)))
-                        });
+                            case "Monday": Monday = meterCount.ToString(); break;
+                            case "Tuesday": Tuesday = meterCount.ToString(); break;
+                            case "Wednesday": Wednesday = meterCount.ToString(); break;
+                            case "Thursday": Thursday = meterCount.ToString(); break;
+                            case "Friday": Friday = meterCount.ToString(); break;
+                            case "Saturday": Saturday = meterCount.ToString(); break;
+                        }
                     }
-                    else
+
+                    total_meter += rowTotalMeter;
+                    total_Pay += rowTotalPay;
+
+                    CTR_MeterSizeList.Add(new Get_CTR
                     {
-                        __Dis = _meterDisplayName;
-                        CTR_MeterSizeList.Add(new Get_CTR       // Store final display meter count records save is null 
-                        {
-                            Description = __Dis,
-                            Monday = Monday,
-                            Tuesday = Tuesday,
-                            Wednesday = Wednesday,
-                            Thursday = Thursday,
-                            Friday = Friday,
-                            Saturday = Saturday,
-                            TotalWorkInWeek = Convert.ToString(total_meter),
-                            Pay = "$ " + _pay,
-                            Total = "$ 0.00"    // Null condition saore value 0.00
-                        });
-                    }
-                    __Dis = string.Empty;
-                    Monday = string.Empty;
-                    Tuesday = string.Empty;
-                    Wednesday = string.Empty;
-                    Thursday = string.Empty;
-                    Friday = string.Empty;
-                    Saturday = string.Empty;
-                    total_meter = 0;
-                    _pay = string.Empty;
-                    //total_Pay = 0;
+                        Description = meterDisplayName,
+                        Monday = Monday,
+                        Tuesday = Tuesday,
+                        Wednesday = Wednesday,
+                        Thursday = Thursday,
+                        Friday = Friday,
+                        Saturday = Saturday,
+                        TotalWorkInWeek = rowTotalMeter.ToString(),
+                        Pay = "$ " + pay,
+                        Total = "$ " + rowTotalPay.ToString("0.00")
+                    });
                 }
 
-                int Mon = 0;
-                int Tue = 0;
-                int Wed = 0;
-                int Thu = 0;
-                int Fri = 0;
-                int Sat = 0;
+                // Step 6: Calculate bottom total row from displayed rows only
+                int Mon = CTR_MeterSizeList.Sum(x => string.IsNullOrEmpty(x.Monday) ? 0 : Convert.ToInt32(x.Monday));
+                int Tue = CTR_MeterSizeList.Sum(x => string.IsNullOrEmpty(x.Tuesday) ? 0 : Convert.ToInt32(x.Tuesday));
+                int Wed = CTR_MeterSizeList.Sum(x => string.IsNullOrEmpty(x.Wednesday) ? 0 : Convert.ToInt32(x.Wednesday));
+                int Thu = CTR_MeterSizeList.Sum(x => string.IsNullOrEmpty(x.Thursday) ? 0 : Convert.ToInt32(x.Thursday));
+                int Fri = CTR_MeterSizeList.Sum(x => string.IsNullOrEmpty(x.Friday) ? 0 : Convert.ToInt32(x.Friday));
+                int Sat = CTR_MeterSizeList.Sum(x => string.IsNullOrEmpty(x.Saturday) ? 0 : Convert.ToInt32(x.Saturday));
 
-                foreach (var w in weekDayName)
+                int finalTotalMeter = Mon + Tue + Wed + Thu + Fri + Sat;
+
+                // Step 7: Add bottom total row
+                CTR_MeterSizeList.Add(new Get_CTR
                 {
-                    var datWiseMeterTotal = MeterSizeDetail.Where(o => o.Day == w.ToString());
-                    foreach (var f in datWiseMeterTotal)
-                    {
-                        __Dis = "Total";
-                        if (f.Day == "Monday")
-                        { Mon += f.TotalInstaledMeter; }
-                        if (f.Day == "Tuesday")
-                        { Tue += f.TotalInstaledMeter; }
-                        if (f.Day == "Wednesday")
-                        { Wed += f.TotalInstaledMeter; }
-                        if (f.Day == "Thursday")
-                        { Thu += f.TotalInstaledMeter; }
-                        if (f.Day == "Friday")
-                        { Fri += f.TotalInstaledMeter; }
-                        if (f.Day == "Saturday")
-                        { Sat += f.TotalInstaledMeter; }
-                        total_meter += f.TotalInstaledMeter;   
-                    }
-                }
-                CTR_MeterSizeList.Add(new Get_CTR               // Store final display Tota meter count save in a day save in total Row
-                {
-                    Description = __Dis,
-                    Monday = Convert.ToString(Mon),
-                    Tuesday = Convert.ToString(Tue),
-                    Wednesday = Convert.ToString(Wed),
-                    Thursday = Convert.ToString(Thu),
-                    Friday = Convert.ToString(Fri),
-                    Saturday = Convert.ToString(Sat),
-                    TotalWorkInWeek = Convert.ToString(total_meter),
+                    Description = "Total",
+                    Monday = Mon.ToString(),
+                    Tuesday = Tue.ToString(),
+                    Wednesday = Wed.ToString(),
+                    Thursday = Thu.ToString(),
+                    Friday = Fri.ToString(),
+                    Saturday = Sat.ToString(),
+                    TotalWorkInWeek = finalTotalMeter.ToString(),
                     Pay = "",
-                    Total = "$ " + Convert.ToString(total_Pay)
+                    Total = "$ " + total_Pay.ToString("0.00")
                 });
-                totalInstalledMeterInWeek = total_meter;
+
+                // Step 8: Update out parameters
+                totalInstalledMeterInWeek = finalTotalMeter;
                 totalPay = total_Pay;
+
+                // Step 9: Return final list
                 return CTR_MeterSizeList;
             }
-            #endregion
             catch (Exception ex)
             {
                 throw ex;
             }
         }
 
+        #endregion
 
         public DataTable ToDataTable<T>(List<T> items)
         {
@@ -1210,5 +1085,6 @@ namespace GarronT.CMS.Model.DAL
             catch (Exception ex) { }
 
         }
+
     }
 }

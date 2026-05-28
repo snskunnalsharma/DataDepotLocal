@@ -1078,14 +1078,63 @@ namespace GarronT.CMS.Model.DAL
 
         public List<ExportReportBO> GetFieldsOnFormType(long formTypeId, long projectId, int UserId)
         {
+            CompassEntities objCompassEntities = new CompassEntities();
 
-            CompassEntities CompassEntities = new CompassEntities();
+            // Completion Form = 14
+            // Project 10135 / 10136 ke liye INVInstallerReport table ke columns source fields me dikhane hain
+            if (formTypeId == 14 && (projectId == 10135 || projectId == 10136))
+            {
+                var completionFieldNames = GetINVInstallerReportSourceFields(projectId);
+
+                var invPresentSavedlist = objCompassEntities.TblExportReports
+                    .Where(o => o.FKFormTypeId == formTypeId
+                        && o.FKProjectId == projectId
+                        && o.Active == 1
+                        && o.CreatedBy == UserId)
+                    .ToList()
+                    .OrderBy(o => o.SortOrder)
+                    .ToList();
+
+                List<ExportReportBO> invFinalFieldList = new List<ExportReportBO>();
+
+                foreach (var fieldName in completionFieldNames)
+                {
+                    var saved = invPresentSavedlist.FirstOrDefault(x => x.FieldName == fieldName);
+
+                    invFinalFieldList.Add(new ExportReportBO
+                    {
+                        FieldName = fieldName,
+                        Flag = saved != null && saved.Flag == 1 ? 1 : 0,
+                        ReportFieldName = saved != null ? saved.ReportFieldName : fieldName,
+                        SortOrder = saved != null && saved.Flag == 1 ? Convert.ToInt32(saved.SortOrder) : 0,
+                        IsExcelMapFieldFlag = 0
+                    });
+                }
+
+                invFinalFieldList = invFinalFieldList
+                    .OrderBy(o => o.Flag == 1 ? 0 : 1)
+                    .ThenBy(o => o.SortOrder)
+                    .ThenBy(o => o.FieldName)
+                    .ToList();
+
+                int invIndex = 1;
+                foreach (var item in invFinalFieldList)
+                {
+                    item.Id = invIndex;
+                    invIndex++;
+                }
+
+                return invFinalFieldList;
+            }
 
             //get all fields selected for current project
-            var ExcelMapColumnList = CompassEntities.SP_GetFieldInfoForProject(projectId).Where(o => o.isMappedToExcel == 1).ToList();
+            var ExcelMapColumnList = objCompassEntities.SP_GetFieldInfoForProject(projectId)
+       .Where(o => o.isMappedToExcel == 1)
+       .ToList();
 
-            // get form fields for the given formid
-            var CurrentAllFormFieldList = CompassEntities.PROC_ExportReport_Form_CurrentFields(formTypeId, projectId).ToList();
+            var CurrentAllFormFieldList = objCompassEntities
+                .PROC_ExportReport_Form_CurrentFields(formTypeId, projectId)
+                .ToList();
 
             //remove the fields from excel mapped column list which are present in the form.
 
@@ -1093,7 +1142,7 @@ namespace GarronT.CMS.Model.DAL
 
 
             //get current form selected fields for the export report.
-            var PresentSavedlist = CompassEntities.TblExportReports.Where(o => o.FKFormTypeId == formTypeId 
+            var PresentSavedlist = objCompassEntities.TblExportReports.Where(o => o.FKFormTypeId == formTypeId 
                 && o.FKProjectId==projectId && o.Active == 1 && o.CreatedBy== UserId).ToList().OrderBy(o => o.SortOrder).ToList();
 
             int maxSortOrder = 0;
@@ -1284,6 +1333,71 @@ WHERE
             }
 
             return result;
+        }
+
+        private List<string> GetINVInstallerReportSourceFields(long projectId)
+        {
+            List<string> fields = new List<string>();
+
+            using (CompassEntities objCompassEntities = new CompassEntities())
+            {
+                using (SqlConnection sqlcon = new SqlConnection(objCompassEntities.Database.Connection.ConnectionString))
+                {
+                    using (SqlCommand cmd = new SqlCommand("PROC_ExportReport_INVInstallerReport_SourceFields", sqlcon))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandTimeout = 300;
+
+                        cmd.Parameters.Add("@ProjectId", SqlDbType.BigInt).Value = projectId;
+
+                        sqlcon.Open();
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                string fieldName = Convert.ToString(reader["FieldName"]);
+
+                                if (!string.IsNullOrWhiteSpace(fieldName))
+                                {
+                                    fields.Add(fieldName);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return fields;
+        }
+        public DataTable GetINVInstallerReportExportData(long formTypeId, long projectId, DateTime fromDate, DateTime toDate)
+        {
+            DataTable dt = new DataTable();
+
+            using (CompassEntities objCompassEntities = new CompassEntities())
+            {
+                using (SqlConnection sqlcon = new SqlConnection(objCompassEntities.Database.Connection.ConnectionString))
+                {
+                    using (SqlCommand cmd = new SqlCommand("PROC_ExportReport_INVInstallerReport_ExportData", sqlcon))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandTimeout = 300;
+
+                        cmd.Parameters.Add("@ProjectId", SqlDbType.BigInt).Value = projectId;
+                        cmd.Parameters.Add("@FormTypeId", SqlDbType.BigInt).Value = formTypeId;
+                        cmd.Parameters.Add("@FromDate", SqlDbType.DateTime).Value = fromDate;
+                        cmd.Parameters.Add("@ToDate", SqlDbType.DateTime).Value = toDate;
+
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            da.SelectCommand.CommandTimeout = 300;
+                            da.Fill(dt);
+                        }
+                    }
+                }
+            }
+
+            return dt;
         }
     }
 }

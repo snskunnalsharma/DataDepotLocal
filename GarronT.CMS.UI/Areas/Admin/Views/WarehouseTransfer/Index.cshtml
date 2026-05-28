@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewBag.Title = "Warehouse Transfer";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
@@ -25,6 +25,43 @@
 </form>
 
 <style>
+    #searchResultModal .modal-dialog {
+        width: 680px !important;
+        max-width: 680px !important;
+        margin: 70px auto !important;
+    }
+
+    #searchResultModal .modal-content {
+        border-radius: 4px;
+    }
+
+    #searchResultModal .modal-header {
+        padding: 12px 18px !important;
+    }
+
+    #searchResultModal .modal-title {
+        font-size: 18px;
+    }
+
+    #searchResultModal .modal-body {
+        max-height: 430px !important;
+        overflow-y: auto !important;
+        padding: 14px 18px !important;
+    }
+
+    #searchResultModal table {
+        font-size: 12px !important;
+    }
+
+    #searchResultModal th,
+    #searchResultModal td {
+        padding: 6px 8px !important;
+    }
+
+    #searchResultModal .modal-footer {
+        padding: 8px 18px !important;
+    }
+
     @@media (min-width:375px) {
         .dataTables_length > label {
             white-space: normal;
@@ -1177,7 +1214,7 @@
                                         <label class="control-label"><strong>OR</strong></label>
                                         @*<strong>OR</strong>&nbsp;&nbsp;*@
                                         <div>
-                                            <input type="text" placeholder="Search by Barcode/Part number/UPC Code" title="Search by Barcode/Part number/UPC Code" class="form-control inputclass chosen-container" id="txtBarcode" name="Barcode" />
+                                            <input type="text" placeholder="Search by Barcode/Part number/UPC Code/PO Number/Pallet No/Tray ID" title="Search by Barcode/Part number/UPC Code/PO Number/Pallet No/Tray ID" class="form-control inputclass chosen-container" id="txtBarcode" name="Barcode" />
                                         </div>
                                         @*
                                     </span>*@
@@ -1201,6 +1238,7 @@
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xxs-12 text-center">
                                     <button id="btnAdd" class="btn btn-success" type="button">Add</button>
                                     <button id="btnupdate" class="btn btn-success" type="button">Update</button>
+                                    <button id="btnSearch" class="btn btn-primary" type="button">Search</button>
                                     <button class="btn btn-danger" id="btnReset" type="button">Reset</button>
                                 </div>
                             </div>
@@ -1325,3 +1363,39 @@
 <!-- WarehouseTransfer JS -->
 <script src="/Scripts/Admin/WarehouseTransfer.js" type="text/javascript"></script>
 
+
+<!-- Search results modal -->
+<div id="searchResultModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="top:50px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Inventory Search Results</h4>
+                <div style="margin-top: 10px;">
+                    <span class="label label-info" style="font-size: 14px;">Total Found: <span id="lblTotalFound">0</span></span>
+                    <span class="label label-success" style="font-size: 14px; margin-left: 10px;">Total Selected: <span id="lblTotalSelected">0</span></span>
+                </div>
+            </div>
+            <div class="modal-body" style="max-height: 500px; overflow-y: auto;">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped" id="tblSearchResults">
+                        <thead>
+                            <tr>
+                                <th style="width: 40px;"><input type="checkbox" id="chkSelectAllResults" /></th>
+                                <th>Product Name</th>
+                                <th>Serial Number</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Results will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnTransferSelected">Transfer</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

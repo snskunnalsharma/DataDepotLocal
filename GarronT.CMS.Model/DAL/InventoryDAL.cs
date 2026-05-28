@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using GarronT.CMS.Model;
 using GarronT.CMS.Model.BO;
 using iTextSharp.text;
@@ -153,11 +153,23 @@ namespace GarronT.CMS.Model.DAL
                 }
 
                 var pProjectId = new SqlParameter("@projectId", projectId);
-                var pInstallerName = new SqlParameter("@installerName", (object)installerName ?? DBNull.Value);
-                var pInstallerUserName = new SqlParameter("@installerUserName", (object)installerUserName ?? DBNull.Value);
-                var pSearch = new SqlParameter("@search", (object)(search ?? ""));
 
-                // ✅ DATE PARSING (SAFE)
+                var pInstallerName = new SqlParameter("@installerName", SqlDbType.NVarChar)
+                {
+                    Value = (object)installerName ?? DBNull.Value
+                };
+
+                var pInstallerUserName = new SqlParameter("@installerUserName", SqlDbType.NVarChar)
+                {
+                    Value = (object)installerUserName ?? DBNull.Value
+                };
+
+                var pSearch = new SqlParameter("@search", SqlDbType.NVarChar)
+                {
+                    Value = (object)(search ?? "") ?? DBNull.Value
+                };
+
+                // ✅ DATE PARSING SAFE
                 DateTime? fromDt = null;
                 DateTime? toDt = null;
 
@@ -169,7 +181,11 @@ namespace GarronT.CMS.Model.DAL
                     if (!string.IsNullOrWhiteSpace(toDate))
                         toDt = Convert.ToDateTime(toDate);
                 }
-                catch { }
+                catch
+                {
+                    fromDt = null;
+                    toDt = null;
+                }
 
                 var pFromDate = new SqlParameter("@fromDate", SqlDbType.DateTime)
                 {
@@ -181,26 +197,68 @@ namespace GarronT.CMS.Model.DAL
                     Value = (object)toDt ?? DBNull.Value
                 };
 
-                // ✅ FINAL SQL (SIMPLE + FAST)
+                // ✅ FINAL SQL - FIXED SPACING + SAFE CONDITIONS
                 string sql = @"
-
-SELECTISNULL(CONVERT(varchar(20), operation_date, 120), '') AS OperationDate,ISNULL(CONVERT(varchar(20), completion_date, 120), '') AS CompletionDate,ISNULL(installer_name, '') AS InstallerName,ISNULL(work_order_id, '') AS WorkOrderId,ISNULL(serial_number, '') AS SerialNumber,ISNULL(service_address, '') AS ServiceAddress,ISNULL(CONVERT(varchar(50), latitude), '') AS Latitude,ISNULL(CONVERT(varchar(50), longitude), '') AS Longitude,ISNULL(status, '') AS Status,ISNULL(project_name, '') AS ProjectName
-
+SELECT
+    ISNULL(CONVERT(varchar(20), operation_date, 120), '') AS OperationDate,
+    ISNULL(CONVERT(varchar(20), completion_date, 120), '') AS CompletionDate,
+    ISNULL(installer_name, '') AS InstallerName,
+    ISNULL(work_order_id, '') AS WorkOrderId,
+    ISNULL(serial_number, '') AS SerialNumber,
+    ISNULL(service_address, '') AS ServiceAddress,
+    ISNULL(CONVERT(varchar(50), latitude), '') AS Latitude,
+    ISNULL(CONVERT(varchar(50), longitude), '') AS Longitude,
+    ISNULL(status, '') AS Status,
+    ISNULL(project_name, '') AS ProjectName
 FROM dbo.INVInstallerReport WITH (NOLOCK)
-
 WHERE project_id = @projectId
-
-AND (@fromDate IS NULL OR @toDate IS NULL OR(operation_date >= @fromDateAND operation_date < DATEADD(day, 1, @toDate)))
-
-AND (((@installerName IS NULL OR @installerName = '') AND (@installerUserName IS NULL OR @installerUserName = ''))OR (@installerName IS NOT NULL AND @installerName <> '' AND installer_name LIKE '%' + @installerName + '%')OR (@installerUserName IS NOT NULL AND @installerUserName <> '' AND installer_name LIKE '%' + @installerUserName + '%'))
-
-AND (@search IS NULL OR @search = '' ORinstaller_name LIKE '%' + @search + '%' ORwork_order_id LIKE '%' + @search + '%' ORserial_number LIKE '%' + @search + '%' ORservice_address LIKE '%' + @search + '%' ORstatus LIKE '%' + @search + '%' ORproject_name LIKE '%' + @search + '%')
-
+  AND (
+        @fromDate IS NULL
+        OR @toDate IS NULL
+        OR (
+            operation_date >= @fromDate
+            AND operation_date < DATEADD(day, 1, @toDate)
+        )
+      )
+  AND (
+        (
+            (@installerName IS NULL OR @installerName = '')
+            AND
+            (@installerUserName IS NULL OR @installerUserName = '')
+        )
+        OR
+        (
+            @installerName IS NOT NULL
+            AND @installerName <> ''
+            AND installer_name LIKE '%' + @installerName + '%'
+        )
+        OR
+        (
+            @installerUserName IS NOT NULL
+            AND @installerUserName <> ''
+            AND installer_name LIKE '%' + @installerUserName + '%'
+        )
+      )
+  AND (
+        @search IS NULL
+        OR @search = ''
+        OR installer_name LIKE '%' + @search + '%'
+        OR work_order_id LIKE '%' + @search + '%'
+        OR serial_number LIKE '%' + @search + '%'
+        OR service_address LIKE '%' + @search + '%'
+        OR status LIKE '%' + @search + '%'
+        OR project_name LIKE '%' + @search + '%'
+      )
 ORDER BY operation_date DESC, completion_date DESC, id DESC";
 
                 return db.Database.SqlQuery<INVInstallerReportRowBO>(
                     sql,
-                    pProjectId, pInstallerName, pInstallerUserName, pSearch, pFromDate, pToDate
+                    pProjectId,
+                    pInstallerName,
+                    pInstallerUserName,
+                    pSearch,
+                    pFromDate,
+                    pToDate
                 ).ToList();
             }
         }
@@ -3213,6 +3271,101 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC";
             return objList;
         }
 
+        public List<ProductMasterBO> GetStockDetailsBySearchTerm(long projectId, long warehouseId, string searchTerm)
+        {
+            using (CompassEntities db = new CompassEntities())
+            {
+                var search = (searchTerm ?? "").Trim();
+                // Raw SQL ensures we get PONumber, PalletNumber, TrayID even if not mapped in EF designer
+                string query = @"
+                    SELECT 
+                        sd.FKProductId as Id,
+                        p.ProductName as ProductName,
+                        p.ProductDescription as ProductDescription,
+                        sd.SerialNumber as SerialNumber,
+                        sd.PONumber as PONumber,
+                        sd.PalletNumber as PalletNumber,
+                        sd.TrayID as TrayID,
+                        sd.BalanceQty as Quantity,
+                        sd.PartNumber as ProductPartNumber,
+                        sd.UPCCode as ProductUPCCode,
+                        sd.FKWarehouseId as WarehouseId,
+                        sd.FKProjectId as ProjectId
+                    FROM StockDetails sd
+                    JOIN ProductMaster p ON sd.FKProductId = p.Id
+                    WHERE sd.FKProjectId = @p0 
+                      AND sd.FKWarehouseId = @p1 
+                      AND sd.BalanceQty > 0 
+                      AND sd.Active = 1
+                      AND (sd.PONumber = @p2 OR sd.PalletNumber = @p2 OR sd.TrayID = @p2 OR sd.SerialNumber = @p2 OR sd.Location = @p2)";
+
+                var results = db.Database.SqlQuery<ProductMasterBO>(query, projectId, warehouseId, search).ToList();
+                return results;
+            }
+        }
+
+        public void AddBatchInventryToTemp(long warehouseId, long toWarehouseId, long projectId, List<ProductMasterBO> selectedItems, List<ProductMasterBO> existingList, out bool duplicateFound, out string duplicateMsg)
+        {
+            duplicateFound = false;
+            duplicateMsg = "";
+            var duplicateSerials = new List<string>();
+
+            using (CompassEntities db = new CompassEntities())
+            {
+                var toWarehouseName = db.WarehouseMasters.Where(a => a.Id == toWarehouseId).Select(a => a.WarehouseName).FirstOrDefault();
+
+                foreach (var item in selectedItems)
+                {
+                    // Check if already in temp list
+                    if (existingList.Any(a => a.SerialNumber != null && a.SerialNumber.Trim().ToUpper() == (item.SerialNumber ?? "").Trim().ToUpper()))
+                    {
+                        duplicateSerials.Add(item.SerialNumber);
+                        duplicateFound = true;
+                        continue;
+                    }
+
+                    var product = GetProductbyId(item.Id);
+                    if (product == null) continue;
+
+                    ProductMasterBO newItem = new ProductMasterBO
+                    {
+                        Id = product.Id,
+                        ProductName = product.ProductName,
+                        ProductDescription = product.ProductDescription,
+                        ProductPartNumber = product.ProductPartNumber,
+                        ProductUPCCode = product.ProductUPCCode,
+                        Make = product.Make,
+                        Type = product.Type,
+                        Size = product.Size,
+                        UtilityId = product.UtilityId,
+                        UtilityName = product.UtilityName,
+                        SerialNumberRequired = product.SerialNumberRequired,
+                        GenerateBarcode = false,
+                        CategoryId = product.CategoryId,
+                        CategoryName = product.CategoryName,
+                        UniqueId = Guid.NewGuid(),
+                        WarehouseId = warehouseId,
+                        WarehouseName = toWarehouseName,
+                        ToWarehouseId = toWarehouseId,
+                        SerialNumber = item.SerialNumber,
+                        Quantity = 1,
+                        ProjectId = projectId,
+                        RecordStatus = "Pending transfer",
+                        ValidRecords = 0,
+                        PONumber = item.PONumber,
+                        PalletNumber = item.PalletNumber,
+                        TrayID = item.TrayID
+                    };
+                    existingList.Add(newItem);
+                }
+            }
+
+            if (duplicateFound)
+            {
+                duplicateMsg = "The following serial numbers were already added: " + string.Join(", ", duplicateSerials);
+            }
+        }
+
         /// <summary>
         /// For warehouse transfer: returns serial numbers that are not present in the given source warehouse
         /// for this project and product (trimmed, case-insensitive match on serial).
@@ -3441,13 +3594,27 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC";
                     return clean.ToUpperInvariant();
                 }
 
+                string NormalizeDbSerial(string v)
+                {
+                    if (string.IsNullOrWhiteSpace(v)) return "";
+
+                    return v
+                        .Replace("\uFEFF", "")
+                        .Replace("\"", "")
+                        .Replace(" ", "")
+                        .Replace(".", "")
+                        .Trim()
+                        .ToUpperInvariant();
+                }
+
                 var serial = NormalizeSerial(serialNumber);
 
                 if (string.IsNullOrEmpty(serial))
                     throw new Exception("Invalid serial number");
 
-                // for numeric serials: also try without leading zeros (DB sometimes stores raw number)
+                // For numeric serials: also try without leading zeros because DB sometimes stores raw number.
                 var serialNoZeros = serial.All(char.IsDigit) ? serial.TrimStart('0') : serial;
+
                 if (string.IsNullOrWhiteSpace(serialNoZeros) && serial.All(char.IsDigit))
                     serialNoZeros = "0";
 
@@ -3471,9 +3638,9 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC";
                 if (stock == null)
                     throw new Exception("Stock not found for serial: " + serial);
 
-                // If caller didn't provide userId (0), fallback to latest outward AllocatedTo for this stock.
-                // This keeps AllocatedTo populated correctly in reports.
+                // If caller didn't provide userId, fallback to latest outward AllocatedTo for this stock.
                 long allocatedToFinal = userId;
+
                 if (allocatedToFinal <= 0)
                 {
                     allocatedToFinal = db.OutwardDetails
@@ -3492,7 +3659,7 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC";
                     }
                 }
 
-                // 2️⃣ Get outward record
+                // 2️⃣ Get latest active outward record
                 var outward = db.OutwardDetails
                     .Where(x =>
                         x.FKStockDetailsID == stock.Id &&
@@ -3501,8 +3668,7 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC";
                     .FirstOrDefault();
 
                 // For inventory stock report, outward must point to the correct installer.
-                // If missing (or allocated to a different installer), create a new outward row.
-                // NOTE: don't create a new outward just because allocatedToFinal is 0.
+                // If missing or allocated to different installer, create a new outward row.
                 if (outward == null || (allocatedToFinal > 0 && outward.AllocatedTo != allocatedToFinal))
                 {
                     long? requestDetailId = null;
@@ -3510,6 +3676,21 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC";
                     if (outward != null)
                     {
                         requestDetailId = outward.FKInventoryMobileStockRequestDetailId;
+                    }
+
+                    if (!requestDetailId.HasValue)
+                    {
+                        requestDetailId = (
+                            from od in db.OutwardDetails
+                            join sd in db.StockDetails on od.FKStockDetailsID equals sd.Id
+                            where od.Active == 1
+                                  && sd.Active == 1
+                                  && od.AllocatedTo == allocatedToFinal
+                                  && sd.FKProjectId == projectId
+                                  && sd.FKProductId == stock.FKProductId
+                            orderby od.Id descending
+                            select (long?)od.FKInventoryMobileStockRequestDetailId
+                        ).FirstOrDefault();
                     }
 
                     if (!requestDetailId.HasValue)
@@ -3558,7 +3739,7 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC";
                         AllStockUtilized = false,
                         MobileResponse = 0,
                         Active = 1,
-                        CreatedBy = userId > 0 ? userId : (allocatedToFinal > 0 ? allocatedToFinal : userId),
+                        CreatedBy = userId > 0 ? userId : (allocatedToFinal > 0 ? allocatedToFinal : 0),
                         CreatedOn = DateTime.Now
                     };
 
@@ -3566,8 +3747,7 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC";
                     db.SaveChanges();
                 }
 
-                // Prevent duplicate active outward rows for same stock,
-                // otherwise reports can keep showing InHand from older rows.
+                // Prevent duplicate active outward rows for same stock.
                 var otherActiveOutwards = db.OutwardDetails
                     .Where(x => x.FKStockDetailsID == stock.Id && x.Active == 1 && x.Id != outward.Id)
                     .ToList();
@@ -3576,7 +3756,7 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC";
                 {
                     o.Active = 0;
                     o.ModifiedOn = DateTime.Now;
-                    o.ModifiedBy = userId;
+                    o.ModifiedBy = userId > 0 ? userId : allocatedToFinal;
                 }
 
                 // 3️⃣ Get service mapping
@@ -3592,7 +3772,10 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC";
                 bool alreadyInstalled = db.tblProjectFieldDataInventoryDetails
                     .Any(x =>
                         x.SerialNumber != null &&
-                        x.SerialNumber.Replace(" ", "").Replace(".", "").Trim().ToUpper() == serial &&
+                        (
+                            x.SerialNumber.Replace(" ", "").Replace(".", "").Trim().ToUpper() == serial
+                            || x.SerialNumber.Replace(" ", "").Replace(".", "").Trim().ToUpper() == serialNoZeros
+                        ) &&
                         x.FKtblProjectFieldDataMasterID == masterId &&
                         x.Active == 1);
 
@@ -3603,7 +3786,7 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC";
 
                     inv.Active = 1;
                     inv.CreatedOn = DateTime.Now;
-                    inv.CreatedBy = userId;
+                    inv.CreatedBy = userId > 0 ? userId : allocatedToFinal;
                     inv.FKServiceId = serviceProduct.FKServiceId;
                     inv.FKProductId = stock.FKProductId;
                     inv.FKtblProjectFieldDataMasterID = masterId;
@@ -3616,30 +3799,36 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC";
 
                     // 6️⃣ Create outward mapping
                     tblProjectFieldDataInventoryOutwardDetail outInv = new tblProjectFieldDataInventoryOutwardDetail();
+
                     outInv.Active = 1;
                     outInv.CreatedOn = DateTime.Now;
-                    outInv.CreatedBy = userId;
+                    outInv.CreatedBy = userId > 0 ? userId : allocatedToFinal;
                     outInv.FKOutwardDetailsId = outward.Id;
                     outInv.FKtblProjectFieldDataInventoryDetailsId = inv.ID;
                     outInv.TotalQty = 1;
+
                     db.tblProjectFieldDataInventoryOutwardDetails.Add(outInv);
                 }
                 else
                 {
-                    // Inventory detail exists; ensure it is linked to this outward record,
-                    // because reports often derive Installed/InHand from the outward mapping table.
+                    // Inventory detail exists; ensure it is linked to this outward record.
                     var existingInv = db.tblProjectFieldDataInventoryDetails
                         .Where(x =>
                             x.Active == 1 &&
                             x.FKtblProjectFieldDataMasterID == masterId &&
                             x.SerialNumber != null &&
-                            x.SerialNumber.Replace(" ", "").Replace(".", "").Trim().ToUpper() == serial)
+                            (
+                                x.SerialNumber.Replace(" ", "").Replace(".", "").Trim().ToUpper() == serial
+                                || x.SerialNumber.Replace(" ", "").Replace(".", "").Trim().ToUpper() == serialNoZeros
+                            ))
                         .OrderByDescending(x => x.ID)
                         .FirstOrDefault();
 
                     if (existingInv != null)
                     {
                         existingInv.StockVerified = 1;
+                        existingInv.ModifiedOn = DateTime.Now;
+                        existingInv.ModifiedBy = userId > 0 ? userId : allocatedToFinal;
 
                         bool mappingExists = db.tblProjectFieldDataInventoryOutwardDetails.Any(m =>
                             m.Active == 1 &&
@@ -3652,7 +3841,7 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC";
                             {
                                 Active = 1,
                                 CreatedOn = DateTime.Now,
-                                CreatedBy = userId,
+                                CreatedBy = userId > 0 ? userId : allocatedToFinal,
                                 FKOutwardDetailsId = outward.Id,
                                 FKtblProjectFieldDataInventoryDetailsId = existingInv.ID,
                                 TotalQty = 1
@@ -3663,23 +3852,27 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC";
                     }
                 }
 
-                // 8️⃣ Update outward
+                // 7️⃣ Update outward
                 if (allocatedToFinal > 0)
                     outward.AllocatedTo = allocatedToFinal;
+
                 if (outward.AllocatedQty <= 0)
                     outward.AllocatedQty = 1;
+
                 outward.InstalledQty = 1;
                 outward.TransferredQty = 0;
                 outward.ReturnToWarehouseQty = 0;
                 outward.RemovedQty = 0;
                 outward.AllStockUtilized = true;
                 outward.ModifiedOn = DateTime.Now;
-                outward.ModifiedBy = userId > 0 ? userId : (allocatedToFinal > 0 ? allocatedToFinal : userId);
+                outward.ModifiedBy = userId > 0 ? userId : allocatedToFinal;
 
-                // 9️⃣ Update stock
+                // 8️⃣ Update stock
                 stock.IsAllocated = true;
                 stock.AllStockUtilized = true;
                 stock.BalanceQty = 0;
+                stock.ModifiedOn = DateTime.Now;
+                stock.ModifiedBy = userId > 0 ? userId : allocatedToFinal;
 
                 db.SaveChanges();
             }

@@ -1028,7 +1028,54 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 public decimal? Longitude { get; set; }
                 public string Status { get; set; }
                 public string ProjectName { get; set; }
-            
+            public string CustomerName { get; set; }
+            public string City { get; set; }
+            public string State { get; set; }
+            public string WorkOrderType { get; set; }
+            public string Cycle { get; set; }
+            public string AppointmentDate { get; set; }
+            public string AppointmentTime { get; set; }
+            public string Route { get; set; }
+            public string Sequence { get; set; }
+            public string Area { get; set; }
+            public string DispatchedFromDate { get; set; }
+            public string DispatchedToDate { get; set; }
+            public string OnsiteStartTime { get; set; }
+            public string OnsiteEndTime { get; set; }
+            public string LastCCReasonLegacy { get; set; }
+            public string LastCCDate { get; set; }
+            public string QAUser { get; set; }
+            public string CCReason { get; set; }
+            public string TotalVisits { get; set; }
+            public string ProvidedLatitudeText { get; set; }
+            public string ProvidedLongitudeText { get; set; }
+            public string MeterNumber { get; set; }
+            public string WorkFlowType { get; set; }
+            public string ResponsibleParty { get; set; }
+            public string CreateDateExcel { get; set; }
+            public string QualityResults { get; set; }
+            public string ExceptionReason { get; set; }
+            public string RouteReleaseDate { get; set; }
+            public string SyncDate { get; set; }
+            public string WorkOrdersDEId { get; set; }
+            public string UpdatedCCReason { get; set; }
+            public string CustomSort { get; set; }
+            public string StandardSort { get; set; }
+            public string GPSAccuracy { get; set; }
+            public string GPSSource { get; set; }
+            public string LinkToWorkOrder { get; set; }
+            public string ExceptionStatus { get; set; }
+            public string WorkOrders { get; set; }
+            public string Events { get; set; }
+            public string CustomerEventsURL { get; set; }
+            public string CustomerUniqueId { get; set; }
+            public string WorkOrderIdURL { get; set; }
+            public string WorkOrderRequestId { get; set; }
+            public string CustomerId { get; set; }
+            public string DeviceId { get; set; }
+            public string NGSector { get; set; }
+            public string CustomerIdAdd { get; set; }
+
         }
 
         public class CompletedInventoryPayload
@@ -1222,9 +1269,6 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         for (int c = 1; c <= colCount; c++)
                         {
                             string key = NormalizeHeaderKey(ws.Cells[r, c].Text);
-                            string cellText = ws.Cells[r, c].Text ?? "";
-
-                            // Do not read WorkOrderId/Status from header text; these come from columns now.
 
                             if (IsMeterOrErtHeader(key))
                                 serialColTemp = c;
@@ -1234,24 +1278,31 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
                             if (key.Contains("COMPLETIONDATE") || (key.Contains("COMPLETION") && key.Contains("DATE")))
                                 completionDateColTemp = c;
+
                             if (key.Contains("INSTALLERNAME") || (key.Contains("INSTALLER") && key.Contains("NAME")))
                                 installerNameColTemp = c;
-                            // Work Order Id: prefer explicit "WORK ORDER ID" style headers
+
                             if (key == "WORKORDERID" || key == "WORKORDER" || key.Contains("WORKORDERID"))
                                 workOrderIdColTemp = c;
+
                             if (key.Contains("SERVICEADDRESS") || (key.Contains("SERVICE") && key.Contains("ADDRESS")) || key.EndsWith("ADDRESS"))
                                 serviceAddressColTemp = c;
+
                             if (key.Contains("PROVIDED") && key.Contains("LATITUDE"))
                                 providedLatitudeColTemp = c;
+
                             if (key.Contains("PROVIDED") && key.Contains("LONGITUDE"))
                                 providedLongitudeColTemp = c;
+
                             if (providedLatitudeColTemp <= 0 && key.Contains("LATITUDE"))
                                 latitudeColTemp = c;
+
                             if (providedLongitudeColTemp <= 0 && key.Contains("LONGITUDE"))
                                 longitudeColTemp = c;
-                            // Status: prefer explicit STATUS column
+
                             if (key == "STATUS")
                                 statusColTemp = c;
+
                             if (key.Contains("PROJECTNAME") || (key.Contains("PROJECT") && key.Contains("NAME")))
                                 projectNameColTemp = c;
 
@@ -1265,7 +1316,6 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
                         if (serialColTemp != -1)
                         {
-                            // Prefer header that has both serial + installer/email column
                             if (emailColTemp != -1)
                             {
                                 targetSheet = ws;
@@ -1286,7 +1336,6 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                                 break;
                             }
 
-                            // fallback candidate (serial-only header)
                             if (targetSheet == null)
                             {
                                 targetSheet = ws;
@@ -1313,7 +1362,20 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 if (targetSheet == null || idxSerial == -1)
                     throw new Exception("Meter Number column not found in completed inventory file.");
 
+                // ✅ Build header map once from detected header row
+                var headerMap = new Dictionary<string, int>();
+
+                for (int c = 1; c <= targetSheet.Dimension.Columns; c++)
+                {
+                    string headerText = (targetSheet.Cells[headerRow, c].Text ?? "").Trim();
+                    string key = NormalizeHeaderKey(headerText);
+
+                    if (!string.IsNullOrWhiteSpace(key) && !headerMap.ContainsKey(key))
+                        headerMap.Add(key, c);
+                }
+
                 int totalRows = targetSheet.Dimension.Rows;
+
                 for (int r = headerRow + 1; r <= totalRows; r++)
                 {
                     string serial = NormalizeSerialValue(targetSheet.Cells[r, idxSerial].Text);
@@ -1324,7 +1386,6 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
                     if (string.IsNullOrWhiteSpace(email))
                     {
-                        // fallback: detect email from row text
                         for (int c = 1; c <= targetSheet.Dimension.Columns; c++)
                         {
                             email = ExtractEmail(targetSheet.Cells[r, c].Text);
@@ -1344,18 +1405,87 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         SerialNumber = serial,
                         TechnicianName = "",
                         InstallerEmail = email,
-                        CompletionDate = (idxCompletionDate > 0) ? ToDateSafe(targetSheet.Cells[r, idxCompletionDate].Text) : null,
-                        InstallerName = (idxInstallerName > 0) ? (targetSheet.Cells[r, idxInstallerName].Text ?? "").Trim() : "",
-                        WorkOrderId = (idxWorkOrderId > 0) ? (targetSheet.Cells[r, idxWorkOrderId].Text ?? "").Trim() : "",
-                        ServiceAddress = (idxServiceAddress > 0) ? (targetSheet.Cells[r, idxServiceAddress].Text ?? "").Trim() : "",
+
+                        CompletionDate = (idxCompletionDate > 0)
+                            ? ToDateSafe(targetSheet.Cells[r, idxCompletionDate].Text)
+                            : null,
+
+                        InstallerName = (idxInstallerName > 0)
+                            ? (targetSheet.Cells[r, idxInstallerName].Text ?? "").Trim()
+                            : "",
+
+                        WorkOrderId = (idxWorkOrderId > 0)
+                            ? (targetSheet.Cells[r, idxWorkOrderId].Text ?? "").Trim()
+                            : "",
+
+                        ServiceAddress = (idxServiceAddress > 0)
+                            ? (targetSheet.Cells[r, idxServiceAddress].Text ?? "").Trim()
+                            : "",
+
                         Latitude = (idxProvidedLatitude > 0)
                             ? (decimal?)ToDecimalSafe(targetSheet.Cells[r, idxProvidedLatitude].Text)
                             : ((idxLatitude > 0) ? (decimal?)ToDecimalSafe(targetSheet.Cells[r, idxLatitude].Text) : null),
+
                         Longitude = (idxProvidedLongitude > 0)
                             ? (decimal?)ToDecimalSafe(targetSheet.Cells[r, idxProvidedLongitude].Text)
                             : ((idxLongitude > 0) ? (decimal?)ToDecimalSafe(targetSheet.Cells[r, idxLongitude].Text) : null),
-                        Status = (idxStatus > 0) ? (targetSheet.Cells[r, idxStatus].Text ?? "").Trim() : "",
-                        ProjectName = (idxProjectName > 0) ? (targetSheet.Cells[r, idxProjectName].Text ?? "").Trim() : ""
+
+                        Status = (idxStatus > 0)
+                            ? (targetSheet.Cells[r, idxStatus].Text ?? "").Trim()
+                            : "",
+
+                        ProjectName = (idxProjectName > 0)
+                            ? (targetSheet.Cells[r, idxProjectName].Text ?? "").Trim()
+                            : "",
+
+                        // ✅ Add-on Excel header fields
+                        CustomerName = GetCellByHeader(targetSheet, r, headerMap, "Customer Name"),
+                        City = GetCellByHeader(targetSheet, r, headerMap, "City"),
+                        State = GetCellByHeader(targetSheet, r, headerMap, "State"),
+                        WorkOrderType = GetCellByHeader(targetSheet, r, headerMap, "Work Order Type"),
+                        Cycle = GetCellByHeader(targetSheet, r, headerMap, "Cycle"),
+                        AppointmentDate = GetCellByHeader(targetSheet, r, headerMap, "Appointment Date"),
+                        AppointmentTime = GetCellByHeader(targetSheet, r, headerMap, "Appointment Time"),
+                        Route = GetCellByHeader(targetSheet, r, headerMap, "Route"),
+                        Sequence = GetCellByHeader(targetSheet, r, headerMap, "Sequence"),
+                        Area = GetCellByHeader(targetSheet, r, headerMap, "Area"),
+                        DispatchedFromDate = GetCellByHeader(targetSheet, r, headerMap, "Dispatched From Date"),
+                        DispatchedToDate = GetCellByHeader(targetSheet, r, headerMap, "Dispatched To Date"),
+                        OnsiteStartTime = GetCellByHeader(targetSheet, r, headerMap, "Onsite Start Time"),
+                        OnsiteEndTime = GetCellByHeader(targetSheet, r, headerMap, "Onsite End Time"),
+                        LastCCReasonLegacy = GetCellByHeader(targetSheet, r, headerMap, "Last CC Reason Legacy"),
+                        LastCCDate = GetCellByHeader(targetSheet, r, headerMap, "Last CC Date"),
+                        QAUser = GetCellByHeader(targetSheet, r, headerMap, "QA User"),
+                        CCReason = GetCellByHeader(targetSheet, r, headerMap, "CC Reason"),
+                        TotalVisits = GetCellByHeader(targetSheet, r, headerMap, "Total Visits"),
+                        ProvidedLatitudeText = GetCellByHeader(targetSheet, r, headerMap, "Provided Latitude"),
+                        ProvidedLongitudeText = GetCellByHeader(targetSheet, r, headerMap, "Provided Longitude"),
+                        MeterNumber = GetCellByHeader(targetSheet, r, headerMap, "Meter Number"),
+                        WorkFlowType = GetCellByHeader(targetSheet, r, headerMap, "Work Flow Type"),
+                        ResponsibleParty = GetCellByHeader(targetSheet, r, headerMap, "Responsible Party"),
+                        CreateDateExcel = GetCellByHeader(targetSheet, r, headerMap, "Create Date"),
+                        QualityResults = GetCellByHeader(targetSheet, r, headerMap, "Quality Results"),
+                        ExceptionReason = GetCellByHeader(targetSheet, r, headerMap, "Exception Reason"),
+                        RouteReleaseDate = GetCellByHeader(targetSheet, r, headerMap, "Route Release Date"),
+                        SyncDate = GetCellByHeader(targetSheet, r, headerMap, "Sync Date"),
+                        WorkOrdersDEId = GetCellByHeader(targetSheet, r, headerMap, "Work Orders DE ID"),
+                        UpdatedCCReason = GetCellByHeader(targetSheet, r, headerMap, "Updated CC Reason"),
+                        CustomSort = GetCellByHeader(targetSheet, r, headerMap, "Custom Sort"),
+                        StandardSort = GetCellByHeader(targetSheet, r, headerMap, "Standard Sort"),
+                        GPSAccuracy = GetCellByHeader(targetSheet, r, headerMap, "GPS Accuracy"),
+                        GPSSource = GetCellByHeader(targetSheet, r, headerMap, "GPS Source"),
+                        LinkToWorkOrder = GetCellByHeader(targetSheet, r, headerMap, "Link To Work Order"),
+                        ExceptionStatus = GetCellByHeader(targetSheet, r, headerMap, "Exception Status"),
+                        WorkOrders = GetCellByHeader(targetSheet, r, headerMap, "Work Orders"),
+                        Events = GetCellByHeader(targetSheet, r, headerMap, "Events"),
+                        CustomerEventsURL = GetCellByHeader(targetSheet, r, headerMap, "Customer Events URL"),
+                        CustomerUniqueId = GetCellByHeader(targetSheet, r, headerMap, "Customer Unique Id"),
+                        WorkOrderIdURL = GetCellByHeader(targetSheet, r, headerMap, "Work Order Id URL"),
+                        WorkOrderRequestId = GetCellByHeader(targetSheet, r, headerMap, "Work Order Request Id"),
+                        CustomerId = GetCellByHeader(targetSheet, r, headerMap, "Customer Id"),
+                        DeviceId = GetCellByHeader(targetSheet, r, headerMap, "Device Id"),
+                        NGSector = GetCellByHeader(targetSheet, r, headerMap, "NG Sector"),
+                        CustomerIdAdd = GetCellByHeader(targetSheet, r, headerMap, "CustomerId Add")
                     });
                 }
             }
@@ -1378,11 +1508,11 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 if (Session["UserId"] != null)
                     long.TryParse(Session["UserId"].ToString(), out userId);
 
-                var serials = JsonConvert.DeserializeObject<List<CompletedInventorySerialItem>>(serialList ?? "[]") ?? new List<CompletedInventorySerialItem>();
+                var serials = JsonConvert.DeserializeObject<List<CompletedInventorySerialItem>>(serialList ?? "[]")
+                    ?? new List<CompletedInventorySerialItem>();
 
-                // Prefer taking full row details from the uploaded file already stored in Session (more reliable than JS payload).
+                // Prefer taking full row details from the uploaded file already stored in Session
                 var sessionPayload = Session["CompletedInventory_" + projectId] as CompletedInventoryPayload;
-                // WorkOrderId/Status come from file columns (not header)
 
                 string NormalizeSerialKey(string v)
                 {
@@ -1397,11 +1527,11 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
                 using (var db = new CompassEntities())
                 {
-                    // Always take ProjectName from selected projectId
                     string selectedProjectName = db.tblProjects
                         .Where(p => p.ProjectId == projectId)
                         .Select(p => p.ProjectName)
                         .FirstOrDefault() ?? "";
+
                     var master = db.tblProjectFieldDataMasters
                         .Where(x => x.Active == 1)
                         .OrderByDescending(x => x.ID)
@@ -1431,26 +1561,29 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         .Select(g => g.First())
                         .ToList();
 
-                    int installed = 0, skipped = 0, errors = 0;
+                    int installed = 0;
+                    int skipped = 0;
+                    int errors = 0;
                     int invReportSaved = 0;
                     var errorList = new List<string>();
 
                     foreach (var item in unique)
                     {
                         string serial = item.SerialNumber?.Trim() ?? "";
+
                         if (string.IsNullOrWhiteSpace(serial))
                         {
                             skipped++;
                             continue;
                         }
 
-                        // Enrich item fields from uploaded file payload (if present).
                         var key = NormalizeSerialKey(serial);
+
                         if (fileBySerial.ContainsKey(key))
                         {
                             var fromFile = fileBySerial[key];
-                            // Keep InstallerName from UI datatable (sent as TechnicianName/InstallerName) if present;
-                            // otherwise take from file.
+
+                            // Existing fields from uploaded file/session
                             item.CompletionDate = item.CompletionDate ?? fromFile.CompletionDate;
                             item.WorkOrderId = string.IsNullOrWhiteSpace(item.WorkOrderId) ? fromFile.WorkOrderId : item.WorkOrderId;
                             item.ServiceAddress = string.IsNullOrWhiteSpace(item.ServiceAddress) ? fromFile.ServiceAddress : item.ServiceAddress;
@@ -1458,22 +1591,71 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                             item.Longitude = item.Longitude ?? fromFile.Longitude;
                             item.Status = string.IsNullOrWhiteSpace(item.Status) ? fromFile.Status : item.Status;
                             item.ProjectName = selectedProjectName;
+
                             if (string.IsNullOrWhiteSpace(item.InstallerEmail))
                                 item.InstallerEmail = fromFile.InstallerEmail;
+
                             if (string.IsNullOrWhiteSpace(item.InstallerName))
                                 item.InstallerName = fromFile.InstallerName;
+
+                            // Add-on Excel header fields from uploaded file/session
+                            item.CustomerName = fromFile.CustomerName;
+                            item.City = fromFile.City;
+                            item.State = fromFile.State;
+                            item.WorkOrderType = fromFile.WorkOrderType;
+                            item.Cycle = fromFile.Cycle;
+                            item.AppointmentDate = fromFile.AppointmentDate;
+                            item.AppointmentTime = fromFile.AppointmentTime;
+                            item.Route = fromFile.Route;
+                            item.Sequence = fromFile.Sequence;
+                            item.Area = fromFile.Area;
+                            item.DispatchedFromDate = fromFile.DispatchedFromDate;
+                            item.DispatchedToDate = fromFile.DispatchedToDate;
+                            item.OnsiteStartTime = fromFile.OnsiteStartTime;
+                            item.OnsiteEndTime = fromFile.OnsiteEndTime;
+                            item.LastCCReasonLegacy = fromFile.LastCCReasonLegacy;
+                            item.LastCCDate = fromFile.LastCCDate;
+                            item.QAUser = fromFile.QAUser;
+                            item.CCReason = fromFile.CCReason;
+                            item.TotalVisits = fromFile.TotalVisits;
+                            item.ProvidedLatitudeText = fromFile.ProvidedLatitudeText;
+                            item.ProvidedLongitudeText = fromFile.ProvidedLongitudeText;
+                            item.MeterNumber = fromFile.MeterNumber;
+                            item.WorkFlowType = fromFile.WorkFlowType;
+                            item.ResponsibleParty = fromFile.ResponsibleParty;
+                            item.CreateDateExcel = fromFile.CreateDateExcel;
+                            item.QualityResults = fromFile.QualityResults;
+                            item.ExceptionReason = fromFile.ExceptionReason;
+                            item.RouteReleaseDate = fromFile.RouteReleaseDate;
+                            item.SyncDate = fromFile.SyncDate;
+                            item.WorkOrdersDEId = fromFile.WorkOrdersDEId;
+                            item.UpdatedCCReason = fromFile.UpdatedCCReason;
+                            item.CustomSort = fromFile.CustomSort;
+                            item.StandardSort = fromFile.StandardSort;
+                            item.GPSAccuracy = fromFile.GPSAccuracy;
+                            item.GPSSource = fromFile.GPSSource;
+                            item.LinkToWorkOrder = fromFile.LinkToWorkOrder;
+                            item.ExceptionStatus = fromFile.ExceptionStatus;
+                            item.WorkOrders = fromFile.WorkOrders;
+                            item.Events = fromFile.Events;
+                            item.CustomerEventsURL = fromFile.CustomerEventsURL;
+                            item.CustomerUniqueId = fromFile.CustomerUniqueId;
+                            item.WorkOrderIdURL = fromFile.WorkOrderIdURL;
+                            item.WorkOrderRequestId = fromFile.WorkOrderRequestId;
+                            item.CustomerId = fromFile.CustomerId;
+                            item.DeviceId = fromFile.DeviceId;
+                            item.NGSector = fromFile.NGSector;
+                            item.CustomerIdAdd = fromFile.CustomerIdAdd;
                         }
                         else
                         {
-                            // Ensure project name even when file row missing
                             item.ProjectName = selectedProjectName;
                         }
-
-                        // WorkOrderId/Status are taken from file columns; no header override.
 
                         long installerUserId = userId;
 
                         string installerEmail = (item.InstallerEmail ?? "").Trim().ToUpperInvariant();
+
                         if (!string.IsNullOrEmpty(installerEmail) && userMapByEmail.ContainsKey(installerEmail))
                         {
                             installerUserId = userMapByEmail[installerEmail];
@@ -1481,146 +1663,149 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
                         try
                         {
+                            // Existing logic: Inventory In Hand se Installed me move
                             dal.MoveInventoryToInstalled(projectId, installerUserId, serial, masterId);
                             installed++;
 
-                            // Save matched serial details into INVInstallerReport (from uploaded file)
+                            // New logic: INVInstallerReport me stored procedure se save/update
                             try
                             {
-                                DateTime now = DateTime.Now;
                                 string serialNorm = (serial ?? "").Trim();
-                                string installerNameFinal = (!string.IsNullOrWhiteSpace(item.TechnicianName) ? item.TechnicianName : item.InstallerName) ?? "";
 
-                                // Upsert using raw SQL (edmx may not have operation_date even if DB has it)
-                                string projectIdStr = projectId.ToString();
-                                int affected = db.Database.ExecuteSqlCommand(@"
-                                                                                    IF EXISTS (
-                                                                                        SELECT 1 
-                                                                                        FROM dbo.INVInstallerReport 
-                                                                                        WHERE project_id = @p0 
-                                                                                          AND serial_number = @p1
-                                                                                    )
-                                                                                    BEGIN
-                                                                                        UPDATE dbo.INVInstallerReport
-                                                                                        SET completion_date = @p2,
-                                                                                            installer_name = @p3,
-                                                                                            work_order_id = @p4,
-                                                                                            service_address = @p5,
-                                                                                            latitude = @p6,
-                                                                                            longitude = @p7,
-                                                                                            status = @p8,
-                                                                                            project_name = @p9,
-                                                                                            updated_at = @p10,
-                                                                                            operation_date = @p11
-                                                                                        WHERE project_id = @p0 
-                                                                                          AND serial_number = @p1;
-                                                                                    END
-                                                                                    ELSE
-                                                                                    BEGIN
-                                                                                        INSERT INTO dbo.INVInstallerReport
-                                                                                        (
-                                                                                            project_id,
-                                                                                            completion_date,
-                                                                                            installer_name,
-                                                                                            work_order_id,
-                                                                                            serial_number,
-                                                                                            service_address,
-                                                                                            latitude,
-                                                                                            longitude,
-                                                                                            status,
-                                                                                            project_name,
-                                                                                            created_at,
-                                                                                            updated_at,
-                                                                                            operation_date
-                                                                                        )
-                                                                                        VALUES
-                                                                                        (
-                                                                                            @p0,
-                                                                                            @p2,
-                                                                                            @p3,
-                                                                                            @p4,
-                                                                                            @p1,
-                                                                                            @p5,
-                                                                                            @p6,
-                                                                                            @p7,
-                                                                                            @p8,
-                                                                                            @p9,
-                                                                                            @p10,
-                                                                                            @p10,
-                                                                                            @p11
-                                                                                        );
-                                                                                    END
-                                                                                    ",
-                                    projectIdStr,
-                                    serialNorm,
-                                    (object)(item.CompletionDate.HasValue ? (object)item.CompletionDate.Value : DBNull.Value),
-                                    (object)installerNameFinal,
-                                    (object)(item.WorkOrderId ?? ""),
-                                    (object)(item.ServiceAddress ?? ""),
-                                    (object)(item.Latitude.HasValue ? (object)item.Latitude.Value : DBNull.Value),
-                                    (object)(item.Longitude.HasValue ? (object)item.Longitude.Value : DBNull.Value),
-                                    (object)(item.Status ?? ""),
-                                    (object)(item.ProjectName ?? ""),
-                                    now,
-                                    now
-                                );
-                                if (affected > 0) invReportSaved++;
-                            }
-                            catch (Exception opDateEx)
-                            {
-                                // Fallback: DB without operation_date column
-                                DateTime now2 = DateTime.Now;
-                                string serialNorm2 = (serial ?? "").Trim();
-                                string installerNameFinal2 = (!string.IsNullOrWhiteSpace(item.TechnicianName) ? item.TechnicianName : item.InstallerName) ?? "";
-                                try
-                                {
-                                    string projectIdStr2 = projectId.ToString();
-                                    int affected2 = db.Database.ExecuteSqlCommand(@"
-IF EXISTS (SELECT 1 FROM dbo.INVInstallerReport WHERE project_id = @p0 AND serial_number = @p1)
-BEGIN
-    UPDATE dbo.INVInstallerReport
-    SET completion_date = @p2,
-        installer_name = @p3,
-        work_order_id = @p4,
-        service_address = @p5,
-        latitude = @p6,
-        longitude = @p7,
-        status = @p8,
-        project_name = @p9,
-        updated_at = @p10
-    WHERE project_id = @p0 AND serial_number = @p1;
-END
-ELSE
-BEGIN
-    DECLARE @newId BIGINT;
-    SELECT @newId = ISNULL(MAX(id), 0) + 1
-    FROM dbo.INVInstallerReport WITH (UPDLOCK, HOLDLOCK);
+                                string installerNameFinal =
+                                    (!string.IsNullOrWhiteSpace(item.TechnicianName)
+                                        ? item.TechnicianName
+                                        : item.InstallerName) ?? "";
 
-    INSERT INTO dbo.INVInstallerReport
-    (id, project_id, completion_date, installer_name, work_order_id, serial_number, service_address, latitude, longitude, status, project_name, created_at, updated_at)
-    VALUES
-    (@newId, @p0, @p2, @p3, @p4, @p1, @p5, @p6, @p7, @p8, @p9, @p10, @p10);
-END
+                                db.Database.ExecuteSqlCommand(@"
+EXEC dbo.SP_Upsert_INVInstallerReport
+    @project_id,
+    @serial_number,
+    @completion_date,
+    @installer_name,
+    @work_order_id,
+    @service_address,
+    @latitude,
+    @longitude,
+    @status,
+    @project_name,
+    @operation_date,
+
+    @customer_name,
+    @city,
+    @state,
+    @work_order_type,
+    @cycle,
+    @appointment_date,
+    @appointment_time,
+    @route,
+    @sequence,
+    @area,
+    @dispatched_from_date,
+    @dispatched_to_date,
+    @onsite_start_time,
+    @onsite_end_time,
+    @last_cc_reason_legacy,
+    @last_cc_date,
+    @qa_user,
+    @cc_reason,
+    @total_visits,
+    @provided_latitude,
+    @provided_longitude,
+    @meter_number,
+    @work_flow_type,
+    @responsible_party,
+    @create_date_excel,
+    @quality_results,
+    @exception_reason,
+    @route_release_date,
+    @sync_date,
+    @work_orders_de_id,
+    @updated_cc_reason,
+    @custom_sort,
+    @standard_sort,
+    @gps_accuracy,
+    @gps_source,
+    @link_to_work_order,
+    @exception_status,
+    @work_orders,
+    @events,
+    @customer_events_url,
+    @customer_unique_id,
+    @work_order_id_url,
+    @work_order_request_id,
+    @customer_id,
+    @device_id,
+    @ng_sector,
+    @customerid_add
 ",
-                                    projectIdStr2,
-                                    serialNorm2,
-                                    (object)(item.CompletionDate.HasValue ? (object)item.CompletionDate.Value : DBNull.Value),
-                                    (object)installerNameFinal2,
-                                    (object)(item.WorkOrderId ?? ""),
-                                    (object)(item.ServiceAddress ?? ""),
-                                    (object)(item.Latitude.HasValue ? (object)item.Latitude.Value : DBNull.Value),
-                                    (object)(item.Longitude.HasValue ? (object)item.Longitude.Value : DBNull.Value),
-                                    (object)(item.Status ?? ""),
-                                    (object)(item.ProjectName ?? ""),
-                                    now2
+                                    new SqlParameter("@project_id", projectId),
+                                    new SqlParameter("@serial_number", (object)serialNorm ?? DBNull.Value),
+
+                                    new SqlParameter("@completion_date", item.CompletionDate.HasValue ? (object)item.CompletionDate.Value : DBNull.Value),
+                                    new SqlParameter("@installer_name", (object)installerNameFinal ?? DBNull.Value),
+                                    new SqlParameter("@work_order_id", (object)(item.WorkOrderId ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@service_address", (object)(item.ServiceAddress ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@latitude", item.Latitude.HasValue ? (object)item.Latitude.Value.ToString() : DBNull.Value),
+                                    new SqlParameter("@longitude", item.Longitude.HasValue ? (object)item.Longitude.Value.ToString() : DBNull.Value),
+                                    new SqlParameter("@status", (object)(item.Status ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@project_name", (object)(item.ProjectName ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@operation_date", item.CompletionDate.HasValue ? (object)item.CompletionDate.Value : DateTime.Now),
+
+                                    new SqlParameter("@customer_name", (object)(item.CustomerName ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@city", (object)(item.City ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@state", (object)(item.State ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@work_order_type", (object)(item.WorkOrderType ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@cycle", (object)(item.Cycle ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@appointment_date", (object)(item.AppointmentDate ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@appointment_time", (object)(item.AppointmentTime ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@route", (object)(item.Route ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@sequence", (object)(item.Sequence ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@area", (object)(item.Area ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@dispatched_from_date", (object)(item.DispatchedFromDate ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@dispatched_to_date", (object)(item.DispatchedToDate ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@onsite_start_time", (object)(item.OnsiteStartTime ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@onsite_end_time", (object)(item.OnsiteEndTime ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@last_cc_reason_legacy", (object)(item.LastCCReasonLegacy ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@last_cc_date", (object)(item.LastCCDate ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@qa_user", (object)(item.QAUser ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@cc_reason", (object)(item.CCReason ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@total_visits", (object)(item.TotalVisits ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@provided_latitude", (object)(item.ProvidedLatitudeText ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@provided_longitude", (object)(item.ProvidedLongitudeText ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@meter_number", (object)(item.MeterNumber ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@work_flow_type", (object)(item.WorkFlowType ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@responsible_party", (object)(item.ResponsibleParty ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@create_date_excel", (object)(item.CreateDateExcel ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@quality_results", (object)(item.QualityResults ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@exception_reason", (object)(item.ExceptionReason ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@route_release_date", (object)(item.RouteReleaseDate ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@sync_date", (object)(item.SyncDate ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@work_orders_de_id", (object)(item.WorkOrdersDEId ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@updated_cc_reason", (object)(item.UpdatedCCReason ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@custom_sort", (object)(item.CustomSort ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@standard_sort", (object)(item.StandardSort ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@gps_accuracy", (object)(item.GPSAccuracy ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@gps_source", (object)(item.GPSSource ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@link_to_work_order", (object)(item.LinkToWorkOrder ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@exception_status", (object)(item.ExceptionStatus ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@work_orders", (object)(item.WorkOrders ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@events", (object)(item.Events ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@customer_events_url", (object)(item.CustomerEventsURL ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@customer_unique_id", (object)(item.CustomerUniqueId ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@work_order_id_url", (object)(item.WorkOrderIdURL ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@work_order_request_id", (object)(item.WorkOrderRequestId ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@customer_id", (object)(item.CustomerId ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@device_id", (object)(item.DeviceId ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@ng_sector", (object)(item.NGSector ?? "") ?? DBNull.Value),
+                                    new SqlParameter("@customerid_add", (object)(item.CustomerIdAdd ?? "") ?? DBNull.Value)
                                 );
-                                    if (affected2 > 0) invReportSaved++;
-                                }
-                                catch (Exception fallbackEx)
-                                {
-                                    // bubble up meaningful error so UI can show it
-                                    throw new Exception("INVInstallerReport save failed (op_date err: " + opDateEx.Message + "). Fallback err: " + fallbackEx.Message);
-                                }
+
+                                invReportSaved++;
+                            }
+                            catch (Exception reportEx)
+                            {
+                                throw new Exception("INVInstallerReport SP save failed: " + reportEx.Message);
                             }
                         }
                         catch (Exception itemEx)
@@ -1630,7 +1815,15 @@ END
                         }
                     }
 
-                    return Json(new { success = true, installed, skipped, errors, invReportSaved, errorList });
+                    return Json(new
+                    {
+                        success = true,
+                        installed,
+                        skipped,
+                        errors,
+                        invReportSaved,
+                        errorList
+                    });
                 }
             }
             catch (Exception ex)
@@ -1647,8 +1840,20 @@ END
             }
         }
 
+        private string GetCellByHeader(ExcelWorksheet ws, int row, Dictionary<string, int> headerMap, string headerName)
+        {
+            if (ws == null || headerMap == null || string.IsNullOrWhiteSpace(headerName))
+                return "";
 
+            string key = NormalizeHeaderKey(headerName);
 
+            if (!headerMap.ContainsKey(key))
+                return "";
+
+            int col = headerMap[key];
+
+            return (ws.Cells[row, col].Text ?? "").Trim();
+        }
 
     }
 }
