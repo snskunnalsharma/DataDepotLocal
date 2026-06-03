@@ -1,4 +1,4 @@
-﻿using GarronT.CMS.Model;
+using GarronT.CMS.Model;
 using GarronT.CMS.Model.BO;
 using GarronT.CMS.Model.DAL;
 using OfficeOpenXml;
@@ -229,7 +229,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         /// <param name="ToLocation"></param>
         /// <param name="TransferInventoryList"></param>
         /// <returns></returns>
-        public ActionResult saveTransferInventory(long ProjectId,long warehouseId, long productId, string ToLocation, string[] TransferInventoryList)
+        public ActionResult saveTransferInventory(long ProjectId, long warehouseId, long productId, string ToLocation, long? InstallerTo, string[] TransferInventoryList)
         {
             StatusMessage statusMessage = new StatusMessage();
             try
@@ -238,7 +238,24 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 if (objPermissionCheck)
                 {
                     long userId = new UserDetails().GetUserId(User.Identity.GetUserId());
-                    statusMessage = new WareHouseDAL().TransferInventoryNew(ProjectId, warehouseId, productId, ToLocation, TransferInventoryList, userId);
+
+                    if (InstallerTo.HasValue && InstallerTo.Value > 0)
+                    {
+                        // Transfer inventory to Installer account
+                        statusMessage = new WareHouseDAL().TransferInventoryToInstaller(
+                            ProjectId, warehouseId, productId, InstallerTo.Value, TransferInventoryList, userId);
+                    }
+                    else if (!string.IsNullOrEmpty(ToLocation))
+                    {
+                        // Transfer inventory to a warehouse location
+                        statusMessage = new WareHouseDAL().TransferInventoryNew(
+                            ProjectId, warehouseId, productId, ToLocation, TransferInventoryList, userId);
+                    }
+                    else
+                    {
+                        statusMessage.Success = false;
+                        statusMessage.Message = "Please select either a location or an installer to transfer inventory.";
+                    }
                 }
                 else
                 {
@@ -250,10 +267,11 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             {
                 statusMessage.Message = ex.Message;
             }
+
             return Json(statusMessage, JsonRequestBehavior.AllowGet);
         }
 
-        
+
         /// <summary>
         /// 25-Jul-2017
         /// Aniket
@@ -330,8 +348,25 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             // return Json(new { statusMessage}, JsonRequestBehavior.AllowGet);
             //return new EmptyResult();
         }
-
-
         #endregion
+        public JsonResult GetInstallersByProject(long ProjectId)
+        {
+            try
+            {
+                InventoryDAL objDAL = new InventoryDAL();
+                var installers = objDAL.GetProjectInstallers(ProjectId)
+                    .Select(i => new
+                    {
+                        Id = i.UserId,
+                        Name = i.UserName
+                    }).ToList();
+
+                return Json(installers, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception)
+            {
+                return Json(new List<object>(), JsonRequestBehavior.AllowGet);
+            }
+        }
     }
 }

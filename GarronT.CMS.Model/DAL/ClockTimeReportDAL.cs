@@ -137,19 +137,31 @@ namespace GarronT.CMS.Model.DAL
                         });
                     }
                 }
-                //return objWeeksModel;
+                //return objWeeksModel;    
                 return objWeeksModel.OrderByDescending(o=>o.SerialNo).ToList();
             }
             catch (Exception ex)
             {
                 throw ex;
-            }
+            }                                                   
         }
 
         //Working harenow  currently
         public List<Model_InstalledMeterDetailPayRate> getInstalledMetersDetails(
     long _ProjectID, int installerid, string WeekRangefromDate, string WeekRangetoDate, SqlConnection con)
         {
+            // Beaumont 2.1 custom logic only for Project ID 10134
+            if (_ProjectID == 10134)
+            {
+                return GetBeaumont21InstalledMetersDetails(
+                    _ProjectID,
+                    installerid,
+                    WeekRangefromDate,
+                    WeekRangetoDate,
+                    con
+                );
+            }
+
             List<Model_InstalledMeterDetailPayRate> objIMDPR = new List<Model_InstalledMeterDetailPayRate>();
 
             // Determine which fields to query
@@ -520,13 +532,22 @@ namespace GarronT.CMS.Model.DAL
                         //
                     }
 
-                    
-                    SqlCommand cnn = new SqlCommand("PROC_GetMeterSizeOrder", con);
-                    cnn.Parameters.AddWithValue("@projectId", _ProjectID);
-                    cnn.CommandType = CommandType.StoredProcedure;
-                    SqlDataAdapter sda = new SqlDataAdapter(cnn);
+
                     DataTable dt_AllMeterSizeOrPay = new DataTable();
-                    sda.Fill(dt_AllMeterSizeOrPay);
+
+                    if (_ProjectID == 10134)
+                    {
+                        dt_AllMeterSizeOrPay = GetProjectTimeClockMeterPayOrder(_ProjectID, con);
+                    }
+                    else
+                    {
+                        SqlCommand cnn = new SqlCommand("PROC_GetMeterSizeOrder", con);
+                        cnn.Parameters.AddWithValue("@projectId", _ProjectID);
+                        cnn.CommandType = CommandType.StoredProcedure;
+
+                        SqlDataAdapter sda = new SqlDataAdapter(cnn);
+                        sda.Fill(dt_AllMeterSizeOrPay);
+                    }
 
 
                     /*SqlDataAdapter sda_AllMeterSizeOrPay = new SqlDataAdapter("select MeterSize,Pay,MeterDisplayName from tblMeterPay where fk_project_id=" + _ProjectID + " and Active=1  order by id", con);
@@ -1085,6 +1106,938 @@ namespace GarronT.CMS.Model.DAL
             catch (Exception ex) { }
 
         }
+        private const int BEAUMONT_SERVICE_RESET_METER_BOX = 7;
+        private const int BEAUMONT_SERVICE_METER_BOX_INSTALL_58_TO_1 = 10;
+        private const int BEAUMONT_SERVICE_LINE_INSPECTION_OUTSIDE_BOX = 20;
 
+        // TODO: Replace this ID with actual tblService.ID for REG EXCH STAND ALONE
+        private const int BEAUMONT_SERVICE_REG_EXCH_STAND_ALONE = -1;
+
+        private List<Model_InstalledMeterDetailPayRate> GetBeaumont21InstalledMetersDetails(
+    long projectId,
+    int installerId,
+    string weekRangeFromDate,
+    string weekRangeToDate,
+    SqlConnection con)
+        {
+            List<Model_InstalledMeterDetailPayRate> result =
+                new List<Model_InstalledMeterDetailPayRate>();
+
+            Dictionary<string, TimeClockServiceConfig> serviceConfig =
+                GetTimeClockServiceConfig(projectId, con);
+
+            string sqlQuery = @"
+        SELECT
+            pf.Id AS ProjectFieldDataId,
+            CONVERT(varchar, pf.VisitDateTime, 101) AS CreatedOn,
+            DATENAME(weekday, pf.VisitDateTime) AS DayName,
+            FORMAT(pf.VisitDateTime, 'HH:mm') AS [Time],
+            dm.InitialFieldName,
+            dm.FieldValue
+        FROM uploadedexceldata up
+        INNER JOIN TblProjectFieldData pf
+            ON up.Id = pf.fk_uploadedexceldata_id
+        INNER JOIN tblProjectFieldDataMaster dm
+            ON pf.Id = dm.TblProjectFieldData_Id
+        WHERE up.FKProjectId = @ProjectId
+          AND CONVERT(date, pf.VisitDateTime) BETWEEN CONVERT(date, @FromDate)
+                                                  AND CONVERT(date, @ToDate)
+          AND pf.CreatedBy = @InstallerId
+          AND pf.Active = 1
+          AND dm.Active = 1
+        ORDER BY
+            pf.VisitDateTime,
+            pf.Id,
+            dm.Id;
+    ";
+
+            DataTable dt = new DataTable();
+
+            using (SqlCommand cmd = new SqlCommand(sqlQuery, con))
+            {
+                cmd.Parameters.AddWithValue("@ProjectId", projectId);
+                cmd.Parameters.AddWithValue("@InstallerId", installerId);
+                cmd.Parameters.AddWithValue("@FromDate", weekRangeFromDate);
+                cmd.Parameters.AddWithValue("@ToDate", weekRangeToDate);
+
+                SqlDataAdapter sda = new SqlDataAdapter(cmd);
+                sda.Fill(dt);
+            }
+
+            if (dt.Rows.Count == 0)
+            {
+                return result;
+            }
+
+            var groupedRecords = dt.AsEnumerable()
+                .GroupBy(r => Convert.ToInt64(r["ProjectFieldDataId"]));
+
+            foreach (var recordGroup in groupedRecords)
+            {
+                DataRow firstRow = recordGroup.First();
+
+                string createdOn = Convert.ToString(firstRow["CreatedOn"]);
+                string dayName = Convert.ToString(firstRow["DayName"]);
+                string time = Convert.ToString(firstRow["Time"]);
+
+                string serviceType = "";              // SERVICE = Residential / Commercial
+                string endPointReading = "";          // END POINT READING
+                string fRegRead = "";                 // OLD FINAL REGISTER READ
+                string fMeterRead = "";               // OLD METER FINAL READ
+                string oldMeterSize = "";             // OLD METER SIZE
+
+                // Lead Line Inspection logic fields
+                string lcrInvestigation = "";         // LCR INVESTIGATION (Y/N)
+                string citySidePipeType = "";         // CITY SIDE PIPE TYPE
+                string customerSidePipeType = "";     // CUSTOMER SIDE PIPE TYPE
+                string verified = "";                 // VERIFIED
+
+                bool isWorkCompleted = false;
+
+                List<int> selectedServiceIds = new List<int>();
+
+                foreach (DataRow row in recordGroup)
+                {
+                    string fieldName = Convert.ToString(row["InitialFieldName"]);
+                    string fieldValue = Convert.ToString(row["FieldValue"]);
+
+                    if (string.IsNullOrWhiteSpace(fieldValue))
+                    {
+                        continue;
+                    }
+
+                    string normalizedFieldName = NormalizeBeaumontText(fieldName);
+                    string normalizedFieldValue = NormalizeBeaumontText(fieldValue);
+
+                    /*
+                        SERVICE is only account/service type:
+                        Residential / Commercial
+                    */
+                    if (normalizedFieldName == "SERVICE")
+                    {
+                        serviceType = fieldValue.Trim();
+                    }
+
+                    /*
+                        SERVICES contains service IDs like:
+                        20|49
+                        4|20|49|50
+
+                        So parse IDs from SERVICES.
+                    */
+                    if (normalizedFieldName == "SERVICES")
+                    {
+                        selectedServiceIds.AddRange(ParseBeaumontServiceIds(fieldValue));
+                    }
+
+                    /*
+                        WORK COMPLETED should be true for completed record.
+                        Existing projects also use WORK COMPLETED as completed service indicator.
+                    */
+                    if (normalizedFieldName == "WORK COMPLETED")
+                    {
+                        if (normalizedFieldValue == "TRUE"
+                            || normalizedFieldValue == "YES"
+                            || normalizedFieldValue == "Y"
+                            || normalizedFieldValue == "1"
+                            || normalizedFieldValue == "DONE")
+                        {
+                            isWorkCompleted = true;
+                        }
+                    }
+
+                    if (normalizedFieldName == "END POINT READING")
+                    {
+                        if (string.IsNullOrWhiteSpace(endPointReading))
+                        {
+                            endPointReading = fieldValue.Trim();
+                        }
+                    }
+
+                    if (normalizedFieldName == "OLD FINAL REGISTER READ")
+                    {
+                        if (string.IsNullOrWhiteSpace(fRegRead))
+                        {
+                            fRegRead = fieldValue.Trim();
+                        }
+                    }
+
+                    if (normalizedFieldName == "OLD METER FINAL READ")
+                    {
+                        if (string.IsNullOrWhiteSpace(fMeterRead))
+                        {
+                            fMeterRead = fieldValue.Trim();
+                        }
+                    }
+
+                    if (normalizedFieldName == "OLD METER SIZE")
+                    {
+                        if (string.IsNullOrWhiteSpace(oldMeterSize))
+                        {
+                            oldMeterSize = fieldValue.Trim();
+                        }
+                    }
+                    if (normalizedFieldName == NormalizeBeaumontText("LCR INVESTIGATION (Y/N)")
+    || normalizedFieldName.Contains("LCR INVESTIGATION"))
+                    {
+                        if (string.IsNullOrWhiteSpace(lcrInvestigation))
+                        {
+                            lcrInvestigation = fieldValue.Trim();
+                        }
+                    }
+
+                    if (normalizedFieldName == NormalizeBeaumontText("CITY SIDE PIPE TYPE")
+                        || normalizedFieldName.Contains("CITY SIDE PIPE TYPE"))
+                    {
+                        if (string.IsNullOrWhiteSpace(citySidePipeType))
+                        {
+                            citySidePipeType = fieldValue.Trim();
+                        }
+                    }
+
+                    if (normalizedFieldName == NormalizeBeaumontText("CUSTOMER SIDE PIPE TYPE")
+                        || normalizedFieldName.Contains("CUSTOMER SIDE PIPE TYPE"))
+                    {
+                        if (string.IsNullOrWhiteSpace(customerSidePipeType))
+                        {
+                            customerSidePipeType = fieldValue.Trim();
+                        }
+                    }
+
+                    if (normalizedFieldName == "VERIFIED"
+                        || normalizedFieldName.Contains("VERIFIED"))
+                    {
+                        if (string.IsNullOrWhiteSpace(verified))
+                        {
+                            verified = fieldValue.Trim();
+                        }
+                    }
+                }
+                
+                /*
+                    If you do not want WORK COMPLETED condition for this project,
+                    remove this continue block.
+
+                    But based on your old report logic, completed records should be counted only.
+                */
+                if (!isWorkCompleted)
+                {
+                    continue;
+                }
+
+                bool hasEndPointReading =
+                    !string.IsNullOrWhiteSpace(endPointReading);
+
+                bool hasFRegRead =
+                    !string.IsNullOrWhiteSpace(fRegRead);
+
+                bool hasFMeterRead =
+                    !string.IsNullOrWhiteSpace(fMeterRead);
+
+                bool isResidential =
+                    NormalizeBeaumontText(serviceType).Contains("RESIDENTIAL");
+
+                bool isCommercial =
+                    NormalizeBeaumontText(serviceType).Contains("COMMERCIAL");
+
+                /*
+                    Service IDs from tblService:
+
+                    7  = Reset Meter Box
+                    10 = Meter Box Install 5-8 to 1 inch
+                    20 = Line Inspection Dig Outside Box
+
+                    For REG EXCH STAND ALONE, set correct ID after checking tblService.
+                    If you do not know ID yet, run:
+                    SELECT * FROM tblService WHERE Service LIKE '%REG%STAND%'
+                */
+
+                bool hasResetMeterBox =
+         selectedServiceIds.Contains(BEAUMONT_SERVICE_RESET_METER_BOX);
+
+                bool hasMeterBoxInstall58To1 =
+                    selectedServiceIds.Contains(BEAUMONT_SERVICE_METER_BOX_INSTALL_58_TO_1);
+
+                bool hasLineInspectionOutsideBox =
+        IsValidBeaumontLeadLineInspection(
+            lcrInvestigation,
+            citySidePipeType,
+            customerSidePipeType,
+            verified
+        );
+
+                bool hasRegExchangeStandAlone =
+     selectedServiceIds.Contains(BEAUMONT_SERVICE_REG_EXCH_STAND_ALONE);
+
+                /*
+                    1. ERT Mitigation
+
+                    Endpoint Test data = END POINT READING.
+                    If F-Reg Read is not available, count under ERT Mitigation.
+                    If F-Reg Read is available, do not count under ERT Mitigation.
+                */
+                if (hasEndPointReading && !hasFRegRead)
+                {
+                    AddBeaumont21RowByCode(
+                        result,
+                        serviceConfig,
+                        projectId,
+                        "ERT_MITIGATION",
+                        createdOn,
+                        dayName,
+                        time
+                    );
+                }
+
+                /*
+                    2. Register Exchange with ERT Mitigation Residential
+
+                    SERVICE = Residential
+                    AND OLD FINAL REGISTER READ has value.
+                */
+                if (isResidential && hasFRegRead)
+                {
+                    AddBeaumont21RowByCode(
+                        result,
+                        serviceConfig,
+                        projectId,
+                        "REG_EX_RES",
+                        createdOn,
+                        dayName,
+                        time
+                    );
+                }
+
+                /*
+                    3. Register Exchange with ERT Mitigation Commercial
+
+                    SERVICE = Commercial
+                    AND OLD FINAL REGISTER READ has value.
+                */
+                if (isCommercial && hasFRegRead)
+                {
+                    AddBeaumont21RowByCode(
+                        result,
+                        serviceConfig,
+                        projectId,
+                        "REG_EX_COM",
+                        createdOn,
+                        dayName,
+                        time
+                    );
+                }
+
+                /*
+                    4. Register Exchange Stand Alone
+
+                    Count from SERVICES ID of REG EXCH STAND ALONE.
+                */
+                if (hasRegExchangeStandAlone)
+                {
+                    AddBeaumont21RowByCode(
+                        result,
+                        serviceConfig,
+                        projectId,
+                        "REG_EX_STANDALONE",
+                        createdOn,
+                        dayName,
+                        time
+                    );
+                }
+
+                /*
+                    5-8. Meter Change Out & ERT Installation
+
+                    F-Meter Read = OLD METER FINAL READ.
+                    Meter Size = OLD METER SIZE.
+                */
+                if (hasFMeterRead)
+                {
+                    if (BeaumontSizeMatches(oldMeterSize, "5/8")
+                        || BeaumontSizeMatches(oldMeterSize, "5/8 x 3/4")
+                        || BeaumontSizeMatches(oldMeterSize, "5/8\" x 3/4"))
+                    {
+                        AddBeaumont21RowByCode(
+                            result,
+                            serviceConfig,
+                            projectId,
+                            "METER_58",
+                            createdOn,
+                            dayName,
+                            time
+                        );
+                    }
+                    else if (BeaumontSizeMatches(oldMeterSize, "1"))
+                    {
+                        AddBeaumont21RowByCode(
+                            result,
+                            serviceConfig,
+                            projectId,
+                            "METER_1",
+                            createdOn,
+                            dayName,
+                            time
+                        );
+                    }
+                    else if (BeaumontSizeMatches(oldMeterSize, "1.5")
+                             || BeaumontSizeMatches(oldMeterSize, "1 1/2")
+                             || BeaumontSizeMatches(oldMeterSize, "1-1/2"))
+                    {
+                        AddBeaumont21RowByCode(
+                            result,
+                            serviceConfig,
+                            projectId,
+                            "METER_15",
+                            createdOn,
+                            dayName,
+                            time
+                        );
+                    }
+                    else if (BeaumontSizeMatches(oldMeterSize, "2"))
+                    {
+                        AddBeaumont21RowByCode(
+                            result,
+                            serviceConfig,
+                            projectId,
+                            "METER_2",
+                            createdOn,
+                            dayName,
+                            time
+                        );
+                    }
+                }
+
+                /*
+                    9. Lead Line Inspection Outside Box
+
+                    Service ID 20 = Line Inspection Dig Outside Box.
+                */
+                if (hasLineInspectionOutsideBox)
+                {
+                    AddBeaumont21RowByCode(
+                        result,
+                        serviceConfig,
+                        projectId,
+                        "LEAD_LINE",
+                        createdOn,
+                        dayName,
+                        time
+                    );
+                }
+
+                /*
+                    10. Residential Box Replacement or Adjustment
+
+                    Combined count:
+                    Service ID 7  = Reset Meter Box
+                    Service ID 10 = Meter Box Install 5-8 to 1 inch
+
+                    If both IDs exist in same record, this adds 2 counts.
+                */
+                if (hasResetMeterBox)
+                {
+                    AddBeaumont21RowByCode(
+                        result,
+                        serviceConfig,
+                        projectId,
+                        "BOX_REPLACEMENT",
+                        createdOn,
+                        dayName,
+                        time
+                    );
+                }
+
+                if (hasMeterBoxInstall58To1)
+                {
+                    AddBeaumont21RowByCode(
+                        result,
+                        serviceConfig,
+                        projectId,
+                        "BOX_REPLACEMENT",
+                        createdOn,
+                        dayName,
+                        time
+                    );
+                }
+            }
+
+            return result;
+        }
+        private void AddBeaumont21Row(
+    List<Model_InstalledMeterDetailPayRate> result,
+    long projectId,
+    string displayName,
+    string createdOn,
+    string dayName,
+    string time,
+    string pay)
+        {
+            result.Add(new Model_InstalledMeterDetailPayRate
+            {
+                ProjectId = projectId,
+                MeterSize = "",
+                MeterType = "",
+                MeterDisplayName = displayName,
+                CreatedOn = createdOn,
+                DayName = dayName,
+                Time = time,
+                Pay = pay
+            });
+        }
+
+        private string NormalizeBeaumontText(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return "";
+            }
+
+            string normalized = value
+                .Trim()
+                .ToUpper()
+                .Replace("\"", "")
+                .Replace("'", "")
+                .Replace("&", " AND ")
+                .Replace("/", " / ")
+                .Replace("_", " ")
+                .Replace("-", " ");
+
+            while (normalized.Contains("  "))
+            {
+                normalized = normalized.Replace("  ", " ");
+            }
+
+            return normalized.Trim();
+        }
+        private bool BeaumontHasService(List<string> serviceValues, string expectedService)
+        {
+            if (serviceValues == null || serviceValues.Count == 0)
+            {
+                return false;
+            }
+
+            string expected = NormalizeBeaumontText(expectedService);
+
+            foreach (string service in serviceValues)
+            {
+                string actual = NormalizeBeaumontText(service);
+
+                if (actual == expected)
+                {
+                    return true;
+                }
+
+                if (expected == "RESIDENTIAL" && actual.Contains("RESIDENTIAL"))
+                {
+                    return true;
+                }
+
+                if (expected == "COMMERCIAL" && actual.Contains("COMMERCIAL"))
+                {
+                    return true;
+                }
+
+                if (expected == NormalizeBeaumontText("REG EXCH STAND ALONE")
+                    && (
+                        actual.Contains("REG EXCH STAND ALONE")
+                        || actual.Contains("REG EXCH STANDALONE")
+                        || actual.Contains("REG EXCHANGE STAND ALONE")
+                        || actual.Contains("REGISTER EXCHANGE STAND ALONE")
+                    ))
+                {
+                    return true;
+                }
+
+                if (expected == NormalizeBeaumontText("Line Inspection Dig Outside Box")
+                    && actual.Contains("LINE INSPECTION")
+                    && actual.Contains("OUTSIDE BOX"))
+                {
+                    return true;
+                }
+
+                if (expected == NormalizeBeaumontText("Reset Meter Box")
+                    && actual.Contains("RESET METER BOX"))
+                {
+                    return true;
+                }
+
+                if ((expected == NormalizeBeaumontText("Meter Box Install 5-8 to 1 inch")
+                        || expected == NormalizeBeaumontText("Meter Box Install 5/8 to 1 Inch"))
+                    && actual.Contains("METER BOX INSTALL")
+                    && (
+                        actual.Contains("5 8")
+                        || actual.Contains("5 / 8")
+                        || actual.Contains("5-8")
+                        || actual.Contains("5/8")
+                    )
+                    && actual.Contains("1"))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool BeaumontSizeMatches(string actualSize, string expectedSize)
+        {
+            string actual = NormalizeBeaumontSize(actualSize);
+            string expected = NormalizeBeaumontSize(expectedSize);
+
+            if (string.IsNullOrWhiteSpace(actual) || string.IsNullOrWhiteSpace(expected))
+            {
+                return false;
+            }
+
+            return actual == expected || actual.Contains(expected);
+        }
+        private string NormalizeBeaumontSize(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return "";
+            }
+
+            return value
+                .Trim()
+                .ToUpper()
+                .Replace("\"", "")
+                .Replace("'", "")
+                .Replace(" ", "")
+                .Replace("-", "")
+                .Replace("X", "x")
+                .Replace("INCH", "")
+                .Replace("IN", "");
+        }
+        private DataTable GetProjectTimeClockMeterPayOrder(
+    long projectId,
+    SqlConnection con)
+        {
+            DataTable dt = new DataTable();
+
+            dt.Columns.Add("MeterSize", typeof(string));
+            dt.Columns.Add("Pay", typeof(decimal));
+            dt.Columns.Add("MeterDisplayName", typeof(string));
+
+            string sql = @"
+        SELECT
+            ServiceDisplayName AS MeterDisplayName,
+            PayAmount AS Pay
+        FROM TimeClockServiceMaster
+        WHERE ProjectId = @ProjectId
+          AND IsActive = 1
+        ORDER BY DisplayOrder;
+    ";
+
+            using (SqlCommand cmd = new SqlCommand(sql, con))
+            {
+                cmd.Parameters.AddWithValue("@ProjectId", projectId);
+
+                SqlDataAdapter sda = new SqlDataAdapter(cmd);
+                sda.Fill(dt);
+            }
+
+            if (dt.Rows.Count == 0 && projectId == 10134)
+            {
+                Dictionary<string, TimeClockServiceConfig> defaults =
+                    GetDefaultBeaumont21ServiceConfig();
+
+                foreach (var item in defaults.Values.OrderBy(x => x.DisplayOrder))
+                {
+                    dt.Rows.Add("", item.PayAmount, item.ServiceDisplayName);
+                }
+            }
+
+            return dt;
+        }
+
+        private class TimeClockServiceConfig
+        {
+            public string ServiceCode { get; set; }
+            public string ServiceDisplayName { get; set; }
+            public decimal PayAmount { get; set; }
+            public int DisplayOrder { get; set; }
+        }
+        private Dictionary<string, TimeClockServiceConfig> GetTimeClockServiceConfig(
+    long projectId,
+    SqlConnection con)
+        {
+            Dictionary<string, TimeClockServiceConfig> config =
+                GetDefaultBeaumont21ServiceConfig();
+
+            string sql = @"
+        SELECT
+            ServiceCode,
+            ServiceDisplayName,
+            PayAmount,
+            DisplayOrder
+        FROM TimeClockServiceMaster
+        WHERE ProjectId = @ProjectId
+          AND IsActive = 1
+        ORDER BY DisplayOrder;
+    ";
+
+            using (SqlCommand cmd = new SqlCommand(sql, con))
+            {
+                cmd.Parameters.AddWithValue("@ProjectId", projectId);
+
+                SqlDataAdapter sda = new SqlDataAdapter(cmd);
+                DataTable dt = new DataTable();
+                sda.Fill(dt);
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    string serviceCode = Convert.ToString(row["ServiceCode"]).Trim();
+
+                    if (string.IsNullOrWhiteSpace(serviceCode))
+                    {
+                        continue;
+                    }
+
+                    config[serviceCode] = new TimeClockServiceConfig
+                    {
+                        ServiceCode = serviceCode,
+                        ServiceDisplayName = Convert.ToString(row["ServiceDisplayName"]).Trim(),
+                        PayAmount = Convert.ToDecimal(row["PayAmount"]),
+                        DisplayOrder = Convert.ToInt32(row["DisplayOrder"])
+                    };
+                }
+            }
+
+            return config;
+        }
+        private Dictionary<string, TimeClockServiceConfig> GetDefaultBeaumont21ServiceConfig()
+        {
+            return new Dictionary<string, TimeClockServiceConfig>
+    {
+        {
+            "ERT_MITIGATION",
+            new TimeClockServiceConfig
+            {
+                ServiceCode = "ERT_MITIGATION",
+                ServiceDisplayName = "ERT Mitigation",
+                PayAmount = 9.00m,
+                DisplayOrder = 1
+            }
+        },
+        {
+            "METER_58",
+            new TimeClockServiceConfig
+            {
+                ServiceCode = "METER_58",
+                ServiceDisplayName = "5/8\" x 3/4 Meter Change Out & ERT Installation",
+                PayAmount = 15.00m,
+                DisplayOrder = 2
+            }
+        },
+        {
+            "REG_EX_RES",
+            new TimeClockServiceConfig
+            {
+                ServiceCode = "REG_EX_RES",
+                ServiceDisplayName = "Register Exchange with ERT Mitigation (Residential)",
+                PayAmount = 12.00m,
+                DisplayOrder = 3
+            }
+        },
+        {
+            "REG_EX_COM",
+            new TimeClockServiceConfig
+            {
+                ServiceCode = "REG_EX_COM",
+                ServiceDisplayName = "Register Exchange with ERT Mitigation (Commercial)",
+                PayAmount = 18.00m,
+                DisplayOrder = 4
+            }
+        },
+        {
+            "REG_EX_STANDALONE",
+            new TimeClockServiceConfig
+            {
+                ServiceCode = "REG_EX_STANDALONE",
+                ServiceDisplayName = "Register Exchange (Stand Alone)",
+                PayAmount = 8.00m,
+                DisplayOrder = 5
+            }
+        },
+        {
+            "LEAD_LINE",
+            new TimeClockServiceConfig
+            {
+                ServiceCode = "LEAD_LINE",
+                ServiceDisplayName = "Lead Line Inspection (Outside the Box) with ERT Mitigation",
+                PayAmount = 12.00m,
+                DisplayOrder = 6
+            }
+        },
+        {
+            "METER_1",
+            new TimeClockServiceConfig
+            {
+                ServiceCode = "METER_1",
+                ServiceDisplayName = "1\" Meter Change Out & ERT Installation",
+                PayAmount = 15.00m,
+                DisplayOrder = 7
+            }
+        },
+        {
+            "METER_15",
+            new TimeClockServiceConfig
+            {
+                ServiceCode = "METER_15",
+                ServiceDisplayName = "1.5\" Meter Change Out & ERT Installation",
+                PayAmount = 65.00m,
+                DisplayOrder = 8
+            }
+        },
+        {
+            "METER_2",
+            new TimeClockServiceConfig
+            {
+                ServiceCode = "METER_2",
+                ServiceDisplayName = "2\" Meter Change Out & ERT Installation",
+                PayAmount = 70.00m,
+                DisplayOrder = 9
+            }
+        },
+        {
+                "BOX_REPLACEMENT",
+                new TimeClockServiceConfig
+                {
+                    ServiceCode = "BOX_REPLACEMENT",
+                    ServiceDisplayName = "Residential Box Replacement or Adjustment",
+                    PayAmount = 15.75m,
+                    DisplayOrder = 10
+                }
+            }
+    };
+        }
+        private void AddBeaumont21RowByCode(
+    List<Model_InstalledMeterDetailPayRate> result,
+    Dictionary<string, TimeClockServiceConfig> serviceConfig,
+    long projectId,
+    string serviceCode,
+    string createdOn,
+    string dayName,
+    string time)
+        {
+            if (!serviceConfig.ContainsKey(serviceCode))
+            {
+                log.Info("Beaumont 2.1 service config missing for ServiceCode: " + serviceCode);
+                return;
+            }
+
+            TimeClockServiceConfig config = serviceConfig[serviceCode];
+
+            result.Add(new Model_InstalledMeterDetailPayRate
+            {
+                ProjectId = projectId,
+                MeterSize = "",
+                MeterType = "",
+                MeterDisplayName = config.ServiceDisplayName,
+                CreatedOn = createdOn,
+                DayName = dayName,
+                Time = time,
+                Pay = config.PayAmount.ToString("0.00")
+            });
+        }
+        private bool IsBeaumontSelectedValue(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return false;
+            }
+
+            string normalized = NormalizeBeaumontText(value);
+
+            if (normalized == "0"
+                || normalized == "NO"
+                || normalized == "N"
+                || normalized == "FALSE"
+                || normalized == "NOT SELECTED"
+                || normalized == "NA"
+                || normalized == "N / A"
+                || normalized == "N/A")
+            {
+                return false;
+            }
+
+            return true;
+        }
+        private List<int> ParseBeaumontServiceIds(string value)
+        {
+            List<int> serviceIds = new List<int>();
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return serviceIds;
+            }
+
+            string[] parts = value.Split('|');
+
+            foreach (string part in parts)
+            {
+                int serviceId;
+
+                if (int.TryParse(part.Trim(), out serviceId))
+                {
+                    serviceIds.Add(serviceId);
+                }
+            }
+
+            return serviceIds;
+        }
+        private bool IsValidBeaumontLeadLineInspection(
+    string lcrInvestigation,
+    string citySidePipeType,
+    string customerSidePipeType,
+    string verified)
+        {
+            bool isLcrYes =
+                NormalizeBeaumontText(lcrInvestigation) == "Y"
+                || NormalizeBeaumontText(lcrInvestigation) == "YES";
+
+            bool isVerifiedBoth =
+                NormalizeBeaumontText(verified) == "BOTH";
+
+            bool isValidCitySidePipe =
+                IsAllowedBeaumontCitySidePipeType(citySidePipeType);
+
+            bool isValidCustomerSidePipe =
+                IsAllowedBeaumontCustomerSidePipeType(customerSidePipeType);
+
+            return isLcrYes
+                && isValidCitySidePipe
+                && isValidCustomerSidePipe
+                && isVerifiedBoth;
+        }
+
+        private bool IsAllowedBeaumontCitySidePipeType(string pipeType)
+        {
+            string value = NormalizeBeaumontText(pipeType);
+
+            return value == "COPPER"
+                || value == "POLY"
+                || value == "GALVANIZED"
+                || value == "GALVANIZES"
+                || value == "GALVANIZE"
+                || value == "CAST IRON"
+                || value == "PEX";
+        }
+
+        private bool IsAllowedBeaumontCustomerSidePipeType(string pipeType)
+        {
+            string value = NormalizeBeaumontText(pipeType);
+
+            return value == "COPPER"
+                || value == "POLY"
+                || value == "GALVANIZED"
+                || value == "GALVANIZES"
+                || value == "GALVANIZE"
+                || value == "CAST IRON"
+                || value == "PEX"
+                || value == "PVC"
+                || value == "LEAD";
+        }
     }
 }

@@ -56,6 +56,7 @@ namespace GarronT.CMS.Model.DAL
                                            ProjectName = o.ProjectCityName
                                        }).OrderBy(a => a.ProjectCityState).ToList();
             return data;
+
         }
 
         public List<ProjectModel> GetInventoryProjectName(int UtilityId)
@@ -88,46 +89,23 @@ namespace GarronT.CMS.Model.DAL
         {
             using (CompassEntities objCompassEntities = new CompassEntities())
             {
-                WebServiceUserRoleDAL objWebServiceUserRoleDAL = new WebServiceUserRoleDAL();
-
-                // Get all users with the "Installer" role
-                var result = objWebServiceUserRoleDAL.GetAllUsersBasedOnRoleWithSelf("Installer");
-
-                var installersList = new List<UsersSmallModel>();
-                if (result != null && result.Count > 0)
-                {
-                    installersList = result.Select(o => new UsersSmallModel { UserId = o.ChildId, UserName = o.ChildName }).ToList();
-                }
-
-                // Get the list of installers associated with the current project
-                var currentProjectUserIds = objCompassEntities.TblProjectInstallers
-                    .Where(o => o.ProjectID == projectId)
-                    .Select(o => o.tblUsers_UserID)
-                    .ToList();
-
-                // Filter the installers based on the current project
-                installersList = installersList
-                    .Where(o => currentProjectUserIds.Contains(o.UserId))
-                    .ToList();
-
-                // Additional filtering based on projectId using UserRoleDAL
-                List<UsersSmallModel> filteredInstallers = new List<UsersSmallModel>();
-                if (projectId > 0)
-                {
-                    using (UserRoleDAL obj = new UserRoleDAL())
-                    {
-                        filteredInstallers = obj.GeInstallerListCurrentProject(projectId).OrderBy(a => a.UserName).ToList();
-                    }
-                }
-
-                // Further filter installersList based on the filteredInstallers
-                installersList = installersList
-                    .Where(o => filteredInstallers.Any(f => f.UserId == o.UserId))
-                    .ToList();
-
-                return installersList;
+                var query = from pi in objCompassEntities.TblProjectInstallers
+                            join us in objCompassEntities.tblUsers on pi.tblUsers_UserID equals us.UserID
+                            where pi.ProjectID == projectId && pi.Active == 1 && us.Active == 1
+                            orderby us.FirstName
+                            select new UsersSmallModel
+                            {
+                                UserId = us.UserID,
+                                UserName = us.FirstName
+                            };
+                return query.ToList();
             }
         }
+
+
+
+
+
 
         public List<INVInstallerReportRowBO> GetINVInstallerReportRows(long projectId, long installerId, string search, string fromDate, string toDate)
         {

@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewBag.Title = "Inventory Bulk Transfer";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
@@ -14,6 +14,8 @@
 @Html.Hidden("urlTransferInventory", Url.Action("saveTransferInventory", "InventoryBulkTransfer"))
 
 <style>
+
+
     @@media (min-width:375px) {
         .dataTables_length > label {
             white-space: normal;
@@ -1282,19 +1284,28 @@
                     @*<h4 class="modal-title"><strong>Location From</strong></h4>*@
                     <div id="mdTitle" style="font-size:large"></div>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" style="width:500px;">
                     <div class="panel-body">
-                        <div class="form-group rep-grp col-sm-6" style="margin-bottom:0px !important">
-                            <label for="name" class="col-lg-2 col-sm-2 control-label"><strong>To Location</strong></label>
-                            <select data-placeholder="Select Location" name="ddlLocationTo" id="ddlLocationTo" class="form-control chosen-select ">
-                                <option value="0">Select Location</option>
-                            </select>
-                        </div>
-                        <div class="form-group rep-grp col-sm-6" style="margin-bottom:0px !important">
-                            <label for="name" class="col-lg-2 col-sm-2 control-label"><strong>Enter Quantity</strong></label>
-                            <input type="number" id="enterQty" placeholder="0" class="form-control chosen-select" />
-                        </div>
+                        <div class="form-group row" style="margin-bottom: 0px !important; display: flex; align-items: center; justify-content: space-between;">
+                            <div class="col-sm-4">
+                                <label for="ddlInstallerTo"><strong>To Installer</strong></label>
+                                <select name="ddlInstallerTo" id="ddlInstallerTo" class="form-control chosen-select">
+                                    <option value="0">Select Installer</option>
+                                </select>
+                            </div>
 
+                            <div class="col-sm-4">
+                                <label for="ddlLocationTo"><strong>To Location</strong></label>
+                                <select name="ddlLocationTo" id="ddlLocationTo" class="form-control chosen-select">
+                                    <option value="0">Select Location</option>
+                                </select>
+                            </div>
+
+                            <div class="col-sm-4">
+                                <label for="enterQty"><strong>Enter Quantity</strong></label>
+                                <input type="number" id="enterQty" placeholder="0" class="form-control chosen-select" />
+                            </div>
+                        </div>
                         <div class="form-group">
                             <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12 btn-reopn" style="text-align:center;">
                                 <input type="hidden" id="hndWarehouseId" name="WarehouseId" />
@@ -1303,10 +1314,10 @@
                                 <input type="hidden" id="availableQty" class="form-control chosen-select" />
                             </div>
                         </div>
-
                         <div class="form-group">
                             <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12 btn-reopn" style="text-align:center;">
                                 <button id="btnTransferInventory" class="btn btn-success" type="button">Transfer Inventory</button>
+                                <button id="btnTransferReset" class="btn btn-warning" type="button">Reset</button>
                                 <button class="btn btn-danger" id="btnTransferCancel" type="button">Cancel</button>
                             </div>
                         </div>
@@ -1425,6 +1436,7 @@
             applyMobileNativePlaceholder($("#ProductId"), "0", "Select Product");
             applyMobileNativePlaceholder($("#LocationType"), "0", "Select Location");
             applyMobileNativePlaceholder($("#ddlLocationTo"), "0", "Select Location");
+            applyMobileNativePlaceholder($("#ddlInstallerTo"), "0", "Select Location");
         }
 
         //$("#WarehouseId").chosen({ placeholder_text_single: "Select Warehouse", no_results_text: "Oops, nothing found!" });
@@ -1455,6 +1467,40 @@
             $("#ddlLocationTo").chosen({ placeholder_text_single: "Select Location", no_results_text: "Oops, nothing found!" });
             $('#ddlLocationTo').val("0").attr("selected", "selected").trigger('chosen:updated');
         }
+        if (!isMobileBrowser) {
+            $("#ddlInstallerTo").chosen({ placeholder_text_single: "Select Installer", no_results_text: "Oops, nothing found!" });
+            $('#ddlInstallerTo').val("0").attr("selected", "selected").trigger('chosen:updated');
+        }
+
+        $('#ddlInstallerTo').change(function () {
+            var val = $(this).val();
+
+            if (val && val !== '0') {
+                $('#ddlLocationTo')
+                    .val("0")
+                    .prop('disabled', true)
+                    .trigger('chosen:updated');
+            } else {
+                $('#ddlLocationTo')
+                    .prop('disabled', false)
+                    .trigger('chosen:updated');
+            }
+        });
+
+        $('#ddlLocationTo').change(function () {
+            var val = $(this).val();
+
+            if (val && val !== '0') {
+                $('#ddlInstallerTo')
+                    .val("0")
+                    .prop('disabled', true)
+                    .trigger('chosen:updated');
+            } else {
+                $('#ddlInstallerTo')
+                    .prop('disabled', false)
+                    .trigger('chosen:updated');
+            }
+        });
 
         $("#divDetail").hide();
         $("#divSummary").show();
@@ -1637,73 +1683,71 @@
 
 
     $('#ProjectId').change(function () {
+        var projectId = $(this).val();
+        if (!projectId || projectId === '0') {
+            $('#ddlInstallerTo').empty().append('<option value="" disabled selected>Select Installer</option>').trigger('chosen:updated');
+            $('#ulWarehouseId').empty();
+            $("#WarehouseIdHeader").removeClass("ddlHeader").text("Select Warehouse");
+            return;
+        }
 
-
-        //$('#WarehouseId').empty().trigger('chosen:updated');
-        $('#ProductId').empty().trigger('chosen:updated');
-        $('#LocationType').empty().trigger('chosen:updated');
-        var value = $("#ProjectId option:selected")
-
-        waitingDialog.show('Please Wait Loading Contacts...');
-        var urlGetWarehouseAndProduct = $('#urlGetWarehouseAndProduct').val();
+        // Warehouses, Products, Locations
         $.ajax({
             type: 'GET',
-            data: { "ProjectId": value.val() },
-            url: urlGetWarehouseAndProduct,
+            url: $('#urlGetWarehouseAndProduct').val(),
+            data: { ProjectId: projectId },
             success: function (data) {
-
-
+                // Warehouses
                 $('#ulWarehouseId').empty();
-                $("#WarehouseIdHeader").removeClass("ddlHeader").text("Select Warehouse")
-
-                if (data.WarehouseList != null) {
-
-                    $.each(data.WarehouseList, function (index, item) {
-                        //if (index == 0) { $('#WarehouseId').append($('<option></option>').val('0').html("")); }
-                        //$('#WarehouseId').append($('<option></option>').val(item.WarehouseId).html(item.WarehouseName));
-                        $('#ulWarehouseId').append($('<li></li>').val(item.WarehouseId).addClass("liWarehouseId active-result").html(item.WarehouseName));
+                if (data.WarehouseList) {
+                    $.each(data.WarehouseList, function (i, item) {
+                        $('#ulWarehouseId').append(
+                            $('<li></li>').val(item.WarehouseId).addClass("liWarehouseId active-result").html(item.WarehouseName)
+                        );
                     });
                 }
-                //$('#WarehouseId').trigger('chosen:updated');
+                $("#WarehouseIdHeader").removeClass("ddlHeader").text("Select Warehouse");
 
-                if (data.ProductList != null) {
-                    appendSentinelOptionVal0($('#ProductId'), "Select Product");
-                    $.each(data.ProductList, function (index, item) {
+                // Products
+                $('#ProductId').empty();
+                appendSentinelOptionVal0($('#ProductId'), "Select Product");
+                if (data.ProductList) {
+                    $.each(data.ProductList, function (i, item) {
                         $('#ProductId').append($('<option></option>').val(item.Id).html(item.FieldValue));
                     });
-                } else if (isMobileBrowser) {
-                    appendSentinelOptionVal0($('#ProductId'), "Select Product");
                 }
                 $('#ProductId').trigger('chosen:updated');
 
-                if (data.LocationType != null) {
-                    appendSentinelOptionVal0($('#LocationType'), "Select Location");
-                    $.each(data.LocationType, function (index, item) {
+                // Locations
+                $('#LocationType').empty();
+                appendSentinelOptionVal0($('#LocationType'), "Select Location");
+                if (data.LocationType) {
+                    $.each(data.LocationType, function (i, item) {
                         $('#LocationType').append($('<option></option>').val(item.LocationId).html(item.Location));
                     });
-                } else if (isMobileBrowser) {
-                    appendSentinelOptionVal0($('#LocationType'), "Select Location");
                 }
                 $('#LocationType').trigger('chosen:updated');
-                waitingDialog.hide();
             },
-            error: function () {
-                var $toast = toastr["error"]("something seems wrong", "Error Notification");
-                waitingDialog.hide();
-            }
+            error: function () { toastr.error("Error loading data"); }
         });
 
+        // Installers
+        $.ajax({
+            type: 'GET',
+            url: '/InventoryBulkTransfer/GetInstallersByProject',
+            data: { ProjectId: projectId },
+
+            success: function (data) {
+                $('#ddlInstallerTo').empty();
+                appendSentinelOptionVal0($('#ddlInstallerTo'), "Select Installer");
+                $.each(data, function (i, installer) {
+                    $('#ddlInstallerTo').append('<option value="' + installer.Id + '">' + installer.Name + '</option>');
+                });
+                $('#ddlInstallerTo').trigger('chosen:updated');
+            },
+            error: function () { toastr.error("Error loading installers"); }
+        });
     });
-
-
-    //$("#WarehouseId").change(function () {
-    //    // $('#CategoryId').val("0").attr("selected", "selected").trigger('chosen:updated');
-
-    //    $('#ProductId').val("0").attr("selected", "selected").trigger('chosen:updated');
-
-
-    //})
-
 
     $('#btnSearch').click(function () {
         debugger;
@@ -1881,6 +1925,8 @@
 
     function TrInv(WarehouseId, ProductId, Location, BalanceQty) {
         debugger;
+        resetTransferModalFields();
+
         var ProjectId = $("#ProjectId").val();
         $("#hndWarehouseId").val(WarehouseId);
         $("#hndProductId").val(ProductId);
@@ -1944,29 +1990,20 @@
     };
 
     $('#btnTransferInventory').click(function () {
-        debugger;
+        var installerTo = $("#ddlInstallerTo").val();
+        var locationTo = $("#ddlLocationTo").val();
+        var availableQty = parseInt($("#availableQty").val());
+        var enterQty = parseInt($("#enterQty").val());
 
-        var LocationToValue = $("#ddlLocationTo").val();
-        if (LocationToValue === '0' || LocationToValue === '') {
-            var $toast = toastr["error"]("Please, select to location", "Notification");
+        // Validate quantity
+        if (!enterQty || enterQty <= 0 || enterQty > availableQty) {
+            toastr.error("Please enter a valid quantity not exceeding available quantity", "Notification");
             return;
         }
-        var availableQty = document.getElementById("availableQty").value;
-        if (availableQty === '0') {
-            var $toast = toastr["error"]("No available inventory", "Notification");
-            return;
-        }
-        var enterQty = document.getElementById("enterQty").value;
-        if (enterQty === '') {
-            var $toast = toastr["error"]("Please enter quantity", "Notification");
-            return;
-        }
-        else if (enterQty === '0') {
-            var $toast = toastr["error"]("Please enter a valid quantity", "Notification");
-            return;
-        }
-        else if (parseInt(availableQty) < parseInt(enterQty)) {
-            var $toast = toastr["error"]("The number of entered quantity cannot be more than the available quantity.", "Notification");
+
+        // Validate either installer or location is selected
+        if ((!installerTo || installerTo === '0') && (!locationTo || locationTo === '0')) {
+            toastr.error("Please select a location or installer", "Notification");
             return;
         }
 
@@ -1974,44 +2011,41 @@
         var ddlWarehouseId = $("#hndWarehouseId").val();
         var ProductId = $("#hndProductId").val();
         var LocationFromValue = $("#hndLocationFromValue").val();
-        var transferQty = $("#enterQty").val();
-        
-        waitingDialog.show('Loading Please Wait...');
+
+        waitingDialog.show('Please Wait...');
         var urlGetTransferInventoryDetail = $("#urlGetTransferInventoryDetail").val();
 
         $.ajax({
             type: 'POST',
             url: urlGetTransferInventoryDetail,
-            async: true,
-            data: { projectId: ProjectId, warehouseId: ddlWarehouseId, productId: ProductId, locationFromValue: LocationFromValue, transferQty: transferQty },
-            success: function (data) {
+            data: {
+                projectId: ProjectId,
+                warehouseId: ddlWarehouseId,
+                productId: ProductId,
+                locationFromValue: LocationFromValue,
+                transferQty: enterQty
+            },
+            success: function (res) {
                 waitingDialog.hide();
-                // debugger;
-                //console.log("result == " + JSON.stringify(data));
-                if (data.success == "false") {
-                    var $toast = toastr["error"](data.ErrorMessage, "Notification");
-                }
-                else {
-                    debugger;
+                if (res.statusMessage && res.statusMessage.Success) {
                     $("#transferInventoryForlocationModal").modal('hide');
-
+                    var destinationLabel = (installerTo && installerTo !== '0') ? $("#ddlInstallerTo option:selected").text() : locationTo;
+                    InventoryTransferDetailData(res.WarehouseStockReportData, destinationLabel);
                     $("#transferInventoryDetailModal").modal({
                         show: true,
                         backdrop: 'static',
-                        keyboard: true
+                        keyboard: false
                     });
-                    debugger;
-                    InventoryTransferDetailData(data.WarehouseStockReportData, LocationToValue);
+                } else {
+                    toastr.error(res.statusMessage ? res.statusMessage.Message : "Error fetching details", "Notification");
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 waitingDialog.hide();
-                console.log("error " + textStatus);
-                console.log("incoming Text " + jqXHR.responseText);
-                var $toast = toastr["error"]("something seems wrong", "Notification");
+                console.error("Error: " + textStatus, jqXHR.responseText);
+                toastr.error("Something went wrong while transferring inventory.", "Notification");
             }
-
-        })
+        });
     });
 
     function InventoryTransferDetailData(varData, LocationToValue) {
@@ -2074,6 +2108,7 @@
 
         var value = $("#ProjectId option:selected");
         var ddlLocationTo = $("#ddlLocationTo").val();
+        var ddlInstallerTo = $("#ddlInstallerTo").val();
         var WarehouseId = $("#hndWarehouseId").val();
         var ProductId = $("#hndProductId").val();
         waitingDialog.show('Please Wait...');
@@ -2081,7 +2116,14 @@
 
         $.ajax({
             url: urlTransferInventory,
-            data: { "ProjectId": value.val(), warehouseId: WarehouseId, productId: ProductId, ToLocation: ddlLocationTo, TransferInventoryList: invList },
+            data: { 
+                "ProjectId": value.val(), 
+                warehouseId: WarehouseId, 
+                productId: ProductId, 
+                ToLocation: ddlLocationTo === '0' ? null : ddlLocationTo, 
+                InstallerTo: ddlInstallerTo === '0' ? null : ddlInstallerTo,
+                TransferInventoryList: invList 
+            },
             type: 'POST',
             success: function (data) {
                 waitingDialog.hide();
@@ -2191,4 +2233,37 @@
 
     });
 
+    function getSelectedSerialNumbers() {
+        var serials = [];
+        $("#inventoryTable tbody tr.selected").each(function () {
+            var serial = $(this).find("td.SerialNumber").text().trim();
+            serials.push(serial);
+        });
+        return serials;
+    }
+    function resetTransferModalFields() {
+        // Reset Installer dropdown
+        $("#ddlInstallerTo")
+            .val("0")
+            .prop("disabled", false)
+            .trigger("chosen:updated");
+
+        // Reset Location dropdown
+        $("#ddlLocationTo")
+            .val("0")
+            .prop("disabled", false)
+            .trigger("chosen:updated");
+
+        // Reset quantity to available quantity
+        var availableQty = $("#availableQty").val();
+
+        if (availableQty && parseInt(availableQty) > 0) {
+            $("#enterQty").val(availableQty);
+        } else {
+            $("#enterQty").val("");
+        }
+    }
+    $("#btnTransferReset").click(function () {
+        resetTransferModalFields();
+    });
 </script>

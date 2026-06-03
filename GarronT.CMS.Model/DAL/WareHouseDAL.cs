@@ -1,4 +1,4 @@
-﻿using GarronT.CMS.Model.BO;
+using GarronT.CMS.Model.BO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -1150,6 +1150,118 @@ namespace GarronT.CMS.Model.DAL
                 statusMessage.Success = false;
                 statusMessage.Message = "Unable to delete record ";
                 throw ex;
+            }
+
+            return statusMessage;
+        }
+        public StatusMessage TransferInventoryToInstaller(
+    long ProjectId,
+    long warehouseId,
+    long productId,
+    long InstallerTo,
+    string[] TransferInventoryList,
+    long userId)
+        {
+            StatusMessage statusMessage = new StatusMessage();
+            CompassEntities dbcontext = new CompassEntities();
+
+            try
+            {
+                var requestDetail = dbcontext.InventoryMobileStockRequestDetails
+                    .FirstOrDefault(rd => rd.Active == 1
+                                       && rd.InventoryMobileStockRequest.Active == 1
+                                       && rd.InventoryMobileStockRequest.FKProjectId == ProjectId
+                                       && rd.FKProductId == productId);
+
+                InventoryMobileStockRequestDetail activeDetailObject = requestDetail;
+
+                foreach (var serial in TransferInventoryList)
+                {
+                    var stockItem = dbcontext.StockDetails
+                        .FirstOrDefault(s => s.FKProjectId == ProjectId
+                                          && s.FKWarehouseId == warehouseId
+                                          && s.FKProductId == productId
+                                          && s.Active == 1
+                                          && s.SerialNumber == serial);
+
+                    if (stockItem == null) continue;
+
+                    if (activeDetailObject == null)
+                    {
+                        var newRequest = new InventoryMobileStockRequest
+                        {
+                            DeviceDateTime = new CommonFunctions().ServerDate(),
+                            JsonRequestData = "System Generated Bulk Transfer Request",
+                            GPSLocation = "",
+                            DeviceIP = "",
+                            FKProjectId = ProjectId,
+                            Active = 1,
+                            CreatedBy = userId,
+                            CreatedOn = new CommonFunctions().ServerDate()
+                        };
+
+                        var newDetail = new InventoryMobileStockRequestDetail
+                        {
+                            InventoryMobileStockRequest = newRequest,
+                            FKProductId = productId,
+                            IsSerialNumber = !string.IsNullOrEmpty(serial),
+                            SerialNumber = serial,
+                            Quantity = 1,
+                            FKInventoryStatusMasterId = 1,
+                            AddedInStock = false,
+                            AddedInOutwardDetails = true,
+                            Active = 1,
+                            CreatedBy = userId,
+                            CreatedOn = new CommonFunctions().ServerDate()
+                        };
+
+                        dbcontext.InventoryMobileStockRequestDetails.Add(newDetail);
+                        activeDetailObject = newDetail;
+                    }
+
+                    // Record allocation in OutwardDetails
+                    OutwardDetail od = new OutwardDetail
+                    {
+                        FKStockDetailsID = stockItem.Id,
+                        AllocatedTo = InstallerTo,
+                        AllocatedQty = 1,
+                        InstalledQty = 0,
+                        TransferredQty = 0,
+                        ReturnToWarehouseQty = 0,
+                        RemovedQty = 0,
+                        AllStockUtilized = true,
+                        Active = 1,
+                        CreatedBy = userId,
+                        CreatedOn = new CommonFunctions().ServerDate()
+                    };
+
+                    if (activeDetailObject.Id > 0)
+                    {
+                        od.FKInventoryMobileStockRequestDetailId = activeDetailObject.Id;
+                    }
+                    else
+                    {
+                        od.InventoryMobileStockRequestDetail = activeDetailObject;
+                    }
+
+                    dbcontext.OutwardDetails.Add(od);
+
+                    stockItem.IsAllocated = true;
+                    stockItem.AllStockUtilized = true;
+                    stockItem.BalanceQty = 0;
+                    stockItem.ModifiedBy = userId;
+                    stockItem.ModifiedOn = new CommonFunctions().ServerDate();
+                }
+
+                dbcontext.SaveChanges();
+
+                statusMessage.Success = true;
+                statusMessage.Message = "Inventory successfully transferred to installer.";
+            }
+            catch (Exception ex)
+            {
+                statusMessage.Success = false;
+                statusMessage.Message = "Error transferring inventory: " + ex.Message;
             }
 
             return statusMessage;
