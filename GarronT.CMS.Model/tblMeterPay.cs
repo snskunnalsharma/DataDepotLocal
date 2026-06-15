@@ -28,7 +28,8 @@ namespace GarronT.CMS.Model
         public Nullable<System.DateTime> CreatedOn { get; set; }
         public Nullable<int> ModifiedBy { get; set; }
         public Nullable<System.DateTime> ModifiedOn { get; set; }
-    
+        public Nullable<decimal> CostRate { get; set; }
+
         public virtual tblProject tblProject { get; set; }
         public virtual tblMeterSize tblMeterSize { get; set; }
         public virtual tblMeterType tblMeterType { get; set; }

@@ -874,212 +874,256 @@ namespace GarronT.CMS.Model.DAL
             }
             return dataTable;
         }
-        
-        public void ExportToPdf(DataTable dt, string strFilePath,string[] collection)
+
+        public void ExportToPdf(DataTable dt, string strFilePath, string[] collection)
         {
             try
             {
-                //Document document = new Document(PageSize.A4);
-                //Document document = new Document(PageSize.A4.Rotate());
-                Document document = new Document(PageSize.A4.Rotate(), 50, 50, 25, 25);
-                //Document document = new Document(PageSize.A4, 50, 50, 25, 25);
-                //Document document = new Document(PageSize.A4, 100, 100, 100, 100);
+                // Landscape Letter with balanced margins
+                Document document = new Document(PageSize.LETTER.Rotate(), 28f, 28f, 22f, 22f);
+
                 PdfWriter writer = PdfWriter.GetInstance(document, new FileStream(strFilePath, FileMode.Create));
                 document.Open();
-                //iTextSharp.text.Font font5 = iTextSharp.text.FontFactory.GetFont(FontFactory.HELVETICA, 7);
-                iTextSharp.text.Font font5 = iTextSharp.text.FontFactory.GetFont(FontFactory.HELVETICA, 9, BaseColor.BLACK);
 
-                /*PdfPTable table = new PdfPTable(dt.Columns.Count);
-                PdfPRow row = null;*/
-                /*float[] widths = new float[dt.Columns.Count];
-                for (int i = 0; i < dt.Columns.Count; i++)
-                    widths[i] = 4f;
+                Font titleFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 13f, BaseColor.BLACK);
+                Font infoFont = FontFactory.GetFont(FontFactory.HELVETICA, 9f, BaseColor.BLACK);
+                Font infoBoldFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 9f, BaseColor.BLACK);
+                Font tableFont = FontFactory.GetFont(FontFactory.HELVETICA, 7.2f, BaseColor.BLACK);
+                Font tableBoldFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 7.2f, BaseColor.BLACK);
+                Font summaryFont = FontFactory.GetFont(FontFactory.HELVETICA, 9f, BaseColor.BLACK);
 
-                table.SetWidths(widths);*/
+                // =========================
+                // Header title
+                // =========================
+                Paragraph title = new Paragraph();
+                title.Alignment = Element.ALIGN_CENTER;
+                title.SetLeading(0f, 1.05f);
+                title.SpacingBefore = 0f;
+                title.SpacingAfter = 4f;
 
-                /*float[] widths = new float[] { 2f, 1f, 1f, 1f, 1f, 1f, 1f, 0.85f, 1f, 1f };
-                table.SetWidths(widths);
-                table.WidthPercentage = 100;*/
+                title.Add(new Chunk(collection[0].ToString() + " Project", titleFont));
+                title.Add(new Chunk("\nContractor's Weekly Install Sheet", titleFont));
 
-                BaseFont bf = BaseFont.CreateFont(BaseFont.TIMES_ROMAN, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
-                //System.Drawing.Font ft = new System.Drawing.Font(bf, 8, 2, Color.Gray);
-                Paragraph pg = new Paragraph();
-                pg.Alignment = Element.ALIGN_CENTER;
-                pg.Add(new Chunk(collection[0].ToString() + " Project"));
-                pg.Add(new Chunk("\n Contractor's Weekly Install Sheet"));
-                pg.Add(new Chunk("\n \n \n"));
-                document.Add(pg);
+                document.Add(title);
 
-                //
-                PdfPTable tab1 = new PdfPTable(2);
-                float[] tabwidths1 = new float[] { 2f, 2f };
-                tab1.SetWidths(tabwidths1);
-                tab1.WidthPercentage = 100;
-                tab1.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
-                
-                //row 1
-                tab1.AddCell("");
-                //tab1.AddCell("         Contractor Name: ___________________");
-                tab1.AddCell("         Contractor Name: " + collection[2].ToString());
-                //row 2
-                tab1.AddCell("");
-                //tab1.AddCell("Contractor LLC. Name: ___________________");
-                tab1.AddCell("Contractor LLC. Name: " + collection[3].ToString());
-                //row 2
-                //tab1.AddCell(("Week Ending: ________________"+ collection[6].ToString(), FontFactory.GetFont(Convert.ToString(System.Drawing.FontStyle.Underline)));
-                //tab1.AddCell("Week Ending: ________________" + collection[6].ToString());
-                tab1.AddCell("Week Ending: "+ collection[1].ToString());
-                //tab1.AddCell("        Contractor Phone: ___________________");
-                tab1.AddCell("        Contractor Phone: " + collection[4].ToString());
-                //row 2
-                tab1.AddCell("");
-                //tab1.AddCell("        Contractor E-Mail: ___________________");
-                tab1.AddCell("        Contractor E-Mail: " + collection[5].ToString());
-                //row 2
-                tab1.AddCell("Project Name: " +collection[0].ToString() + "");
-                //tab1.AddCell("          Project Manager: ___________________");
-                tab1.AddCell("          Project Manager: " + collection[6].ToString());
-                //row 2
-                tab1.AddCell("\n");
-                tab1.AddCell("\n");
-                document.Add(tab1);
-                //
+                // =========================
+                // Top info section
+                // Left side: Week Ending / Project Name
+                // Right side: Contractor details
+                // =========================
+                // =========================
+                // Top contractor/project info
+                // Better alignment: left info + contractor details on far right
+                // =========================
+                PdfPTable topInfo = new PdfPTable(3);
+                topInfo.WidthPercentage = 100;
+                topInfo.SetWidths(new float[] { 2.1f, 2.0f, 2.1f });
+                topInfo.SpacingBefore = 0f;
+                topInfo.SpacingAfter = 4f;
+                topInfo.DefaultCell.Border = Rectangle.NO_BORDER;
 
-                /*Paragraph para = new Paragraph();
-                Chunk glue = new Chunk(new iTextSharp.text.pdf.draw.VerticalPositionMark());
-                Phrase ph1 = new Phrase();
-                //ph1.Add(new Chunk(Environment.NewLine));
-                string blank = "";
-                string Contractor = "Contractor E-mail: "+collection[0].ToString()+"";
-                Paragraph main = new Paragraph();
-                ph1.Add(new Chunk(blank)); // Here I add projectname as a chunk into Phrase.    
-                ph1.Add(glue); // Here I add special chunk to the same phrase.    
-                ph1.Add(new Chunk(Contractor)); // Here I add date as a chunk into same phrase.   
-                main.Add(ph1);
-                para.Add(main);
-                document.Add(para);
+                // LEFT BLOCK
+                PdfPTable leftInfo = new PdfPTable(1);
+                leftInfo.WidthPercentage = 100;
+                leftInfo.DefaultCell.Border = Rectangle.NO_BORDER;
 
-                Paragraph para2 = new Paragraph();
-                Chunk glue2 = new Chunk(new iTextSharp.text.pdf.draw.VerticalPositionMark());
-                Phrase ph2 = new Phrase();
-                //ph2.Add(new Chunk(Environment.NewLine));
-                string Project = "Project Name : "+ collection[1].ToString() + "";
-                string Manager = "Project Manager: "+ collection[2].ToString() + "";
-                Paragraph main2 = new Paragraph();
-                ph2.Add(new Chunk(Project)); // Here I add projectname as a chunk into Phrase.    
-                ph2.Add(glue2); // Here I add special chunk to the same phrase.    
-                ph2.Add(new Chunk(Manager)); // Here I add date as a chunk into same phrase. 
-                ph2.Add(new Chunk(Environment.NewLine));
-                ph2.Add(new Chunk(Environment.NewLine));
-                main2.Add(ph2);
-                para2.Add(main2);
-                document.Add(para2);*/
+                leftInfo.AddCell(CreateNoBorderPdfCell("\n", infoFont, Element.ALIGN_LEFT));
+                leftInfo.AddCell(CreateNoBorderPdfCell("Week Ending: " + collection[1].ToString(), infoFont, Element.ALIGN_LEFT));
+                leftInfo.AddCell(CreateNoBorderPdfCell("\nProject Name: " + collection[0].ToString(), infoFont, Element.ALIGN_LEFT));
 
-                //PdfPCell cell = new PdfPCell(new Phrase("Products"));
-                //cell.Colspan = dt.Columns.Count;
+                // CENTER BLANK BLOCK
+                PdfPCell centerBlank = new PdfPCell(new Phrase(""));
+                centerBlank.Border = Rectangle.NO_BORDER;
+
+                // RIGHT CONTRACTOR BLOCK
+                PdfPTable rightInfo = new PdfPTable(1);
+                rightInfo.WidthPercentage = 100;
+                rightInfo.DefaultCell.Border = Rectangle.NO_BORDER;
+
+                rightInfo.AddCell(CreateNoBorderPdfCell("Contractor Name: " + collection[2].ToString(), infoFont, Element.ALIGN_LEFT));
+                rightInfo.AddCell(CreateNoBorderPdfCell("Contractor LLC. Name: " + collection[3].ToString(), infoFont, Element.ALIGN_LEFT));
+                rightInfo.AddCell(CreateNoBorderPdfCell("Contractor Phone: " + collection[4].ToString(), infoFont, Element.ALIGN_LEFT));
+                rightInfo.AddCell(CreateNoBorderPdfCell("Contractor E-Mail: " + collection[5].ToString(), infoFont, Element.ALIGN_LEFT));
+                rightInfo.AddCell(CreateNoBorderPdfCell("Project Manager: " + collection[6].ToString(), infoFont, Element.ALIGN_LEFT));
+
+                PdfPCell leftWrap = new PdfPCell(leftInfo);
+                leftWrap.Border = Rectangle.NO_BORDER;
+                leftWrap.Padding = 0f;
+                leftWrap.VerticalAlignment = Element.ALIGN_BOTTOM;
+
+                PdfPCell rightWrap = new PdfPCell(rightInfo);
+                rightWrap.Border = Rectangle.NO_BORDER;
+                rightWrap.Padding = 0f;
+                rightWrap.PaddingRight = 4f;
+                rightWrap.VerticalAlignment = Element.ALIGN_TOP;
+
+                topInfo.AddCell(leftWrap);
+                topInfo.AddCell(centerBlank);
+                topInfo.AddCell(rightWrap);
+
+                document.Add(topInfo);
+
+                // =========================
+                // Main table
+                // =========================
                 PdfPTable table = new PdfPTable(dt.Columns.Count);
-                float[] widths = new float[] { 2f, 1f, 1f, 1f, 1f, 1f, 1f, 0.85f, 1f, 1f };
-                table.SetWidths(widths);
                 table.WidthPercentage = 100;
+                table.HorizontalAlignment = Element.ALIGN_CENTER;
+                table.SpacingBefore = 0f;
+                table.SpacingAfter = 10f;
+                table.SplitLate = false;
+                table.SplitRows = true;
 
+                float[] widths = new float[]
+                {
+            2.45f,  // Description
+            1.08f,  // Monday
+            1.08f,  // Tuesday
+            1.08f,  // Wednesday
+            1.08f,  // Thursday
+            1.08f,  // Friday
+            1.08f,  // Saturday
+            0.95f,  // Total Work In Week
+            0.95f,  // Pay
+            1.00f   // Total
+                };
+
+                table.SetWidths(widths);
+
+                // Header row
                 foreach (DataColumn c in dt.Columns)
                 {
-                    PdfPCell cell = new PdfPCell();
-                    //cell.Phrase = new Phrase(new Phrase(c.ColumnName, font5));
-                    //table.AddCell(cell);
+                    string headerText;
+
                     if (c.ColumnName == "TotalWorkInWeek")
                     {
-                        //table.AddCell(new Phrase("Total Work\nIn Week", font5));
-                        cell.HorizontalAlignment = 1;           // 0=left, 1=middle, 2 right
-                        cell.VerticalAlignment = 1;
-                        cell.Phrase = new Phrase("Total Work\nIn Week", font5);
-                        table.AddCell(cell);
+                        headerText = "Total Work\nIn Week";
                     }
                     else if (c.ColumnName == "Pay" || c.ColumnName == "Total")
                     {
-                        //table.AddCell(new Phrase("", font5));
-                        cell.HorizontalAlignment = Element.ALIGN_MIDDLE;
-                        cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                        cell.Phrase = new Phrase("", font5);
-                        table.AddCell(cell);
+                        headerText = "";
                     }
                     else
                     {
-                        //table.AddCell(new Phrase(c.ColumnName, font5));
-                        cell.HorizontalAlignment = 1;
-                        cell.VerticalAlignment = 1;
-                        cell.Phrase = new Phrase(c.ColumnName, font5);
-                        table.AddCell(cell);
+                        headerText = c.ColumnName;
                     }
 
+                    PdfPCell headerCell = CreateBorderPdfCell(headerText, tableBoldFont, Element.ALIGN_CENTER);
+                    headerCell.PaddingTop = 3f;
+                    headerCell.PaddingBottom = 3f;
+                    table.AddCell(headerCell);
                 }
 
+                // Data rows
                 foreach (DataRow r in dt.Rows)
                 {
-                    if (dt.Rows.Count > 0)
+                    string description = Convert.ToString(r["Description"]);
+
+                    bool isSectionRow =
+                        description == "METER INSTALL DESCRIPTION" ||
+                        description == "Total";
+
+                    for (int h = 0; h < dt.Columns.Count; h++)
                     {
-                        int i = 0;
-                        for (int h = 0; h < dt.Columns.Count; h++)
+                        string cellText = r[h] == null ? "" : r[h].ToString();
+
+                        int alignment = Element.ALIGN_CENTER;
+
+                        // Description column
+                        if (h == 0)
                         {
-                            PdfPCell cell = new PdfPCell();
-                            //table.AddCell(new Phrase(r[h].ToString(), font5));
-                            i++;
-                            string df = r[h].ToString();
-                            /*if (i == 1) 
-                            {
-                                cell.HorizontalAlignment = 0;       // 0=left, 1=middle, 2 right
-                                cell.VerticalAlignment = 0;
-                                cell.Phrase = new Phrase(r[h].ToString(), font5);
-                                table.AddCell(cell);
-                            }
-                     else*/ if ((i == 9 || i == 10) && df!= "Pay" && df != "Total")
-                            {
-                                cell.HorizontalAlignment = 2;       // 0=left, 1=middle, 2 right
-                                cell.VerticalAlignment = 2;
-                                cell.Phrase = new Phrase(r[h].ToString(), font5);
-                                table.AddCell(cell);
-                            }
-                            else
-                            {
-                                cell.HorizontalAlignment = 1;
-                                cell.VerticalAlignment = 1;
-                                cell.Phrase = new Phrase(r[h].ToString(), font5);
-                                table.AddCell(cell);
-                            }
+                            alignment = Element.ALIGN_CENTER;
                         }
+
+                        // Pay and Total columns right aligned, except title cells
+                        if ((h == 8 || h == 9) && cellText != "Pay" && cellText != "Total")
+                        {
+                            alignment = Element.ALIGN_RIGHT;
+                        }
+
+                        Font activeFont = isSectionRow ? tableBoldFont : tableFont;
+
+                        PdfPCell cell = CreateBorderPdfCell(cellText, activeFont, alignment);
+
+                        if (isSectionRow)
+                        {
+                            cell.PaddingTop = 3f;
+                            cell.PaddingBottom = 3f;
+                        }
+
+                        table.AddCell(cell);
                     }
                 }
+
                 document.Add(table);
-                
-                PdfPTable tab = new PdfPTable(5);
-                float[] tabwidths = new float[] { 1f, 1f, 1f, 1.5f, 0.5f };
-                tab.SetWidths(tabwidths);
-                tab.WidthPercentage = 100;
-                
 
-                //cell.Border = Rectangle.NO_BORDER; // | Rectangle.TOP_BORDER;
-                //cell.BorderWidthBottom = 5f;
-                tab.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
-                
-                //row 1
-                tab.AddCell("\n\n\nTOTAL WO IN\n DATA DEPOT");
-                tab.AddCell("\n\n\nTOTAL\n HOURS");
-                tab.AddCell("\n\n\nAVG PER\n HOUR");
-                tab.AddCell("\n\n\nContractor Signature       ");
-                tab.AddCell("\n\n " + DateTime.Now.ToString("MM/dd/yyyy") + "\n    Date");
+                // =========================
+                // Bottom summary + signature section
+                // =========================
+                // =========================
+                // Bottom summary + signature section
+                // Clean alignment: summary left, signature center-right, dates far right
+                // =========================
+                // =========================
+                // Bottom summary + signatures side by side
+                // =========================
+                PdfPTable bottom = new PdfPTable(6);
+                bottom.WidthPercentage = 100;
+                bottom.SetWidths(new float[] { 1.05f, 1.05f, 1.05f, 1.75f, 1.75f, 0.95f });
+                bottom.SpacingBefore = 10f;
+                bottom.SpacingAfter = 0f;
+                bottom.KeepTogether = true;
 
-                //row 2
-                tab.AddCell("     "+ collection[7].ToString() + "");
-                tab.AddCell(" "+ collection[8].ToString() + "");
-                tab.AddCell(" "+ collection[9].ToString() + "");
-                tab.AddCell("Project Manager Signature  ");
-                tab.AddCell("  " + DateTime.Now.ToString("MM/dd/yyyy") + "\n     Date");
-                document.Add(tab);
+                string today = DateTime.Now.ToString("MM/dd/yyyy");
+
+                // Summary 1
+                bottom.AddCell(CreateNoBorderPdfCell(
+                    "TOTAL WO IN\nDATA DEPOT\n" + collection[7].ToString(),
+                    summaryFont,
+                    Element.ALIGN_CENTER
+                ));
+
+                // Summary 2
+                bottom.AddCell(CreateNoBorderPdfCell(
+                    "TOTAL\nHOURS\n" + collection[8].ToString(),
+                    summaryFont,
+                    Element.ALIGN_CENTER
+                ));
+
+                // Summary 3
+                bottom.AddCell(CreateNoBorderPdfCell(
+                    "AVG PER\nHOUR\n" + collection[9].ToString(),
+                    summaryFont,
+                    Element.ALIGN_CENTER
+                ));
+
+                // Contractor signature column
+                bottom.AddCell(CreateSingleSignatureColumnCell(
+                    "Contractor Electronic Signature",
+                    today,
+                    summaryFont
+                ));
+
+                // Project manager signature column
+                bottom.AddCell(CreateSingleSignatureColumnCell(
+                    "Project Manager Electronic Signature",
+                    today,
+                    summaryFont
+                ));
+
+                // Optional blank/right spacer column
+                bottom.AddCell(CreateNoBorderPdfCell("", summaryFont, Element.ALIGN_CENTER));
+
+                document.Add(bottom);
+               
                 document.Close();
             }
-            catch(Exception ex)
-            { }
+            catch (Exception ex)
+            {
+                log.Error("Error in ExportToPdf: ", ex);
+            }
         }
+
 
         /// <summary>
         /// create directory with access right.
@@ -2038,6 +2082,116 @@ namespace GarronT.CMS.Model.DAL
                 || value == "PEX"
                 || value == "PVC"
                 || value == "LEAD";
+        }
+        private PdfPCell CreateBorderPdfCell(string text, Font font, int alignment)
+        {
+            PdfPCell cell = new PdfPCell(new Phrase(text ?? "", font));
+            cell.HorizontalAlignment = alignment;
+            cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+
+            cell.PaddingTop = 2f;
+            cell.PaddingBottom = 2f;
+            cell.PaddingLeft = 2.5f;
+            cell.PaddingRight = 2.5f;
+
+            cell.MinimumHeight = 14f;
+            cell.NoWrap = false;
+            cell.BorderWidth = 0.7f;
+
+            return cell;
+        }
+
+        private PdfPCell CreateNoBorderPdfCell(string text, Font font, int alignment)
+        {
+            PdfPCell cell = new PdfPCell(new Phrase(text ?? "", font));
+            cell.Border = Rectangle.NO_BORDER;
+            cell.HorizontalAlignment = alignment;
+            cell.VerticalAlignment = Element.ALIGN_TOP;
+
+            cell.PaddingTop = 1f;
+            cell.PaddingBottom = 1f;
+            cell.PaddingLeft = 2f;
+            cell.PaddingRight = 2f;
+
+            cell.NoWrap = false;
+
+            return cell;
+        }
+        private PdfPCell CreateSignatureAreaCell(Font font)
+        {
+            PdfPCell outerCell = new PdfPCell();
+            outerCell.Border = Rectangle.NO_BORDER;
+            outerCell.PaddingTop = 4f;
+            outerCell.PaddingBottom = 0f;
+            outerCell.PaddingLeft = 20f;
+            outerCell.PaddingRight = 20f;
+            outerCell.VerticalAlignment = Element.ALIGN_TOP;
+
+            PdfPTable signatureTable = new PdfPTable(1);
+            signatureTable.WidthPercentage = 100;
+
+            // Contractor signature
+            PdfPCell contractorBox = new PdfPCell(new Phrase("Contractor Electronic Signature", font));
+            contractorBox.HorizontalAlignment = Element.ALIGN_LEFT;
+            contractorBox.VerticalAlignment = Element.ALIGN_BOTTOM;
+            contractorBox.FixedHeight = 52f;
+            contractorBox.PaddingBottom = 3f;
+            contractorBox.Border = Rectangle.NO_BORDER;
+            signatureTable.AddCell(contractorBox);
+
+            // Reduced gap so Project Manager Signature moves upward
+            PdfPCell gapCell = new PdfPCell(new Phrase(""));
+            gapCell.Border = Rectangle.NO_BORDER;
+            gapCell.FixedHeight = 20f;
+            signatureTable.AddCell(gapCell);
+
+            // Project manager signature
+            PdfPCell managerBox = new PdfPCell(new Phrase("Project Manager Electronic Signature", font));
+            managerBox.HorizontalAlignment = Element.ALIGN_LEFT;
+            managerBox.VerticalAlignment = Element.ALIGN_BOTTOM;
+            managerBox.FixedHeight = 38f;
+            managerBox.PaddingBottom = 3f;
+            managerBox.Border = Rectangle.NO_BORDER;
+            signatureTable.AddCell(managerBox);
+
+            outerCell.AddElement(signatureTable);
+
+            return outerCell;
+        }
+        private PdfPCell CreateSingleSignatureColumnCell(string signatureText, string dateText, Font font)
+        {
+            PdfPCell outerCell = new PdfPCell();
+            outerCell.Border = Rectangle.NO_BORDER;
+            outerCell.PaddingTop = 6f;
+            outerCell.PaddingBottom = 0f;
+            outerCell.PaddingLeft = 8f;
+            outerCell.PaddingRight = 8f;
+            outerCell.VerticalAlignment = Element.ALIGN_TOP;
+
+            PdfPTable innerTable = new PdfPTable(1);
+            innerTable.WidthPercentage = 100;
+
+            // Signature text
+            PdfPCell signatureCell = new PdfPCell(new Phrase(signatureText, font));
+            signatureCell.Border = Rectangle.NO_BORDER;
+            signatureCell.HorizontalAlignment = Element.ALIGN_CENTER;
+            signatureCell.VerticalAlignment = Element.ALIGN_BOTTOM;
+            signatureCell.FixedHeight = 42f;
+            signatureCell.PaddingBottom = 4f;
+            innerTable.AddCell(signatureCell);
+
+            // Date text below signature
+            PdfPCell dateCell = new PdfPCell(new Phrase("Date " + dateText, font));
+            dateCell.Border = Rectangle.NO_BORDER;
+            dateCell.HorizontalAlignment = Element.ALIGN_CENTER;
+            dateCell.VerticalAlignment = Element.ALIGN_TOP;
+            dateCell.FixedHeight = 20f;
+            dateCell.PaddingTop = 2f;
+            innerTable.AddCell(dateCell);
+
+            outerCell.AddElement(innerTable);
+
+            return outerCell;
         }
     }
 }

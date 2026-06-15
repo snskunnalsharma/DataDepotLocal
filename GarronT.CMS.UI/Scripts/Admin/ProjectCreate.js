@@ -7,6 +7,10 @@ var selectDropDown;
 var manageEventvalue = "";
 $(document).ready(function () {
 
+    $("#btnSaveTab3Data").click(function () {
+        checkTab3Status(false);
+    });
+
     $("#Operations").addClass('active');
     $("#subOperations").addClass('block');
 
@@ -1087,17 +1091,21 @@ function checkTab2Status() {
 }
 
 function getTab3Data() {
-    //debugger;;
     var projId = $("#txtProjectId").val();
     var urlGetTab3Data = $('#GetTab3Url').val();
+
     var mastDiv = $('#ulServicePrice');
     mastDiv.empty();
+
     var mastAdditionalDiv = $('#ulAdditionalServicePrice');
     mastAdditionalDiv.empty();
+
     var mastMeterPayRateDiv = $('#ulMeterSizesPayRates');
     mastMeterPayRateDiv.empty();
+
     var result = '<li class="row" style="margin-top: -12px; margin-bottom: -10px;" > <div class="task-title"> <span class="task-title-sp col-lg-2 col-sm-3 col-xs-3 show_deactive" style="font-weight:700">Service Name</span>' +
         '<span class="task-title-sp col-lg-2 col-sm-3 col-xs-2" style="font-weight:700; ">Rate For Service ($)</span> ' +
+        '<span class="task-title-sp col-lg-2 col-sm-3 col-xs-2" style="font-weight:700;">Cost ($)</span> ' +
         '<span class="task-title-sp1 col-lg-2 col-sm-3 col-xs-3" style="font-weight:700;padding-left: 34px;">Service Images</span>' +
         '<span class="task-title-sp2 col-lg-2 col-sm-3 col-xs-3" style="font-weight:700;padding-left:34px;">Images Required</span> ' +
         '<span class="task-title-sp2 col-lg-3 col-sm-3 col-xs-3 btnAddProduct" style="font-weight:700; ">Products Required</span></div></li><br>';
@@ -1109,19 +1117,18 @@ function getTab3Data() {
         '<span class="task-title-sp2 col-lg-3 col-sm-3 col-xs-3 btnAddProduct" style="font-weight:700;">Products Required</span></div></li><br>';
 
     var result2 = '<li class="row" style="margin-top: -12px; margin-bottom: -10px;" > <div class="task-title"> <span class="task-title-sp col-lg-2 col-sm-3 col-xs-3 show_deactive" style="font-weight:700">Meter Size</span>' +
-        '<span class="task-title-sp col-lg-2 col-sm-3 col-xs-2" style="font-weight:700">Meter Pay Rate ($)</span></div></li><br>';
+        '<span class="task-title-sp col-lg-2 col-sm-3 col-xs-2" style="font-weight:700">Meter Pay Rate ($)</span>' +
+        '<span class="task-title-sp col-lg-2 col-sm-3 col-xs-2" style="font-weight:700">Cost ($)</span></div></li><br>';
+
     $.ajax({
         cache: false,
         type: "GET",
         url: urlGetTab3Data,
         data: { "projectId": projId },
-        //async: false,
         success: function (data) {
-
 
             var Servicelist = [];
 
-            //style="width: 100%; margin-top: 0%; margin-bottom: 1%;"
             $.each(data.objList1, function (id, ServiceSmallModel) {
                 result = result + ' <li class="row" style="margin-bottom: 5px;"> <div class="task-content">';
 
@@ -1130,150 +1137,148 @@ function getTab3Data() {
 
                 result = result + '<div class="col-lg-2 col-sm-3 col-xs-3">' +
                     '<input maxlength="20" id="' + ServiceSmallModel.ServiceId + '" type="text" placeholder="Enter rate for service" value="' +
-                    ServiceSmallModel.ServiceBasePrice + '"' +
-                    'style="width:100%; text-align:right; padding-right:10px;" class="tab3txt allownumericwithdecimal"  />' +
+                    formatMoney(ServiceSmallModel.ServiceBasePrice) + '"' +
+                    'style="width:50%; text-align:right; padding-right:10px;" class="tab3txt allownumericwithdecimal"  />' +
+                    '</div>';
+
+                result += '<div class="col-lg-2 col-sm-3 col-xs-3">' +
+                    '<input maxlength="20" id="costRate' + ServiceSmallModel.ServiceId + '" type="text" ' +
+                    'data-masterfieldid="' + ServiceSmallModel.MasterFieldId + '" ' +
+                    'value="' + formatMoney(
+                        ServiceSmallModel.CostRate == null || parseFloat(ServiceSmallModel.CostRate) === 0
+                            ? calculateDoubleCostRate(ServiceSmallModel.ServiceBasePrice)
+                            : ServiceSmallModel.CostRate
+                    ) + '" ' +
+                    'style="width:50%;text-align:right;padding-right:10px;" ' +
+                    'class="tab3Costtxt allownumericwithdecimal" />' +
                     '</div>';
 
                 result = result + '<div class="col-lg-2 col-sm-3 col-xs-3" style="text-align:center">';
+
                 if (ServiceSmallModel.isImageMapped == true) {
                     result = result + '<a id="btnservice' + ServiceSmallModel.ServiceId + '" class="btn btn-primary getPicture" data-backdrop="static" href="#"><i class="fa fa-eye"></i></a>';
                 }
                 else {
-                    result = result + '<div class="row" style=""> <div class="col-sm-3 text-center"></div></div>'
+                    result = result + '<div class="row" style=""> <div class="col-sm-3 text-center"></div></div>';
                 }
 
                 result = result + '</div>';
 
-
                 var _imageFlag = ServiceSmallModel.ImageFlag == false ? false : true;
+
                 result = result + '<div class="col-lg-2 col-sm-3 col-xs-3 sel-serv" style="">';
+
                 if (ServiceSmallModel.isImageMapped == true) {
                     result = result + '<div class="row m-bot15" style=""> <div class="col-sm-3 text-center">' +
                         '<input class="serviceImage" id="chk' + ServiceSmallModel.ServiceId + '" type="checkbox" ' +
                         (_imageFlag == true ? ' checked ' : '') + ' data-toggle="switch"></div></div>';
                 }
                 else {
-                    result = result + '<div class="row " style="margin-bottom:29%;"> <div class="col-sm-3 text-center"></div></div>'
+                    result = result + '<div class="row " style="margin-bottom:29%;"> <div class="col-sm-3 text-center"></div></div>';
                 }
+
                 result = result + ' </div>';
-
-
 
                 result = result + ' <div class="col-lg-3 col-sm-3 col-xs-3 regProduct" style="">';
 
-                // if (data.objList3 != undefined && data.objList3 != null) {
-                //modifiedby AniketJ on 05-Aug-2017
-                //Added button to add product
-
-                //result = result + '<select id="ddlService' + ServiceSmallModel.ServiceId + '" name="Service" style="display:none;" multiple="multiple">';
-                //$.each(data.objList3, function (index, item) {
-                //    result = result + '<option value=' + item.productId + '>' + item.productName + '</option>';
-
-                //})
-
-                //result = result + '</select>';
-                //Servicelist.push('ddlService' + ServiceSmallModel.ServiceId);
-
-
                 result = result + '<input type="button" class="btn btn-success btnAddProduct" name="' + ServiceSmallModel.ServiceId + '" id="btnAddServiceProduct" value="Add Product" >';
 
-                // }
-
                 result = result + '</div></div>  </li>';
-
-
             });
 
-            //style="width: 100%; margin-top: 0%; margin-bottom: 1%;"
             $.each(data.objList2, function (id, ServiceNotSelectedModel) {
-                //debugger;
                 result1 = result1 + ' <li class="row"style="margin-bottom: 5px;" > <div class="task-content">';
 
                 result1 = result1 + '<div class="col-lg-2 col-sm-3 col-xs-3 show_deactive"><span>'
                     + ServiceNotSelectedModel.ServiceName + '</span></div>';
 
-                result1 = result1 + '<div class="col-lg-2 col-sm-3 col-xs-3">' +
-                    '<input maxlength="20" id="' + ServiceNotSelectedModel.ServiceId + '" type="text" placeholder="Enter rate for service" value="' +
-                    ServiceNotSelectedModel.ServiceBasePrice + '"' +
-                    'style="width:100%; text-align:right; padding-right:10px;" class="tab3txt allownumericwithdecimal"  />' +
+                result1 += '<div class="col-lg-2 col-sm-3 col-xs-3">' +
+                    '<input maxlength="20" id="costRate' + ServiceNotSelectedModel.ServiceId + '" type="text" ' +
+                    'value="' + formatMoney(
+                        ServiceNotSelectedModel.CostRate == null || parseFloat(ServiceNotSelectedModel.CostRate) === 0
+                            ? calculateDoubleCostRate(ServiceNotSelectedModel.ServiceBasePrice)
+                            : ServiceNotSelectedModel.CostRate
+                    ) + '" ' +
+                    'style="width:50%;text-align:right;padding-right:10px;" ' +
+                    'class="tab3Costtxt allownumericwithdecimal" />' +
                     '</div>';
 
                 result1 = result1 + '<div class="col-lg-2 col-sm-3 col-xs-3" style="text-align:center">';
+
                 if (ServiceNotSelectedModel.isImageMapped == true) {
                     result1 = result1 + '<a id="btnservice' + ServiceNotSelectedModel.ServiceId
                         + '" class="btn btn-primary getPicture" data-backdrop="static" href="#"><i class="fa fa-eye"></i></a>';
                 }
                 else {
-                    result1 = result1 + '<div class="row" style=""> <div class="col-sm-3 text-center"></div></div> '
+                    result1 = result1 + '<div class="row" style=""> <div class="col-sm-3 text-center"></div></div> ';
                 }
+
                 result1 = result1 + '</div>';
 
-                var _imageFlag = ServiceNotSelectedModel.ImageFlag == false ? false : true;
+                var _imageFlag2 = ServiceNotSelectedModel.ImageFlag == false ? false : true;
+
                 result1 = result1 + '<div class="col-lg-2 col-sm-3 col-xs-3 sel-serv" style="text-align:center">';
+
                 if (ServiceNotSelectedModel.isImageMapped == true) {
                     result1 = result1 + '<div class="row m-bot15" style=""> <div class="col-sm-3 text-center">' +
                         '<input class="serviceImage" id="chk' + ServiceNotSelectedModel.ServiceId + '" type="checkbox" ' +
-                        (_imageFlag == true ? ' checked ' : '') + ' data-toggle="switch"></div></div>';
+                        (_imageFlag2 == true ? ' checked ' : '') + ' data-toggle="switch"></div></div>';
                 }
                 else {
-                    result1 = result1 + '<div class="row " style="margin-bottom:29%;"> <div class="col-sm-3 text-center"></div></div>'
+                    result1 = result1 + '<div class="row " style="margin-bottom:29%;"> <div class="col-sm-3 text-center"></div></div>';
                 }
+
                 result1 = result1 + ' </div>';
-
-
 
                 result1 = result1 + ' <div class="col-lg-3 col-sm-3 col-xs-3 regProduct" style="">';
 
-                //if (data.objList3 != undefined && data.objList3 != null) {
-                //result1 = result1 + '<select id="ddlService' + ServiceNotSelectedModel.ServiceId + '" name="Service" style="display:none;" multiple="multiple">';
-                //$.each(data.objList3, function (index, item) {
-                //    result1 = result1 + '<option value=' + item.productId + '>' + item.productName + '</option>';
-
-                //})
-
-                //result1 = result1 + '</select>';
-
-                //Servicelist.push('ddlService' + ServiceNotSelectedModel.ServiceId);
-
                 result1 = result1 + '<input type="button" class="btn btn-success btnAddProduct" name="' + ServiceNotSelectedModel.ServiceId + '" id="btnAddServiceProduct" value="Add Product" >';
-                // }
 
                 result1 = result1 + '</div> </div> </li>';
-
             });
 
             $.each(data.objList4, function (id, ServiceSmallModel) {
                 result2 = result2 + ' <li class="row" style="margin-bottom: 5px;"> <div class="task-content">';
+
                 result2 = result2 + ' <div class="col-lg-2 col-sm-3 col-xs-3 show_deactive"><span>' + ServiceSmallModel.MeterSize + '</span></div>';
+
                 result2 = result2 + '<div class="col-lg-2 col-sm-3 col-xs-3">' +
                     '<input maxlength="20" id="' + ServiceSmallModel.Id + '" type="text" placeholder="Enter Meter Pay Rate" value="' +
-                    ServiceSmallModel.Pay + '"' +
-                    'style="width:100%; text-align:right; padding-right:10px;" class="tab4txt allownumericwithdecimal"  />' +
+                    formatMoney(ServiceSmallModel.Pay) + '"' +
+                    'style="width:50%; text-align:right; padding-right:10px;" class="tab4txt allownumericwithdecimal"  />' +
+                    '</div>';
+
+                result2 += '<div class="col-lg-2 col-sm-3 col-xs-3">' +
+                    '<input maxlength="20" id="meterCostRate' + ServiceSmallModel.Id + '" type="text" ' +
+                    'data-serviceid="' + ServiceSmallModel.ServiceId + '" ' +
+                    'value="' + formatMoney(
+                        ServiceSmallModel.CostRate == null || parseFloat(ServiceSmallModel.CostRate) === 0
+                            ? calculateDoubleCostRate(ServiceSmallModel.Pay)
+                            : ServiceSmallModel.CostRate
+                    ) + '" ' +
+                    'style="width:50%;text-align:right;padding-right:10px;" ' +
+                    'class="tab4Costtxt meterCostRateByService allownumericwithdecimal" />' +
                     '</div>';
 
                 result2 = result2 + ' </div>';
                 result2 = result2 + ' <div class="col-lg-3 col-sm-3 col-xs-3 regProduct" style="">';
-                //result2 = result2 + '<input type="button" class="btn btn-success btnAddMeterPayRate" name="' + ServiceSmallModel.Id + '" id="btnAddMeterPayRates" value="Save" >';
                 result2 = result2 + '</div></div>  </li>';
             });
 
             mastDiv.append(result);
             mastAdditionalDiv.append(result1);
             mastMeterPayRateDiv.append(result2);
-            ShowHideAddProductButton()
-            //debugger;;
-            $("[data-toggle='switch']").wrap('<div class="switch" />').parent().bootstrapSwitch()
 
+            ShowHideAddProductButton();
+
+            $("[data-toggle='switch']").wrap('<div class="switch" />').parent().bootstrapSwitch();
 
             if (Servicelist != null && Servicelist.length > 0) {
                 $.each(Servicelist, function (key, value) {
-
                     $('#' + value).multiselect({ includeSelectAllOption: true, enableFiltering: true, enableCaseInsensitiveFiltering: true });
                     $('#' + value).multiselect("refresh");
                 });
-
             }
-
 
             $.each(data.objList1, function (id, ServiceSmallModel) {
                 if (ServiceSmallModel.productArray != undefined && ServiceSmallModel.productArray.length > 0) {
@@ -1296,21 +1301,41 @@ function getTab3Data() {
                 }
             });
 
+            $("#txtProjectBudget").val(
+                data.ProjectBudget == null ? "0.00" : formatAmountWithCommas(data.ProjectBudget)
+            );
+
+            $("#txtServiceLineBudget").val(
+                data.ServiceLineBudget == null ? "0.00" : formatAmountWithCommas(data.ServiceLineBudget)
+            );
 
             waitingDialog.hide();
         },
 
         error: function (xhr, ajaxOptions, thrownError) {
-            //spinner.stop(target);
             waitingDialog.hide();
-            var $toast = toastr["error"]("something seems wrong", "Error Notification");
-
+            toastr["error"]("something seems wrong", "Error Notification");
         }
-
     });
+}
+function formatMoney(value) {
+    var number = parseFloat(value);
 
+    if (isNaN(number)) {
+        return "0.00";
+    }
 
+    return number.toFixed(2);
+}
 
+function calculateDoubleCostRate(rateValue) {
+    var rate = parseFloat(rateValue);
+
+    if (isNaN(rate)) {
+        return "0.00";
+    }
+
+    return (rate * 2).toFixed(2);
 }
 
 $(document).on('keypress keyup blu', '.allownumericwithdecimal', function (e) {
@@ -1335,7 +1360,19 @@ $(document).on('keypress keyup blu', '.allownumericwithdecimal', function (e) {
     }
 
 });
+$(document).on('keyup change blur', '.tab3txt', function () {
+    var serviceId = $(this).attr('id');
+    var serviceRate = $(this).val();
 
+    var costRateBox = $('#costRate' + serviceId);
+
+    if (costRateBox.length > 0) {
+        costRateBox.val(calculateDoubleCostRate(serviceRate));
+
+        // also update Add Meter Pay Rate cost
+        syncSelectedServiceCostToMeterPay(costRateBox);
+    }
+});
 $(document).on('keypress keyup blu', '.allowalphanumeric', function (e) {
     var regex = new RegExp("^[a-zA-Z0-9\\-\\s]+$");
     var str = String.fromCharCode(!e.charCode ? e.which : e.charCode);
@@ -1368,89 +1405,124 @@ $(document).on('change', '.checkalphanumeric', function (e) {
 
 
 
-function checkTab3Status() {
+function checkTab3Status(moveNext) {
     debugger;
 
-    var data1 = [];
+    if (moveNext === undefined) {
+        moveNext = true;
+    }
 
+    var data1 = [];
     var checkVal = false;
-    var serviceName = ''
 
     $(".tab3txt").each(function () {
 
         if ($.isNumeric($(this).val())) {
 
-            var imageRequired = 'false';
+            var serviceId = $(this)[0].id;
+            var imageRequired = "false";
 
-            var a = $('#chk' + $(this)[0].id);
+            var chkObj = $("#chk" + serviceId);
 
-            if (a != null) {
-                var b = a.parent().attr('class');
-                if (b != null && (b == 'switch-animate switch-on' || b == 'switch-on switch-animate')) {
-                    imageRequired = 'true';
+            if (chkObj != null) {
+                var switchClass = chkObj.parent().attr("class");
+
+                if (switchClass != null &&
+                    (switchClass == "switch-animate switch-on" ||
+                        switchClass == "switch-on switch-animate")) {
+                    imageRequired = "true";
                 }
             }
 
-            //ddlService767
-            var selectedProductList = $('#ddlService' + $(this)[0].id).val();
+            var selectedProductList = $("#ddlService" + serviceId).val();
 
-            debugger;
-            var serviceObject = { serviceId: $(this)[0].id, servicePrice: $(this).val(), imageCaptureRequired: imageRequired, AssignedProductList: selectedProductList };
+            var serviceObject = {
+                serviceId: serviceId,
+                servicePrice: $(this).val(),
+                costRate: $("#costRate" + serviceId).val() || 0,
+                imageCaptureRequired: imageRequired,
+                AssignedProductList: selectedProductList
+            };
+
             data1.push(serviceObject);
-            debugger;
         }
         else {
             checkVal = true;
-            serviceName = $(this)[0].id.text;
         }
-
     });
 
     if (checkVal) {
-        var $toast = toastr["error"]('Please enter valid rate for all services.', 'Notification !');
-        $(this).focus();
-        return;
+        toastr["error"]("Please enter valid rate for all services.", "Notification !");
+        return false;
+    }
+    var projectBudget = removeAmountCommas($("#txtProjectBudget").val()) || 0;
+    var serviceLineBudget = removeAmountCommas($("#txtServiceLineBudget").val()) || 0;
+
+    if (!$.isNumeric(projectBudget)) {
+        toastr["error"]("Please enter valid project budget.", "Notification !");
+        $("#txtProjectBudget").focus();
+        return false;
     }
 
+    if (!$.isNumeric(serviceLineBudget)) {
+        toastr["error"]("Please enter valid service line budget.", "Notification !");
+        $("#txtServiceLineBudget").focus();
+        return false;
+    }
 
+    waitingDialog.show("Please Wait...");
 
-    waitingDialog.show('Please Wait...');
+    var data0 = {
+        projectId: $("#txtProjectId").val(),
+        projectBudget: projectBudget,
+        serviceLineBudget: serviceLineBudget,
+        serviceLineCode: "LEAD_LINE",
+        Servicedata: data1
+    };
 
-    debugger;
-
-    var data0 = { projectId: $("#txtProjectId").val(), Servicedata: data1 };
-    debugger;
     var json = JSON.stringify(data0);
     console.log(json);
 
-    debugger;
     jQuery.ajaxSettings.traditional = true;
-    var urlSaveTab3Data = $('#SaveTab3Url').val();
+
+    var urlSaveTab3Data = $("#SaveTab3Url").val();
+
     $.ajax({
         url: urlSaveTab3Data,
         type: "POST",
-        // async: false,
         data: {
-            "Objdata": json
+            Objdata: json
         },
         success: function (data) {
-            if (data.success == true) {
-                //debugger;;
-                nextStepWizard.removeAttr('disabled').trigger('click');
-                saveMetePayRates(); // Add new line
-                getTab4Data();
 
-            } else {
+            if (data.success == true) {
+
+                saveMetePayRates();
+
+                toastr["success"]("Tab 3 information saved successfully.", "Success Notification !");
+
+                if (moveNext === true) {
+                    nextStepWizard.removeAttr("disabled").trigger("click");
+                    getTab4Data();
+                }
+                else {
+                    waitingDialog.hide();
+                }
+
+                return true;
+            }
+            else {
+                waitingDialog.hide();
+                toastr["error"](data.returnMessage || "Tab 3 save failed.", "Error Notification");
                 return false;
             }
         },
         error: function () {
-            console.log("get error");
-            var $toast = toastr["error"]("something seems wrong", "Error Notification");
+            waitingDialog.hide();
+            toastr["error"]("Something seems wrong.", "Error Notification");
             return false;
         }
     });
-
 }
 
 function saveMetePayRates() {
@@ -1464,7 +1536,13 @@ function saveMetePayRates() {
     $(".tab4txt").each(function () {
 
         if ($.isNumeric($(this).val())) {
-            var Object = { Id: $(this)[0].id, Pay: $(this).val() };
+            var meterId = $(this)[0].id;
+
+            var Object = {
+                Id: meterId,
+                Pay: $(this).val(),
+                CostRate: $('#meterCostRate' + meterId).val() || 0
+            };
             data2.push(Object);
         }
         else {
@@ -2432,3 +2510,107 @@ $('#chkMapWithNationWide').change(function () {
     }
 });
 //#endregion
+function calculateDoubleCostRate(rateValue) {
+    var rate = parseFloat(rateValue);
+
+    if (isNaN(rate)) {
+        return "0.00";
+    }
+
+    return (rate * 2).toFixed(2);
+}
+$(document).on('focus', '.tab3Costtxt', function () {
+    $(this).attr('data-manual-edit', 'true');
+});
+$(document).on('keyup change blur', '.tab3txt', function () {
+    var serviceId = $(this).attr('id');
+    var serviceRate = $(this).val();
+
+    var costRateBox = $('#costRate' + serviceId);
+
+    if (costRateBox.length > 0) {
+        var isManualEdit = costRateBox.attr('data-manual-edit') === 'true';
+
+        if (!isManualEdit) {
+            costRateBox.val(calculateDoubleCostRate(serviceRate));
+        }
+    }
+});
+function calculateDoubleCostRate(rateValue) {
+    var rate = parseFloat(rateValue);
+
+    if (isNaN(rate)) {
+        return "0.00";
+    }
+
+    return (rate * 2).toFixed(2);
+}
+$(document).on('keyup change blur', '.tab4txt', function () {
+    var meterPayId = $(this).attr('id');
+    var payRate = $(this).val();
+
+    var costRateBox = $('#meterCostRate' + meterPayId);
+
+    if (costRateBox.length > 0) {
+        costRateBox.val(calculateDoubleCostRate(payRate));
+    }
+});
+function syncSelectedServiceCostToMeterPay(costRateInput) {
+    var serviceId = $(costRateInput).attr('data-masterfieldid');
+    var costRate = formatMoney($(costRateInput).val());
+
+    if (serviceId == undefined || serviceId == null || serviceId == '') {
+        return;
+    }
+
+    $('.meterCostRateByService[data-serviceid="' + serviceId + '"]').val(costRate);
+}
+$(document).on('keyup change blur', '.tab3Costtxt', function () {
+    syncSelectedServiceCostToMeterPay(this);
+});
+function formatMoney(value) {
+    var number = parseFloat(value);
+
+    if (isNaN(number)) {
+        return "0.00";
+    }
+
+    return number.toFixed(2);
+}
+function removeAmountCommas(value) {
+    if (value === undefined || value === null) {
+        return "0";
+    }
+
+    return $.trim(value.toString()).replace(/,/g, "");
+}
+
+function formatAmountWithCommas(value) {
+    var cleanValue = removeAmountCommas(value);
+
+    if (cleanValue === "" || cleanValue === ".") {
+        return "0.00";
+    }
+
+    var number = parseFloat(cleanValue);
+
+    if (isNaN(number)) {
+        return "0.00";
+    }
+
+    return number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+$(document).on('blur', '.tab3Costtxt, .tab4Costtxt', function () {
+    $(this).val(formatMoney($(this).val()));
+});
+
+$(document).on('blur', '.tab3txt, .tab4txt, .tab3Costtxt, .tab4Costtxt', function () {
+    $(this).val(formatMoney($(this).val()));
+});
+$(document).on("focus", "#txtProjectBudget, #txtServiceLineBudget", function () {
+    $(this).val(removeAmountCommas($(this).val()));
+});
+
+$(document).on("blur", "#txtProjectBudget, #txtServiceLineBudget", function () {
+    $(this).val(formatAmountWithCommas($(this).val()));
+});

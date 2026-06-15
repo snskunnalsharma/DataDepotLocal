@@ -1,4 +1,4 @@
-﻿<style>
+<style>
     /***************************** IPHONE 6S Landscape **********************************/
     @@media only screen and (min-width:651px)and (max-width:767px) {
         ul.sidebar-menu {
@@ -12,7 +12,6 @@
         // Avoid relying on per-user AspNetUserRolePermissions, which can get out of sync when role rights change.
         var PermissionList = new List<string>();
 
-        // Prefer login session cache (set in LoginController) for performance.
         var sessionPerms = Session["PermissionList"] as List<GarronT.CMS.Model.AspNetPermission>;
         if (sessionPerms != null)
         {
@@ -51,7 +50,6 @@
                     .ToList();
             }
         }
-
         if (PermissionList.Contains("Dashboard"))
         {
             <li>
@@ -376,7 +374,8 @@
         }
 
         if (PermissionList.Contains("Reports") || PermissionList.Contains("DuplicateReport") || PermissionList.Contains("ExportReport") ||
-            PermissionList.Contains("AuditorReports") || PermissionList.Contains("InstallerMapDataHistory") || PermissionList.Contains("ClockTimeReport"))
+    PermissionList.Contains("AuditorReports") || PermissionList.Contains("InstallerMapDataHistory") ||
+    PermissionList.Contains("ClockTimeReport") || PermissionList.Contains("BudgetStatusReport"))
         {
             <li>
                 <a id="Reports" target="_self" class="nav-bg nav-main  dcjq-parent" href="javascript:void(0);">
@@ -451,7 +450,17 @@
                             </a>
                         </li>
                     }
-
+                    @if (PermissionList.Contains("BudgetStatusReport"))
+                    {
+                        <li id="liBudgetStatusReport">
+                            <a target="_self" class="AdminMenu" href="@Url.Action("Index", "BudgetStatusReport", new { area = "Admin" })">
+                                <span class="icon">
+                                    <i class="fa fa-check-square-o"></i>
+                                </span>
+                                <span>Budget Status Report</span>
+                            </a>
+                        </li>
+                    }
                 </ul>
             </li>
 

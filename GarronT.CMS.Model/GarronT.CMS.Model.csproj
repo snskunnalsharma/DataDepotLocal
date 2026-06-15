@@ -218,6 +218,7 @@
     <Compile Include="BO\AuditBO.cs" />
     <Compile Include="BO\AuditCycleBO.cs" />
     <Compile Include="BO\AutoSynchInventory.cs" />
+    <Compile Include="BO\BudgetStatusReportBO.cs" />
     <Compile Include="BO\CategoryBO.cs" />
     <Compile Include="BO\ClockTimeReportModel.cs" />
     <Compile Include="BO\CustomerAuditPercentage.cs" />
@@ -240,6 +241,7 @@
     <Compile Include="BO\InventoryUploadBO.cs" />
     <Compile Include="BO\InwardInventoryBo.cs" />
     <Compile Include="BO\MobileOffline.cs" />
+    <Compile Include="BO\ProjectBudgetMaster.cs" />
     <Compile Include="BO\ReasonBO.cs" />
     <Compile Include="BO\ReceiveInventry.cs" />
     <Compile Include="BO\ReOpenMail.cs" />
@@ -337,6 +339,7 @@
     <Compile Include="DAL\AppointmentAllocationDAL.cs" />
     <Compile Include="DAL\AppointmentDAL.cs" />
     <Compile Include="DAL\AuditDAL.cs" />
+    <Compile Include="DAL\BudgetStatusReportDAL.cs" />
     <Compile Include="DAL\CategoryDAL.cs" />
     <Compile Include="DAL\ClockTimeReportDAL.cs" />
     <Compile Include="DAL\DuplicateReportDAL.cs" />

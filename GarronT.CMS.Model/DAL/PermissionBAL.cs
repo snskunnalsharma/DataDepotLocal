@@ -1,4 +1,4 @@
-﻿using GarronT.CMS.Model.BO;
+using GarronT.CMS.Model.BO;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -52,13 +52,16 @@ namespace GarronT.CMS.Model.DAL
                 .ThenBy(p => p.Permission_Id)
                 .ToList();
 
-            var reportNames = new HashSet<string>(StringComparer.Ordinal)
+            var reportNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
                 "Duplicate Report",
                 "Export Report",
                 "Installer Report",
                 "Auditor Report",
-                "Skip History Report"
+                "Skip History Report",
+                "Budget Status Report",
+                "BudgetStatusReport",
+                "Time Clock Report"
             };
 
             var reportOrdered = list.Where(p => reportNames.Contains(p.PermissionName))
@@ -71,12 +74,7 @@ namespace GarronT.CMS.Model.DAL
                     p.Permission_Id < firstReportsCutoff
                     && !inventoryNames.Contains(p.PermissionName)
                     && !reportNames.Contains(p.PermissionName)
-                    && p.PermissionName != "Time Clock Report"
                     && p.PermissionName != "Test")
-                .OrderBy(p => p.Permission_Id)
-                .ToList();
-
-            var timeClockItems = list.Where(p => p.PermissionName == "Time Clock Report")
                 .OrderBy(p => p.Permission_Id)
                 .ToList();
 
@@ -88,7 +86,6 @@ namespace GarronT.CMS.Model.DAL
                 firstBlock.Select(p => p.Permission_Id)
                     .Concat(invOrdered.Select(p => p.Permission_Id))
                     .Concat(reportOrdered.Select(p => p.Permission_Id))
-                    .Concat(timeClockItems.Select(p => p.Permission_Id))
                     .Concat(testItems.Select(p => p.Permission_Id)));
 
             var remainder = list.Where(p => !assigned.Contains(p.Permission_Id))
@@ -98,7 +95,6 @@ namespace GarronT.CMS.Model.DAL
             return firstBlock
                 .Concat(invOrdered)
                 .Concat(reportOrdered)
-                .Concat(timeClockItems)
                 .Concat(testItems)
                 .Concat(remainder)
                 .ToList();

@@ -49,7 +49,8 @@ namespace GarronT.CMS.Model
         public Nullable<bool> IsCloned { get; set; }
         public Nullable<long> CloneProjectId { get; set; }
         public Nullable<int> mapBy { get; set; }
-    
+        public Nullable<decimal> ProjectBudget { get; set; }
+
         public virtual ICollection<ProjectServiceProductRelation> ProjectServiceProductRelations { get; set; }
         public virtual ICollection<ProjectWarehouseRelation> ProjectWarehouseRelations { get; set; }
         public virtual ICollection<StockDetail> StockDetails { get; set; }

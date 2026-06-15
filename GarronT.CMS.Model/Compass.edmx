@@ -14,7 +14,27 @@
           <Property Name="ContextKey" Type="nvarchar" MaxLength="300" Nullable="false" />
           <Property Name="Model" Type="varbinary(max)" Nullable="false" />
           <Property Name="ProductVersion" Type="nvarchar" MaxLength="32" Nullable="false" />
-        </EntityType>       
+        </EntityType>
+        <EntityType Name="ProjectBudgetMaster">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ProjectId" Type="bigint" Nullable="false" />
+          <Property Name="BudgetCode" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="BudgetName" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="BudgetAmount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="BudgetType" Type="varchar" MaxLength="50" />
+          <Property Name="ServiceId" Type="bigint" />
+          <Property Name="ServiceCode" Type="varchar" MaxLength="100" />
+          <Property Name="Description" Type="varchar" MaxLength="500" />
+          <Property Name="DisplayOrder" Type="int" Nullable="false" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="CreatedBy" Type="bigint" />
+          <Property Name="CreatedOn" Type="datetime" Nullable="false" />
+          <Property Name="ModifiedBy" Type="bigint" />
+          <Property Name="ModifiedOn" Type="datetime" />
+        </EntityType>
         <EntityType Name="Missing_Inventory">
           <Key>
             <PropertyRef Name="Id" />
@@ -1332,6 +1352,7 @@
           <Property Name="IsCloned" Type="bit" />
           <Property Name="CloneProjectId" Type="bigint" />
           <Property Name="mapBy" Type="int" />
+          <Property Name="ProjectBudget" Type="decimal" Precision="18" Scale="2" Nullable="true" />
         </EntityType>
         <EntityType Name="TblProjectCustomeFieldReletion">
           <Key>
@@ -1614,6 +1635,7 @@
           <Property Name="CreatedOn" Type="datetime" />
           <Property Name="ModifiedBy" Type="int" />
           <Property Name="ModifiedOn" Type="datetime" />
+          <Property Name="CostRate" Type="decimal" Precision="18" Scale="2" Nullable="true" />
         </EntityType>
         <EntityType Name="TblProjectStandardFieldRelation">
           <Key>
@@ -2110,6 +2132,7 @@
           <Property Name="CreatedOn" Type="datetime" />
           <Property Name="ModifiedBy" Type="int" />
           <Property Name="ModifiedOn" Type="datetime" />
+          <Property Name="CostRate" Type="decimal" Precision="18" Scale="2" Nullable="true" />
         </EntityType>
         <EntityType Name="UtilityMaster">
           <Key>
@@ -3753,6 +3776,7 @@
         </Function>
         <EntityContainer Name="CompassModelStoreContainer">
           <EntitySet Name="__MigrationHistory" EntityType="Self.__MigrationHistory" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ProjectBudgetMaster" EntityType="Self.ProjectBudgetMaster" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Missing_Inventory" EntityType="Self.Missing_Inventory" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="INVInstallerReport" EntityType="Self.INVInstallerReport" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WarehouseTransfer" EntityType="Self.WarehouseTransfer" Schema="dbo" store:Type="Tables" />
@@ -4281,6 +4305,7 @@
       <Schema Namespace="CompassModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityContainer Name="CompassEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="C__MigrationHistory" EntityType="CompassModel.C__MigrationHistory" />
+          <EntitySet Name="ProjectBudgetMasters" EntityType="Self.ProjectBudgetMaster" />
           <EntitySet Name="Missing_Inventory" EntityType="CompassModel.Missing_Inventory" />
           <EntitySet Name="INVInstallerReport" EntityType="CompassModel.INVInstallerReport" />
           <EntitySet Name="WarehouseTransfer" EntityType="CompassModel.WarehouseTransfer" />
@@ -5856,6 +5881,7 @@
           <Property Name="CreatedOn" Type="DateTime" Precision="3" />
           <Property Name="ModifiedBy" Type="Int32" />
           <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
+          <Property Name="CostRate" Type="Decimal" Precision="18" Scale="2" Nullable="true" />
         </EntityType>
         <ComplexType Name="STP_DashboardInstallationsPerMonth_Result">
           <Property Type="String" Name="initialfieldname" Nullable="true" MaxLength="250" />
@@ -7956,6 +7982,26 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="ProjectBudgetMaster">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ProjectId" Type="Int64" Nullable="false" />
+          <Property Name="BudgetCode" Type="String" Nullable="false" MaxLength="100" Unicode="false" FixedLength="false" />
+          <Property Name="BudgetName" Type="String" Nullable="false" MaxLength="255" Unicode="false" FixedLength="false" />
+          <Property Name="BudgetAmount" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="BudgetType" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="ServiceId" Type="Int64" />
+          <Property Name="ServiceCode" Type="String" MaxLength="100" Unicode="false" FixedLength="false" />
+          <Property Name="Description" Type="String" MaxLength="500" Unicode="false" FixedLength="false" />
+          <Property Name="DisplayOrder" Type="Int32" Nullable="false" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="CreatedBy" Type="Int64" />
+          <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ModifiedBy" Type="Int64" />
+          <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
+        </EntityType>
         <EntityType Name="InventoryMobileStockRequestDetail">
           <Key>
             <PropertyRef Name="Id" />
@@ -9870,6 +9916,7 @@
           <Property Name="IsCloned" Type="Boolean" />
           <Property Name="CloneProjectId" Type="Int64" />
           <Property Name="mapBy" Type="Int32" />
+          <Property Name="ProjectBudget" Type="Decimal" Precision="18" Scale="2" Nullable="true" />
           <NavigationProperty Name="ProjectServiceProductRelations" Relationship="CompassModel.FK_ProjectServiceProductRelation_tblProject" FromRole="tblProject" ToRole="ProjectServiceProductRelation" />
           <NavigationProperty Name="ProjectWarehouseRelations" Relationship="CompassModel.FK_ProjectWarehouseRelation_tblProject" FromRole="tblProject" ToRole="ProjectWarehouseRelation" />
           <NavigationProperty Name="StockDetails" Relationship="CompassModel.FK_StockDetails_tblProject" FromRole="tblProject" ToRole="StockDetail" />
@@ -10047,6 +10094,7 @@
           <Property Name="CreatedOn" Type="DateTime" Precision="3" />
           <Property Name="ModifiedBy" Type="Int32" />
           <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
+          <Property Name="CostRate" Type="Decimal" Precision="18" Scale="2" Nullable="true" />
           <NavigationProperty Name="tblProject" Relationship="CompassModel.FK_tblMeterPay_tblProject" FromRole="tblMeterPay" ToRole="tblProject" />
           <NavigationProperty Name="tblMeterSize" Relationship="CompassModel.FK_tblMeterPay_tblMeterSize" FromRole="tblMeterPay" ToRole="tblMeterSize" />
           <NavigationProperty Name="tblMeterType" Relationship="CompassModel.FK_tblMeterPay_tblMeterType" FromRole="tblMeterPay" ToRole="tblMeterType" />
@@ -10196,6 +10244,27 @@
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ProjectBudgetMasters">
+            <EntityTypeMapping TypeName="IsTypeOf(CompassModel.ProjectBudgetMaster)">
+              <MappingFragment StoreEntitySet="ProjectBudgetMaster">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="ProjectId" ColumnName="ProjectId" />
+                <ScalarProperty Name="BudgetCode" ColumnName="BudgetCode" />
+                <ScalarProperty Name="BudgetName" ColumnName="BudgetName" />
+                <ScalarProperty Name="BudgetAmount" ColumnName="BudgetAmount" />
+                <ScalarProperty Name="BudgetType" ColumnName="BudgetType" />
+                <ScalarProperty Name="ServiceId" ColumnName="ServiceId" />
+                <ScalarProperty Name="ServiceCode" ColumnName="ServiceCode" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="DisplayOrder" ColumnName="DisplayOrder" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -10841,6 +10910,7 @@
                 <ScalarProperty Name="MasterTableName" ColumnName="MasterTableName" />
                 <ScalarProperty Name="ProjectID" ColumnName="ProjectID" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="CostRate" ColumnName="CostRate" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -14398,6 +14468,7 @@
                 <ScalarProperty Name="ProjectDecsription" ColumnName="ProjectDecsription" />
                 <ScalarProperty Name="ProjectName" ColumnName="ProjectName" />
                 <ScalarProperty Name="ProjectId" ColumnName="ProjectId" />
+                <ScalarProperty Name="ProjectBudget" ColumnName="ProjectBudget" />     
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -14483,6 +14554,7 @@
                 <ScalarProperty Name="FK_MeterType_Id" ColumnName="FK_MeterType_Id" />
                 <ScalarProperty Name="FK_MeterSize_Id" ColumnName="FK_MeterSize_Id" />
                 <ScalarProperty Name="FK_Project_Id" ColumnName="FK_Project_Id" />
+                <ScalarProperty Name="CostRate" ColumnName="CostRate" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>

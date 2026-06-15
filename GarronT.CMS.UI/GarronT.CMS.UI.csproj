@@ -275,6 +275,7 @@
     <Compile Include="Areas\Admin\Controllers\AppointmentAllocationController.cs" />
     <Compile Include="Areas\Admin\Controllers\AppointmentController.cs" />
     <Compile Include="Areas\Admin\Controllers\AuditorReportsController.cs" />
+    <Compile Include="Areas\Admin\Controllers\BudgetStatusReportController.cs" />
     <Compile Include="Areas\Admin\Controllers\CategoryController.cs" />
     <Compile Include="Areas\Admin\Controllers\CityController.cs" />
     <Compile Include="Areas\Admin\Controllers\ClockTimeReportController.cs" />
@@ -4440,6 +4441,7 @@
     <Content Include="Areas\Admin\Views\InventoryBulkTransfer\Index.cshtml" />
     <Content Include="Angular\views\Form\field\SinglePhoto.html" />
     <Content Include="Areas\Admin\Views\InventoryRequestConfiguration\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\BudgetStatusReport\Index.cshtml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile1.pubxml" />
     <None Include="Properties\PublishProfiles\publish.pubxml" />

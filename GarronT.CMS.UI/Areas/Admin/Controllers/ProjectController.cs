@@ -394,6 +394,9 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 obj1.objList2 = objList2.ToList();
                 //obj1.objList3 = objList3;
                 obj1.objList4 = objList4.ToList();
+                obj1.ProjectBudget = obj.GetProjectBudget(projectId);
+                obj1.ServiceLineBudget = obj.GetServiceLineBudget(projectId);
+
                 return Json(obj1, JsonRequestBehavior.AllowGet);
             }
 
@@ -402,13 +405,12 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
 
         public JsonResult SaveTab3Data(string Objdata)
         {
-            IEnumerable<ServiceSmallModel> objList1 = new List<ServiceSmallModel>();
-            //public bool SaveTab3Records(long projectId, List<ServiceSmallModel> objList, int UserId)
-
             JavaScriptSerializer s = new JavaScriptSerializer();
             s.MaxJsonLength = 2147483644;
+
             Tab3BO objTab3BO = new Tab3BO();
             int userId = (int)new UserDetails().GetUserId(User.Identity.GetUserId());
+
             try
             {
                 objTab3BO = s.Deserialize<Tab3BO>(Objdata);
@@ -416,15 +418,22 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 using (ProjectMasterDAL obj = new ProjectMasterDAL())
                 {
                     bool a1 = obj.SaveTab3Records(objTab3BO, userId);
-                    return Json(new { success = a1 }, JsonRequestBehavior.AllowGet);
+
+                    return Json(new
+                    {
+                        success = a1,
+                        returnMessage = a1 ? "Tab 3 saved successfully." : "Tab 3 save failed."
+                    }, JsonRequestBehavior.AllowGet);
                 }
             }
             catch (Exception ex)
             {
-                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+                return Json(new
+                {
+                    success = false,
+                    returnMessage = ex.Message
+                }, JsonRequestBehavior.AllowGet);
             }
-
-
         }
 
         public JsonResult SaveTab3DataMeterPayRate(string Objdata)

@@ -1,4 +1,4 @@
-﻿using GarronT.CMS.Model;
+using GarronT.CMS.Model;
 
 using System;
 using System.Collections.Generic;

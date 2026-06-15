@@ -1,4 +1,4 @@
-﻿@model GarronT.CMS.Model.BO.AspNetPermissionVM
+@model GarronT.CMS.Model.BO.AspNetPermissionVM
 @{
     ViewBag.Title = "User Role Rights";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
@@ -263,7 +263,7 @@
                                                     string[] str4 = { "Warehouse Master", "Category Master", "Product Master", "Inventory Upload", "Inventory Receive", "Inventory View", "View Stock Request" };
                                                     string[] str5 = { "Alert Master", "Audit", "Customer", "Project", "Installer Allocation", "Appointment" };
                                                     string[] str6 = { "Form Management" };
-                                                    string[] str7 = { "Time Clock Report", "Duplicate Report", "Export Report", "Installer Report", "Auditor Report", "Skip History Report","Test" };
+                                                    string[] str7 = { "Time Clock Report", "Duplicate Report", "Export Report", "Installer Report", "Auditor Report", "Skip History Report", "Budget Status Report", "Test" };
                                                     string[] str8 = { "Warehouse Stock Report", "Inventory Stock Report", "Product Movement Report", "Inventory Transfer", "Warehouse Transfer", "INV Installer Report" };
 
 
@@ -272,8 +272,7 @@
                                                     if (item.PermissionName == "Project Status" || item.PermissionName == "Dashboard" ||
                                                         item.PermissionName == "City Logo Master" || item.PermissionName == "Warehouse Master" ||
                                                         item.PermissionName == "Alert Master" || item.PermissionName == "Form Management" ||
-                                                        item.PermissionName == "Duplicate Report" || item.PermissionName == "Warehouse Stock Report"
-                                                         || item.PermissionName == "Time Clock Report")
+                                                        item.PermissionName == "Duplicate Report" || item.PermissionName == "Warehouse Stock Report")
                                                     {
                                                         var aMenuName = "";
                                                         if (item.PermissionName == "City Logo Master")
@@ -484,7 +483,8 @@
                                                                 if (item.PermissionName == "Project Status" || item.PermissionName == "Dashboard" ||
                                                                 item.PermissionName == "Inventory View" || item.PermissionName == "Inventory Stock Report" || item.PermissionName == "Duplicate Report" ||
                                                                 item.PermissionName == "Product Movement Report" || item.PermissionName == "Inventory Transfer" || item.PermissionName == "Warehouse Transfer" ||
-                                                                item.PermissionName == "INV Installer Report" || item.PermissionName == "Skip History Report" || item.PermissionName == "Time Clock Report")
+                                                                item.PermissionName == "INV Installer Report" || item.PermissionName == "Skip History Report" || item.PermissionName == "Time Clock Report" ||
+                                                                item.PermissionName == "Budget Status Report" || item.PermissionName == "BudgetStatusReport")
                                                                 {
 
 

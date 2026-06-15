@@ -1,0 +1,1005 @@
+@{
+    ViewBag.Title = "Budget Status Report";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@Html.Hidden("UrlGetProjectByUtility", Url.Action("GetProject", "BudgetStatusReport"))
+@Html.Hidden("UrlGetInstallerByProject", Url.Action("GetInstallerList", "BudgetStatusReport"))
+@Html.Hidden("UrlGetBudgetStatusReport", Url.Action("GetBudgetStatusReport", "BudgetStatusReport"))
+@Html.Hidden("UrlExportBudgetStatusReport", Url.Action("ExportBudgetStatusReport", "BudgetStatusReport"))
+<link href="@Url.Content("~/Content/themes/base/jquery-ui.css")" rel="stylesheet" />
+
+<style>
+        .budget-filter-row {
+            margin-top: 18px;
+            margin-bottom: 18px;
+        }
+
+            .budget-filter-row .form-control {
+                height: 28px;
+                padding: 3px 6px;
+                font-size: 12px;
+                border-radius: 3px;
+            }
+
+        .budget-btn-row {
+            text-align: center;
+            margin-top: 6px;
+            margin-bottom: 25px;
+        }
+
+            .budget-btn-row .btn {
+                padding: 4px 10px;
+                font-size: 12px;
+                margin-right: 4px;
+            }
+
+        #tblBudgetStatusReport thead th {
+            background: linear-gradient(#1f4e69, #133449);
+            color: #ffffff;
+            text-align: center;
+            font-size: 12px;
+            vertical-align: middle;
+            font-weight: bold;
+        }
+
+        #tblBudgetStatusReport tfoot th {
+            text-align: center;
+            font-size: 12px;
+            vertical-align: middle;
+            font-weight: bold;
+        }
+
+        #tblBudgetStatusReport tbody td {
+            text-align: center;
+            font-size: 12px;
+            vertical-align: middle;
+        }
+
+
+        .budget-date-box {
+            height: 28px;
+            padding: 3px 6px;
+            font-size: 12px;
+            border: 1px solid #aaa;
+            border-radius: 3px;
+            width: 100%;
+        }
+
+        .budget-summary-box {
+            margin-top: 70px;
+            min-height: 160px;
+            border-left: 1px solid #f2f2f2;
+            padding-left: 35px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+            .budget-summary-box .summary-value {
+                display: block;
+                margin-bottom: 28px;
+                font-size: 15px;
+            }
+
+        .label-under-budget {
+            background: #5cb85c;
+            color: #fff;
+            padding: 3px 7px;
+            border-radius: 3px;
+        }
+
+        .label-near-limit {
+            background: #f0ad4e;
+            color: #fff;
+            padding: 3px 7px;
+            border-radius: 3px;
+        }
+
+        .label-over-budget {
+            background: #d9534f;
+            color: #fff;
+            padding: 3px 7px;
+            border-radius: 3px;
+        }
+
+        .label-no-budget {
+            background: #777;
+            color: #fff;
+            padding: 3px 7px;
+            border-radius: 3px;
+        }
+
+        .ui-datepicker {
+            z-index: 99999 !important;
+            font-size: 12px !important;
+            width: 18em !important;
+        }
+
+            .ui-datepicker table {
+                width: 100% !important;
+                font-size: 12px !important;
+            }
+
+            .ui-datepicker td span,
+            .ui-datepicker td a {
+                text-align: center !important;
+                padding: 4px !important;
+            }
+
+            .ui-datepicker .ui-datepicker-title select {
+                font-size: 12px !important;
+                height: 24px !important;
+                padding: 1px !important;
+            }
+
+        .ui-datepicker-buttonpane button {
+            font-size: 12px !important;
+            padding: 3px 8px !important;
+        }
+
+        /* Budget Status Report datepicker fix */
+        .datepicker,
+        .datepicker-dropdown,
+        .datepicker.datepicker-dropdown {
+            width: 220px !important;
+            max-width: 220px !important;
+            min-width: 220px !important;
+            padding: 6px !important;
+            z-index: 99999 !important;
+        }
+
+            .datepicker table {
+                width: 100% !important;
+                margin: 0 !important;
+            }
+
+                .datepicker table tr td,
+                .datepicker table tr th {
+                    width: 30px !important;
+                    height: 26px !important;
+                    padding: 3px !important;
+                    text-align: center !important;
+                    font-size: 12px !important;
+                }
+
+            .datepicker .datepicker-switch {
+                text-align: center !important;
+                font-size: 13px !important;
+            }
+
+            .datepicker .prev,
+            .datepicker .next {
+                width: 28px !important;
+                text-align: center !important;
+            }
+
+        .datepicker-months table,
+        .datepicker-years table,
+        .datepicker-days table {
+            width: 100% !important;
+        }
+
+        .datepicker-dropdown:before,
+        .datepicker-dropdown:after {
+            display: none !important;
+        }
+        /* Force budget report datepicker popup below date textbox */
+        .datepicker-dropdown {
+            position: absolute !important;
+            z-index: 99999 !important;
+        }
+
+        .datepicker {
+            width: 220px !important;
+            max-width: 220px !important;
+            min-width: 220px !important;
+            padding: 6px !important;
+            font-size: 12px !important;
+        }
+
+            .datepicker table {
+                width: 100% !important;
+            }
+
+                .datepicker table tr td,
+                .datepicker table tr th {
+                    width: 30px !important;
+                    height: 26px !important;
+                    padding: 3px !important;
+                    text-align: center !important;
+                    font-size: 12px !important;
+                }
+
+        .col-filter-5 {
+            position: relative;
+            min-height: 1px;
+            padding-right: 15px;
+            padding-left: 15px;
+        }
+
+        @@media (min-width: 992px) {
+            .col-filter-5 {
+                width: 20%;
+                float: left;
+            }
+        }
+        .budget-summary-row {
+        margin-top: 35px;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .budget-summary-card {
+        font-size: 13px;
+        color: #333;
+        padding: 0;
+        min-height: 70px;
+    }
+
+    .budget-summary-title {
+        font-size: 13px;
+        font-weight: normal;
+        margin-bottom: 4px;
+    }
+
+    .budget-summary-item {
+        line-height: 18px;
+        white-space: nowrap;
+    }
+
+    .budget-summary-label {
+        font-weight: normal;
+        margin-right: 4px;
+    }
+
+    .budget-summary-value {
+        font-weight: normal;
+    }
+
+    .budget-summary-divider {
+        display: none;
+    }
+
+    .budget-amount-card {
+        margin-left: 15px;
+    }
+
+    .budget-period-card {
+        text-align: left;
+    }
+
+    @@media (max-width: 767px) {
+        .budget-summary-card {
+            margin-top: 15px;
+        }
+
+        .budget-amount-card {
+            margin-left: 0;
+        }
+    }
+        .budget-amount-card {
+            margin-left: 0;
+        }
+    
+</style>
+
+<section id="main-content">
+    <section class="wrapper">
+
+        <section class="panel rep_panel">
+            <header class="panel-heading rep_header" style="background:#80B2DF; color:#fff; margin-top:35px;">
+                Budget Status Report
+                <span class="tools pull-right">
+                    <a class="fa fa-chevron-down clickdive" href="javascript:;" style="color:#fff; padding-right:10px;"></a>
+                </span>
+            </header>
+
+            <div class="panel-body">
+
+                <form id="budgetStatusReportForm">
+
+                    <div class="row budget-filter-row">
+
+                        <div class="col-filter-5 col-sm-6 col-xs-12">
+                            @Html.DropDownList("UtilityId", (IEnumerable<SelectListItem>)ViewBag.UtilityListItem, new { @class = "form-control chosen-select", @data_placeholder = "Select Utility", @title = "Select Utility" })
+                        </div>
+
+                        <div class="col-filter-5 col-sm-6 col-xs-12">
+                            <select data-placeholder="Select Project"
+                                    id="ddlProject"
+                                    name="ProjectId"
+                                    class="form-control chosen-select">
+                                <option value=""></option>
+                            </select>
+                        </div>
+
+                        <div class="col-filter-5 col-sm-6 col-xs-12">
+                            <select data-placeholder="Select Installer"
+                                    id="ddlInstaller"
+                                    name="InstallerId"
+                                    class="form-control chosen-select">
+                                <option value=""></option>
+                            </select>
+                        </div>
+
+                        <div class="col-filter-5 col-sm-6 col-xs-12">
+                            <div class="chosen-container chosen-container-single" style="width: 100%; position: relative;">
+                                <a class="chosen-single" style="cursor: pointer;">
+                                    <span id="spanFromDate" style="color: #999;">From Date</span>
+                                    <div><b></b></div>
+                                </a>
+                                <input type="text"
+                                       id="txtFromDate"
+                                       name="FromDate"
+                                       class="form-control datepicker"
+                                       readonly="readonly"
+                                       autocomplete="off"
+                                       style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2; border: none; background: transparent; padding: 0; margin: 0;" />
+                            </div>
+                        </div>
+
+                        <div class="col-filter-5 col-sm-6 col-xs-12">
+                            <div class="chosen-container chosen-container-single" style="width: 100%; position: relative;">
+                                <a class="chosen-single" style="cursor: pointer;">
+                                    <span id="spanToDate" style="color: #999;">To Date</span>
+                                    <div><b></b></div>
+                                </a>
+                                <input type="text"
+                                       id="txtToDate"
+                                       name="ToDate"
+                                       class="form-control datepicker"
+                                       readonly="readonly"
+                                       autocomplete="off"
+                                       style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2; border: none; background: transparent; padding: 0; margin: 0;" />
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row budget-btn-row">
+                        <button id="btnSearch" class="btn btn-success" type="button">Search</button>
+                        <button id="btnReset" class="btn btn-danger" type="button">Reset</button>
+                        <button id="btnExport" class="btn btn-success" type="button">Export</button>
+                    </div>
+
+                </form>
+
+            </div>
+        </section>
+
+        <section class="panel dynamic_panel rep-dyanmc-panel">
+            <div class="panel-body report_table">
+                <div class="table-responsive rep_dyn_table">
+
+                    <table id="tblBudgetStatusReport" class="display table table-bordered table-striped dataTable" style="width: 100% !important;">
+                        <thead>
+                            <tr>
+                                <th>Service Description</th>
+                                <th>Unit Cost ($)</th>
+                                <th>Total Count</th>
+                                <th>Total Cost ($)</th>
+                            </tr>
+                        </thead>
+                        <tfoot style="display: none;">
+                            <tr>
+                                <th style=" text-align:center">Total</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                        <tbody></tbody>
+                    </table>
+
+                </div>
+            </div>
+        </section>
+
+        <div class="row budget-summary-row">
+
+            <!-- Left Side: Budget Amount Summary -->
+            <!-- Left Side: Budget Amount Summary -->
+            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                <div class="budget-summary-card budget-amount-card">
+
+                    <div class="budget-summary-item">
+                        <span class="budget-summary-label">Approved Project Budget ($)</span>
+                        <span class="budget-summary-value" id="lblApprovedProjectBudget">0.00</span>
+                    </div>
+
+                    <div class="budget-summary-divider"></div>
+
+                    <div class="budget-summary-item">
+                        <span class="budget-summary-label">Balance Budget ($)</span>
+                        <span class="budget-summary-value" id="lblBalanceBudget">0.00</span>
+                    </div>
+
+                </div>
+            </div>
+            <!-- Middle Empty Space -->
+            <div class="col-lg-6 col-md-4 col-sm-2 hidden-xs"></div>
+
+            <!-- Right Side: Report Period -->
+            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                <div class="budget-summary-card budget-period-card">
+                    <div class="budget-summary-title">
+                        Report Period
+                    </div>
+
+                    <div class="budget-summary-item">
+                        <span class="budget-summary-label">From Date</span>
+                        <span class="budget-summary-value" id="lblFromDate">-</span>
+                    </div>
+
+                    <div class="budget-summary-divider"></div>
+
+                    <div class="budget-summary-item">
+                        <span class="budget-summary-label">To Date</span>
+                        <span class="budget-summary-value" id="lblToDate">-</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+</section>
+
+<link href="@Url.Content("~/Scripts/js/jquery-ui.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.css")" rel="stylesheet" />
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.jquery.min.js")"></script>
+<script src="@Url.Content("~/Content/MSTS/admin/chosenddl/chosen.proto.min.js")"></script>
+<script src="@Url.Content("~/Scripts/js/jquery-ui.js")"></script>
+
+<script>
+    $(document).ready(function () {
+
+        toastr.options = {
+            closeButton: true,
+            progressBar: true,
+            positionClass: "toast-top-right",
+            timeOut: "1500",
+            extendedTimeOut: "500",
+            showDuration: "200",
+            hideDuration: "300"
+        };
+        $("#Reports").addClass("active");
+        $("#subReports").addClass("block");
+
+        $('.sub').find("*").removeClass('active');
+        $('#liBudgetStatusReport').addClass("active");
+
+        $(".chosen-select").chosen({
+            no_results_text: "Oops, nothing found!",
+            width: "100%"
+        });
+
+        // Helper function to clear date fields
+        function clearDatefield(selector) {
+            var $input = $(selector);
+            $input.val("");
+            if (selector === "#txtFromDate") {
+                $("#spanFromDate").text("From Date").css("color", "#999");
+                $("#lblFromDate").text("-");
+                $("#txtFromDate").datepicker("option", "maxDate", null);
+            } else if (selector === "#txtToDate") {
+                $("#spanToDate").text("To Date").css("color", "#999");
+                $("#lblToDate").text("-");
+                $("#txtToDate").datepicker("option", "minDate", null);
+            }
+        }
+
+        setDefaultDates();
+
+        // Override jQuery UI datepicker _updateDatepicker to add custom Ok and Close buttons
+        var old_updateDatepicker = $.datepicker._updateDatepicker;
+        $.datepicker._updateDatepicker = function (inst) {
+            old_updateDatepicker.apply(this, arguments);
+
+            var buttonPane = inst.dpDiv.find(".ui-datepicker-buttonpane");
+            if (buttonPane.length > 0) {
+                buttonPane.empty();
+
+                // Add Close Button
+                $("<button>", {
+                    text: "Close",
+                    type: "button",
+                    class: "ui-datepicker-close ui-state-default ui-priority-secondary ui-corner-all",
+                    click: function () {
+                        inst.input.datepicker("hide");
+                    }
+                }).appendTo(buttonPane);
+
+                // Add Ok Button
+                $("<button>", {
+                    text: "Ok",
+                    type: "button",
+                    class: "ui-datepicker-close ui-state-default ui-priority-primary ui-corner-all",
+                    click: function () {
+                        inst.input.datepicker("hide");
+                    }
+                }).appendTo(buttonPane);
+            }
+        };
+
+        $(".datepicker").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+            dateFormat: "mm/dd/yy",
+            beforeShow: function (input, inst) {
+                $(input).parent().addClass("chosen-container-active chosen-with-drop");
+                setTimeout(function () {
+                    var offset = $(input).offset();
+                    var height = $(input).outerHeight();
+
+                    inst.dpDiv.css({
+                        top: offset.top + height + 2,
+                        left: offset.left,
+                        zIndex: 99999
+                    });
+                }, 0);
+            },
+            onClose: function (dateText, inst) {
+                $(this).parent().removeClass("chosen-container-active chosen-with-drop");
+            }
+        });
+
+        $("#txtFromDate").datepicker("option", "onSelect", function (selectedDate) {
+            $("#txtToDate").datepicker("option", "minDate", selectedDate);
+            $("#lblFromDate").text(selectedDate || "-");
+            $("#spanFromDate").text(selectedDate || "From Date").css("color", selectedDate ? "#333" : "#999");
+
+            if (!selectedDate || selectedDate === "") {
+                clearDatefield("#txtToDate");
+            }
+        });
+
+        $("#txtToDate").datepicker("option", "onSelect", function (selectedDate) {
+            $("#txtFromDate").datepicker("option", "maxDate", selectedDate);
+            $("#lblToDate").text(selectedDate || "-");
+            $("#spanToDate").text(selectedDate || "To Date").css("color", selectedDate ? "#333" : "#999");
+        });
+
+        // Hover and Focus events to simulate Chosen dropdown highlighting on the custom date elements
+        $("#txtFromDate, #txtToDate").on("focus", function () {
+            $(this).parent().addClass("chosen-container-active chosen-with-drop");
+        }).on("blur", function () {
+            $(this).parent().removeClass("chosen-container-active chosen-with-drop");
+        });
+
+        $("#txtFromDate, #txtToDate").hover(
+            function () {
+                $(this).siblings(".chosen-single").css("border-color", "#999");
+            },
+            function () {
+                $(this).siblings(".chosen-single").css("border-color", "#ccc");
+            }
+        );
+
+        // Validation Interceptors for Sequential Selection
+        $("#ddlProject").on("chosen:showing_dropdown", function () {
+            var utilityId = $("#UtilityId").val();
+            if (!utilityId || utilityId === "0" || utilityId === "") {
+                setTimeout(function () {
+                    $("#ddlProject").trigger("chosen:close");
+                }, 0);
+                toastr["warning"]("Select Utility first");
+            }
+        });
+
+        $("#ddlInstaller").on("chosen:showing_dropdown", function () {
+            var projectId = $("#ddlProject").val();
+            if (!projectId || projectId === "") {
+                setTimeout(function () {
+                    $("#ddlInstaller").trigger("chosen:close");
+                }, 0);
+                toastr["warning"]("Select Project first");
+            }
+        });
+
+        $("#txtFromDate").on("mousedown focus", function (e) {
+            var installerId = $("#ddlInstaller").val();
+            if (!installerId || installerId === "") {
+                e.preventDefault();
+                e.stopPropagation();
+                $(this).blur();
+                toastr["warning"]("Select Installer first");
+                return false;
+            }
+        });
+
+        $("#txtToDate").on("mousedown focus", function (e) {
+            var fromDate = $("#txtFromDate").val();
+            if (!fromDate || fromDate === "") {
+                e.preventDefault();
+                e.stopPropagation();
+                $(this).blur();
+                toastr["warning"]("Select From Date first");
+                return false;
+            }
+        });
+
+        // Cascading Event Handlers
+        $("#UtilityId").off("change").on("change", function () {
+            var utilityId = $(this).val();
+
+            resetProjectDropdown();
+            resetInstallerDropdown();
+            clearDatefield("#txtFromDate");
+            clearDatefield("#txtToDate");
+
+            console.log("Selected UtilityId:", utilityId);
+
+            if (utilityId && utilityId !== "0" && utilityId !== "") {
+                loadProjectList(utilityId);
+            }
+        });
+
+        $("#ddlProject").off("change").on("change", function () {
+            var projectId = $(this).val();
+
+            resetInstallerDropdown();
+            clearDatefield("#txtFromDate");
+            clearDatefield("#txtToDate");
+
+            console.log("Selected ProjectId:", projectId);
+
+            if (projectId && projectId !== "0" && projectId !== "") {
+                loadInstallerList(projectId);
+            }
+        });
+
+        $("#ddlInstaller").off("change").on("change", function () {
+            clearDatefield("#txtFromDate");
+            clearDatefield("#txtToDate");
+        });
+
+        resetProjectDropdown();
+        resetInstallerDropdown();
+        bindBudgetStatusReportTable([]);
+
+        $("#btnSearch").click(function () {
+            getBudgetStatusReport();
+        });
+
+        $("#btnReset").click(function () {
+            $("#UtilityId").val("").trigger("chosen:updated");
+
+            resetProjectDropdown();
+            resetInstallerDropdown();
+
+            setDefaultDates();
+            clearDatefield("#txtFromDate");
+            clearDatefield("#txtToDate");
+
+            bindBudgetStatusReportTable([]);
+            resetBudgetSummary();
+        });
+
+        $("#btnExport").click(function () {
+            exportBudgetStatusReport();
+        });
+    });
+
+    function setDefaultDates() {
+        $("#txtFromDate").val("");
+        $("#txtToDate").val("");
+
+        $("#lblFromDate").text("-");
+        $("#lblToDate").text("-");
+
+        $("#spanFromDate").text("From Date").css("color", "#999");
+        $("#spanToDate").text("To Date").css("color", "#999");
+
+        try {
+            $("#txtFromDate").datepicker("option", "maxDate", null);
+            $("#txtToDate").datepicker("option", "minDate", null);
+        } catch (e) { }
+    }
+
+    function loadProjectList(utilityId) {
+        var url = $("#UrlGetProjectByUtility").val();
+
+        $("#ddlProject").empty();
+        $("#ddlProject").append($("<option value=''></option>"));
+        $("#ddlProject").prop("disabled", true);
+        updateChosen("#ddlProject");
+
+        $.ajax({
+            url: url,
+            type: "GET",
+            data: {
+                UtilityId: utilityId
+            },
+            success: function (response) {
+                console.log("Project response:", response);
+
+                $("#ddlProject").empty();
+                $("#ddlProject").append($("<option value=''></option>"));
+
+                if (response && response.success === false) {
+                    toastr["error"](response.returnMessage || "Unable to load project list.", "Error");
+                    $("#ddlProject").prop("disabled", true);
+                    updateChosen("#ddlProject");
+                    return;
+                }
+
+                if (response && response.length > 0) {
+                    $.each(response, function (index, item) {
+                        $("#ddlProject").append(
+                            $("<option></option>")
+                                .val(item.ProjectId || item.ProjectID || item.projectId)
+                                .text(item.ProjectName || item.ProjectCityState || item.ProjectCityName)
+                        );
+                    });
+
+                    $("#ddlProject").prop("disabled", false);
+                } else {
+                    $("#ddlProject").prop("disabled", true);
+                    toastr["warning"]("No project found for selected utility.", "Notification");
+                }
+
+                updateChosen("#ddlProject");
+            },
+            error: function (xhr) {
+                console.log("Project AJAX error:", xhr.status, xhr.responseText);
+                resetProjectDropdown();
+                toastr["error"]("Unable to load project list.", "Error");
+            }
+        });
+    }
+
+    function loadInstallerList(projectId) {
+        var url = $("#UrlGetInstallerByProject").val();
+
+        $("#ddlInstaller").empty();
+        $("#ddlInstaller").append($("<option value=''></option>"));
+        $("#ddlInstaller").prop("disabled", true);
+        updateChosen("#ddlInstaller");
+
+        if (!projectId || projectId === "0" || projectId === "") {
+            return;
+        }
+
+        $.ajax({
+            url: url,
+            type: "GET",
+            data: {
+                projectId: projectId
+            },
+            success: function (response) {
+                console.log("Installer response:", response);
+
+                $("#ddlInstaller").empty();
+                $("#ddlInstaller").append($("<option value=''></option>"));
+
+                if (response && response.success === false) {
+                    toastr["error"](response.returnMessage || "Unable to load installer list.", "Error");
+                    $("#ddlInstaller").prop("disabled", true);
+                    updateChosen("#ddlInstaller");
+                    return;
+                }
+
+                if (response && response.length > 0) {
+                    $.each(response, function (index, item) {
+                        $("#ddlInstaller").append(
+                            $("<option></option>")
+                                .val(item.UserId || item.UserID || item.userId)
+                                .text(item.UserName || item.FullName || item.Name || item.userName)
+                        );
+                    });
+
+                    $("#ddlInstaller").prop("disabled", false);
+                } else {
+                    $("#ddlInstaller").prop("disabled", true);
+                    toastr["warning"]("No installer found for selected project.", "Notification");
+                }
+
+                updateChosen("#ddlInstaller");
+            },
+            error: function (xhr) {
+                console.log("Installer AJAX error:", xhr.status, xhr.responseText);
+                resetInstallerDropdown();
+                toastr["error"]("Unable to load installer list.", "Error");
+            }
+        });
+    }
+
+    function getBudgetStatusReport() {
+        var url = $("#UrlGetBudgetStatusReport").val();
+
+        waitingDialog.show('Loading Please Wait...');
+
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: {
+                projectId: $("#ddlProject").val(),
+                installerId: $("#ddlInstaller").val(),
+                fromDate: $("#txtFromDate").val(),
+                toDate: $("#txtToDate").val()
+            },
+            success: function (response) {
+                waitingDialog.hide();
+                if (response.success === false) {
+                    toastr["error"](response.returnMessage || "Unable to load report.", "Error");
+                    bindBudgetStatusReportTable([]);
+                    resetBudgetSummary();
+                    return;
+                }
+
+                // Bind table rows
+                bindBudgetStatusReportTable(response.data || []);
+
+                // Update Approved Project Budget
+                var approvedBudget = parseFloat(response.ApprovedProjectBudget || 0);
+
+                // Calculate Total Cost from returned data
+                var totalCost = (response.data || []).reduce(function (sum, row) {
+                    return sum + parseFloat(row.TotalCost || 0);
+                }, 0);
+
+                // Calculate Balance Budget
+                var balanceBudget = approvedBudget - totalCost;
+
+                // Update labels
+                $("#lblApprovedProjectBudget").text(formatCurrency(approvedBudget));
+                $("#lblBalanceBudget").text(formatCurrency(balanceBudget));
+            },
+            error: function () {
+                waitingDialog.hide();
+                toastr["error"]("Something went wrong while loading report.", "Error");
+                bindBudgetStatusReportTable([]);
+                resetBudgetSummary();
+            }
+        });
+    }
+
+    function bindBudgetStatusReportTable(data) {
+        if ($.fn.DataTable.isDataTable("#tblBudgetStatusReport")) {
+            $("#tblBudgetStatusReport").DataTable().destroy();
+        }
+
+        $("#tblBudgetStatusReport tbody").empty();
+
+        var table = $("#tblBudgetStatusReport").DataTable({
+            data: data,
+            searching: false,
+            paging: false,
+            ordering: false,
+            info: false,
+            autoWidth: false,
+            columns: [
+                {
+                    data: "ServiceDescription",
+                    defaultContent: ""
+                },
+                {
+                    data: "UnitCost",
+                    className: "text-right",
+                    render: function (value) {
+                        return formatCurrency(value);
+                    }
+                },
+                {
+                    data: "TotalCount",
+                    className: "text-center",
+                    render: function (value) {
+                        return formatCount(value);
+                    }
+                },
+                {
+                    data: "TotalCost",
+                    className: "text-right",
+                    render: function (value) {
+                        return formatCurrency(value);
+                    }
+                }
+            ],
+            footerCallback: function (row, data, start, end, display) {
+                var api = this.api();
+                var footer = $(api.table().footer());
+
+                if (!data || data.length === 0) {
+                    footer.hide();
+                    return;
+                }
+
+                footer.show();
+
+                var totalUnitCost = data.reduce(function (sum, row) {
+                    return sum + parseFloat(row.UnitCost || 0);
+                }, 0);
+
+                $(api.column(1).footer())
+                    .html(formatCurrency(totalUnitCost))
+                    .css("text-align", "center");
+
+                var totalCount = data.reduce(function (sum, row) {
+                    return sum + parseInt(row.TotalCount || 0, 10);
+                }, 0);
+
+                $(api.column(2).footer())
+                    .html(formatCount(totalCount))
+                    .css("text-align", "center");
+
+                var totalCost = data.reduce(function (sum, row) {
+                    return sum + parseFloat(row.TotalCost || 0);
+                }, 0);
+
+                $(api.column(3).footer())
+                    .html(formatCurrency(totalCost))
+                    .css("text-align", "center");
+            }
+        });
+
+        var footer = $(table.table().footer());
+
+        if (!data || data.length === 0) {
+            footer.hide();
+        } else {
+            footer.show();
+        }
+    }
+
+    function exportBudgetStatusReport() {
+        var url = $("#UrlExportBudgetStatusReport").val();
+
+        var queryString =
+            "?projectId=" + encodeURIComponent($("#ddlProject").val() || "") +
+            "&installerId=" + encodeURIComponent($("#ddlInstaller").val() || "") +
+            "&fromDate=" + encodeURIComponent($("#txtFromDate").val() || "") +
+            "&toDate=" + encodeURIComponent($("#txtToDate").val() || "");
+
+        window.location.href = url + queryString;
+    }
+
+    // Format utility helpers
+    function formatMoney(value) {
+        value = parseFloat(value || 0);
+        return value.toFixed(2);
+    }
+    
+    function updateChosen(selector) {
+        $(selector).trigger("chosen:updated");
+        $(selector).trigger("liszt:updated");
+    }
+    function resetProjectDropdown() {
+        $("#ddlProject").empty();
+        $("#ddlProject").append($("<option value=''></option>"));
+        $("#ddlProject").prop("disabled", true);
+        updateChosen("#ddlProject");
+    }
+
+    function resetInstallerDropdown() {
+        $("#ddlInstaller").empty();
+        $("#ddlInstaller").append($("<option value=''></option>"));
+        $("#ddlInstaller").prop("disabled", true);
+        updateChosen("#ddlInstaller");
+    }
+    function formatCurrency(value) {
+        value = String(value || 0).replace(/\$/g, "").replace(/,/g, "");
+        value = parseFloat(value || 0);
+
+        return value.toLocaleString("en-US", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+
+    // Count formatting helper
+    function formatCount(value) {
+        value = String(value || 0).replace(/,/g, "");
+        value = parseInt(value || 0, 10);
+
+        return value.toLocaleString("en-US", {
+            maximumFractionDigits: 0
+        });
+    }
+
+    function resetBudgetSummary() {
+        $("#lblApprovedProjectBudget").text("0.00");
+        $("#lblBalanceBudget").text("0.00");
+    }
+</script>

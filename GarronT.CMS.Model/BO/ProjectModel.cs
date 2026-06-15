@@ -67,7 +67,7 @@ namespace GarronT.CMS.Model.BO
         public string ProjectAppointmentUrl { get; set; }
 
         public string ManageInventory { get; set; }
-
+        public Nullable<decimal> ProjectBudget { get; set; }
 
         public List<StateModel> objStateList { get; set; }
         public List<CityModel> objCityList { get; set; }

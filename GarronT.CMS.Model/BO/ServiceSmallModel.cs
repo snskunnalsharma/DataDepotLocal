@@ -8,8 +8,8 @@ namespace GarronT.CMS.Model.BO
 {
     public class ServiceSmallModel : IDisposable
     {
-
         bool disposed;
+
         protected virtual void Dispose(bool disposing)
         {
             //dispose unmanaged ressources
@@ -26,14 +26,19 @@ namespace GarronT.CMS.Model.BO
         public long MasterFieldId { get; set; }
         public string ServiceName { get; set; }
         public string ServiceBasePrice { get; set; }
+
+        // New: Service Cost Rate
+        public Nullable<decimal> CostRate { get; set; }
+
         public bool isImageMapped { get; set; }
         public Nullable<bool> ImageFlag { get; set; }
         public long[] productArray { get; set; }
     }
+
     public class ServiceNotSelectedModel : IDisposable
     {
-
         bool disposed;
+
         protected virtual void Dispose(bool disposing)
         {
             //dispose unmanaged ressources
@@ -50,13 +55,19 @@ namespace GarronT.CMS.Model.BO
         public long MasterFieldId { get; set; }
         public string ServiceName { get; set; }
         public string ServiceBasePrice { get; set; }
+
+        // New: Additional Service Cost Rate
+        public Nullable<decimal> CostRate { get; set; }
+
         public bool isImageMapped { get; set; }
         public Nullable<bool> ImageFlag { get; set; }
         public long[] productArray { get; set; }
     }
+
     public class ServiceModel : IDisposable
     {
         bool disposed;
+
         protected virtual void Dispose(bool disposing)
         {
             //dispose unmanaged ressources
@@ -68,16 +79,20 @@ namespace GarronT.CMS.Model.BO
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
         public List<ServiceSmallModel> objList1 { get; set; }
         public List<ServiceNotSelectedModel> objList2 { get; set; }
         public List<ProductServiceBo> objList3 { get; set; }
         public List<MeterSizePayRateBo> objList4 { get; set; }
+
+        // New: Project Budget
+        public Nullable<decimal> ProjectBudget { get; set; }
+        public decimal ServiceLineBudget { get; set; }
     }
 
     public class ProductServiceBo
     {
         public long productId { get; set; }
-
         public long ProjectServiceId { get; set; }
         public string productName { get; set; }
         public string Make { get; set; }
@@ -91,20 +106,26 @@ namespace GarronT.CMS.Model.BO
     // Add new 
     public class MeterSizePayRateBo : IDisposable
     {
-
         bool disposed;
+
         protected virtual void Dispose(bool disposing)
         {
             disposed = true;
         }
+
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
         public long Id { get; set; }
         public string MeterSize { get; set; }
         public string Pay { get; set; }
+        public Nullable<decimal> CostRate { get; set; }
+        public string ServiceId { get; set; }
+
+
         public long[] MeterPayRateArray { get; set; }
     }
 
@@ -126,5 +147,4 @@ namespace GarronT.CMS.Model.BO
         public long MeterTypeId { get; set; }
         public string MeterType { get; set; }
     }
-
 }

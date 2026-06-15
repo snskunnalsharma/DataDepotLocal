@@ -851,9 +851,9 @@ namespace GarronT.CMS.UI
                     var droles = rols.Where(a => Convert.ToString(a.Id) == Convert.ToString(roleId[i])).FirstOrDefault();
                     if (droles != null)
                     {
-                        if (droles.Name == "Installer" || droles.Name == "Manager" || droles.Name == "Field Supervisor" || droles.Name == "Auditor")
+                        if (droles.Name == "Installer" || droles.Name == "Manager" || droles.Name == "Field Supervisor" || droles.Name == "INV Manager" || droles.Name == "Auditor")
                         {
-                            var tempNumber = droles.Name == "Installer" ? 1 : droles.Name == "Manager" ? 2 : droles.Name == "Field Supervisor" ? 3 : 4;
+                            var tempNumber = droles.Name == "Installer" ? 1 : droles.Name == "Manager" ? 2 : droles.Name == "INV Manager" ? 3 : droles.Name == "Field Supervisor" ? 4 : 5;
                             if (RoleNames == "")
                             {
                                 RoleNames = tempNumber.ToString();//droles.Name;
@@ -879,6 +879,7 @@ namespace GarronT.CMS.UI
             }
         }
 
+
         /*[WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         public void GetUserSkippedStatus(string userid)
@@ -895,82 +896,82 @@ namespace GarronT.CMS.UI
         //    s.MaxJsonLength = 2147483644;
 
 
-            //    log.Info("WEB Service GetInventorySourceInfo Started at - " + DateTime.Now.ToString());
-            //    long _userId = 0;
+        //    log.Info("WEB Service GetInventorySourceInfo Started at - " + DateTime.Now.ToString());
+        //    long _userId = 0;
 
 
-            //    if (string.IsNullOrEmpty(userId))
-            //    {
-            //        setJsonReponse(1, "Fail", MemberInfoGetting.GetMemberName(() => userId));
-            //    }
-            //    else if (!long.TryParse(userId, out _userId))
-            //    {
-            //        setJsonReponse(2, "Fail", MemberInfoGetting.GetMemberName(() => userId));
-            //    }
-            //    else
-            //    {
+        //    if (string.IsNullOrEmpty(userId))
+        //    {
+        //        setJsonReponse(1, "Fail", MemberInfoGetting.GetMemberName(() => userId));
+        //    }
+        //    else if (!long.TryParse(userId, out _userId))
+        //    {
+        //        setJsonReponse(2, "Fail", MemberInfoGetting.GetMemberName(() => userId));
+        //    }
+        //    else
+        //    {
 
-            //        try
-            //        {
-            //            DateTime currentDate1 = DateTime.Parse(UnixTimeStampToDateTime(currentDate).ToString());
+        //        try
+        //        {
+        //            DateTime currentDate1 = DateTime.Parse(UnixTimeStampToDateTime(currentDate).ToString());
 
-            //            if (sourceNumber == 1)
-            //            {
+        //            if (sourceNumber == 1)
+        //            {
 
-            //                List<InventorySourceBO> objInventorySourceBOList = new List<InventorySourceBO>();
-            //                InventoryWebServiceDAL objInventoryWebServiceDAL = new InventoryWebServiceDAL();
-            //                objInventorySourceBOList = objInventoryWebServiceDAL.GetInventorySourceData(_userId, currentDate1);
+        //                List<InventorySourceBO> objInventorySourceBOList = new List<InventorySourceBO>();
+        //                InventoryWebServiceDAL objInventoryWebServiceDAL = new InventoryWebServiceDAL();
+        //                objInventorySourceBOList = objInventoryWebServiceDAL.GetInventorySourceData(_userId, currentDate1);
 
-            //                Context.Response.ContentType = "application/json";
-            //                Context.Response.Write(s.Serialize(objInventorySourceBOList));
-            //                objInventoryWebServiceDAL.Dispose();
+        //                Context.Response.ContentType = "application/json";
+        //                Context.Response.Write(s.Serialize(objInventorySourceBOList));
+        //                objInventoryWebServiceDAL.Dispose();
 
-            //            }
-            //            else if (sourceNumber == 2)
-            //            {
+        //            }
+        //            else if (sourceNumber == 2)
+        //            {
 
-            //                InventoryNewRequestSourceBO objInventoryNewRequestSourceBO = new InventoryNewRequestSourceBO();
-            //                InventoryWebServiceDAL objInventoryWebServiceDAL = new InventoryWebServiceDAL();
-            //                //objInventoryNewRequestSourceBO = objInventoryWebServiceDAL.GetInventoryNewRequestSourceData(_userId, currentDate1);
+        //                InventoryNewRequestSourceBO objInventoryNewRequestSourceBO = new InventoryNewRequestSourceBO();
+        //                InventoryWebServiceDAL objInventoryWebServiceDAL = new InventoryWebServiceDAL();
+        //                //objInventoryNewRequestSourceBO = objInventoryWebServiceDAL.GetInventoryNewRequestSourceData(_userId, currentDate1);
 
-            //                Context.Response.ContentType = "application/json";
-            //                Context.Response.Write(s.Serialize(objInventoryNewRequestSourceBO));
-            //                objInventoryWebServiceDAL.Dispose();
+        //                Context.Response.ContentType = "application/json";
+        //                Context.Response.Write(s.Serialize(objInventoryNewRequestSourceBO));
+        //                objInventoryWebServiceDAL.Dispose();
 
-            //            }
-            //            else if (sourceNumber == 3)
-            //            {
+        //            }
+        //            else if (sourceNumber == 3)
+        //            {
 
-            //                List<InventorySourceBO> objInventorySourceBOList = new List<InventorySourceBO>();
-            //                InventoryWebServiceDAL objInventoryWebServiceDAL = new InventoryWebServiceDAL();
-            //                objInventorySourceBOList = objInventoryWebServiceDAL.GetInventorySourceData(_userId, currentDate1);
+        //                List<InventorySourceBO> objInventorySourceBOList = new List<InventorySourceBO>();
+        //                InventoryWebServiceDAL objInventoryWebServiceDAL = new InventoryWebServiceDAL();
+        //                objInventorySourceBOList = objInventoryWebServiceDAL.GetInventorySourceData(_userId, currentDate1);
 
-            //                Context.Response.ContentType = "application/json";
-            //                Context.Response.Write(s.Serialize(objInventorySourceBOList));
-            //                objInventoryWebServiceDAL.Dispose();
+        //                Context.Response.ContentType = "application/json";
+        //                Context.Response.Write(s.Serialize(objInventorySourceBOList));
+        //                objInventoryWebServiceDAL.Dispose();
 
-            //            }
-            //            else
-            //            {
-            //                setJsonReponse(4, "Fail", "Wrong Source Number");
-            //            }
-
-
-
-            //        }
-            //        catch (Exception ex)
-            //        {
-            //            setJsonReponse(4, "Fail", ex.Message);
-            //            log.Info("WEB Service  GetInventorySourceInfo ERROR at " + DateTime.Now.ToString());
-            //            log.Info("WEB Service  GetInventorySourceInfo ERROR  ex.Message - " + ex.Message);
-
-            //            log.Info("WEB Service  GetInventorySourceInfo ERROR  ex.InnerException.Message - " + (ex.InnerException != null ? Convert.ToString(ex.InnerException.Message) : ""));
-            //        }
-
-            //    }
+        //            }
+        //            else
+        //            {
+        //                setJsonReponse(4, "Fail", "Wrong Source Number");
+        //            }
 
 
-            //}
+
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            setJsonReponse(4, "Fail", ex.Message);
+        //            log.Info("WEB Service  GetInventorySourceInfo ERROR at " + DateTime.Now.ToString());
+        //            log.Info("WEB Service  GetInventorySourceInfo ERROR  ex.Message - " + ex.Message);
+
+        //            log.Info("WEB Service  GetInventorySourceInfo ERROR  ex.InnerException.Message - " + (ex.InnerException != null ? Convert.ToString(ex.InnerException.Message) : ""));
+        //        }
+
+        //    }
+
+
+        //}
 
 
 

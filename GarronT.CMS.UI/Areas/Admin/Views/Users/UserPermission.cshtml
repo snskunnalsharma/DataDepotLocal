@@ -1184,7 +1184,7 @@
                                             string[] str4 = { "Warehouse Master", "Category Master", "Product Master", "Inventory Upload", "Inventory Receive", "Inventory View", "View Stock Request" };
                                             string[] str5 = { "Alert Master", "Audit", "Customer", "Project", "Installer Allocation", "Appointment" };
                                             string[] str6 = { "Form Management" };
-                                            string[] str7 = { "Duplicate Report", "Export Report", "Installer Report", "Auditor Report", "Skip History Report" };
+                                            string[] str7 = { "Duplicate Report", "Export Report", "Installer Report", "Auditor Report", "Skip History Report", "Budget Status Report" };
                                             string[] str8 = { "Warehouse Stock Report", "Inventory Stock Report", "Product Movement Report", "Inventory Transfer", "Warehouse Transfer", "INV Installer Report" };
 
 
@@ -1413,10 +1413,11 @@
                                                     }
                                                 </tr>
                                             }
-                                            else if (item.PermissionName == "Project Status" || item.PermissionName == "Dashboard" ||
-                                                                item.PermissionName == "Inventory View" || item.PermissionName == "Inventory Stock Report" || item.PermissionName == "Duplicate Report" ||
-                                                                item.PermissionName == "Product Movement Report" || item.PermissionName == "Inventory Transfer" || item.PermissionName == "Warehouse Transfer" ||
-                                                                item.PermissionName == "INV Installer Report" || item.PermissionName == "Skip History Report")
+                                     else if (item.PermissionName == "Project Status" || item.PermissionName == "Dashboard" ||
+                    item.PermissionName == "Inventory View" || item.PermissionName == "Inventory Stock Report" || item.PermissionName == "Duplicate Report" ||
+                    item.PermissionName == "Product Movement Report" || item.PermissionName == "Inventory Transfer" || item.PermissionName == "Warehouse Transfer" ||
+                    item.PermissionName == "INV Installer Report" || item.PermissionName == "Skip History Report" ||
+                    item.PermissionName == "Budget Status Report")
                                             {
                                                 <tr class="members">
                                                     <td permissionid="@item.Permission_Id" permissionname="@item.PermissionDescription" name="Permission">

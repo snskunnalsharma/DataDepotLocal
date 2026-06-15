@@ -33,7 +33,8 @@ namespace GarronT.CMS.Model
         public Nullable<System.DateTime> CreatedOn { get; set; }
         public Nullable<int> ModifiedBy { get; set; }
         public Nullable<System.DateTime> ModifiedOn { get; set; }
-    
+        public Nullable<decimal> CostRate { get; set; }
+
         public virtual ICollection<ProjectServiceProductRelation> ProjectServiceProductRelations { get; set; }
         public virtual ICollection<tblProjectFieldDataInventoryDetail> tblProjectFieldDataInventoryDetails { get; set; }
     }
