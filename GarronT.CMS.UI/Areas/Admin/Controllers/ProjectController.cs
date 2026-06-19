@@ -1,4 +1,4 @@
-﻿using GarronT.CMS.Model.BO;
+using GarronT.CMS.Model.BO;
 using GarronT.CMS.Model.DAL;
 using System;
 using System.Collections.Generic;
@@ -396,6 +396,11 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 obj1.objList4 = objList4.ToList();
                 obj1.ProjectBudget = obj.GetProjectBudget(projectId);
                 obj1.ServiceLineBudget = obj.GetServiceLineBudget(projectId);
+
+                if (projectId == 10134)
+                {
+                    obj1.objList5 = obj.GetTimeClockServiceMasterRecords(projectId);
+                }
 
                 return Json(obj1, JsonRequestBehavior.AllowGet);
             }

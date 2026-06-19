@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using GarronT.CMS.Model.BO;
 using GoogleMaps.LocationServices;
 using Microsoft.AspNet.Identity;
@@ -634,7 +634,7 @@ namespace GarronT.CMS.Model.DAL
 
                             decimal costRate = item.CostRate.HasValue && item.CostRate.Value > 0
                                 ? item.CostRate.Value
-                                : servicePrice * 2;
+                                : servicePrice;
 
                             var serviceObject = new ProjectServiceBO
                             {
@@ -666,7 +666,7 @@ namespace GarronT.CMS.Model.DAL
 
                             decimal costRate = item.CostRate.HasValue && item.CostRate.Value > 0
                                 ? item.CostRate.Value
-                                : servicePrice * 2;
+                                : servicePrice;
 
                             var serviceObject = new ProjectServiceBO
                             {
@@ -1216,6 +1216,64 @@ namespace GarronT.CMS.Model.DAL
             }
         }
 
+        public List<TimeClockServiceMasterBo> GetTimeClockServiceMasterRecords(long projectId)
+        {
+            List<TimeClockServiceMasterBo> result = new List<TimeClockServiceMasterBo>();
+            try
+            {
+                CompassEntities dbcontext = new CompassEntities();
+                using (SqlConnection sqlConnection = new SqlConnection(dbcontext.Database.Connection.ConnectionString))
+                {
+                    sqlConnection.Open();
+                    string sql = @"
+                        SELECT Id, ProjectId, ServiceCode, ServiceDisplayName, PayAmount, DisplayOrder, IsActive, Cost
+                        FROM TimeClockServiceMaster
+                        WHERE ProjectId = @projectId AND IsActive = 1
+                        ORDER BY DisplayOrder";
+                    using (SqlCommand cmd = new SqlCommand(sql, sqlConnection))
+                    {
+                        cmd.Parameters.AddWithValue("@projectId", projectId);
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.HasRows)
+                            {
+                                int idCol = reader.GetOrdinal("Id");
+                                int projIdCol = reader.GetOrdinal("ProjectId");
+                                int codeCol = reader.GetOrdinal("ServiceCode");
+                                int nameCol = reader.GetOrdinal("ServiceDisplayName");
+                                int payCol = reader.GetOrdinal("PayAmount");
+                                int orderCol = reader.GetOrdinal("DisplayOrder");
+                                int activeCol = reader.GetOrdinal("IsActive");
+                                
+                                int costCol = -1;
+                                try { costCol = reader.GetOrdinal("Cost"); } catch { }
+
+                                while (reader.Read())
+                                {
+                                    result.Add(new TimeClockServiceMasterBo
+                                    {
+                                        Id = reader.IsDBNull(idCol) ? 0 : Convert.ToInt64(reader[idCol]),
+                                        ProjectId = reader.IsDBNull(projIdCol) ? 0 : Convert.ToInt64(reader[projIdCol]),
+                                        ServiceCode = reader.IsDBNull(codeCol) ? "" : Convert.ToString(reader[codeCol]),
+                                        ServiceDisplayName = reader.IsDBNull(nameCol) ? "" : Convert.ToString(reader[nameCol]),
+                                        PayAmount = reader.IsDBNull(payCol) ? 0 : Convert.ToDecimal(reader[payCol]),
+                                        DisplayOrder = reader.IsDBNull(orderCol) ? 0 : Convert.ToInt32(reader[orderCol]),
+                                        IsActive = !reader.IsDBNull(activeCol) && Convert.ToBoolean(reader[activeCol]),
+                                        Cost = (costCol >= 0 && !reader.IsDBNull(costCol)) ? Convert.ToDecimal(reader[costCol]) : 0
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                log4net.LogManager.GetLogger(typeof(ProjectMasterDAL)).Error("GetTimeClockServiceMasterRecords exception", ex);
+            }
+            return result;
+        }
+
         public List<ProductServiceBo> GetProductServiceList(long projectId)
         {
             try
@@ -1320,7 +1378,7 @@ namespace GarronT.CMS.Model.DAL
 
                             decimal finalCostRate = item.costRate > 0
                                 ? item.costRate
-                                : item.servicePrice * 2;
+                                : item.servicePrice;
 
                             // Save project-wise cost rate
                             obj.CostRate = finalCostRate;
@@ -1411,6 +1469,89 @@ namespace GarronT.CMS.Model.DAL
                         CompassEntities.SaveChanges();
                     }
                     SaveProjectBudgetMaster(CompassEntities, objTab3BO, currentUserId);
+
+                    // Save Report Services if projectId == 10134 and reportServicesData is not null
+                    if (objTab3BO.projectId == 10134 && objTab3BO.reportServicesData != null)
+                    {
+                        List<long> incomingIds = objTab3BO.reportServicesData.Where(x => x.Id > 0).Select(x => x.Id).ToList();
+                        
+                        using (SqlConnection sqlConnection = new SqlConnection(CompassEntities.Database.Connection.ConnectionString))
+                        {
+                            sqlConnection.Open();
+                            
+                            // Deactivate deleted services
+                            if (incomingIds.Count > 0)
+                            {
+                                string deleteSql = "UPDATE TimeClockServiceMaster SET IsActive = 0 WHERE ProjectId = 10134 AND Id NOT IN (" + string.Join(",", incomingIds) + ")";
+                                using (SqlCommand deleteCmd = new SqlCommand(deleteSql, sqlConnection))
+                                {
+                                    deleteCmd.ExecuteNonQuery();
+                                }
+                            }
+                            else
+                            {
+                                string deleteSql = "UPDATE TimeClockServiceMaster SET IsActive = 0 WHERE ProjectId = 10134";
+                                using (SqlCommand deleteCmd = new SqlCommand(deleteSql, sqlConnection))
+                                {
+                                    deleteCmd.ExecuteNonQuery();
+                                }
+                            }
+
+                            // Insert or update incoming services
+                            int displayOrder = 1;
+                            foreach (var reportService in objTab3BO.reportServicesData)
+                            {
+                                if (reportService.Id > 0)
+                                {
+                                    // Update existing record
+                                    string updateSql = @"
+                                        UPDATE TimeClockServiceMaster
+                                        SET ServiceDisplayName = @ServiceDisplayName,
+                                            PayAmount = @PayAmount,
+                                            Cost = @Cost,
+                                            DisplayOrder = @DisplayOrder,
+                                            UpdatedOn = @UpdatedOn
+                                        WHERE Id = @Id AND ProjectId = 10134";
+                                    using (SqlCommand updateCmd = new SqlCommand(updateSql, sqlConnection))
+                                    {
+                                        updateCmd.Parameters.AddWithValue("@ServiceDisplayName", reportService.ServiceDisplayName);
+                                        updateCmd.Parameters.AddWithValue("@PayAmount", reportService.PayAmount);
+                                        updateCmd.Parameters.AddWithValue("@Cost", reportService.Cost);
+                                        updateCmd.Parameters.AddWithValue("@DisplayOrder", displayOrder++);
+                                        updateCmd.Parameters.AddWithValue("@UpdatedOn", DateTime.Now);
+                                        updateCmd.Parameters.AddWithValue("@Id", reportService.Id);
+                                        updateCmd.ExecuteNonQuery();
+                                    }
+                                }
+                                else
+                                {
+                                    // Insert new record
+                                    string serviceCode = reportService.ServiceCode;
+                                    if (string.IsNullOrWhiteSpace(serviceCode))
+                                    {
+                                        serviceCode = reportService.ServiceDisplayName.Trim().ToUpper().Replace(" ", "_");
+                                        if (serviceCode.Length > 50)
+                                            serviceCode = serviceCode.Substring(0, 50);
+                                    }
+                                    
+                                    string insertSql = @"
+                                        INSERT INTO TimeClockServiceMaster (ProjectId, ServiceCode, ServiceDisplayName, PayAmount, DisplayOrder, IsActive, CreatedOn, Cost)
+                                        VALUES (10134, @ServiceCode, @ServiceDisplayName, @PayAmount, @DisplayOrder, 1, @CreatedOn, @Cost)";
+                                    using (SqlCommand insertCmd = new SqlCommand(insertSql, sqlConnection))
+                                    {
+                                        insertCmd.Parameters.AddWithValue("@ServiceCode", serviceCode);
+                                        insertCmd.Parameters.AddWithValue("@ServiceDisplayName", reportService.ServiceDisplayName);
+                                        insertCmd.Parameters.AddWithValue("@PayAmount", reportService.PayAmount);
+                                        insertCmd.Parameters.AddWithValue("@DisplayOrder", displayOrder++);
+                                        insertCmd.Parameters.AddWithValue("@CreatedOn", DateTime.Now);
+                                        insertCmd.Parameters.AddWithValue("@Cost", reportService.Cost);
+                                        insertCmd.ExecuteNonQuery();
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     scope.Complete();
                    
                 }
@@ -1451,7 +1592,7 @@ namespace GarronT.CMS.Model.DAL
                             }
                             else
                             {
-                                obj.CostRate = item.Pay * 2;
+                                obj.CostRate = item.Pay;
                             }
 
                             obj.ModifiedBy = currentUserId;
@@ -1532,8 +1673,8 @@ namespace GarronT.CMS.Model.DAL
 
                             obj.BasePrice = serviceBasePrice;
 
-                            // New service cost rate = service rate * 2
-                            obj.CostRate = serviceBasePrice * 2;
+                            // New service cost rate = service rate
+                            obj.CostRate = serviceBasePrice;
 
                             obj.IsAdditionalService = false;
 
@@ -1561,10 +1702,10 @@ namespace GarronT.CMS.Model.DAL
                             decimal existingCostRate = Convert.ToDecimal(obj.CostRate);
                             decimal existingBasePrice = Convert.ToDecimal(obj.BasePrice);
 
-                            // Old project support: if cost rate is empty/zero, set service rate * 2
+                            // Old project support: if cost rate is empty/zero, set service rate
                             if (existingCostRate <= 0)
                             {
-                                obj.CostRate = existingBasePrice * 2;
+                                obj.CostRate = existingBasePrice;
                             }
                         }
 
@@ -1625,8 +1766,8 @@ namespace GarronT.CMS.Model.DAL
                             obj.MasterTableName = "tblService";
                             obj.BasePrice = serviceBasePrice;
 
-                            // Additional service cost rate = service rate * 2
-                            obj.CostRate = serviceBasePrice * 2;
+                            // Additional service cost rate = service rate
+                            obj.CostRate = serviceBasePrice;
 
                             obj.IsAdditionalService = true;
 
@@ -1651,10 +1792,10 @@ namespace GarronT.CMS.Model.DAL
                             decimal existingCostRate = Convert.ToDecimal(obj.CostRate);
                             decimal existingBasePrice = Convert.ToDecimal(obj.BasePrice);
 
-                            // Old project support: if additional service cost rate is empty/zero, set service rate * 2
+                            // Old project support: if additional service cost rate is empty/zero, set service rate
                             if (existingCostRate <= 0)
                             {
-                                obj.CostRate = existingBasePrice * 2;
+                                obj.CostRate = existingBasePrice;
                             }
 
                             obj.ModifiedBy = userId;

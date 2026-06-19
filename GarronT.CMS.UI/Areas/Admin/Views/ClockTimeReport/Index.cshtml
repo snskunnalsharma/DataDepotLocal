@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewBag.Title = "Clock Time Report";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
@@ -2742,55 +2742,23 @@
                 </div>
             </div>
         </section>
-        <br /><br />
         <header class="panel-heading">
-            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 col-xxs-2 sm-mbot2 xs-mbot2 xxs-mbot2">
-                <b>
-                    TOTAL WO IN<br />DATA DEPOT
-                    <br />
-                    <b id="totalInstalledMeter" name="totalInstalledMeter" style="padding-left:8%;">-</b>
-                </b>
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 col-xxs-2 sm-mbot2 xs-mbot2 xxs-mbot2" style="white-space: nowrap;">
+                <b>TOTAL WO IN DATA DEPOT: <b id="totalInstalledMeter" name="totalInstalledMeter" style="padding-left:1%;">-</b></b>
             </div>
-            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 col-xxs-2 sm-mbot2 xs-mbot2 xxs-mbot2">
-                <b>TOTAL<br />HOURS</b>
-                <br />
-                <b id="ttHoursInWeek" name="ttHoursInWeek" style="padding-left:1%;">-</b>
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 col-xxs-2 sm-mbot2 xs-mbot2 xxs-mbot2" style="white-space: nowrap;">
+                <b>TOTAL HOURS: <b id="ttHoursInWeek" name="ttHoursInWeek" style="padding-left:1%;">-</b></b>
             </div>
-            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 col-xxs-2 sm-mbot2 xs-mbot2 xxs-mbot2">
-                <b>AVG PER<br />HOUR</b>
-                <br />
-                <b id="avgPerHours" name="avgPerHours" style="padding-left:1%;">-</b>
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 col-xxs-2 sm-mbot2 xs-mbot2 xxs-mbot2" style="white-space: nowrap;">
+                <b>AVG PER HOUR: <b id="avgPerHours" name="avgPerHours" style="padding-left:1%;">-</b></b>
             </div>
-            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 col-xxs-2 sm-mbot2 xs-mbot2 xxs-mbot2">
+            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 col-xxs-3 sm-mbot3 xs-mbot3 xxs-mbot3" style="white-space: nowrap;">
+                <b>Contractor Signature</b><br />
+                <b>Date: <b id="fTodayDate" name="fTodayDate" style="padding-left:1%;">-</b></b>
             </div>
-            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 col-xxs-3 sm-mbot3 xs-mbot3 xxs-mbot3">
-                <b>Contractor Signature</b>
-            </div>
-            <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1 col-xxs-1 sm-mbot1 xs-mbot1 xxs-mbot1">
-                <b id="fTodayDate" name="fTodayDate" style="padding-left:1%;">-</b>
-                <br />
-                <b>Date</b>
-            </div>
-        </header>
-        <br />
-        <br />
-        <br />
-        <header class="panel-heading">
-            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 col-xxs-2 sm-mbot2 xs-mbot2 xxs-mbot2">
-            </div>
-            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 col-xxs-2 sm-mbot2 xs-mbot2 xxs-mbot2">
-            </div>
-            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 col-xxs-2 sm-mbot2 xs-mbot2 xxs-mbot2">
-            </div>
-            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 col-xxs-2 sm-mbot2 xs-mbot2 xxs-mbot2">
-            </div>
-            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 col-xxs-3 sm-mbot3 xs-mbot3 xxs-mbot3">
-                <b>Project Manager Signature</b>
-            </div>
-            <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1 col-xxs-1 sm-mbot1 xs-mbot1 xxs-mbot1">
-                <b id="sTodayDate" name="sTodayDate" style="padding-left:1%;">-</b>
-                <br />
-                <b> Date</b>
+            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 col-xxs-3 sm-mbot3 xs-mbot3 xxs-mbot3" style="white-space: nowrap;">
+                <b>Project Manager Signature</b><br />
+                <b>Date: <b id="sTodayDate" name="sTodayDate" style="padding-left:1%;">-</b></b>
             </div>
         </header>
     </section>

@@ -93,7 +93,15 @@ namespace GarronT.CMS.Model.DAL
 
             using (CompassEntities db = new CompassEntities())
             {
-                List<BudgetStatusReportBO> reportRows = new List<BudgetStatusReportBO>();
+                db.Database.CommandTimeout = 180;
+                List<BudgetStatusReportBO> allRows = new List<BudgetStatusReportBO>();
+
+                // Check if project has service line budget configured
+                var serviceLineBudgetRecord = db.ProjectBudgetMaster
+                    .Where(o => o.ProjectId == projectId.Value && o.BudgetCode == "SERVICE_LINE_BUDGET" && o.IsActive == true)
+                    .FirstOrDefault();
+
+                bool hasServiceLineBudget = serviceLineBudgetRecord != null || projectId.Value == 10134;
 
                 // === Project 10134 (Beaumont) logic ===
                 if (projectId.Value == 10134)
@@ -107,15 +115,15 @@ namespace GarronT.CMS.Model.DAL
                         var installedMeters = GetBeaumont21InstalledMetersDetails(
                             projectId.Value,
                             installerId,
-                            parsedFromDate.Date.ToString("yyyy-MM-dd"),
-                            parsedToDate.Date.ToString("yyyy-MM-dd"),
+                            parsedFromDate.Date,
+                            parsedToDate.Date.AddDays(1),
                             con
                         );
 
                         foreach (var service in serviceConfig.Values.OrderBy(x => x.DisplayOrder))
                         {
                             int count = installedMeters.Count(x => x.MeterDisplayName == service.ServiceDisplayName);
-                            reportRows.Add(new BudgetStatusReportBO
+                            allRows.Add(new BudgetStatusReportBO
                             {
                                 ServiceDescription = service.ServiceDisplayName,
                                 UnitCost = service.Cost,
@@ -128,7 +136,7 @@ namespace GarronT.CMS.Model.DAL
                 else
                 {
                     // Other projects use the default stored procedure
-                    reportRows = db.Database.SqlQuery<BudgetStatusReportBO>(
+                    allRows = db.Database.SqlQuery<BudgetStatusReportBO>(
                         "EXEC dbo.PROC_GetBudgetStatusReport @ProjectId, @InstallerId, @FromDate, @ToDate",
                         new SqlParameter("@ProjectId", projectId.Value),
                         new SqlParameter("@InstallerId", installerId.HasValue ? (object)installerId.Value : DBNull.Value),
@@ -137,10 +145,56 @@ namespace GarronT.CMS.Model.DAL
                     ).ToList();
                 }
 
-                result.ReportRows = reportRows;
-                result.UsedBudget = reportRows.Sum(o => o.TotalCost);
-                result.ApprovedProjectBudget = GetApprovedProjectBudget(db, projectId.Value);
+                if (hasServiceLineBudget)
+                {
+                    foreach (var row in allRows)
+                    {
+                        bool isServiceLineRow = !string.IsNullOrEmpty(row.ServiceDescription) &&
+                            (row.ServiceDescription.IndexOf("Line Inspection", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                             row.ServiceDescription.IndexOf("Lead Line", StringComparison.OrdinalIgnoreCase) >= 0);
+
+                        if (isServiceLineRow)
+                        {
+                            bool keepOriginalName = string.Equals(row.ServiceDescription, "Line Inspection Dig Outside Box", StringComparison.OrdinalIgnoreCase) ||
+                                                    string.Equals(row.ServiceDescription, "Line Inspection Inside Meter Box", StringComparison.OrdinalIgnoreCase) ||
+                                                    string.Equals(row.ServiceDescription, "Lead Line Inspection (Outside the Box) with ERT Mitigation", StringComparison.OrdinalIgnoreCase);
+                            if (!keepOriginalName)
+                            {
+                                row.ServiceDescription = "Service Line";
+                            }
+                            result.ServiceLineReportRows.Add(row);
+                        }
+                        else
+                        {
+                            result.ReportRows.Add(row);
+                        }
+                    }
+
+                    // Fetch project budget from ProjectBudgetMaster
+                    var projectBudgetRecord = db.ProjectBudgetMaster
+                        .Where(o => o.ProjectId == projectId.Value && o.BudgetCode == "PROJECT_BUDGET" && o.IsActive == true)
+                        .FirstOrDefault();
+
+                    result.ApprovedProjectBudget = projectBudgetRecord != null
+                        ? projectBudgetRecord.BudgetAmount
+                        : GetApprovedProjectBudget(db, projectId.Value);
+
+                    result.ServiceLineBudget = serviceLineBudgetRecord != null
+                        ? serviceLineBudgetRecord.BudgetAmount
+                        : 500000.00m; // fallback for 10134
+                }
+                else
+                {
+                    result.ReportRows = allRows;
+                    result.ApprovedProjectBudget = GetApprovedProjectBudget(db, projectId.Value);
+                    result.ServiceLineBudget = 0;
+                }
+
+                result.UsedBudget = result.ReportRows.Sum(o => o.TotalCost);
                 result.BalanceBudget = result.ApprovedProjectBudget - result.UsedBudget;
+
+                result.ServiceLineUsedBudget = result.ServiceLineReportRows.Sum(o => o.TotalCost);
+                result.ServiceLineBalanceBudget = result.ServiceLineBudget - result.ServiceLineUsedBudget;
             }
 
             return result;
@@ -177,11 +231,16 @@ namespace GarronT.CMS.Model.DAL
                 document.Open();
 
                 Font titleFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 13f, BaseColor.BLACK);
-                Font infoFont = FontFactory.GetFont(FontFactory.HELVETICA, 9f, BaseColor.BLACK);
+
+                Font infoLabelFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 9f, BaseColor.BLACK);
+                Font infoValueFont = FontFactory.GetFont(FontFactory.HELVETICA, 9f, BaseColor.BLACK);
+
                 Font tableFont = FontFactory.GetFont(FontFactory.HELVETICA, 8.5f, BaseColor.BLACK);
                 Font tableHeaderFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 9.5f, BaseColor.BLACK);
                 Font tableBoldFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 9.0f, BaseColor.BLACK);
-                Font summaryFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 9.5f, BaseColor.BLACK);
+
+                Font summaryLabelFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 9.5f, BaseColor.BLACK);
+                Font summaryAmountFont = FontFactory.GetFont(FontFactory.HELVETICA, 9.5f, BaseColor.BLACK);
 
                 string projectName = string.Empty;
                 if (projectId.HasValue)
@@ -191,18 +250,12 @@ namespace GarronT.CMS.Model.DAL
                         var pd = db.tblProjects.Where(o => o.ProjectId == projectId.Value).FirstOrDefault();
                         if (pd != null)
                         {
-                            if (pd.CityId > 0 && pd.StateId > 0)
+                            var projectCityStateResult = db.STP_GetProjectCityState()
+                                .Where(o => o.ProjectId == projectId.Value)
+                                .FirstOrDefault();
+                            if (projectCityStateResult != null)
                             {
-                                var cityName = db.TblCityMasters.Where(o => o.CityId == pd.CityId).FirstOrDefault();
-                                var stateName = db.tblStateMasters.Where(o => o.StateId == pd.StateId).FirstOrDefault();
-                                if (cityName != null && stateName != null)
-                                {
-                                    projectName = cityName.CityName + " " + stateName.StateName;
-                                }
-                                else
-                                {
-                                    projectName = pd.ProjectName;
-                                }
+                                projectName = projectCityStateResult.ProjectCityName;
                             }
                             else
                             {
@@ -212,12 +265,6 @@ namespace GarronT.CMS.Model.DAL
                     }
                 }
 
-                string titleText = projectName;
-                if (!string.IsNullOrEmpty(titleText) && !titleText.EndsWith("Project", StringComparison.OrdinalIgnoreCase))
-                {
-                    titleText += " Project";
-                }
-
                 // Title Section
                 Paragraph title = new Paragraph();
                 title.Alignment = Element.ALIGN_CENTER;
@@ -225,42 +272,52 @@ namespace GarronT.CMS.Model.DAL
                 title.SpacingBefore = 0f;
                 title.SpacingAfter = 12f;
 
-                if (!string.IsNullOrEmpty(titleText))
-                {
-                    title.Add(new Chunk(titleText + "\n", titleFont));
-                }
                 title.Add(new Chunk("Budget Status Report\n", titleFont));
-                title.Add(new Chunk("Date Range: " + fromDate + " To " + toDate + "\n", infoFont));
-                if (!string.IsNullOrEmpty(exportedBy))
+
+                if (!string.IsNullOrEmpty(projectName))
                 {
-                    title.Add(new Chunk("User Name: " + exportedBy + "\n", infoFont));
+                    title.Add(new Chunk("Project Name: ", infoLabelFont));
+                    title.Add(new Chunk(projectName + "\n", infoValueFont));
                 }
+
+                title.Add(new Chunk("Date Range: ", infoLabelFont));
+                title.Add(new Chunk(fromDate + " ", infoValueFont));
+                title.Add(new Chunk("To ", infoLabelFont));
+                title.Add(new Chunk(toDate + "\n", infoValueFont));
 
                 document.Add(title);
 
                 // Create Table
-                PdfPTable table = new PdfPTable(4);
+                PdfPTable table = new PdfPTable(5);
                 table.WidthPercentage = 100;
                 table.HorizontalAlignment = Element.ALIGN_CENTER;
                 table.SpacingBefore = 5f;
                 table.SpacingAfter = 15f;
-                table.SetWidths(new float[] { 3f, 1f, 1f, 1f });
+
+                // Added Sr. No column
+                table.SetWidths(new float[] { 0.45f, 3f, 1f, 1f, 1f });
 
                 // Header Cells
-                table.AddCell(CreateBorderPdfCell("Service Description", tableHeaderFont, Element.ALIGN_CENTER));
-                table.AddCell(CreateBorderPdfCell("Unit Cost ($)", tableHeaderFont, Element.ALIGN_CENTER));
-                table.AddCell(CreateBorderPdfCell("Total Count", tableHeaderFont, Element.ALIGN_CENTER));
-                table.AddCell(CreateBorderPdfCell("Total Cost ($)", tableHeaderFont, Element.ALIGN_CENTER));
+                table.AddCell(CreateBorderPdfCell("Sr. No", tableHeaderFont, Element.ALIGN_CENTER));
+                table.AddCell(CreateBorderPdfCell("Service Description", tableHeaderFont, Element.ALIGN_LEFT));
+                table.AddCell(CreateBorderPdfCell("Unit Cost ($)", tableHeaderFont, Element.ALIGN_RIGHT));
+                table.AddCell(CreateBorderPdfCell("Total Count", tableHeaderFont, Element.ALIGN_RIGHT));
+                table.AddCell(CreateBorderPdfCell("Total Cost ($)", tableHeaderFont, Element.ALIGN_RIGHT));
 
                 CultureInfo usCulture = CultureInfo.GetCultureInfo("en-US");
 
                 // Data Rows
+                int srNo = 1;
+
                 foreach (var item in reportResult.ReportRows)
                 {
+                    table.AddCell(CreateBorderPdfCell(srNo.ToString(), tableFont, Element.ALIGN_CENTER));
                     table.AddCell(CreateBorderPdfCell(item.ServiceDescription ?? "", tableFont, Element.ALIGN_LEFT));
                     table.AddCell(CreateBorderPdfCell("$" + item.UnitCost.ToString("N2", usCulture), tableFont, Element.ALIGN_RIGHT));
-                    table.AddCell(CreateBorderPdfCell(item.TotalCount.ToString("N0", usCulture), tableFont, Element.ALIGN_CENTER));
+                    table.AddCell(CreateBorderPdfCell(item.TotalCount.ToString("N0", usCulture), tableFont, Element.ALIGN_RIGHT));
                     table.AddCell(CreateBorderPdfCell("$" + item.TotalCost.ToString("N2", usCulture), tableFont, Element.ALIGN_RIGHT));
+
+                    srNo++;
                 }
 
                 // Table Footer / Total Row
@@ -268,42 +325,131 @@ namespace GarronT.CMS.Model.DAL
                 int totalCount = reportResult.ReportRows.Sum(o => o.TotalCount);
                 decimal totalCost = reportResult.ReportRows.Sum(o => o.TotalCost);
 
-                table.AddCell(CreateBorderPdfCell("Total", tableBoldFont, Element.ALIGN_CENTER));
+                table.AddCell(CreateBorderPdfCell("", tableBoldFont, Element.ALIGN_CENTER));
+                table.AddCell(CreateBorderPdfCell("Total", tableBoldFont, Element.ALIGN_LEFT));
                 table.AddCell(CreateBorderPdfCell("$" + totalUnitCost.ToString("N2", usCulture), tableBoldFont, Element.ALIGN_RIGHT));
-                table.AddCell(CreateBorderPdfCell(totalCount.ToString("N0", usCulture), tableBoldFont, Element.ALIGN_CENTER));
+                table.AddCell(CreateBorderPdfCell(totalCount.ToString("N0", usCulture), tableBoldFont, Element.ALIGN_RIGHT));
                 table.AddCell(CreateBorderPdfCell("$" + totalCost.ToString("N2", usCulture), tableBoldFont, Element.ALIGN_RIGHT));
 
                 document.Add(table);
 
-                // Bottom Summary Table
-                PdfPTable bottomTable = new PdfPTable(3);
-                bottomTable.WidthPercentage = 100;
-                bottomTable.SetWidths(new float[] { 1f, 1f, 1f });
-                bottomTable.SpacingBefore = 10f;
-                bottomTable.KeepTogether = true;
+                bool hasServiceLine = reportResult.ServiceLineReportRows != null && reportResult.ServiceLineReportRows.Any();
 
-                // Approved Project Budget
-                bottomTable.AddCell(CreateNoBorderPdfCell(
-                    "APPROVED PROJECT BUDGET\n$" + reportResult.ApprovedProjectBudget.ToString("N2", usCulture),
-                    summaryFont,
-                    Element.ALIGN_CENTER
-                ));
+                if (hasServiceLine)
+                {
+                    // Under Table 1, render budget summary for Table 1
+                    PdfPTable t1SummaryTable = new PdfPTable(2);
+                    t1SummaryTable.WidthPercentage = 100;
+                    t1SummaryTable.SetWidths(new float[] { 1f, 1f });
+                    t1SummaryTable.SpacingBefore = 5f;
+                    t1SummaryTable.SpacingAfter = 20f;
+                    t1SummaryTable.KeepTogether = true;
 
-                // Total Used Budget (Total Cost)
-                bottomTable.AddCell(CreateNoBorderPdfCell(
-                    "TOTAL USED BUDGET\n$" + reportResult.UsedBudget.ToString("N2", usCulture),
-                    summaryFont,
-                    Element.ALIGN_CENTER
-                ));
+                    t1SummaryTable.AddCell(CreateNoBorderPdfCell(
+                        CreateSummaryPhrase("APPROVED PROJECT BUDGET", reportResult.ApprovedProjectBudget, usCulture, summaryLabelFont, summaryAmountFont),
+                        Element.ALIGN_LEFT
+                    ));
 
-                // Balance Budget
-                bottomTable.AddCell(CreateNoBorderPdfCell(
-                    "BALANCE BUDGET\n$" + reportResult.BalanceBudget.ToString("N2", usCulture),
-                    summaryFont,
-                    Element.ALIGN_CENTER
-                ));
+                    t1SummaryTable.AddCell(CreateNoBorderPdfCell(
+                        CreateSummaryPhrase("BALANCE BUDGET", reportResult.BalanceBudget, usCulture, summaryLabelFont, summaryAmountFont),
+                        Element.ALIGN_LEFT
+                    ));
 
-                document.Add(bottomTable);
+                    document.Add(t1SummaryTable);
+
+                    // Render Table 2
+                    PdfPTable table2 = new PdfPTable(5);
+                    table2.WidthPercentage = 100;
+                    table2.HorizontalAlignment = Element.ALIGN_CENTER;
+                    table2.SpacingBefore = 5f;
+                    table2.SpacingAfter = 15f;
+                    table2.SetWidths(new float[] { 0.45f, 3f, 1f, 1f, 1f });
+
+                    // Header Cells
+                    table2.AddCell(CreateBorderPdfCell("Sr. No", tableHeaderFont, Element.ALIGN_CENTER));
+                    table2.AddCell(CreateBorderPdfCell("Service Description", tableHeaderFont, Element.ALIGN_LEFT));
+                    table2.AddCell(CreateBorderPdfCell("Unit Cost ($)", tableHeaderFont, Element.ALIGN_RIGHT));
+                    table2.AddCell(CreateBorderPdfCell("Total Count", tableHeaderFont, Element.ALIGN_RIGHT));
+                    table2.AddCell(CreateBorderPdfCell("Total Cost ($)", tableHeaderFont, Element.ALIGN_RIGHT));
+
+                    // Data Rows Table 2
+                    int slSrNo = 1;
+                    foreach (var item in reportResult.ServiceLineReportRows)
+                    {
+                        table2.AddCell(CreateBorderPdfCell(slSrNo.ToString(), tableFont, Element.ALIGN_CENTER));
+                        table2.AddCell(CreateBorderPdfCell(item.ServiceDescription ?? "", tableFont, Element.ALIGN_LEFT));
+                        table2.AddCell(CreateBorderPdfCell("$" + item.UnitCost.ToString("N2", usCulture), tableFont, Element.ALIGN_RIGHT));
+                        table2.AddCell(CreateBorderPdfCell(item.TotalCount.ToString("N0", usCulture), tableFont, Element.ALIGN_RIGHT));
+                        table2.AddCell(CreateBorderPdfCell("$" + item.TotalCost.ToString("N2", usCulture), tableFont, Element.ALIGN_RIGHT));
+                        slSrNo++;
+                    }
+
+                    document.Add(table2);
+
+                    // Under Table 2, render Service Line budgets
+                    PdfPTable t2SummaryTable = new PdfPTable(2);
+                    t2SummaryTable.WidthPercentage = 100;
+                    t2SummaryTable.SetWidths(new float[] { 1f, 1f });
+                    t2SummaryTable.SpacingBefore = 5f;
+                    t2SummaryTable.KeepTogether = true;
+
+                    t2SummaryTable.AddCell(CreateNoBorderPdfCell(
+                        CreateSummaryPhrase("SERVICE LINE BUDGET", reportResult.ServiceLineBudget, usCulture, summaryLabelFont, summaryAmountFont),
+                        Element.ALIGN_LEFT
+                    ));
+
+                    t2SummaryTable.AddCell(CreateNoBorderPdfCell(
+                        CreateSummaryPhrase("BALANCE SERVICE LINE BUDGET", reportResult.ServiceLineBalanceBudget, usCulture, summaryLabelFont, summaryAmountFont),
+                        Element.ALIGN_LEFT
+                    ));
+
+                    document.Add(t2SummaryTable);
+                }
+                else
+                {
+                    // Bottom Summary Table
+                    PdfPTable bottomTable = new PdfPTable(3);
+                    bottomTable.WidthPercentage = 100;
+                    bottomTable.SetWidths(new float[] { 1f, 1f, 1f });
+                    bottomTable.SpacingBefore = 10f;
+                    bottomTable.KeepTogether = true;
+
+                    // Approved Project Budget
+                    bottomTable.AddCell(CreateNoBorderPdfCell(
+                        CreateSummaryPhrase(
+                            "APPROVED PROJECT BUDGET",
+                            reportResult.ApprovedProjectBudget,
+                            usCulture,
+                            summaryLabelFont,
+                            summaryAmountFont
+                        ),
+                        Element.ALIGN_CENTER
+                    ));
+
+                    bottomTable.AddCell(CreateNoBorderPdfCell(
+                        CreateSummaryPhrase(
+                            "TOTAL USED BUDGET",
+                            reportResult.UsedBudget,
+                            usCulture,
+                            summaryLabelFont,
+                            summaryAmountFont
+                        ),
+                        Element.ALIGN_CENTER
+                    ));
+
+                    bottomTable.AddCell(CreateNoBorderPdfCell(
+                        CreateSummaryPhrase(
+                            "BALANCE BUDGET",
+                            reportResult.BalanceBudget,
+                            usCulture,
+                            summaryLabelFont,
+                            summaryAmountFont
+                        ),
+                        Element.ALIGN_CENTER
+                    ));
+
+                    document.Add(bottomTable);
+                }
 
                 document.Close();
                 return ms.ToArray();
@@ -356,8 +502,8 @@ namespace GarronT.CMS.Model.DAL
         private List<Model_InstalledMeterDetailPayRate> GetBeaumont21InstalledMetersDetails(
             long projectId,
             long? installerId,
-            string weekRangeFromDate,
-            string weekRangeToDate,
+            DateTime fromDate,
+            DateTime toDate,
             SqlConnection con)
         {
             List<Model_InstalledMeterDetailPayRate> result =
@@ -380,8 +526,8 @@ namespace GarronT.CMS.Model.DAL
         INNER JOIN tblProjectFieldDataMaster dm
             ON pf.Id = dm.TblProjectFieldData_Id
         WHERE up.FKProjectId = @ProjectId
-          AND CONVERT(date, pf.VisitDateTime) BETWEEN CONVERT(date, @FromDate)
-                                                  AND CONVERT(date, @ToDate)
+          AND pf.VisitDateTime >= @FromDate
+          AND pf.VisitDateTime < @ToDate
           AND (@InstallerId IS NULL OR pf.CreatedBy = @InstallerId)
           AND pf.Active = 1
           AND dm.Active = 1
@@ -395,10 +541,11 @@ namespace GarronT.CMS.Model.DAL
 
             using (SqlCommand cmd = new SqlCommand(sqlQuery, con))
             {
+                cmd.CommandTimeout = 180;
                 cmd.Parameters.AddWithValue("@ProjectId", projectId);
                 cmd.Parameters.AddWithValue("@InstallerId", installerId.HasValue ? (object)installerId.Value : DBNull.Value);
-                cmd.Parameters.AddWithValue("@FromDate", weekRangeFromDate);
-                cmd.Parameters.AddWithValue("@ToDate", weekRangeToDate);
+                cmd.Parameters.AddWithValue("@FromDate", fromDate);
+                cmd.Parameters.AddWithValue("@ToDate", toDate);
 
                 SqlDataAdapter sda = new SqlDataAdapter(cmd);
                 sda.Fill(dt);
@@ -561,6 +708,7 @@ namespace GarronT.CMS.Model.DAL
 
                 const int BEAUMONT_SERVICE_RESET_METER_BOX = 7;
                 const int BEAUMONT_SERVICE_METER_BOX_INSTALL_58_TO_1 = 10;
+                const int BEAUMONT_SERVICE_METER_BOX_INSTALL_15_TO_2 = 61;
                 const int BEAUMONT_SERVICE_REG_EXCH_STAND_ALONE = -1;
 
                 bool hasResetMeterBox =
@@ -568,6 +716,9 @@ namespace GarronT.CMS.Model.DAL
 
                 bool hasMeterBoxInstall58To1 =
                     selectedServiceIds.Contains(BEAUMONT_SERVICE_METER_BOX_INSTALL_58_TO_1);
+
+                bool hasMeterBoxInstall15To2 =
+                    selectedServiceIds.Contains(BEAUMONT_SERVICE_METER_BOX_INSTALL_15_TO_2);
 
                 bool hasLineInspectionOutsideBox =
                     IsValidBeaumontLeadLineInspection(
@@ -715,6 +866,19 @@ namespace GarronT.CMS.Model.DAL
                 }
 
                 if (hasMeterBoxInstall58To1)
+                {
+                    AddBeaumont21RowByCode(
+                        result,
+                        serviceConfig,
+                        projectId,
+                        "BOX_REPLACEMENT",
+                        createdOn,
+                        dayName,
+                        time
+                    );
+                }
+
+                if (hasMeterBoxInstall15To2)
                 {
                     AddBeaumont21RowByCode(
                         result,
@@ -1060,6 +1224,39 @@ namespace GarronT.CMS.Model.DAL
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+        private Phrase CreateSummaryPhrase(
+    string label,
+    decimal amount,
+    CultureInfo cultureInfo,
+    Font labelFont,
+    Font amountFont)
+        {
+            Phrase phrase = new Phrase();
+
+            phrase.Add(new Chunk(label + "\n", labelFont));
+
+            // Amount and dollar sign both normal/unbold
+            phrase.Add(new Chunk("$" + amount.ToString("N2", cultureInfo), amountFont));
+
+            return phrase;
+        }
+
+        private PdfPCell CreateNoBorderPdfCell(Phrase phrase, int alignment)
+        {
+            PdfPCell cell = new PdfPCell(phrase);
+            cell.Border = Rectangle.NO_BORDER;
+            cell.HorizontalAlignment = alignment;
+            cell.VerticalAlignment = Element.ALIGN_TOP;
+
+            cell.PaddingTop = 2f;
+            cell.PaddingBottom = 2f;
+            cell.PaddingLeft = 4f;
+            cell.PaddingRight = 4f;
+
+            cell.NoWrap = false;
+
+            return cell;
         }
     }
 }

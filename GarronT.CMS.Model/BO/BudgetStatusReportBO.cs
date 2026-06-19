@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace GarronT.CMS.Model.BO
 {
@@ -23,9 +23,18 @@ namespace GarronT.CMS.Model.BO
 
         public List<BudgetStatusReportBO> ReportRows { get; set; }
 
+        public decimal ServiceLineBudget { get; set; }
+
+        public decimal ServiceLineUsedBudget { get; set; }
+
+        public decimal ServiceLineBalanceBudget { get; set; }
+
+        public List<BudgetStatusReportBO> ServiceLineReportRows { get; set; }
+
         public BudgetStatusReportResultBO()
         {
             ReportRows = new List<BudgetStatusReportBO>();
+            ServiceLineReportRows = new List<BudgetStatusReportBO>();
         }
     }
 

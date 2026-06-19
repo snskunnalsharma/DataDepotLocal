@@ -1,4 +1,4 @@
-﻿var spinner, opts, target;
+var spinner, opts, target;
 var curStep, curStepBtn, nextStepWizard, curInputs, isValid;
 var $sourceFields, $destinationFields, $chooser, navListItems, NewData;
 var editMode = false;
@@ -1138,6 +1138,7 @@ function getTab3Data() {
                 result = result + '<div class="col-lg-2 col-sm-3 col-xs-3">' +
                     '<input maxlength="20" id="' + ServiceSmallModel.ServiceId + '" type="text" placeholder="Enter rate for service" value="' +
                     formatMoney(ServiceSmallModel.ServiceBasePrice) + '"' +
+                    'data-masterfieldid="' + ServiceSmallModel.MasterFieldId + '" ' +
                     'style="width:50%; text-align:right; padding-right:10px;" class="tab3txt allownumericwithdecimal"  />' +
                     '</div>';
 
@@ -1146,7 +1147,7 @@ function getTab3Data() {
                     'data-masterfieldid="' + ServiceSmallModel.MasterFieldId + '" ' +
                     'value="' + formatMoney(
                         ServiceSmallModel.CostRate == null || parseFloat(ServiceSmallModel.CostRate) === 0
-                            ? calculateDoubleCostRate(ServiceSmallModel.ServiceBasePrice)
+                            ? calculateDefaultCostRate(ServiceSmallModel.ServiceBasePrice)
                             : ServiceSmallModel.CostRate
                     ) + '" ' +
                     'style="width:50%;text-align:right;padding-right:10px;" ' +
@@ -1194,9 +1195,10 @@ function getTab3Data() {
 
                 result1 += '<div class="col-lg-2 col-sm-3 col-xs-3">' +
                     '<input maxlength="20" id="costRate' + ServiceNotSelectedModel.ServiceId + '" type="text" ' +
+                    'data-masterfieldid="' + ServiceNotSelectedModel.MasterFieldId + '" ' +
                     'value="' + formatMoney(
                         ServiceNotSelectedModel.CostRate == null || parseFloat(ServiceNotSelectedModel.CostRate) === 0
-                            ? calculateDoubleCostRate(ServiceNotSelectedModel.ServiceBasePrice)
+                            ? calculateDefaultCostRate(ServiceNotSelectedModel.ServiceBasePrice)
                             : ServiceNotSelectedModel.CostRate
                     ) + '" ' +
                     'style="width:50%;text-align:right;padding-right:10px;" ' +
@@ -1245,7 +1247,8 @@ function getTab3Data() {
                 result2 = result2 + '<div class="col-lg-2 col-sm-3 col-xs-3">' +
                     '<input maxlength="20" id="' + ServiceSmallModel.Id + '" type="text" placeholder="Enter Meter Pay Rate" value="' +
                     formatMoney(ServiceSmallModel.Pay) + '"' +
-                    'style="width:50%; text-align:right; padding-right:10px;" class="tab4txt allownumericwithdecimal"  />' +
+                    'data-serviceid="' + ServiceSmallModel.ServiceId + '" ' +
+                    'style="width:50%; text-align:right; padding-right:10px;" class="tab4txt meterPayRateByService allownumericwithdecimal"  />' +
                     '</div>';
 
                 result2 += '<div class="col-lg-2 col-sm-3 col-xs-3">' +
@@ -1253,7 +1256,7 @@ function getTab3Data() {
                     'data-serviceid="' + ServiceSmallModel.ServiceId + '" ' +
                     'value="' + formatMoney(
                         ServiceSmallModel.CostRate == null || parseFloat(ServiceSmallModel.CostRate) === 0
-                            ? calculateDoubleCostRate(ServiceSmallModel.Pay)
+                            ? calculateDefaultCostRate(ServiceSmallModel.Pay)
                             : ServiceSmallModel.CostRate
                     ) + '" ' +
                     'style="width:50%;text-align:right;padding-right:10px;" ' +
@@ -1268,6 +1271,34 @@ function getTab3Data() {
             mastDiv.append(result);
             mastAdditionalDiv.append(result1);
             mastMeterPayRateDiv.append(result2);
+
+            // Render Report Services section for project 10134
+            if (projId == 10134) {
+                $('#divReportServicesSection').show();
+                var reportDiv = $('#ulReportServices');
+                reportDiv.empty();
+
+                var reportResult = '<li class="row" style="margin-top: -12px; margin-bottom: -10px;" > <div class="task-title">' +
+                    '<span class="task-title-sp col-lg-3 col-sm-3 col-xs-3 show_deactive" style="font-weight:700">Service Name</span>' +
+                    '<span class="task-title-sp col-lg-3 col-sm-3 col-xs-3" style="font-weight:700">Rate For Service ($)</span>' +
+                    '<span class="task-title-sp col-lg-3 col-sm-3 col-xs-3" style="font-weight:700">Cost ($)</span>' +
+                    '<span class="task-title-sp col-lg-3 col-sm-3 col-xs-3" style="font-weight:700">Actions</span>' +
+                    '</div></li><br>';
+
+                if (data.objList5 && data.objList5.length > 0) {
+                    $.each(data.objList5, function (id, service) {
+                        reportResult += ' <li class="row report-service-row" style="margin-bottom: 5px;" data-id="' + service.Id + '" data-service-code="' + service.ServiceCode + '"> <div class="task-content">' +
+                            ' <div class="col-lg-3 col-sm-3 col-xs-3 show_deactive"><span>' + service.ServiceDisplayName + '</span></div>' +
+                            ' <div class="col-lg-3 col-sm-3 col-xs-3"><input maxlength="20" type="text" value="' + formatMoney(service.PayAmount) + '" class="reportServiceRateTxt allownumericwithdecimal" style="width:50%; text-align:right; padding-right:10px;" /></div>' +
+                            ' <div class="col-lg-3 col-sm-3 col-xs-3"><input maxlength="20" type="text" value="' + formatMoney(service.Cost) + '" class="reportServiceCostTxt allownumericwithdecimal" style="width:50%; text-align:right; padding-right:10px;" /></div>' +
+                            ' <div class="col-lg-3 col-sm-3 col-xs-3"><button type="button" class="btn btn-danger btn-xs btnDeleteReportService"><i class="fa fa-trash"></i></button></div>' +
+                            ' </div></li>';
+                    });
+                }
+                reportDiv.append(reportResult);
+            } else {
+                $('#divReportServicesSection').hide();
+            }
 
             ShowHideAddProductButton();
 
@@ -1328,14 +1359,14 @@ function formatMoney(value) {
     return number.toFixed(2);
 }
 
-function calculateDoubleCostRate(rateValue) {
+function calculateDefaultCostRate(rateValue) {
     var rate = parseFloat(rateValue);
 
     if (isNaN(rate)) {
         return "0.00";
     }
 
-    return (rate * 2).toFixed(2);
+    return rate.toFixed(2);
 }
 
 $(document).on('keypress keyup blu', '.allownumericwithdecimal', function (e) {
@@ -1361,17 +1392,7 @@ $(document).on('keypress keyup blu', '.allownumericwithdecimal', function (e) {
 
 });
 $(document).on('keyup change blur', '.tab3txt', function () {
-    var serviceId = $(this).attr('id');
-    var serviceRate = $(this).val();
-
-    var costRateBox = $('#costRate' + serviceId);
-
-    if (costRateBox.length > 0) {
-        costRateBox.val(calculateDoubleCostRate(serviceRate));
-
-        // also update Add Meter Pay Rate cost
-        syncSelectedServiceCostToMeterPay(costRateBox);
-    }
+    syncSelectedServiceRateToMeterPay(this);
 });
 $(document).on('keypress keyup blu', '.allowalphanumeric', function (e) {
     var regex = new RegExp("^[a-zA-Z0-9\\-\\s]+$");
@@ -1470,6 +1491,49 @@ function checkTab3Status(moveNext) {
         return false;
     }
 
+    var reportServicesData = [];
+    var projId = $("#txtProjectId").val();
+    if (projId == 10134) {
+        var reportValError = false;
+        $(".report-service-row").each(function () {
+            var row = $(this);
+            var id = parseInt(row.attr("data-id")) || 0;
+            var serviceCode = row.attr("data-service-code") || "";
+            
+            var serviceDisplayName = "";
+            if (id > 0) {
+                serviceDisplayName = row.find("span").text().trim();
+            } else {
+                serviceDisplayName = row.find(".reportServiceNameTxt").val() || "";
+                serviceDisplayName = serviceDisplayName.trim();
+            }
+            
+            var payAmount = parseFloat(row.find(".reportServiceRateTxt").val()) || 0;
+            var cost = parseFloat(row.find(".reportServiceCostTxt").val()) || 0;
+            
+            if (serviceDisplayName === "") {
+                reportValError = true;
+                row.find(".reportServiceNameTxt").focus();
+                return false;
+            }
+            
+            reportServicesData.push({
+                Id: id,
+                ProjectId: 10134,
+                ServiceCode: serviceCode,
+                ServiceDisplayName: serviceDisplayName,
+                PayAmount: payAmount,
+                Cost: cost,
+                IsActive: true
+            });
+        });
+        
+        if (reportValError) {
+            toastr["error"]("Please enter a name for all added report services.", "Notification !");
+            return false;
+        }
+    }
+
     waitingDialog.show("Please Wait...");
 
     var data0 = {
@@ -1477,7 +1541,8 @@ function checkTab3Status(moveNext) {
         projectBudget: projectBudget,
         serviceLineBudget: serviceLineBudget,
         serviceLineCode: "LEAD_LINE",
-        Servicedata: data1
+        Servicedata: data1,
+        reportServicesData: reportServicesData
     };
 
     var json = JSON.stringify(data0);
@@ -1497,17 +1562,9 @@ function checkTab3Status(moveNext) {
 
             if (data.success == true) {
 
-                saveMetePayRates();
+                saveMetePayRates(moveNext);
 
-                toastr["success"]("Tab 3 information saved successfully.", "Success Notification !");
-
-                if (moveNext === true) {
-                    nextStepWizard.removeAttr("disabled").trigger("click");
-                    getTab4Data();
-                }
-                else {
-                    waitingDialog.hide();
-                }
+                toastr["success"]("Configure Services information saved successfully.", "Success Notification !");
 
                 return true;
             }
@@ -1525,7 +1582,7 @@ function checkTab3Status(moveNext) {
     });
 }
 
-function saveMetePayRates() {
+function saveMetePayRates(moveNext) {
     debugger;
 
     var data2 = [];
@@ -1580,17 +1637,23 @@ function saveMetePayRates() {
         },
         success: function (data) {
             if (data.success == true) {
-                //debugger;;
-                nextStepWizard.removeAttr('disabled').trigger('click');
-                getTab4Data();
+                if (moveNext === true) {
+                    nextStepWizard.removeAttr('disabled').trigger('click');
+                    getTab4Data();
+                } else {
+                    waitingDialog.hide();
+                }
 
             } else {
+                waitingDialog.hide();
+                toastr["error"](data.returnMessage || "Tab 3 meter pay rates save failed.", "Error Notification");
                 return false;
             }
 
         },
         error: function () {
-            var $toast = toastr["error"]("something seems wrong", "Error Notification");
+            waitingDialog.hide();
+            toastr["error"]("something seems wrong", "Error Notification");
             return false;
         }
     });
@@ -2506,107 +2569,77 @@ $('#chkMapWithNationWide').change(function () {
         $('#ddlCity').empty();
         $('#ddlCity').append($('<option></option>').val('0').html("")).trigger('chosen:updated');
 
-
     }
 });
 //#endregion
-function calculateDoubleCostRate(rateValue) {
+function calculateDefaultCostRate(rateValue) {
     var rate = parseFloat(rateValue);
-
     if (isNaN(rate)) {
         return "0.00";
     }
-
-    return (rate * 2).toFixed(2);
+    return rate.toFixed(2);
 }
-$(document).on('focus', '.tab3Costtxt', function () {
-    $(this).attr('data-manual-edit', 'true');
-});
-$(document).on('keyup change blur', '.tab3txt', function () {
-    var serviceId = $(this).attr('id');
-    var serviceRate = $(this).val();
 
-    var costRateBox = $('#costRate' + serviceId);
-
-    if (costRateBox.length > 0) {
-        var isManualEdit = costRateBox.attr('data-manual-edit') === 'true';
-
-        if (!isManualEdit) {
-            costRateBox.val(calculateDoubleCostRate(serviceRate));
-        }
-    }
-});
-function calculateDoubleCostRate(rateValue) {
-    var rate = parseFloat(rateValue);
-
-    if (isNaN(rate)) {
-        return "0.00";
-    }
-
-    return (rate * 2).toFixed(2);
+// Sync Selected Services rate and cost to Add Meter Pay Rates
+function syncSelectedServiceRateToMeterPay(element) {
+    var masterFieldId = $(element).attr("data-masterfieldid");
+    var rate = $(element).val();
+    $('.tab4txt.meterPayRateByService[data-serviceid="' + masterFieldId + '"]').val(rate);
 }
-$(document).on('keyup change blur', '.tab4txt', function () {
-    var meterPayId = $(this).attr('id');
-    var payRate = $(this).val();
 
-    var costRateBox = $('#meterCostRate' + meterPayId);
-
-    if (costRateBox.length > 0) {
-        costRateBox.val(calculateDoubleCostRate(payRate));
-    }
-});
-function syncSelectedServiceCostToMeterPay(costRateInput) {
-    var serviceId = $(costRateInput).attr('data-masterfieldid');
-    var costRate = formatMoney($(costRateInput).val());
-
-    if (serviceId == undefined || serviceId == null || serviceId == '') {
-        return;
-    }
-
-    $('.meterCostRateByService[data-serviceid="' + serviceId + '"]').val(costRate);
+function syncSelectedServiceCostToMeterPay(element) {
+    var masterFieldId = $(element).attr("data-masterfieldid");
+    var cost = $(element).val();
+    $('.tab4Costtxt.meterCostRateByService[data-serviceid="' + masterFieldId + '"]').val(cost);
 }
+
 $(document).on('keyup change blur', '.tab3Costtxt', function () {
     syncSelectedServiceCostToMeterPay(this);
 });
-function formatMoney(value) {
-    var number = parseFloat(value);
 
-    if (isNaN(number)) {
-        return "0.00";
-    }
+// Report Services handlers
+$(document).on('click', '#btnAddReportService', function () {
+    var newRow = ' <li class="row report-service-row" style="margin-bottom: 5px;" data-id="0" data-service-code=""> <div class="task-content">' +
+        ' <div class="col-lg-3 col-sm-3 col-xs-3 show_deactive"><input type="text" placeholder="Enter service name" class="reportServiceNameTxt" style="width:95%;" /></div>' +
+        ' <div class="col-lg-3 col-sm-3 col-xs-3"><input maxlength="20" type="text" value="0.00" class="reportServiceRateTxt allownumericwithdecimal" style="width:50%; text-align:right; padding-right:10px;" /></div>' +
+        ' <div class="col-lg-3 col-sm-3 col-xs-3"><input maxlength="20" type="text" value="0.00" class="reportServiceCostTxt allownumericwithdecimal" style="width:50%; text-align:right; padding-right:10px;" /></div>' +
+        ' <div class="col-lg-3 col-sm-3 col-xs-3"><button type="button" class="btn btn-danger btn-xs btnDeleteReportService"><i class="fa fa-trash"></i></button></div>' +
+        ' </div></li>';
+    $('#ulReportServices').append(newRow);
+});
 
-    return number.toFixed(2);
-}
-function removeAmountCommas(value) {
-    if (value === undefined || value === null) {
-        return "0";
-    }
+$(document).on('click', '.btnDeleteReportService', function () {
+    var row = $(this).closest('.report-service-row');
+    $.confirm({
+        icon: 'fa fa-warning',
+        columnClass: 'col-md-6 col-md-offset-3',
+        closeIcon: true,
+        animationBounce: 2,
+        title: 'Delete Service!',
+        content: 'Do you want to delete the current service?',
+        buttons: {
+            Yes: {
+                text: 'Yes',
+                btnClass: 'btn-danger',
+                action: function () {
+                    row.remove();
+                }
+            },
+            No: {
+                text: 'No',
+                btnClass: 'btn-blue',
+                action: function () {
+                }
+            }
+        }
+    });
+});
 
-    return $.trim(value.toString()).replace(/,/g, "");
-}
-
-function formatAmountWithCommas(value) {
-    var cleanValue = removeAmountCommas(value);
-
-    if (cleanValue === "" || cleanValue === ".") {
-        return "0.00";
-    }
-
-    var number = parseFloat(cleanValue);
-
-    if (isNaN(number)) {
-        return "0.00";
-    }
-
-    return number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
-$(document).on('blur', '.tab3Costtxt, .tab4Costtxt', function () {
+// Input formatting
+$(document).on('blur', '.tab3txt, .tab4txt, .tab3Costtxt, .tab4Costtxt, .reportServiceRateTxt, .reportServiceCostTxt', function () {
     $(this).val(formatMoney($(this).val()));
 });
 
-$(document).on('blur', '.tab3txt, .tab4txt, .tab3Costtxt, .tab4Costtxt', function () {
-    $(this).val(formatMoney($(this).val()));
-});
 $(document).on("focus", "#txtProjectBudget, #txtServiceLineBudget", function () {
     $(this).val(removeAmountCommas($(this).val()));
 });
@@ -2614,3 +2647,22 @@ $(document).on("focus", "#txtProjectBudget, #txtServiceLineBudget", function () 
 $(document).on("blur", "#txtProjectBudget, #txtServiceLineBudget", function () {
     $(this).val(formatAmountWithCommas($(this).val()));
 });
+
+function removeAmountCommas(value) {
+    if (value === undefined || value === null) {
+        return "0";
+    }
+    return $.trim(value.toString()).replace(/,/g, "");
+}
+
+function formatAmountWithCommas(value) {
+    var cleanValue = removeAmountCommas(value);
+    if (cleanValue === "" || cleanValue === ".") {
+        return "0.00";
+    }
+    var number = parseFloat(cleanValue);
+    if (isNaN(number)) {
+        return "0.00";
+    }
+    return number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}

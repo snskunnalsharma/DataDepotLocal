@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,6 +17,8 @@ namespace GarronT.CMS.Model.BO
         public string serviceLineCode { get; set; }
 
         public List<ProjectServiceBO> Servicedata { get; set; }
+
+        public List<TimeClockServiceMasterBo> reportServicesData { get; set; }
     }
 
     public class ProjectServiceBO

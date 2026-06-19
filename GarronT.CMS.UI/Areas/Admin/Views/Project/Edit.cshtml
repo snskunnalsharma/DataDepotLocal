@@ -1,4 +1,4 @@
-﻿
+
 @{
     ViewBag.Title = "Project Edit";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
@@ -6909,6 +6909,23 @@
                     <div class="row setup-content" id="step-3" style="padding-top: 1%; display: none">
 
                         <div class="container-fluid">
+                            <div id="divReportServicesSection" style="display: none;">
+                                <div class="col-lg-12 col-sm-12 col-xs-12 " style="padding-left: 5%; background-color: #64b5f6; padding-top: 5px; padding-bottom: 5px; margin-top: 10px;">
+                                    <b>Report Services</b>
+                                    <button type="button" class="btn btn-success btn-xs" id="btnAddReportService" style="margin-left: 20px; padding: 2px 8px; font-weight: bold;">Add Service</button>
+                                </div>
+                                <div class="col-xs-12 ">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <div class="task-content col-md-offset-1">
+                                                <br>
+                                                <ul class="task-list" id="ulReportServices"></ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="col-lg-12 col-sm-12 col-xs-12 " style="padding-left: 5%; background-color: #64b5f6"><b>Selected Services</b></div>
                             <div class="col-xs-12 ">
                                 <div class="col-md-12">

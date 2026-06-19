@@ -124,7 +124,11 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         data = result.ReportRows,
                         ApprovedProjectBudget = result.ApprovedProjectBudget,
                         UsedBudget = result.UsedBudget,
-                        BalanceBudget = result.BalanceBudget
+                        BalanceBudget = result.BalanceBudget,
+                        ServiceLineBudget = result.ServiceLineBudget,
+                        ServiceLineUsedBudget = result.ServiceLineUsedBudget,
+                        ServiceLineBalanceBudget = result.ServiceLineBalanceBudget,
+                        ServiceLineData = result.ServiceLineReportRows
                     }, JsonRequestBehavior.AllowGet);
 
                     jsonResult.MaxJsonLength = int.MaxValue;

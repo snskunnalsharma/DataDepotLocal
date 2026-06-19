@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -84,6 +84,7 @@ namespace GarronT.CMS.Model.BO
         public List<ServiceNotSelectedModel> objList2 { get; set; }
         public List<ProductServiceBo> objList3 { get; set; }
         public List<MeterSizePayRateBo> objList4 { get; set; }
+        public List<TimeClockServiceMasterBo> objList5 { get; set; } // New!
 
         // New: Project Budget
         public Nullable<decimal> ProjectBudget { get; set; }

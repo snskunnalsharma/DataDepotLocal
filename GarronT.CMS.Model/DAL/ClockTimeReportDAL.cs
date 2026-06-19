@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Web;
 using AutoMapper;
 using System.Linq;
@@ -1060,16 +1060,9 @@ namespace GarronT.CMS.Model.DAL
                 // =========================
                 // Bottom summary + signature section
                 // =========================
-                // =========================
-                // Bottom summary + signature section
-                // Clean alignment: summary left, signature center-right, dates far right
-                // =========================
-                // =========================
-                // Bottom summary + signatures side by side
-                // =========================
-                PdfPTable bottom = new PdfPTable(6);
+                PdfPTable bottom = new PdfPTable(5);
                 bottom.WidthPercentage = 100;
-                bottom.SetWidths(new float[] { 1.05f, 1.05f, 1.05f, 1.75f, 1.75f, 0.95f });
+                bottom.SetWidths(new float[] { 2.1f, 1.5f, 1.7f, 2.5f, 2.5f });
                 bottom.SpacingBefore = 10f;
                 bottom.SpacingAfter = 0f;
                 bottom.KeepTogether = true;
@@ -1078,21 +1071,21 @@ namespace GarronT.CMS.Model.DAL
 
                 // Summary 1
                 bottom.AddCell(CreateNoBorderPdfCell(
-                    "TOTAL WO IN\nDATA DEPOT\n" + collection[7].ToString(),
+                    "TOTAL WO IN DATA DEPOT: " + collection[7].ToString(),
                     summaryFont,
                     Element.ALIGN_CENTER
                 ));
 
                 // Summary 2
                 bottom.AddCell(CreateNoBorderPdfCell(
-                    "TOTAL\nHOURS\n" + collection[8].ToString(),
+                    "TOTAL HOURS: " + collection[8].ToString(),
                     summaryFont,
                     Element.ALIGN_CENTER
                 ));
 
                 // Summary 3
                 bottom.AddCell(CreateNoBorderPdfCell(
-                    "AVG PER\nHOUR\n" + collection[9].ToString(),
+                    "AVG PER HOUR: " + collection[9].ToString(),
                     summaryFont,
                     Element.ALIGN_CENTER
                 ));
@@ -1110,9 +1103,6 @@ namespace GarronT.CMS.Model.DAL
                     today,
                     summaryFont
                 ));
-
-                // Optional blank/right spacer column
-                bottom.AddCell(CreateNoBorderPdfCell("", summaryFont, Element.ALIGN_CENTER));
 
                 document.Add(bottom);
                
@@ -1152,23 +1142,28 @@ namespace GarronT.CMS.Model.DAL
         }
         private const int BEAUMONT_SERVICE_RESET_METER_BOX = 7;
         private const int BEAUMONT_SERVICE_METER_BOX_INSTALL_58_TO_1 = 10;
+        private const int BEAUMONT_SERVICE_METER_BOX_INSTALL_15_TO_2 = 61;
         private const int BEAUMONT_SERVICE_LINE_INSPECTION_OUTSIDE_BOX = 20;
 
         // TODO: Replace this ID with actual tblService.ID for REG EXCH STAND ALONE
         private const int BEAUMONT_SERVICE_REG_EXCH_STAND_ALONE = -1;
 
         private List<Model_InstalledMeterDetailPayRate> GetBeaumont21InstalledMetersDetails(
-    long projectId,
-    int installerId,
-    string weekRangeFromDate,
-    string weekRangeToDate,
-    SqlConnection con)
+            long projectId,
+            int installerId,
+            string weekRangeFromDate,
+            string weekRangeToDate,
+            SqlConnection con)
         {
             List<Model_InstalledMeterDetailPayRate> result =
                 new List<Model_InstalledMeterDetailPayRate>();
 
             Dictionary<string, TimeClockServiceConfig> serviceConfig =
                 GetTimeClockServiceConfig(projectId, con);
+
+            // Optimizing query to be sargable and setting command timeout
+            DateTime parsedFromDate = DateTime.Parse(weekRangeFromDate);
+            DateTime parsedToDate = DateTime.Parse(weekRangeToDate).AddDays(1);
 
             string sqlQuery = @"
         SELECT
@@ -1184,8 +1179,8 @@ namespace GarronT.CMS.Model.DAL
         INNER JOIN tblProjectFieldDataMaster dm
             ON pf.Id = dm.TblProjectFieldData_Id
         WHERE up.FKProjectId = @ProjectId
-          AND CONVERT(date, pf.VisitDateTime) BETWEEN CONVERT(date, @FromDate)
-                                                  AND CONVERT(date, @ToDate)
+          AND pf.VisitDateTime >= @FromDate
+          AND pf.VisitDateTime < @ToDate
           AND pf.CreatedBy = @InstallerId
           AND pf.Active = 1
           AND dm.Active = 1
@@ -1199,10 +1194,11 @@ namespace GarronT.CMS.Model.DAL
 
             using (SqlCommand cmd = new SqlCommand(sqlQuery, con))
             {
+                cmd.CommandTimeout = 180;
                 cmd.Parameters.AddWithValue("@ProjectId", projectId);
                 cmd.Parameters.AddWithValue("@InstallerId", installerId);
-                cmd.Parameters.AddWithValue("@FromDate", weekRangeFromDate);
-                cmd.Parameters.AddWithValue("@ToDate", weekRangeToDate);
+                cmd.Parameters.AddWithValue("@FromDate", parsedFromDate);
+                cmd.Parameters.AddWithValue("@ToDate", parsedToDate);
 
                 SqlDataAdapter sda = new SqlDataAdapter(cmd);
                 sda.Fill(dt);
@@ -1321,8 +1317,9 @@ namespace GarronT.CMS.Model.DAL
                             oldMeterSize = fieldValue.Trim();
                         }
                     }
+
                     if (normalizedFieldName == NormalizeBeaumontText("LCR INVESTIGATION (Y/N)")
-    || normalizedFieldName.Contains("LCR INVESTIGATION"))
+                        || normalizedFieldName.Contains("LCR INVESTIGATION"))
                     {
                         if (string.IsNullOrWhiteSpace(lcrInvestigation))
                         {
@@ -1357,13 +1354,7 @@ namespace GarronT.CMS.Model.DAL
                         }
                     }
                 }
-                
-                /*
-                    If you do not want WORK COMPLETED condition for this project,
-                    remove this continue block.
 
-                    But based on your old report logic, completed records should be counted only.
-                */
                 if (!isWorkCompleted)
                 {
                     continue;
@@ -1384,42 +1375,26 @@ namespace GarronT.CMS.Model.DAL
                 bool isCommercial =
                     NormalizeBeaumontText(serviceType).Contains("COMMERCIAL");
 
-                /*
-                    Service IDs from tblService:
-
-                    7  = Reset Meter Box
-                    10 = Meter Box Install 5-8 to 1 inch
-                    20 = Line Inspection Dig Outside Box
-
-                    For REG EXCH STAND ALONE, set correct ID after checking tblService.
-                    If you do not know ID yet, run:
-                    SELECT * FROM tblService WHERE Service LIKE '%REG%STAND%'
-                */
-
                 bool hasResetMeterBox =
-         selectedServiceIds.Contains(BEAUMONT_SERVICE_RESET_METER_BOX);
+                    selectedServiceIds.Contains(BEAUMONT_SERVICE_RESET_METER_BOX);
 
                 bool hasMeterBoxInstall58To1 =
                     selectedServiceIds.Contains(BEAUMONT_SERVICE_METER_BOX_INSTALL_58_TO_1);
 
+                bool hasMeterBoxInstall15To2 =
+                    selectedServiceIds.Contains(BEAUMONT_SERVICE_METER_BOX_INSTALL_15_TO_2);
+
                 bool hasLineInspectionOutsideBox =
-        IsValidBeaumontLeadLineInspection(
-            lcrInvestigation,
-            citySidePipeType,
-            customerSidePipeType,
-            verified
-        );
+                    IsValidBeaumontLeadLineInspection(
+                        lcrInvestigation,
+                        citySidePipeType,
+                        customerSidePipeType,
+                        verified
+                    );
 
                 bool hasRegExchangeStandAlone =
-     selectedServiceIds.Contains(BEAUMONT_SERVICE_REG_EXCH_STAND_ALONE);
+                    selectedServiceIds.Contains(BEAUMONT_SERVICE_REG_EXCH_STAND_ALONE);
 
-                /*
-                    1. ERT Mitigation
-
-                    Endpoint Test data = END POINT READING.
-                    If F-Reg Read is not available, count under ERT Mitigation.
-                    If F-Reg Read is available, do not count under ERT Mitigation.
-                */
                 if (hasEndPointReading && !hasFRegRead)
                 {
                     AddBeaumont21RowByCode(
@@ -1433,12 +1408,6 @@ namespace GarronT.CMS.Model.DAL
                     );
                 }
 
-                /*
-                    2. Register Exchange with ERT Mitigation Residential
-
-                    SERVICE = Residential
-                    AND OLD FINAL REGISTER READ has value.
-                */
                 if (isResidential && hasFRegRead)
                 {
                     AddBeaumont21RowByCode(
@@ -1452,12 +1421,6 @@ namespace GarronT.CMS.Model.DAL
                     );
                 }
 
-                /*
-                    3. Register Exchange with ERT Mitigation Commercial
-
-                    SERVICE = Commercial
-                    AND OLD FINAL REGISTER READ has value.
-                */
                 if (isCommercial && hasFRegRead)
                 {
                     AddBeaumont21RowByCode(
@@ -1471,11 +1434,6 @@ namespace GarronT.CMS.Model.DAL
                     );
                 }
 
-                /*
-                    4. Register Exchange Stand Alone
-
-                    Count from SERVICES ID of REG EXCH STAND ALONE.
-                */
                 if (hasRegExchangeStandAlone)
                 {
                     AddBeaumont21RowByCode(
@@ -1489,12 +1447,6 @@ namespace GarronT.CMS.Model.DAL
                     );
                 }
 
-                /*
-                    5-8. Meter Change Out & ERT Installation
-
-                    F-Meter Read = OLD METER FINAL READ.
-                    Meter Size = OLD METER SIZE.
-                */
                 if (hasFMeterRead)
                 {
                     if (BeaumontSizeMatches(oldMeterSize, "5/8")
@@ -1551,11 +1503,6 @@ namespace GarronT.CMS.Model.DAL
                     }
                 }
 
-                /*
-                    9. Lead Line Inspection Outside Box
-
-                    Service ID 20 = Line Inspection Dig Outside Box.
-                */
                 if (hasLineInspectionOutsideBox)
                 {
                     AddBeaumont21RowByCode(
@@ -1569,15 +1516,6 @@ namespace GarronT.CMS.Model.DAL
                     );
                 }
 
-                /*
-                    10. Residential Box Replacement or Adjustment
-
-                    Combined count:
-                    Service ID 7  = Reset Meter Box
-                    Service ID 10 = Meter Box Install 5-8 to 1 inch
-
-                    If both IDs exist in same record, this adds 2 counts.
-                */
                 if (hasResetMeterBox)
                 {
                     AddBeaumont21RowByCode(
@@ -1592,6 +1530,19 @@ namespace GarronT.CMS.Model.DAL
                 }
 
                 if (hasMeterBoxInstall58To1)
+                {
+                    AddBeaumont21RowByCode(
+                        result,
+                        serviceConfig,
+                        projectId,
+                        "BOX_REPLACEMENT",
+                        createdOn,
+                        dayName,
+                        time
+                    );
+                }
+
+                if (hasMeterBoxInstall15To2)
                 {
                     AddBeaumont21RowByCode(
                         result,
