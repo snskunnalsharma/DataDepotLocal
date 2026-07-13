@@ -2,6 +2,48 @@
 var oTable;
 var StateData;
 var BindCon;
+var projectDataWarningShown = false;
+
+function showProjectDataMessage(message) {
+    if (projectDataWarningShown) {
+        return;
+    }
+    projectDataWarningShown = true;
+    toastr["warning"](message || "No accounts in this project.", "Notification");
+    setTimeout(function () { projectDataWarningShown = false; }, 4000);
+}
+
+function loadProjectCycles(projectId) {
+    if (!projectId || projectId === '0') {
+        return;
+    }
+
+    var accountsUrl = $('#urlHasProjectAccounts').val();
+    if (!accountsUrl) {
+        CycleList();
+        return;
+    }
+
+    $.ajax({
+        type: 'GET',
+        url: accountsUrl,
+        data: { projectId: projectId },
+        success: function (result) {
+            if (result && result.hasAccounts === false) {
+                showProjectDataMessage("No accounts in this project.");
+                $('#ulCycle1').empty();
+                $("#CycleHeader").removeClass("ddlHeader").text("Select Cycle");
+                return;
+            }
+            CycleList();
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.error('HasProjectAccounts failed:', textStatus, errorThrown, jqXHR && jqXHR.responseText);
+            CycleList();
+        }
+    });
+}
+
 $(document).ready(function () {
     debugger;
     $("#ProjectStatus").addClass('active').css('background-color', '#EF6C00').css('border-radius', '6px');
@@ -65,8 +107,8 @@ function BindFormType() {
                 }
 
             },
-            error: function () {
-                var $toast = toastr["error"]("something seems wrong", "Error Notification");
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.error('BindFormType failed:', textStatus, errorThrown, jqXHR && jqXHR.responseText);
             }
         });
     }
@@ -84,9 +126,8 @@ function LocationList() {
             data: { projectId: Project.val() },
             success: function (data) {
                 $('#ddlLocation').empty();
-                var count = data.length;
+                var count = data ? data.length : 0;
                 if (count > 0) {
-                    //debugger;
                     $.each(data, function (index, item) {
                         if (index == 0) {
                             $('#ddlLocation').append($('<option></option>').val('0'));
@@ -97,8 +138,8 @@ function LocationList() {
                 }
 
             },
-            error: function () {
-                var $toast = toastr["error"]("something seems wrong", "Error Notification");
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.error('LocationList failed:', textStatus, errorThrown, jqXHR && jqXHR.responseText);
             }
         });
     }
@@ -209,6 +250,7 @@ function resizeContent() {
 
 $('#ddlProject').change(function () {
     var Project = $("#ddlProject option:selected");
+    projectDataWarningShown = false;
     
     $('#ddlInstaller').empty();
 
@@ -233,10 +275,11 @@ $('#ddlProject').change(function () {
 
    
    
-    if (Project.length > 0) {
+    var projectId = $('#ddlProject').val();
+    if (projectId && projectId !== '0') {
         BindFormType();
         LocationList();
-        CycleList();
+        loadProjectCycles(projectId);
         //filterCycle(element);
         filterCycle1();
         getRouteList();
@@ -848,7 +891,7 @@ function getRouteList() {
             url: urlRootData,
             type: 'POST',
             async: true,
-            data: { ProjectId: ProjectID, Cycle: cyclevalue, InstallerId: InstallerId},
+            data: { ProjectId: ProjectID, Cycle: cyclevalue, InstallerId: InstallerID},
             complete: function () {
                 //waitingDialog.hide();
             },
@@ -1153,6 +1196,10 @@ function CycleList() {
         success: function (Cycle) {
            // console.log("get urlCycleData success")
             $('#ulCycle1').empty();
+            if (!Cycle || !$.isArray(Cycle) || Cycle.length === 0) {
+                $("#CycleHeader").removeClass("ddlHeader").text("Select Cycle");
+                return;
+            }
             var count = Cycle.length;
             for (i = 0; i < count; i++) {
                 var cycleVal = Cycle[i];
@@ -1163,13 +1210,7 @@ function CycleList() {
         },
         error: function (jqXHR, textStatus, errorThrown) {
             waitingDialog.hide();
-            var $toast = toastr["error"](textStatus + "</br>" + errorThrown, "Error Notification");
-            console.log('jqXHR:');
-            console.log(jqXHR);
-            console.log('textStatus:');
-            console.log(textStatus);
-            console.log('errorThrown:');
-            console.log(errorThrown);
+            console.error('CycleList failed:', textStatus, errorThrown, jqXHR && jqXHR.responseText);
         }
 
 
@@ -1216,7 +1257,12 @@ function CycleListByOffice() {
         success: function (Cycle) {
             // console.log("get urlCycleData success")
             $('#ulCycle1').empty();
-            var count = Cycle.length;
+            var count = Cycle ? Cycle.length : 0;
+            if (count === 0) {
+                $("#CycleHeader").removeClass("ddlHeader").text("Select Cycle");
+                $('#Cycle_SelectAll').prop('checked', false);
+                return;
+            }
             for (i = 0; i < count; i++) {
 
                 $('#ulCycle1').append($('<li></li>').val(Cycle[i]).addClass("liCycle active-result").html(Cycle[i]));
@@ -1226,13 +1272,7 @@ function CycleListByOffice() {
         },
         error: function (jqXHR, textStatus, errorThrown) {
             waitingDialog.hide();
-            var $toast = toastr["error"](textStatus + "</br>" + errorThrown, "Error Notification");
-            console.log('jqXHR:');
-            console.log(jqXHR);
-            console.log('textStatus:');
-            console.log(textStatus);
-            console.log('errorThrown:');
-            console.log(errorThrown);
+            console.error('CycleListByOffice failed:', textStatus, errorThrown, jqXHR && jqXHR.responseText);
         }
 
 
@@ -1262,7 +1302,7 @@ function CycleListByOffice() {
 
 function filterCycle1(element) {
     //debugger;
-    //var value = $(element).val().toLowerCase();
+    var value = element ? $(element).val().toLowerCase() : "";
 
     $("#ulCycle1 > li").each(function () {
         if ($(this).text().toLowerCase().search(value) > -1) {

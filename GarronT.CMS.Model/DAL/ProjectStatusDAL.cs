@@ -525,6 +525,15 @@ namespace GarronT.CMS.Model.DAL
             return data;
         }
 
+        public bool HasActiveAccounts(long projectId)
+        {
+            using (CompassEntities compassEntities = new CompassEntities())
+            {
+                return compassEntities.UploadedExcelDatas.AsNoTracking()
+                    .Any(o => o.FKProjectId == projectId && o.Active == 1);
+            }
+        }
+
         /// <summary>
         /// get locatin list
         /// </summary>
@@ -537,16 +546,22 @@ namespace GarronT.CMS.Model.DAL
             List<LocationModel> data = new List<LocationModel>();
             if (!string.IsNullOrEmpty(dyOfficeColName))
             {
-                /*var list = CompassEntities.UploadedExcelDatas.AsNoTracking().Where(o => o.FKProjectId == projectId && o.Active == 1).AsEnumerable()
-                .Select(o => (string)o.GetType().GetProperty(dyOfficeColName).GetValue(o)).Distinct().ToList();*/
-
-                var list = CompassEntities.UploadedExcelDatas.AsNoTracking().Where(o => o.FKProjectId == projectId && o.Active == 1).AsEnumerable()
-                           .OrderBy(r => r.GetType().GetProperty(dyOfficeColName).GetValue(r, null))
-                           .Select(o => (string)o.GetType().GetProperty(dyOfficeColName).GetValue(o)).Distinct().ToList();
+                var list = CompassEntities.UploadedExcelDatas.AsNoTracking()
+                    .Where(o => o.FKProjectId == projectId && o.Active == 1)
+                    .AsEnumerable()
+                    .Select(o =>
+                    {
+                        var officeProp = o.GetType().GetProperty(dyOfficeColName);
+                        return officeProp != null ? officeProp.GetValue(o, null) as string : null;
+                    })
+                    .Where(v => !string.IsNullOrWhiteSpace(v))
+                    .Distinct()
+                    .OrderBy(v => v)
+                    .ToList();
 
                 foreach (var item in list)
                 {
-                    data.Add(new LocationModel { LocationId = item.ToString(), LocationName = item.ToString() });
+                    data.Add(new LocationModel { LocationId = item, LocationName = item });
                 }
             }
             return data;
@@ -591,41 +606,40 @@ namespace GarronT.CMS.Model.DAL
         // Start new cycle addition method
         public List<string> GetDynamicFreshCycleByProjectIDs(long projectID)
         {
+            if (!HasActiveAccounts(projectID))
+            {
+                return new List<string>();
+            }
+
             CompassEntities dbcontext = new CompassEntities();
-
             var Param = new SqlParameter { ParameterName = "@ProjectId", Value = projectID };
-
-            //var GetCycle1 = dbcontext.Database.SqlQuery<DataTable>("exec  PROC_DynamicPendingCycle @ProjectId", Param);
-
-
             List<string> GetCycle = new List<string>();
 
-
-
-            SqlConnection sqlConnection1 = new SqlConnection(dbcontext.Database.Connection.ConnectionString);
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
-
-            cmd.CommandText = "PROC_DynamicPendingCycle";
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Connection = sqlConnection1;
-            cmd.Parameters.Add(Param);
-            cmd.CommandTimeout = sqlConnection1.ConnectionTimeout;
-            sqlConnection1.Open();
-
-            reader = cmd.ExecuteReader();
-            while (reader.Read())
+            try
             {
-                GetCycle.Add(reader["Cycle"].ToString());
+                using (SqlConnection sqlConnection1 = new SqlConnection(dbcontext.Database.Connection.ConnectionString))
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.CommandText = "PROC_DynamicPendingCycle";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Connection = sqlConnection1;
+                    cmd.Parameters.Add(Param);
+                    cmd.CommandTimeout = sqlConnection1.ConnectionTimeout;
+                    sqlConnection1.Open();
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            GetCycle.Add(reader["Cycle"].ToString());
+                        }
+                    }
+                }
             }
-            // Data is accessible through the DataReader object here.
-
-            sqlConnection1.Close();
-            reader.Close();
-            reader.Dispose();
-            cmd.Dispose();
-            sqlConnection1.Dispose();
-
+            catch (SqlException)
+            {
+                return new List<string>();
+            }
 
             // Apply sorting only if ProjectID equals 10122
             if (projectID == 10122)

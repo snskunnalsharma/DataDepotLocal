@@ -7,12 +7,42 @@
 @Html.Hidden("UrlGetInstallerByProject", Url.Action("GetInstallerList", "BudgetStatusReport"))
 @Html.Hidden("UrlGetBudgetStatusReport", Url.Action("GetBudgetStatusReport", "BudgetStatusReport"))
 @Html.Hidden("UrlExportBudgetStatusReport", Url.Action("ExportBudgetStatusReport", "BudgetStatusReport"))
+@Html.Hidden("UrlGetYearList", Url.Action("GetYearList", "BudgetStatusReport"))
+@Html.Hidden("UrlGetWeekDayRangeList", Url.Action("GetWeekDayRangeList", "BudgetStatusReport"))
 <link href="@Url.Content("~/Content/themes/base/jquery-ui.css")" rel="stylesheet" />
 
 <style>
         .budget-filter-row {
             margin-top: 18px;
             margin-bottom: 18px;
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .budget-filter-item {
+            flex: 1 1 0;
+            min-width: 110px;
+        }
+
+        .budget-filter-item.filter-project {
+            flex: 1.8 1 0;
+            min-width: 180px;
+        }
+
+        .budget-filter-item.filter-period-type {
+            flex: 1.1 1 0;
+            min-width: 120px;
+        }
+
+        .budget-filter-item.period-week {
+            flex: 2 1 0;
+            min-width: 200px;
+        }
+
+        .budget-filter-item .chosen-container {
+            width: 100% !important;
         }
 
             .budget-filter-row .form-control {
@@ -239,19 +269,6 @@
                     font-size: 12px !important;
                 }
 
-        .col-filter-5 {
-            position: relative;
-            min-height: 1px;
-            padding-right: 15px;
-            padding-left: 15px;
-        }
-
-        @@media (min-width: 992px) {
-            .col-filter-5 {
-                width: 20%;
-                float: left;
-            }
-        }
         .rep-dyanmc-panel,
         .budget-summary-row {
             max-width: 950px;
@@ -260,67 +277,282 @@
         }
 
         .budget-summary-row {
-            margin-top: 35px;
+            margin-top: 20px;
+            margin-bottom: 10px;
         }
 
-    .budget-summary-card {
-        font-size: 13px;
-        color: #333;
-        padding: 0;
-        min-height: 70px;
-    }
-
-    .budget-summary-title {
-        font-size: 13px;
-        font-weight: normal;
-        margin-bottom: 4px;
-    }
-
-    .budget-summary-item {
-        line-height: 18px;
-        white-space: nowrap;
-    }
-
-    .budget-summary-label {
-        font-weight: normal;
-        margin-right: 4px;
-    }
-
-    .budget-summary-value {
-        font-weight: normal;
-    }
-
-    .budget-summary-divider {
-        display: none;
-    }
-
-    .budget-amount-card {
-        margin-left: 15px;
-    }
-
-    .budget-period-card {
-        text-align: left;
-    }
-
-    @@media (max-width: 767px) {
         .budget-summary-card {
-            margin-top: 15px;
+            font-size: 13px;
+            color: #333;
+            padding: 0;
+            min-height: 70px;
+        }
+
+        .budget-summary-title {
+            font-size: 13px;
+            font-weight: normal;
+            margin-bottom: 8px;
+        }
+
+        .budget-summary-item {
+            line-height: 20px;
+            margin-bottom: 10px;
+        }
+
+        .budget-summary-label {
+            font-weight: normal;
+            margin-right: 4px;
+            display: inline-block;
+        }
+
+        .budget-summary-value {
+            font-weight: normal;
+            display: inline-block;
+        }
+
+        .budget-summary-divider {
+            display: none;
         }
 
         .budget-amount-card {
             margin-left: 0;
         }
-    }
-        .budget-amount-card {
-            margin-left: 0;
+
+        .budget-period-card {
+            text-align: left;
+        }
+
+        .budget-summary-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px 28px;
+        }
+
+        .budget-summary-block {
+            flex: 1 1 220px;
+            min-width: 0;
+        }
+
+        .budget-summary-block .budget-summary-label {
+            display: block;
+            margin-bottom: 4px;
+            line-height: 1.35;
+        }
+
+        .budget-summary-block .budget-summary-value {
+            display: block;
+            font-size: 15px;
+        }
+
+        .budget-split-summary-layout {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .budget-split-summary-budgets {
+            flex: 1 1 420px;
+            min-width: 0;
+        }
+
+        .budget-split-summary-period {
+            flex: 0 1 220px;
+            min-width: 180px;
+        }
+
+        #tblBudgetStatusReport tbody td.text-left,
+        #tblServiceLineReport tbody td.text-left {
+            word-break: break-word;
+            white-space: normal;
+        }
+
+        .report_table .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        @@media (max-width: 991px) {
+            .budget-filter-row {
+                flex-wrap: wrap;
+            }
+
+            .budget-filter-item {
+                flex: 1 1 calc(50% - 10px);
+                min-width: 140px;
+            }
+
+            .budget-filter-item.filter-project,
+            .budget-filter-item.period-week {
+                flex: 1 1 100%;
+            }
+
+            .rep-dyanmc-panel,
+            .budget-summary-row {
+                max-width: 100%;
+            }
+
+            .budget-split-summary-budgets,
+            .budget-split-summary-period {
+                flex: 1 1 100%;
+            }
+        }
+
+        @@media (max-width: 1024px) {
+            #budgetStatusReportForm .form-control,
+            #budgetStatusReportForm select.chosen-select {
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box;
+            }
+
+            #budgetStatusReportForm select.chosen-select + .chosen-container {
+                display: none !important;
+            }
+
+            #budgetStatusReportForm .period-daily-from .chosen-container,
+            #budgetStatusReportForm .period-daily-to .chosen-container {
+                display: block !important;
+                width: 100% !important;
+                position: relative !important;
+            }
+
+            #budgetStatusReportForm .period-daily-from .chosen-single,
+            #budgetStatusReportForm .period-daily-to .chosen-single {
+                display: block !important;
+                height: 34px !important;
+                line-height: 32px !important;
+                padding: 0 30px 0 12px !important;
+                border: 1px solid #ccc !important;
+                border-radius: 4px !important;
+                background: linear-gradient(to bottom, #ffffff 0%, #eeeeee 100%) !important;
+                box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075) !important;
+                text-decoration: none !important;
+            }
+
+            #budgetStatusReportForm .period-daily-from .chosen-single span,
+            #budgetStatusReportForm .period-daily-to .chosen-single span {
+                display: block !important;
+                margin-right: 0 !important;
+                color: #999 !important;
+            }
+
+            #budgetStatusReportForm .period-daily-from.has-date-value .chosen-single span,
+            #budgetStatusReportForm .period-daily-to.has-date-value .chosen-single span {
+                color: #555 !important;
+            }
+
+            #budgetStatusReportForm .period-daily-from .chosen-single div b,
+            #budgetStatusReportForm .period-daily-to .chosen-single div b {
+                display: block !important;
+                width: 0;
+                height: 0;
+                border-left: 4px solid transparent;
+                border-right: 4px solid transparent;
+                border-top: 5px solid #888;
+                position: absolute;
+                right: 10px;
+                top: 14px;
+            }
+
+            #budgetStatusReportForm .period-daily-from .datepicker,
+            #budgetStatusReportForm .period-daily-to .datepicker {
+                opacity: 0 !important;
+                position: absolute !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                height: 34px !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                border: none !important;
+                background: transparent !important;
+                cursor: pointer !important;
+                z-index: 2 !important;
+            }
+
+            #budgetStatusReportForm select.chosen-select.mobile-native-select {
+                display: block !important;
+                position: static !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                height: 34px !important;
+                padding: 6px 30px 6px 12px;
+                font-size: 14px;
+                line-height: 1.42857143;
+                color: #555;
+                background: linear-gradient(to bottom, #ffffff 0%, #eeeeee 100%);
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                -webkit-appearance: menulist;
+                appearance: menulist;
+                box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+                clip: auto !important;
+                clip-path: none !important;
+                opacity: 1 !important;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+            }
+
+            #budgetStatusReportForm select.chosen-select.mobile-native-select option {
+                color: #555;
+            }
+
+            #budgetStatusReportForm select.chosen-select.mobile-native-select option[hidden] {
+                display: none;
+            }
+        }
+
+        @@media (max-width: 767px) {
+            .budget-filter-item {
+                flex: 1 1 100%;
+                min-width: 0;
+            }
+
+            .budget-summary-card {
+                margin-top: 10px;
+            }
+
+            #tblBudgetStatusReport thead th,
+            #tblServiceLineReport thead th,
+            #tblBudgetStatusReport tbody td,
+            #tblServiceLineReport tbody td,
+            #tblBudgetStatusReport tfoot th,
+            #tblServiceLineReport tfoot th {
+                font-size: 11px;
+                padding: 4px 3px !important;
+            }
+
+            .budget-btn-row .btn {
+                display: inline-block;
+                width: auto;
+                margin: 4px 2px;
+            }
+
+            .budget-summary-block {
+                flex: 1 1 100%;
+            }
+        }
+
+        @@media (max-width: 480px) {
+            .budget-filter-row {
+                gap: 8px;
+            }
+
+            .panel.rep_panel .panel-body {
+                padding: 10px;
+            }
         }
 
         .text-right {
             text-align: right !important;
         }
+
         .text-left {
             text-align: left !important;
         }
+
         .text-center {
             text-align: center !important;
         }
@@ -344,20 +576,42 @@
 
                     <div class="row budget-filter-row">
 
-                        <div class="col-md-3 col-sm-6 col-xs-12" style="margin-bottom: 10px;">
+                        <div class="budget-filter-item filter-utility">
                             @Html.DropDownList("UtilityId", (IEnumerable<SelectListItem>)ViewBag.UtilityListItem, new { @class = "form-control chosen-select", @data_placeholder = "Select Utility", @title = "Select Utility" })
                         </div>
 
-                        <div class="col-md-3 col-sm-6 col-xs-12" style="margin-bottom: 10px;">
+                        <div class="budget-filter-item filter-project">
                             <select data-placeholder="Select Project"
                                     id="ddlProject"
                                     name="ProjectId"
                                     class="form-control chosen-select">
-                                <option value=""></option>
                             </select>
                         </div>
 
-                        <div class="col-md-3 col-sm-6 col-xs-12" style="margin-bottom: 10px;">
+                        <div class="budget-filter-item filter-period-type">
+                            <select id="ddlReportPeriodType" name="ReportPeriodType" class="form-control chosen-select" data-placeholder="Report Period">
+                                <option value="Monthly" selected>Monthly</option>
+                                <option value="Weekly">Weekly</option>
+                                <option value="Daily">Daily</option>
+                            </select>
+                        </div>
+
+                        <div class="budget-filter-item period-filter period-year">
+                            <select id="ddlYear" name="Year" class="form-control chosen-select" data-placeholder="Select Year">
+                            </select>
+                        </div>
+
+                        <div class="budget-filter-item period-filter period-month">
+                            <select id="ddlMonth" name="Month" class="form-control chosen-select" data-placeholder="Select Month">
+                            </select>
+                        </div>
+
+                        <div class="budget-filter-item period-filter period-week" style="display: none;">
+                            <select id="ddlWeek" name="Week" class="form-control chosen-select" data-placeholder="Select Week Range">
+                            </select>
+                        </div>
+
+                        <div class="budget-filter-item period-filter period-daily-from" style="display: none;">
                             <div class="chosen-container chosen-container-single" style="width: 100%; position: relative;">
                                 <a class="chosen-single" style="cursor: pointer;">
                                     <span id="spanFromDate" style="color: #999;">From Date</span>
@@ -367,13 +621,14 @@
                                        id="txtFromDate"
                                        name="FromDate"
                                        class="form-control datepicker"
+                                       placeholder="From Date"
                                        readonly="readonly"
                                        autocomplete="off"
                                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2; border: none; background: transparent; padding: 0; margin: 0;" />
                             </div>
                         </div>
 
-                        <div class="col-md-3 col-sm-6 col-xs-12" style="margin-bottom: 10px;">
+                        <div class="budget-filter-item period-filter period-daily-to" style="display: none;">
                             <div class="chosen-container chosen-container-single" style="width: 100%; position: relative;">
                                 <a class="chosen-single" style="cursor: pointer;">
                                     <span id="spanToDate" style="color: #999;">To Date</span>
@@ -383,6 +638,7 @@
                                        id="txtToDate"
                                        name="ToDate"
                                        class="form-control datepicker"
+                                       placeholder="To Date"
                                        readonly="readonly"
                                        autocomplete="off"
                                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2; border: none; background: transparent; padding: 0; margin: 0;" />
@@ -432,14 +688,23 @@
             </div>
         </section>
 
-        <!-- Split Mode Summary: Table 1 Summary (Approved Project Budget & Balance Budget) -->
-        <div class="row budget-summary-row" id="rowTable1Summary" style="display: none; margin-top: 15px; margin-bottom: 25px; margin-left: 0px; margin-right: 0px;">
+        <!-- Split Mode Summary: Table 1 Summary -->
+        <div class="row budget-summary-row" id="rowTable1Summary" style="display: none;">
             <div class="col-xs-12">
-                <span class="budget-summary-label" style="font-size: 13px; margin-right: 5px;"><b>Project Budget ($)</b></span>
-                <span class="budget-summary-value" id="lblSplitApprovedProjectBudget" style="font-size: 13px; font-weight: normal; margin-right: 40px;">0.00</span>
-
-                <span class="budget-summary-label" style="font-size: 13px; margin-right: 5px;"><b>Balance Budget ($)</b></span>
-                <span class="budget-summary-value" id="lblSplitBalanceBudget" style="font-size: 13px; font-weight: normal;">0.00</span>
+                <div class="budget-summary-grid">
+                    <div class="budget-summary-block">
+                        <span class="budget-summary-label"><b>Project Starting Budget ($)</b></span>
+                        <span class="budget-summary-value" id="lblSplitApprovedProjectBudget">0.00</span>
+                    </div>
+                    <div class="budget-summary-block">
+                        <span class="budget-summary-label"><b>Period Used Budget ($)</b></span>
+                        <span class="budget-summary-value" id="lblSplitUsedBudget">0.00</span>
+                    </div>
+                    <div class="budget-summary-block">
+                        <span class="budget-summary-label"><b>Ending Project Budget Balance ($)</b></span>
+                        <span class="budget-summary-value" id="lblSplitBalanceBudget">0.00</span>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -467,42 +732,32 @@
 
         <div class="row budget-summary-row" id="rowNormalSummary">
 
-            <!-- Left Side: Budget Amount Summary -->
-            <!-- Left Side: Budget Amount Summary -->
-            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                 <div class="budget-summary-card budget-amount-card">
-
                     <div class="budget-summary-item">
-                        <span class="budget-summary-label"><b>Approved Project Budget ($)</b></span>
+                        <span class="budget-summary-label"><b>Project Starting Budget ($)</b></span>
                         <span class="budget-summary-value" id="lblApprovedProjectBudget">0.00</span>
                     </div>
-
-                    <div class="budget-summary-divider"></div>
-
                     <div class="budget-summary-item">
-                        <span class="budget-summary-label"><b>Balance Budget ($)</b></span>
+                        <span class="budget-summary-label"><b>Period Used Budget ($)</b></span>
+                        <span class="budget-summary-value" id="lblUsedBudget">0.00</span>
+                    </div>
+                    <div class="budget-summary-item">
+                        <span class="budget-summary-label"><b>Ending Project Budget Balance ($)</b></span>
                         <span class="budget-summary-value" id="lblBalanceBudget">0.00</span>
                     </div>
-
                 </div>
             </div>
-            <!-- Middle Empty Space -->
-            <div class="col-lg-6 col-md-4 col-sm-2 hidden-xs"></div>
 
-            <!-- Right Side: Report Period -->
-            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                 <div class="budget-summary-card budget-period-card">
                     <div class="budget-summary-title">
-                        <b>Report Period</b>
+                        <b>Report Period</b> <span id="lblReportPeriodType"></span>
                     </div>
-
                     <div class="budget-summary-item">
                         <span class="budget-summary-label"><b>From Date</b></span>
                         <span class="budget-summary-value" id="lblFromDate">-</span>
                     </div>
-
-                    <div class="budget-summary-divider"></div>
-
                     <div class="budget-summary-item">
                         <span class="budget-summary-label"><b>To Date</b></span>
                         <span class="budget-summary-value" id="lblToDate">-</span>
@@ -514,28 +769,40 @@
 
 
 
-        <!-- Split Mode Summary: Table 2 Summary (Service Line Budget & Balance Service Line Budget & Report Period) -->
-        <div class="row budget-summary-row" id="rowTable2Summary" style="display: none; margin-top: 15px;">
-            <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12" style="white-space: nowrap;">
-                <span class="budget-summary-label" style="font-size: 13px; margin-right: 5px;"><b>Service Line Budget ($)</b></span>
-                <span class="budget-summary-value" id="lblServiceLineBudget" style="font-size: 13px; font-weight: normal; margin-right: 40px;">0.00</span>
-
-                <span class="budget-summary-label" style="font-size: 13px; margin-right: 5px;"><b>Balance Service Line Budget ($)</b></span>
-                <span class="budget-summary-value" id="lblServiceLineBalanceBudget" style="font-size: 13px; font-weight: normal;">0.00</span>
-            </div>
-            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 text-right text-left-xs" style="float: right;">
-                <div style="display: inline-block; text-align: left;">
-                    <div class="budget-summary-title">
-                        <b>Report Period</b>
+        <!-- Split Mode Summary: Table 2 Summary -->
+        <div class="row budget-summary-row" id="rowTable2Summary" style="display: none;">
+            <div class="col-xs-12">
+                <div class="budget-split-summary-layout">
+                    <div class="budget-split-summary-budgets">
+                        <div class="budget-summary-grid">
+                            <div class="budget-summary-block">
+                                <span class="budget-summary-label"><b>Service Line Starting Budget ($)</b></span>
+                                <span class="budget-summary-value" id="lblServiceLineBudget">0.00</span>
+                            </div>
+                            <div class="budget-summary-block">
+                                <span class="budget-summary-label"><b>Period Used Service Line Budget ($)</b></span>
+                                <span class="budget-summary-value" id="lblServiceLineUsedBudget">0.00</span>
+                            </div>
+                            <div class="budget-summary-block">
+                                <span class="budget-summary-label"><b>Ending Service Line Budget Balance ($)</b></span>
+                                <span class="budget-summary-value" id="lblServiceLineBalanceBudget">0.00</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="budget-summary-item">
-                        <span class="budget-summary-label"><b>From Date</b></span>
-                        <span class="budget-summary-value" id="lblSplitFromDate">-</span>
-                    </div>
-                    <div class="budget-summary-divider"></div>
-                    <div class="budget-summary-item">
-                        <span class="budget-summary-label"><b>To Date</b></span>
-                        <span class="budget-summary-value" id="lblSplitToDate">-</span>
+                    <div class="budget-split-summary-period">
+                        <div class="budget-summary-card budget-period-card">
+                            <div class="budget-summary-title">
+                                <b>Report Period</b> <span id="lblSplitReportPeriodType"></span>
+                            </div>
+                            <div class="budget-summary-item">
+                                <span class="budget-summary-label"><b>From Date</b></span>
+                                <span class="budget-summary-value" id="lblSplitFromDate">-</span>
+                            </div>
+                            <div class="budget-summary-item">
+                                <span class="budget-summary-label"><b>To Date</b></span>
+                                <span class="budget-summary-value" id="lblSplitToDate">-</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -551,6 +818,128 @@
 <script src="@Url.Content("~/Scripts/js/jquery-ui.js")"></script>
 
 <script>
+    var BUDGET_MOBILE_MAX_WIDTH = 1024;
+    var budgetChosenInitialized = false;
+
+    function isBudgetMobileView() {
+        return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || window.innerWidth <= BUDGET_MOBILE_MAX_WIDTH;
+    }
+
+    function getBudgetSelectPlaceholder($select) {
+        return $select.data("placeholder") || $select.attr("data-placeholder") || $select.attr("title") || "Select";
+    }
+
+    function applyBudgetMobilePlaceholder($select, label) {
+        if (!isBudgetMobileView() || !$select || !$select.length) {
+            return;
+        }
+
+        var placeholderLabel = label || getBudgetSelectPlaceholder($select);
+        $select.find('option[value=""]').remove();
+        $select.prepend(
+            $('<option></option>')
+                .val("")
+                .text(placeholderLabel)
+                .prop({ hidden: true, selected: true })
+        );
+    }
+
+    function appendBudgetSelectPlaceholder($select, label) {
+        if (!$select || !$select.length) {
+            return;
+        }
+
+        var placeholderLabel = label || getBudgetSelectPlaceholder($select);
+        $select.find('option[value=""]').remove();
+
+        if (isBudgetMobileView()) {
+            $select.prepend(
+                $('<option></option>')
+                    .val("")
+                    .text(placeholderLabel)
+                    .prop({ hidden: true, selected: true })
+            );
+        } else {
+            $select.prepend(
+                $('<option></option>')
+                    .val("")
+                    .text("")
+                    .prop({ disabled: true, selected: true })
+            );
+        }
+    }
+
+    function resetBudgetSelectOptions($select, label) {
+        $select.empty();
+        appendBudgetSelectPlaceholder($select, label);
+    }
+
+    function updateBudgetSelectTitles() {
+        if (!isBudgetMobileView()) {
+            return;
+        }
+
+        $("#budgetStatusReportForm .chosen-select.mobile-native-select").each(function () {
+            var text = $(this).find("option:selected").text();
+            $(this).attr("title", text || "");
+        });
+    }
+
+    function destroyBudgetChosenSelects() {
+        $("#budgetStatusReportForm .chosen-select").each(function () {
+            var $el = $(this);
+            if ($el.next(".chosen-container").length) {
+                $el.chosen("destroy");
+            }
+        });
+        budgetChosenInitialized = false;
+    }
+
+    function enableBudgetMobileNativeSelects() {
+        $("#budgetStatusReportForm .chosen-select").addClass("mobile-native-select");
+        applyBudgetMobilePlaceholder($("#UtilityId"), "Select Utility");
+        applyBudgetMobilePlaceholder($("#ddlProject"), "Select Project");
+        applyBudgetMobilePlaceholder($("#ddlYear"), "Select Year");
+        applyBudgetMobilePlaceholder($("#ddlMonth"), "Select Month");
+        applyBudgetMobilePlaceholder($("#ddlWeek"), "Select Week Range");
+        updateBudgetSelectTitles();
+    }
+
+    function initBudgetSelects() {
+        if (isBudgetMobileView()) {
+            destroyBudgetChosenSelects();
+            enableBudgetMobileNativeSelects();
+        } else {
+            $("#budgetStatusReportForm .chosen-select").removeClass("mobile-native-select");
+            if (!budgetChosenInitialized) {
+                $("#budgetStatusReportForm .chosen-select").chosen({
+                    no_results_text: "Oops, nothing found!",
+                    width: "100%"
+                });
+                budgetChosenInitialized = true;
+            } else {
+                refreshBudgetSelects();
+            }
+        }
+    }
+
+    function refreshBudgetSelects(selector) {
+        var $targets = selector ? $(selector) : $("#budgetStatusReportForm .chosen-select");
+
+        if (isBudgetMobileView()) {
+            $targets.each(function () {
+                var $select = $(this);
+                if ($select.val() === "" || $select.val() === null) {
+                    applyBudgetMobilePlaceholder($select, getBudgetSelectPlaceholder($select));
+                }
+            });
+            updateBudgetSelectTitles();
+        } else {
+            $targets.trigger("chosen:updated");
+            $targets.trigger("liszt:updated");
+        }
+    }
+
     $(document).ready(function () {
 
         toastr.options = {
@@ -568,27 +957,47 @@
         $('.sub').find("*").removeClass('active');
         $('#liBudgetStatusReport').addClass("active");
 
-        $(".chosen-select").chosen({
-            no_results_text: "Oops, nothing found!",
-            width: "100%"
-        });
+        appendBudgetSelectPlaceholder($("#ddlProject"), "Select Project");
+        appendBudgetSelectPlaceholder($("#ddlYear"), "Select Year");
+        appendBudgetSelectPlaceholder($("#ddlMonth"), "Select Month");
+        appendBudgetSelectPlaceholder($("#ddlWeek"), "Select Week Range");
 
-        // Helper function to clear date fields
+        initBudgetSelects();
+        initMonthList();
+        togglePeriodFilters();
+        resetPeriodDropdowns();
+        setDefaultDates();
+
         function clearDatefield(selector) {
             var $input = $(selector);
             $input.val("");
             if (selector === "#txtFromDate") {
                 $("#spanFromDate").text("From Date").css("color", "#999");
+                $(".period-daily-from").removeClass("has-date-value");
                 $("#lblFromDate").text("-");
                 $("#txtFromDate").datepicker("option", "maxDate", null);
             } else if (selector === "#txtToDate") {
                 $("#spanToDate").text("To Date").css("color", "#999");
+                $(".period-daily-to").removeClass("has-date-value");
                 $("#lblToDate").text("-");
                 $("#txtToDate").datepicker("option", "minDate", null);
             }
         }
 
-        setDefaultDates();
+        function updateDateFieldDisplay(inputSelector, selectedDate, placeholderText, wrapperClass) {
+            var displayText = selectedDate || placeholderText;
+            var hasValue = !!selectedDate;
+
+            if (inputSelector === "#txtFromDate") {
+                $("#spanFromDate").text(displayText).css("color", hasValue ? "#333" : "#999");
+                $(".period-daily-from").toggleClass("has-date-value", hasValue);
+                $("#lblFromDate").text(selectedDate || "-");
+            } else if (inputSelector === "#txtToDate") {
+                $("#spanToDate").text(displayText).css("color", hasValue ? "#333" : "#999");
+                $(".period-daily-to").toggleClass("has-date-value", hasValue);
+                $("#lblToDate").text(selectedDate || "-");
+            }
+        }
 
         // Override jQuery UI datepicker _updateDatepicker to add custom Ok and Close buttons
         var old_updateDatepicker = $.datepicker._updateDatepicker;
@@ -653,8 +1062,7 @@
 
         $("#txtFromDate").datepicker("option", "onSelect", function (selectedDate) {
             $("#txtToDate").datepicker("option", "minDate", selectedDate);
-            $("#lblFromDate").text(selectedDate || "-");
-            $("#spanFromDate").text(selectedDate || "From Date").css("color", selectedDate ? "#333" : "#999");
+            updateDateFieldDisplay("#txtFromDate", selectedDate, "From Date");
 
             if (!selectedDate || selectedDate === "") {
                 clearDatefield("#txtToDate");
@@ -663,8 +1071,7 @@
 
         $("#txtToDate").datepicker("option", "onSelect", function (selectedDate) {
             $("#txtFromDate").datepicker("option", "maxDate", selectedDate);
-            $("#lblToDate").text(selectedDate || "-");
-            $("#spanToDate").text(selectedDate || "To Date").css("color", selectedDate ? "#333" : "#999");
+            updateDateFieldDisplay("#txtToDate", selectedDate, "To Date");
         });
 
         // Hover and Focus events to simulate Chosen dropdown highlighting on the custom date elements
@@ -683,7 +1090,6 @@
             }
         );
 
-        // Validation Interceptors for Sequential Selection
         $("#ddlProject").on("chosen:showing_dropdown", function () {
             var utilityId = $("#UtilityId").val();
             if (!utilityId || utilityId === "0" || utilityId === "") {
@@ -691,6 +1097,16 @@
                     $("#ddlProject").trigger("chosen:close");
                 }, 0);
                 toastr["warning"]("Select Utility first");
+            }
+        });
+
+        $("#ddlYear, #ddlMonth, #ddlWeek").on("chosen:showing_dropdown", function () {
+            var projectId = $("#ddlProject").val();
+            if (!projectId || projectId === "") {
+                setTimeout(function () {
+                    $(this).trigger("chosen:close");
+                }.bind(this), 0);
+                toastr["warning"]("Select Project first");
             }
         });
 
@@ -716,15 +1132,13 @@
             }
         });
 
-        // Cascading Event Handlers
         $("#UtilityId").off("change").on("change", function () {
             var utilityId = $(this).val();
 
             resetProjectDropdown();
+            resetPeriodDropdowns();
             clearDatefield("#txtFromDate");
             clearDatefield("#txtToDate");
-
-            console.log("Selected UtilityId:", utilityId);
 
             if (utilityId && utilityId !== "0" && utilityId !== "") {
                 loadProjectList(utilityId);
@@ -732,8 +1146,31 @@
         });
 
         $("#ddlProject").off("change").on("change", function () {
+            resetPeriodDropdowns();
             clearDatefield("#txtFromDate");
             clearDatefield("#txtToDate");
+            loadYearList($(this).val());
+        });
+
+        $("#ddlReportPeriodType").off("change").on("change", function () {
+            resetPeriodDropdowns();
+            clearDatefield("#txtFromDate");
+            clearDatefield("#txtToDate");
+            togglePeriodFilters();
+            var projectId = $("#ddlProject").val();
+            if (projectId) {
+                loadYearList(projectId);
+            }
+        });
+
+        $("#ddlYear").off("change").on("change", function () {
+            $("#ddlWeek").find("option:not([value=''])").remove();
+            appendBudgetSelectPlaceholder($("#ddlWeek"), "Select Week Range");
+            refreshBudgetSelects("#ddlWeek");
+            var periodType = $("#ddlReportPeriodType").val();
+            if (periodType === "Weekly" && $("#ddlProject").val()) {
+                loadWeekList($("#ddlProject").val(), $(this).val());
+            }
         });
 
         resetProjectDropdown();
@@ -744,9 +1181,14 @@
         });
 
         $("#btnReset").click(function () {
-            $("#UtilityId").val("").trigger("chosen:updated");
+            $("#UtilityId").val("");
+            applyBudgetMobilePlaceholder($("#UtilityId"), "Select Utility");
+            refreshBudgetSelects("#UtilityId");
 
             resetProjectDropdown();
+            resetPeriodDropdowns();
+            $("#ddlReportPeriodType").val("Monthly");
+            togglePeriodFilters();
 
             setDefaultDates();
             clearDatefield("#txtFromDate");
@@ -764,12 +1206,253 @@
             $("#rowNormalSummary").show();
 
             resetBudgetSummary();
+            refreshBudgetSelects("#ddlReportPeriodType");
         });
 
         $("#btnExport").click(function () {
             exportBudgetStatusReport();
         });
+
+        $("#budgetStatusReportForm .chosen-select").on("change", updateBudgetSelectTitles);
+
+        $(window).on("resize", function () {
+            clearTimeout(window.budgetSelectResizeTimer);
+            window.budgetSelectResizeTimer = setTimeout(function () {
+                var isMobile = isBudgetMobileView();
+                var wasMobile = $("#budgetStatusReportForm .chosen-select").first().hasClass("mobile-native-select");
+                if (isMobile !== wasMobile) {
+                    budgetChosenInitialized = false;
+                    initBudgetSelects();
+                }
+            }, 200);
+        });
     });
+
+    function initMonthList() {
+        var months = [
+            { id: 1, name: "January" }, { id: 2, name: "February" }, { id: 3, name: "March" },
+            { id: 4, name: "April" }, { id: 5, name: "May" }, { id: 6, name: "June" },
+            { id: 7, name: "July" }, { id: 8, name: "August" }, { id: 9, name: "September" },
+            { id: 10, name: "October" }, { id: 11, name: "November" }, { id: 12, name: "December" }
+        ];
+
+        $("#ddlMonth").find("option:not([value=''])").remove();
+        $.each(months, function (index, item) {
+            $("#ddlMonth").append($("<option></option>").val(item.id).text(item.name));
+        });
+        appendBudgetSelectPlaceholder($("#ddlMonth"), "Select Month");
+        refreshBudgetSelects("#ddlMonth");
+    }
+
+    function togglePeriodFilters() {
+        var periodType = $("#ddlReportPeriodType").val() || "Monthly";
+
+        $(".period-filter").hide();
+
+        if (periodType === "Monthly") {
+            $(".period-year").show();
+            $(".period-month").show();
+        } else if (periodType === "Weekly") {
+            $(".period-year").show();
+            $(".period-week").show();
+        } else if (periodType === "Daily") {
+            $(".period-daily-from").show();
+            $(".period-daily-to").show();
+            updateDateFieldDisplay("#txtFromDate", $("#txtFromDate").val(), "From Date");
+            updateDateFieldDisplay("#txtToDate", $("#txtToDate").val(), "To Date");
+        }
+
+        refreshBudgetSelects("#ddlYear");
+        refreshBudgetSelects("#ddlMonth");
+        refreshBudgetSelects("#ddlWeek");
+    }
+
+    function resetPeriodDropdowns() {
+        $("#ddlYear").find("option:not([value=''])").remove();
+        $("#ddlWeek").find("option:not([value=''])").remove();
+        appendBudgetSelectPlaceholder($("#ddlYear"), "Select Year");
+        appendBudgetSelectPlaceholder($("#ddlWeek"), "Select Week Range");
+        appendBudgetSelectPlaceholder($("#ddlMonth"), "Select Month");
+        refreshBudgetSelects("#ddlYear");
+        refreshBudgetSelects("#ddlMonth");
+        refreshBudgetSelects("#ddlWeek");
+    }
+
+    function loadYearList(projectId) {
+        if (!projectId) {
+            resetPeriodDropdowns();
+            return;
+        }
+
+        var url = $("#UrlGetYearList").val();
+        resetBudgetSelectOptions($("#ddlYear"), "Select Year");
+        refreshBudgetSelects("#ddlYear");
+
+        $.ajax({
+            url: url,
+            type: "GET",
+            data: { projectId: projectId },
+            success: function (response) {
+                if (response && response.success === false) {
+                    toastr["error"](response.returnMessage || "Unable to load year list.", "Error");
+                    return;
+                }
+
+                $("#ddlYear").find("option:not([value=''])").remove();
+                if (response && response.length > 0) {
+                    $.each(response, function (index, item) {
+                        $("#ddlYear").append(
+                            $("<option></option>")
+                                .val(item.YearId || item.yearId)
+                                .text(item.YearName || item.yearName)
+                        );
+                    });
+                }
+                appendBudgetSelectPlaceholder($("#ddlYear"), "Select Year");
+                refreshBudgetSelects("#ddlYear");
+            },
+            error: function () {
+                toastr["error"]("Unable to load year list.", "Error");
+            }
+        });
+    }
+
+    function loadWeekList(projectId, year) {
+        if (!projectId || !year) {
+            return;
+        }
+
+        var url = $("#UrlGetWeekDayRangeList").val();
+        resetBudgetSelectOptions($("#ddlWeek"), "Select Week Range");
+        refreshBudgetSelects("#ddlWeek");
+
+        $.ajax({
+            url: url,
+            type: "GET",
+            data: { year: year, projectId: projectId },
+            success: function (response) {
+                if (response && response.success === false) {
+                    toastr["error"](response.returnMessage || "Unable to load week list.", "Error");
+                    return;
+                }
+
+                $("#ddlWeek").find("option:not([value=''])").remove();
+                if (response && response.length > 0) {
+                    $.each(response, function (index, item) {
+                        $("#ddlWeek").append(
+                            $("<option></option>")
+                                .val(item.WeekRangeDate)
+                                .text(item.DisplayWeekRangeDate)
+                        );
+                    });
+                }
+                appendBudgetSelectPlaceholder($("#ddlWeek"), "Select Week Range");
+                refreshBudgetSelects("#ddlWeek");
+            },
+            error: function () {
+                toastr["error"]("Unable to load week list.", "Error");
+            }
+        });
+    }
+
+    function formatDateValue(dateObj) {
+        var month = dateObj.getMonth() + 1;
+        var day = dateObj.getDate();
+        var year = dateObj.getFullYear();
+        return (month < 10 ? "0" : "") + month + "/" + (day < 10 ? "0" : "") + day + "/" + year;
+    }
+
+    function parseWeekRange(weekRangeValue) {
+        if (!weekRangeValue) {
+            return null;
+        }
+
+        var parts = weekRangeValue.split(",");
+        if (parts.length < 2) {
+            return null;
+        }
+
+        var fromDate = new Date(parts[0].trim().split(" ")[0]);
+        var toDate = new Date(parts[1].trim().split(" ")[0]);
+
+        if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) {
+            return null;
+        }
+
+        return {
+            fromDate: formatDateValue(fromDate),
+            toDate: formatDateValue(toDate)
+        };
+    }
+
+    function resolveReportDates() {
+        var periodType = $("#ddlReportPeriodType").val() || "Monthly";
+        var year = parseInt($("#ddlYear").val(), 10);
+        var month = parseInt($("#ddlMonth").val(), 10);
+        var fromDate = "";
+        var toDate = "";
+
+        if (periodType === "Monthly") {
+            if (!year || !month) {
+                toastr["warning"]("Select Year and Month.");
+                return null;
+            }
+            fromDate = formatDateValue(new Date(year, month - 1, 1));
+            toDate = formatDateValue(new Date(year, month, 0));
+        } else if (periodType === "Weekly") {
+            if (!year || !$("#ddlWeek").val()) {
+                toastr["warning"]("Select Year and Week Range.");
+                return null;
+            }
+            var weekDates = parseWeekRange($("#ddlWeek").val());
+            if (!weekDates) {
+                toastr["warning"]("Invalid week range selected.");
+                return null;
+            }
+            fromDate = weekDates.fromDate;
+            toDate = weekDates.toDate;
+        } else if (periodType === "Daily") {
+            fromDate = $("#txtFromDate").val();
+            toDate = $("#txtToDate").val();
+            if (!fromDate || !toDate) {
+                toastr["warning"]("Select From Date and To Date.");
+                return null;
+            }
+        }
+
+        $("#txtFromDate").val(fromDate);
+        $("#txtToDate").val(toDate);
+        return {
+            fromDate: fromDate,
+            toDate: toDate,
+            reportPeriodType: periodType
+        };
+    }
+
+    function validateSearchFilters() {
+        if (!$("#UtilityId").val()) {
+            toastr["warning"]("Select Utility.");
+            return false;
+        }
+        if (!$("#ddlProject").val()) {
+            toastr["warning"]("Select Project.");
+            return false;
+        }
+        return true;
+    }
+
+    function updateReportSummary(response) {
+        var fromDate = response.FromDate || $("#txtFromDate").val() || "-";
+        var toDate = response.ToDate || $("#txtToDate").val() || "-";
+        var periodLabel = "(" + (response.ReportPeriodType || $("#ddlReportPeriodType").val() || "Monthly") + ")";
+
+        $("#lblFromDate").text(fromDate);
+        $("#lblToDate").text(toDate);
+        $("#lblSplitFromDate").text(fromDate);
+        $("#lblSplitToDate").text(toDate);
+        $("#lblReportPeriodType").text(periodLabel);
+        $("#lblSplitReportPeriodType").text(periodLabel);
+    }
 
     function setDefaultDates() {
         $("#txtFromDate").val("");
@@ -780,6 +1463,7 @@
 
         $("#spanFromDate").text("From Date").css("color", "#999");
         $("#spanToDate").text("To Date").css("color", "#999");
+        $(".period-daily-from, .period-daily-to").removeClass("has-date-value");
 
         try {
             $("#txtFromDate").datepicker("option", "maxDate", null);
@@ -790,10 +1474,9 @@
     function loadProjectList(utilityId) {
         var url = $("#UrlGetProjectByUtility").val();
 
-        $("#ddlProject").empty();
-        $("#ddlProject").append($("<option value=''></option>"));
+        resetBudgetSelectOptions($("#ddlProject"), "Select Project");
         $("#ddlProject").prop("disabled", true);
-        updateChosen("#ddlProject");
+        refreshBudgetSelects("#ddlProject");
 
         $.ajax({
             url: url,
@@ -804,13 +1487,13 @@
             success: function (response) {
                 console.log("Project response:", response);
 
-                $("#ddlProject").empty();
-                $("#ddlProject").append($("<option value=''></option>"));
+                $("#ddlProject").find("option:not([value=''])").remove();
 
                 if (response && response.success === false) {
                     toastr["error"](response.returnMessage || "Unable to load project list.", "Error");
                     $("#ddlProject").prop("disabled", true);
-                    updateChosen("#ddlProject");
+                    appendBudgetSelectPlaceholder($("#ddlProject"), "Select Project");
+                    refreshBudgetSelects("#ddlProject");
                     return;
                 }
 
@@ -829,7 +1512,8 @@
                     toastr["warning"]("No project found for selected utility.", "Notification");
                 }
 
-                updateChosen("#ddlProject");
+                appendBudgetSelectPlaceholder($("#ddlProject"), "Select Project");
+                refreshBudgetSelects("#ddlProject");
             },
             error: function (xhr) {
                 console.log("Project AJAX error:", xhr.status, xhr.responseText);
@@ -896,6 +1580,15 @@
     }
 
     function getBudgetStatusReport() {
+        if (!validateSearchFilters()) {
+            return;
+        }
+
+        var reportDates = resolveReportDates();
+        if (!reportDates) {
+            return;
+        }
+
         var url = $("#UrlGetBudgetStatusReport").val();
 
         waitingDialog.show('Loading Please Wait...');
@@ -906,8 +1599,9 @@
             data: {
                 projectId: $("#ddlProject").val(),
                 installerId: null,
-                fromDate: $("#txtFromDate").val(),
-                toDate: $("#txtToDate").val()
+                fromDate: reportDates.fromDate,
+                toDate: reportDates.toDate,
+                reportPeriodType: reportDates.reportPeriodType
             },
             success: function (response) {
                 waitingDialog.hide();
@@ -926,41 +1620,34 @@
                     return;
                 }
 
-                var hasServiceLine = response.ServiceLineData && response.ServiceLineData.length > 0;
+                var hasServiceLine =
+                    (response.ServiceLineData && response.ServiceLineData.length > 0) ||
+                    parseFloat(response.TotalConfiguredServiceLineBudget || 0) > 0;
+                var approvedBudget = parseFloat(response.ApprovedProjectBudget || 0);
+                var usedBudget = parseFloat(response.UsedBudget || 0);
+                var balanceBudget = parseFloat(response.BalanceBudget || 0);
+                var serviceLineBudget = parseFloat(response.ServiceLineBudget || 0);
+                var serviceLineUsedBudget = parseFloat(response.ServiceLineUsedBudget || 0);
+                var serviceLineBalanceBudget = parseFloat(response.ServiceLineBalanceBudget || 0);
+
+                updateReportSummary(response);
 
                 if (hasServiceLine) {
-                    // Split mode
                     $("#rowNormalSummary").hide();
-
                     $("#panelServiceLineReport").show();
                     $("#rowTable1Summary").show();
                     $("#rowTable2Summary").show();
 
-                    // Bind Table 1
                     bindBudgetStatusReportTable(response.data || []);
-
-                    // Bind Table 2
                     bindServiceLineTable(response.ServiceLineData);
 
-                    // Update Table 1 Summary Labels
-                    var approvedBudget = parseFloat(response.ApprovedProjectBudget || 0);
-                    var balanceBudget = parseFloat(response.BalanceBudget || 0);
                     $("#lblSplitApprovedProjectBudget").text(formatCurrency(approvedBudget));
+                    $("#lblSplitUsedBudget").text(formatCurrency(usedBudget));
                     $("#lblSplitBalanceBudget").text(formatCurrency(balanceBudget));
-
-                    // Update Table 2 Summary Labels
-                    var serviceLineBudget = parseFloat(response.ServiceLineBudget || 0);
-                    var serviceLineBalanceBudget = parseFloat(response.ServiceLineBalanceBudget || 0);
                     $("#lblServiceLineBudget").text(formatCurrency(serviceLineBudget));
+                    $("#lblServiceLineUsedBudget").text(formatCurrency(serviceLineUsedBudget));
                     $("#lblServiceLineBalanceBudget").text(formatCurrency(serviceLineBalanceBudget));
-
-                    // Update Dates
-                    var fromDate = $("#txtFromDate").val() || "-";
-                    var toDate = $("#txtToDate").val() || "-";
-                    $("#lblSplitFromDate").text(fromDate);
-                    $("#lblSplitToDate").text(toDate);
                 } else {
-                    // Normal mode
                     if ($.fn.DataTable.isDataTable("#tblServiceLineReport")) {
                         $("#tblServiceLineReport").DataTable().destroy();
                     }
@@ -968,23 +1655,13 @@
                     $("#panelServiceLineReport").hide();
                     $("#rowTable1Summary").hide();
                     $("#rowTable2Summary").hide();
-
                     $("#rowNormalSummary").show();
 
-                    // Bind Table 1
                     bindBudgetStatusReportTable(response.data || []);
 
-                    // Update Labels
-                    var approvedBudget = parseFloat(response.ApprovedProjectBudget || 0);
-                    var balanceBudget = parseFloat(response.BalanceBudget || 0);
                     $("#lblApprovedProjectBudget").text(formatCurrency(approvedBudget));
+                    $("#lblUsedBudget").text(formatCurrency(usedBudget));
                     $("#lblBalanceBudget").text(formatCurrency(balanceBudget));
-
-                    // Update Dates
-                    var fromDate = $("#txtFromDate").val() || "-";
-                    var toDate = $("#txtToDate").val() || "-";
-                    $("#lblFromDate").text(fromDate);
-                    $("#lblToDate").text(toDate);
                 }
             },
             error: function () {
@@ -1160,13 +1837,22 @@
     }
 
     function exportBudgetStatusReport() {
+        if (!validateSearchFilters()) {
+            return;
+        }
+
+        var reportDates = resolveReportDates();
+        if (!reportDates) {
+            return;
+        }
+
         var url = $("#UrlExportBudgetStatusReport").val();
 
         var queryString =
             "?projectId=" + encodeURIComponent($("#ddlProject").val() || "") +
             "&installerId=" +
-            "&fromDate=" + encodeURIComponent($("#txtFromDate").val() || "") +
-            "&toDate=" + encodeURIComponent($("#txtToDate").val() || "");
+            "&fromDate=" + encodeURIComponent(reportDates.fromDate) +
+            "&toDate=" + encodeURIComponent(reportDates.toDate);
 
         window.location.href = url + queryString;
     }
@@ -1178,14 +1864,13 @@
     }
     
     function updateChosen(selector) {
-        $(selector).trigger("chosen:updated");
-        $(selector).trigger("liszt:updated");
+        refreshBudgetSelects(selector);
     }
+
     function resetProjectDropdown() {
-        $("#ddlProject").empty();
-        $("#ddlProject").append($("<option value=''></option>"));
+        resetBudgetSelectOptions($("#ddlProject"), "Select Project");
         $("#ddlProject").prop("disabled", true);
-        updateChosen("#ddlProject");
+        refreshBudgetSelects("#ddlProject");
     }
 
     function formatCurrency(value) {
@@ -1210,10 +1895,19 @@
 
     function resetBudgetSummary() {
         $("#lblApprovedProjectBudget").text("0.00");
+        $("#lblUsedBudget").text("0.00");
         $("#lblBalanceBudget").text("0.00");
         $("#lblSplitApprovedProjectBudget").text("0.00");
+        $("#lblSplitUsedBudget").text("0.00");
         $("#lblSplitBalanceBudget").text("0.00");
         $("#lblServiceLineBudget").text("0.00");
+        $("#lblServiceLineUsedBudget").text("0.00");
         $("#lblServiceLineBalanceBudget").text("0.00");
+        $("#lblFromDate").text("-");
+        $("#lblToDate").text("-");
+        $("#lblSplitFromDate").text("-");
+        $("#lblSplitToDate").text("-");
+        $("#lblReportPeriodType").text("");
+        $("#lblSplitReportPeriodType").text("");
     }
 </script>

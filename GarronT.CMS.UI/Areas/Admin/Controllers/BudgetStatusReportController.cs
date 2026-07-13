@@ -1,3 +1,4 @@
+using GarronT.CMS.Model;
 using GarronT.CMS.Model.BO;
 using GarronT.CMS.Model.DAL;
 using KSPL.Indus.MSTS.UI.Filters;
@@ -109,22 +110,122 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             }
         }
 
+        [HttpGet]
+        public JsonResult GetYearList(long projectId)
+        {
+            try
+            {
+                using (CompassEntities db = new CompassEntities())
+                {
+                    var projectDetail = db.tblProjects.Where(o => o.ProjectId == projectId).FirstOrDefault();
+                    if (projectDetail == null || projectDetail.FromDate == null)
+                    {
+                        return Json(new List<YearsListModel>(), JsonRequestBehavior.AllowGet);
+                    }
+
+                    var projectStartYear = Convert.ToDateTime(projectDetail.FromDate).Year;
+                    var currentYear = DateTime.Now.Year;
+                    var years = new List<YearsListModel>();
+
+                    for (var year = projectStartYear; year <= currentYear; year++)
+                    {
+                        years.Add(new YearsListModel
+                        {
+                            YearId = year,
+                            YearName = year.ToString()
+                        });
+                    }
+
+                    return Json(years.OrderByDescending(o => o.YearId).ToList(), JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("BudgetStatusReport GetYearList error", ex);
+                return Json(new
+                {
+                    success = false,
+                    returnMessage = ex.Message
+                }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpGet]
+        public JsonResult GetWeekDayRangeList(int year, long projectId)
+        {
+            try
+            {
+                using (CompassEntities db = new CompassEntities())
+                {
+                    var projectDetail = db.tblProjects.Where(o => o.ProjectId == projectId).FirstOrDefault();
+                    if (projectDetail == null || projectDetail.FromDate == null)
+                    {
+                        return Json(new List<WeeksModel>(), JsonRequestBehavior.AllowGet);
+                    }
+
+                    var projectStartDate = Convert.ToDateTime(projectDetail.FromDate);
+                    var jan1 = new DateTime(year, 1, 1);
+                    var startOfFirstWeek = jan1.AddDays(1 - (int)(jan1.DayOfWeek));
+
+                    var weeks = Enumerable
+                        .Range(0, 54)
+                        .Select(i => new { weekStart = startOfFirstWeek.AddDays(i * 7) })
+                        .TakeWhile(x => x.weekStart.Year <= jan1.Year)
+                        .Select(x => new
+                        {
+                            x.weekStart,
+                            weekFinish = x.weekStart.AddDays(6)
+                        })
+                        .SkipWhile(x => x.weekFinish < jan1.AddDays(1))
+                        .Select((x, i) => new
+                        {
+                            x.weekStart,
+                            x.weekFinish,
+                            weekNum = i + 1
+                        });
+
+                    var weekRangeDates = weeks
+                        .Select(g => new Tuple<DateTime, DateTime, int>(g.weekStart, g.weekFinish, g.weekNum))
+                        .ToList();
+
+                    var objWeeksModel = new ClockTimeReportDAL().GetWeekRangeDateCollection_new(weekRangeDates, projectStartDate);
+                    return Json(objWeeksModel, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("BudgetStatusReport GetWeekDayRangeList error", ex);
+                return Json(new
+                {
+                    success = false,
+                    returnMessage = ex.Message
+                }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
         [HttpPost]
-        public JsonResult GetBudgetStatusReport(long? projectId, long? installerId, string fromDate, string toDate)
+        public JsonResult GetBudgetStatusReport(long? projectId, long? installerId, string fromDate, string toDate, string reportPeriodType = "")
         {
             try
             {
                 using (BudgetStatusReportDAL objDAL = new BudgetStatusReportDAL())
                 {
-                    BudgetStatusReportResultBO result = objDAL.GetBudgetStatusReport(projectId, installerId, fromDate, toDate);
+                    BudgetStatusReportResultBO result = objDAL.GetBudgetStatusReport(projectId, installerId, fromDate, toDate, reportPeriodType);
 
                     var jsonResult = Json(new
                     {
                         success = true,
                         data = result.ReportRows,
+                        FromDate = result.FromDate,
+                        ToDate = result.ToDate,
+                        ReportPeriodType = result.ReportPeriodType,
+                        TotalConfiguredProjectBudget = result.TotalConfiguredProjectBudget,
+                        PriorProjectUsedBudget = result.PriorProjectUsedBudget,
                         ApprovedProjectBudget = result.ApprovedProjectBudget,
                         UsedBudget = result.UsedBudget,
                         BalanceBudget = result.BalanceBudget,
+                        TotalConfiguredServiceLineBudget = result.TotalConfiguredServiceLineBudget,
+                        PriorServiceLineUsedBudget = result.PriorServiceLineUsedBudget,
                         ServiceLineBudget = result.ServiceLineBudget,
                         ServiceLineUsedBudget = result.ServiceLineUsedBudget,
                         ServiceLineBalanceBudget = result.ServiceLineBalanceBudget,

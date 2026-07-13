@@ -1,4 +1,99 @@
-﻿
+var MOBILE_MAX_WIDTH = 1024;
+var chosenInitialized = false;
+
+function isMobileView() {
+    return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || window.innerWidth <= MOBILE_MAX_WIDTH;
+}
+
+function applyMobileNativePlaceholder($select, sentinelValue, label) {
+    if (!isMobileView() || !$select || !$select.length) return;
+    var v = String(sentinelValue);
+    var $opt = $select.find("option").filter(function () { return String($(this).val()) === v; });
+    if ($opt.length === 0) {
+        $opt = $('<option></option>').val(v).text(label);
+        $select.prepend($opt);
+    } else {
+        $opt = $opt.first();
+        $opt.text(label);
+        $opt.prependTo($select);
+    }
+    $select.find("option").prop("selected", false);
+    $opt.prop({ hidden: true, selected: true });
+}
+
+function appendPlaceholderOption($select, label) {
+    if (isMobileView()) {
+        $select.prepend($('<option></option>').val('').text(label).prop({ hidden: true, selected: true }));
+    } else {
+        // Chosen uses the first empty-value option as placeholder; label comes from placeholder_text_single
+        $select.prepend($('<option></option>').val('').text('').prop({ selected: true }));
+    }
+}
+
+function refreshChosenSelects() {
+    if (!isMobileView()) {
+        $('.chosen-select').trigger('chosen:updated');
+    } else {
+        updateSelectTitles();
+    }
+}
+
+function updateSelectTitles() {
+    if (!isMobileView()) return;
+    $('.chosen-select.mobile-native-select').each(function () {
+        var text = $(this).find('option:selected').text();
+        $(this).attr('title', text || '');
+    });
+}
+
+function destroyChosenSelects() {
+    $('.chosen-select').each(function () {
+        var $el = $(this);
+        if ($el.next('.chosen-container').length) {
+            $el.chosen('destroy');
+        }
+    });
+    chosenInitialized = false;
+}
+
+function showClockReportResults() {
+    var $filterPanel = $('.clock-time-report-page .rep_panel');
+    if (!$filterPanel.length) {
+        return;
+    }
+
+    var siteHeaderHeight = $('.header').outerHeight() || 65;
+    var scrollTop = $filterPanel.offset().top - siteHeaderHeight - 8;
+
+    $('html, body').animate({ scrollTop: Math.max(0, scrollTop) }, 250);
+}
+
+function enableMobileNativeSelects() {
+    $('.chosen-select').addClass('mobile-native-select');
+    applyMobileNativePlaceholder($("#ddlProject"), "", "Select Project");
+    applyMobileNativePlaceholder($("#InstallerName"), "", "Select Installer");
+    applyMobileNativePlaceholder($("#YearName"), "", "Select Year");
+    applyMobileNativePlaceholder($("#MonthName"), "", "Select Month");
+    applyMobileNativePlaceholder($("#WeekName"), "", "Select Week Range");
+}
+
+function initChosenSelects() {
+    if (isMobileView()) {
+        destroyChosenSelects();
+        enableMobileNativeSelects();
+    } else {
+        $('.chosen-select').removeClass('mobile-native-select');
+        if (!chosenInitialized) {
+            $("#ddlProject").chosen({ placeholder_text_single: "Select Project", no_results_text: "Oops, nothing found!" });
+            $("#InstallerName").chosen({ placeholder_text_single: "Select Installer", no_results_text: "Oops, nothing found!" });
+            $("#YearName").chosen({ placeholder_text_single: "Select Year", no_results_text: "Oops, nothing found!" });
+            $("#MonthName").chosen({ placeholder_text_single: "Select Month", no_results_text: "Oops, nothing found!" });
+            $("#WeekName").chosen({ placeholder_text_single: "Select Week Range", no_results_text: "Oops, nothing found!" });
+            chosenInitialized = true;
+        }
+    }
+}
+
 var oTable;
 $(document).ready(function () {
 
@@ -17,12 +112,9 @@ $(document).ready(function () {
     var listate = $('#liClockTimeReport');
     listate.addClass("active");
 
-    $("#ddlProject").chosen({ no_results_text: "Oops, nothing found!" });
-    $("#InstallerName").chosen({ no_results_text: "Oops, nothing found!" });
-    $("#YearName").chosen({ no_results_text: "Oops, nothing found!" });
-    $("#MonthName").chosen({ no_results_text: "Oops, nothing found!" });
-    $("#WeekName").chosen({ no_results_text: "Oops, nothing found!" });
-    
+    initChosenSelects();
+    $('.chosen-select').on('change', updateSelectTitles);
+
     setControllOnBack();
     getProjectList();
     //GetAllInstallerList();
@@ -120,6 +212,7 @@ function bindTable() {
                 document.getElementById("totalInstalledMeter").innerHTML = msg.TotalInstalledMeterInWeek;
                 document.getElementById("ttHoursInWeek").innerHTML = msg.TotalWorkingHoursInWeek;
                 document.getElementById("avgPerHours").innerHTML = msg.AvrPerHours;
+                showClockReportResults();
             }
             else {
                 waitingDialog.hide();
@@ -143,13 +236,12 @@ function getProjectList() {
         success: function (ProjectList) {
 
             $('#ddlProject').empty();
-            //debugger;
-            $('#ddlProject').append($('<option></option>').val(''));
+            appendPlaceholderOption($('#ddlProject'), 'Select Project');
             $.each(ProjectList, function (index, item) {
                 $('#ddlProject').append($('<option></option>').val(item.ProjectId).html(item.ProjectCityState));
             });
 
-            $('.chosen-select').trigger('chosen:updated');
+            refreshChosenSelects();
         },
         error: function (jqXHR, textStatus, errorThrown) {
             waitingDialog.hide();
@@ -179,14 +271,13 @@ function GetAllInstallerList() {
         success: function (ProjectList) {
       
             $('#InstallerName').empty();
-            //debugger;
-            $('#InstallerName').append($('<option></option>').val(''));
+            appendPlaceholderOption($('#InstallerName'), 'Select Installer');
             $.each(ProjectList, function (index, item) {
                 $('#InstallerName').append($('<option></option>').val(item.UserId).html(item.UserName));
 
             });
 
-            $('.chosen-select').trigger('chosen:updated');
+            refreshChosenSelects();
         },
         error: function (jqXHR, textStatus, errorThrown) {
             waitingDialog.hide();
@@ -212,12 +303,12 @@ function GetyearList() {
         success: function (YearList) {
 
             $('#YearName').empty();
-            $('#YearName').append($('<option></option>').val(''));
+            appendPlaceholderOption($('#YearName'), 'Select Year');
             $.each(YearList, function (index, item) {
                 $('#YearName').append($('<option></option>').val(item.YearId).html(item.YearName));
             });
 
-            $('.chosen-select').trigger('chosen:updated');
+            refreshChosenSelects();
         },
         error: function (jqXHR, textStatus, errorThrown) {
             waitingDialog.hide();
@@ -290,7 +381,7 @@ function GetMonthList() {
 
     $('#MonthName').empty();
 
-    $('#MonthName').append($('<option></option>').val(''));
+    appendPlaceholderOption($('#MonthName'), 'Select Month');
     $.each(MonthName, function (index, item) {
         $('#MonthName').append($('<option></option>').val(item.ID).html(item.Month));
 
@@ -326,13 +417,12 @@ $('#MonthName').change(function () {
         data: { _year: _year, _month: _month },
         success: function (WeekRangeList) {
             $('#WeekName').empty();
-            //debugger;
-            $('#WeekName').append($('<option></option>').val(''));
+            appendPlaceholderOption($('#WeekName'), 'Select Week Range');
             $.each(WeekRangeList, function (index, item) {
                 $('#WeekName').append($('<option></option>').val(item.WeekRangeDate).html(item.DisplayWeekRangeDate));
 
             });
-            $('.chosen-select').trigger('chosen:updated');
+            refreshChosenSelects();
         },
         error: function (jqXHR, textStatus, errorThrown) {
             waitingDialog.hide();
@@ -372,13 +462,12 @@ function GetWeekDayRangeList() {
         success: function (WeekRangeList) {
             debugger;
             $('#WeekName').empty();
-            //debugger;
-            $('#WeekName').append($('<option></option>').val(''));
+            appendPlaceholderOption($('#WeekName'), 'Select Week Range');
             $.each(WeekRangeList, function (index, item) {
                 $('#WeekName').append($('<option></option>').val(item.WeekRangeDate).html(item.DisplayWeekRangeDate));
 
             });
-            $('.chosen-select').trigger('chosen:updated');
+            refreshChosenSelects();
         },
         error: function (jqXHR, textStatus, errorThrown) {
             waitingDialog.hide();
@@ -501,6 +590,7 @@ function searchClick() {
 
                 document.getElementById("clockTimeReportFilePath").innerHTML = msg.filePath;
                 $('#btnExport').prop("disabled", false);
+                showClockReportResults();
             }
             else {
                 waitingDialog.hide();
@@ -520,11 +610,20 @@ $("#btnReset").click(function () {
 
 function ResetAllData() {
     debugger;
-    $('#WeekName').val("");
+    $('#WeekName').empty();
+    appendPlaceholderOption($('#WeekName'), 'Select Week Range');
     getProjectList();
-    $('#InstallerName').val(0).attr("selected", "selected");
+    $('#InstallerName').empty();
+    appendPlaceholderOption($('#InstallerName'), 'Select Installer');
     GetyearList();
     GetMonthList();
+    refreshChosenSelects();
+    if (isMobileView()) {
+        applyMobileNativePlaceholder($("#ddlProject"), "", "Select Project");
+        applyMobileNativePlaceholder($("#InstallerName"), "", "Select Installer");
+        applyMobileNativePlaceholder($("#YearName"), "", "Select Year");
+        applyMobileNativePlaceholder($("#WeekName"), "", "Select Week Range");
+    }
     $('#btnExport').prop("disabled", true);
     document.getElementById("clockTimeReportFilePath").innerHTML = "";
 }

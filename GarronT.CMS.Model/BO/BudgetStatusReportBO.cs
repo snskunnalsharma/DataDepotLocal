@@ -15,6 +15,16 @@ namespace GarronT.CMS.Model.BO
 
     public class BudgetStatusReportResultBO
     {
+        public string FromDate { get; set; }
+
+        public string ToDate { get; set; }
+
+        public string ReportPeriodType { get; set; }
+
+        public decimal TotalConfiguredProjectBudget { get; set; }
+
+        public decimal PriorProjectUsedBudget { get; set; }
+
         public decimal ApprovedProjectBudget { get; set; }
 
         public decimal UsedBudget { get; set; }
@@ -22,6 +32,10 @@ namespace GarronT.CMS.Model.BO
         public decimal BalanceBudget { get; set; }
 
         public List<BudgetStatusReportBO> ReportRows { get; set; }
+
+        public decimal TotalConfiguredServiceLineBudget { get; set; }
+
+        public decimal PriorServiceLineUsedBudget { get; set; }
 
         public decimal ServiceLineBudget { get; set; }
 

@@ -76,7 +76,7 @@ namespace GarronT.CMS.Model.DAL
             }
         }
 
-        public BudgetStatusReportResultBO GetBudgetStatusReport(long? projectId, long? installerId, string fromDate, string toDate)
+        public BudgetStatusReportResultBO GetBudgetStatusReport(long? projectId, long? installerId, string fromDate, string toDate, string reportPeriodType = "")
         {
             BudgetStatusReportResultBO result = new BudgetStatusReportResultBO();
 
@@ -91,10 +91,21 @@ namespace GarronT.CMS.Model.DAL
             if (!DateTime.TryParse(toDate, out parsedToDate))
                 throw new Exception("To Date is required.");
 
+            parsedFromDate = parsedFromDate.Date;
+            parsedToDate = parsedToDate.Date;
+
+            if (parsedToDate < parsedFromDate)
+                throw new Exception("To Date cannot be earlier than From Date.");
+
+            result.FromDate = parsedFromDate.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
+            result.ToDate = parsedToDate.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
+            result.ReportPeriodType = string.IsNullOrWhiteSpace(reportPeriodType) ? "Custom" : reportPeriodType.Trim();
+
             using (CompassEntities db = new CompassEntities())
             {
                 db.Database.CommandTimeout = 180;
                 List<BudgetStatusReportBO> allRows = new List<BudgetStatusReportBO>();
+                List<BudgetStatusReportBO> priorRows = new List<BudgetStatusReportBO>();
 
                 // Check if project has service line budget configured
                 var serviceLineBudgetRecord = db.ProjectBudgetMaster
@@ -115,8 +126,8 @@ namespace GarronT.CMS.Model.DAL
                         var installedMeters = GetBeaumont21InstalledMetersDetails(
                             projectId.Value,
                             installerId,
-                            parsedFromDate.Date,
-                            parsedToDate.Date.AddDays(1),
+                            parsedFromDate,
+                            parsedToDate.AddDays(1),
                             con
                         );
 
@@ -131,6 +142,30 @@ namespace GarronT.CMS.Model.DAL
                                 TotalCost = service.Cost * count
                             });
                         }
+
+                        // Get prior spend before report start (rolling starting balance)
+                        if (parsedFromDate > new DateTime(1900, 1, 1))
+                        {
+                            var priorInstalledMeters = GetBeaumont21InstalledMetersDetails(
+                                projectId.Value,
+                                installerId,
+                                new DateTime(1900, 1, 1),
+                                parsedFromDate,
+                                con
+                            );
+
+                            foreach (var service in serviceConfig.Values.OrderBy(x => x.DisplayOrder))
+                            {
+                                int count = priorInstalledMeters.Count(x => x.MeterDisplayName == service.ServiceDisplayName);
+                                priorRows.Add(new BudgetStatusReportBO
+                                {
+                                    ServiceDescription = service.ServiceDisplayName,
+                                    UnitCost = service.Cost,
+                                    TotalCount = count,
+                                    TotalCost = service.Cost * count
+                                });
+                            }
+                        }
                     }
                 }
                 else
@@ -140,11 +175,78 @@ namespace GarronT.CMS.Model.DAL
                         "EXEC dbo.PROC_GetBudgetStatusReport @ProjectId, @InstallerId, @FromDate, @ToDate",
                         new SqlParameter("@ProjectId", projectId.Value),
                         new SqlParameter("@InstallerId", installerId.HasValue ? (object)installerId.Value : DBNull.Value),
-                        new SqlParameter("@FromDate", parsedFromDate.Date),
-                        new SqlParameter("@ToDate", parsedToDate.Date)
+                        new SqlParameter("@FromDate", parsedFromDate),
+                        new SqlParameter("@ToDate", parsedToDate)
                     ).ToList();
+
+                    // Get prior spend before report start (rolling starting balance)
+                    if (parsedFromDate > new DateTime(1900, 1, 1))
+                    {
+                        priorRows = db.Database.SqlQuery<BudgetStatusReportBO>(
+                            "EXEC dbo.PROC_GetBudgetStatusReport @ProjectId, @InstallerId, @FromDate, @ToDate",
+                            new SqlParameter("@ProjectId", projectId.Value),
+                            new SqlParameter("@InstallerId", installerId.HasValue ? (object)installerId.Value : DBNull.Value),
+                            new SqlParameter("@FromDate", new DateTime(1900, 1, 1)),
+                            new SqlParameter("@ToDate", parsedFromDate.AddDays(-1))
+                        ).ToList();
+                    }
                 }
 
+                // Compute prior spend amounts
+                decimal priorMainUsedBudget = 0;
+                decimal priorServiceLineUsedBudget = 0;
+
+                if (hasServiceLineBudget)
+                {
+                    foreach (var row in priorRows)
+                    {
+                        bool isServiceLineRow = !string.IsNullOrEmpty(row.ServiceDescription) &&
+                            (row.ServiceDescription.IndexOf("Line Inspection", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                             row.ServiceDescription.IndexOf("Lead Line", StringComparison.OrdinalIgnoreCase) >= 0);
+
+                        if (isServiceLineRow)
+                        {
+                            priorServiceLineUsedBudget += row.TotalCost;
+                        }
+                        else
+                        {
+                            priorMainUsedBudget += row.TotalCost;
+                        }
+                    }
+                }
+                else
+                {
+                    priorMainUsedBudget = priorRows.Sum(o => o.TotalCost);
+                }
+
+                decimal totalProjectBudget = 0;
+                decimal totalServiceLineBudget = 0;
+
+                var projectBudgetRecord = db.ProjectBudgetMaster
+                    .Where(o => o.ProjectId == projectId.Value && o.BudgetCode == "PROJECT_BUDGET" && o.IsActive == true)
+                    .FirstOrDefault();
+
+                totalProjectBudget = projectBudgetRecord != null
+                    ? projectBudgetRecord.BudgetAmount
+                    : GetApprovedProjectBudget(db, projectId.Value);
+
+                if (hasServiceLineBudget)
+                {
+                    totalServiceLineBudget = serviceLineBudgetRecord != null
+                        ? serviceLineBudgetRecord.BudgetAmount
+                        : 500000.00m; // fallback for 10134
+                }
+
+                result.TotalConfiguredProjectBudget = totalProjectBudget;
+                result.PriorProjectUsedBudget = priorMainUsedBudget;
+                result.TotalConfiguredServiceLineBudget = totalServiceLineBudget;
+                result.PriorServiceLineUsedBudget = priorServiceLineUsedBudget;
+
+                // Starting balance = configured budget - all spend before report from date
+                result.ApprovedProjectBudget = totalProjectBudget - priorMainUsedBudget;
+                result.ServiceLineBudget = totalServiceLineBudget - priorServiceLineUsedBudget;
+
+                // Separate current report period rows into Service Line vs General
                 if (hasServiceLineBudget)
                 {
                     foreach (var row in allRows)
@@ -169,27 +271,13 @@ namespace GarronT.CMS.Model.DAL
                             result.ReportRows.Add(row);
                         }
                     }
-
-                    // Fetch project budget from ProjectBudgetMaster
-                    var projectBudgetRecord = db.ProjectBudgetMaster
-                        .Where(o => o.ProjectId == projectId.Value && o.BudgetCode == "PROJECT_BUDGET" && o.IsActive == true)
-                        .FirstOrDefault();
-
-                    result.ApprovedProjectBudget = projectBudgetRecord != null
-                        ? projectBudgetRecord.BudgetAmount
-                        : GetApprovedProjectBudget(db, projectId.Value);
-
-                    result.ServiceLineBudget = serviceLineBudgetRecord != null
-                        ? serviceLineBudgetRecord.BudgetAmount
-                        : 500000.00m; // fallback for 10134
                 }
                 else
                 {
                     result.ReportRows = allRows;
-                    result.ApprovedProjectBudget = GetApprovedProjectBudget(db, projectId.Value);
-                    result.ServiceLineBudget = 0;
                 }
 
+                // Period spend and ending balance for current report range
                 result.UsedBudget = result.ReportRows.Sum(o => o.TotalCost);
                 result.BalanceBudget = result.ApprovedProjectBudget - result.UsedBudget;
 
@@ -346,16 +434,26 @@ namespace GarronT.CMS.Model.DAL
                     t1SummaryTable.KeepTogether = true;
 
                     t1SummaryTable.AddCell(CreateNoBorderPdfCell(
-                        CreateSummaryPhrase("APPROVED PROJECT BUDGET", reportResult.ApprovedProjectBudget, usCulture, summaryLabelFont, summaryAmountFont),
+                        CreateSummaryPhrase("PROJECT STARTING BUDGET", reportResult.ApprovedProjectBudget, usCulture, summaryLabelFont, summaryAmountFont),
                         Element.ALIGN_LEFT
                     ));
 
                     t1SummaryTable.AddCell(CreateNoBorderPdfCell(
-                        CreateSummaryPhrase("BALANCE BUDGET", reportResult.BalanceBudget, usCulture, summaryLabelFont, summaryAmountFont),
+                        CreateSummaryPhrase("PERIOD USED BUDGET", reportResult.UsedBudget, usCulture, summaryLabelFont, summaryAmountFont),
                         Element.ALIGN_LEFT
                     ));
 
                     document.Add(t1SummaryTable);
+
+                    PdfPTable t1BalanceTable = new PdfPTable(1);
+                    t1BalanceTable.WidthPercentage = 100;
+                    t1BalanceTable.SpacingAfter = 20f;
+                    t1BalanceTable.KeepTogether = true;
+                    t1BalanceTable.AddCell(CreateNoBorderPdfCell(
+                        CreateSummaryPhrase("ENDING BALANCE BUDGET", reportResult.BalanceBudget, usCulture, summaryLabelFont, summaryAmountFont),
+                        Element.ALIGN_LEFT
+                    ));
+                    document.Add(t1BalanceTable);
 
                     // Render Table 2
                     PdfPTable table2 = new PdfPTable(5);
@@ -394,16 +492,25 @@ namespace GarronT.CMS.Model.DAL
                     t2SummaryTable.KeepTogether = true;
 
                     t2SummaryTable.AddCell(CreateNoBorderPdfCell(
-                        CreateSummaryPhrase("SERVICE LINE BUDGET", reportResult.ServiceLineBudget, usCulture, summaryLabelFont, summaryAmountFont),
+                        CreateSummaryPhrase("SERVICE LINE STARTING BUDGET", reportResult.ServiceLineBudget, usCulture, summaryLabelFont, summaryAmountFont),
                         Element.ALIGN_LEFT
                     ));
 
                     t2SummaryTable.AddCell(CreateNoBorderPdfCell(
-                        CreateSummaryPhrase("BALANCE SERVICE LINE BUDGET", reportResult.ServiceLineBalanceBudget, usCulture, summaryLabelFont, summaryAmountFont),
+                        CreateSummaryPhrase("PERIOD USED SERVICE LINE BUDGET", reportResult.ServiceLineUsedBudget, usCulture, summaryLabelFont, summaryAmountFont),
                         Element.ALIGN_LEFT
                     ));
 
                     document.Add(t2SummaryTable);
+
+                    PdfPTable t2BalanceTable = new PdfPTable(1);
+                    t2BalanceTable.WidthPercentage = 100;
+                    t2BalanceTable.KeepTogether = true;
+                    t2BalanceTable.AddCell(CreateNoBorderPdfCell(
+                        CreateSummaryPhrase("ENDING BALANCE SERVICE LINE BUDGET", reportResult.ServiceLineBalanceBudget, usCulture, summaryLabelFont, summaryAmountFont),
+                        Element.ALIGN_LEFT
+                    ));
+                    document.Add(t2BalanceTable);
                 }
                 else
                 {
@@ -417,7 +524,7 @@ namespace GarronT.CMS.Model.DAL
                     // Approved Project Budget
                     bottomTable.AddCell(CreateNoBorderPdfCell(
                         CreateSummaryPhrase(
-                            "APPROVED PROJECT BUDGET",
+                            "PROJECT STARTING BUDGET",
                             reportResult.ApprovedProjectBudget,
                             usCulture,
                             summaryLabelFont,
@@ -439,7 +546,7 @@ namespace GarronT.CMS.Model.DAL
 
                     bottomTable.AddCell(CreateNoBorderPdfCell(
                         CreateSummaryPhrase(
-                            "BALANCE BUDGET",
+                            "ENDING BALANCE BUDGET",
                             reportResult.BalanceBudget,
                             usCulture,
                             summaryLabelFont,

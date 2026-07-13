@@ -60,12 +60,22 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         // cycle method start
         public ActionResult GetFreshCycle(long projectID)
         {
-            List<string> cyclelist = new List<string>();
+            try
+            {
+                using (ProjectStatusDAL projectStatusDAL = new ProjectStatusDAL())
+                {
+                    if (!projectStatusDAL.HasActiveAccounts(projectID))
+                    {
+                        return base.Json(new List<string>(), JsonRequestBehavior.AllowGet);
+                    }
 
-            //cyclelist = new InstallerDAL().GetFreshCycleByProjectID(projectID);
-            cyclelist = new ProjectStatusDAL().GetDynamicFreshCycleByProjectIDs(projectID);
-
-            return base.Json(cyclelist, JsonRequestBehavior.AllowGet);
+                    return base.Json(projectStatusDAL.GetDynamicFreshCycleByProjectIDs(projectID), JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception)
+            {
+                return base.Json(new List<string>(), JsonRequestBehavior.AllowGet);
+            }
         }
 
         public ActionResult GetFreshCycleByOffice(long projectID, string locationID)
@@ -193,6 +203,15 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             {
                 var objLocationList = projectStatusDAL.LocationList(projectId);
                 return base.Json(objLocationList, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpGet]
+        public JsonResult HasProjectAccounts(long projectId)
+        {
+            using (ProjectStatusDAL projectStatusDAL = new ProjectStatusDAL())
+            {
+                return Json(new { hasAccounts = projectStatusDAL.HasActiveAccounts(projectId) }, JsonRequestBehavior.AllowGet);
             }
         }
         #endregion
