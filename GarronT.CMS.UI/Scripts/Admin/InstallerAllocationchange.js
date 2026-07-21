@@ -3360,8 +3360,6 @@ function Edit(data) {
 }
 
 function EditAllocation(data, cycle, routes) {
-    debugger;
-    alert();
     InstallerEdit = true;
     waitingDialog.show('Loading Please Wait...');
 
@@ -3416,7 +3414,6 @@ function EditAllocation(data, cycle, routes) {
     }
     console.log("incSkip == " + incSkip);
 
-    debugger;
     var unAlloSkip = "0";
     if ($("#chkUnallocatedSkip").is(":checked")) {
         console.log("checked ==> UnAllocated Skip");
@@ -3427,213 +3424,236 @@ function EditAllocation(data, cycle, routes) {
     }
     console.log("UnAllocated Skip == " + unAlloSkip);
 
-    if (cycle != null) {
-        // do stuff 
-        $("#ulCycle li").filter(function () { return $(this).text() === cycle.trim(); }).addClass("ui-selected click-selected highlighted");
-        $('#txtfilterRoute').val("");
-        $('#Route_SelectAll').prop('checked', false);
-        $('#Route1_SelectAll').prop('checked', false);
+    if (cycle != null && cycle !== undefined && String(cycle).trim() !== "") {
+        var selectedCycle = String(cycle).trim();
+        var routeValue = (routes != null && routes !== undefined && String(routes).trim() !== "")
+            ? String(routes).split(',').map(function (r) { return $.trim(r); }).filter(function (r) { return r !== ""; })
+            : [];
 
-        $('#txtfilterAddress').val("");
-        $('#Address_SelectAll').prop('checked', false);
+        console.log("EditAllocation v20260720b: loading cycles for", selectedCycle, routeValue);
 
+        // Use GetFreshCycles (same API that already works on this page).
+        // Modal path never populates #ulCycle, so load cycles then select row cycle/route.
+        var urlCycleData = $('#GetCycle').val();
+        $.ajax({
+            url: urlCycleData,
+            async: true,
+            data: { "ProjectID": ProjectID },
+            success: function (Cycle) {
+                console.log("EditAllocation: cycles loaded", Cycle);
 
-        var selectedlivalue = $('#ulCycle li.highlighted').map(function (i, el) { return $(el).html(); });
+                $('#ulCycle').empty();
+                if (Cycle && Cycle.length) {
+                    for (var i = 0; i < Cycle.length; i++) {
+                        $('#ulCycle').append($('<li></li>').val(Cycle[i]).addClass("liCycle active-result").html(Cycle[i]));
+                    }
+                }
 
+                if ($("#ulCycle li").filter(function () { return $.trim($(this).text()) === selectedCycle; }).length === 0) {
+                    $('#ulCycle').append($('<li></li>').val(selectedCycle).addClass("liCycle active-result").html(selectedCycle));
+                }
 
-        var selectedlilength = selectedlivalue.length;
-        if (selectedlilength == 0) {
-            $("#CycleHeader").removeClass("ddlHeader").text("Select Cycle")
-        } else {
-            $("#CycleHeader").addClass("ddlHeader").text(selectedlilength + " Cycle selected")
-        }
+                $("#ulCycle li").removeClass("ui-selected click-selected highlighted disabledli");
+                $("#ulCycle li").filter(function () { return $.trim($(this).text()) === selectedCycle; }).addClass("ui-selected click-selected highlighted");
 
-        //#region SelectAll checked/unchecked
-        if ($('#ulCycle .liCycle:visible').length > 0 && $('#ulCycle .highlighted:visible').length == $('#ulCycle .liCycle:visible').length) {
-            $('#Cycle_SelectAll').prop('checked', true);
-        } else {
-            $('#Cycle_SelectAll').prop('checked', false);
-        }
-        //#endregion
-        //initialize();
+                $('#txtfilterRoute').val("");
+                $('#Route_SelectAll').prop('checked', false);
+                $('#Route1_SelectAll').prop('checked', false);
+                $('#txtfilterAddress').val("");
+                $('#Address_SelectAll').prop('checked', false);
 
-        var cyclevalue = [];
-        var value = $('#ulCycle li.highlighted')
-        value.each(function (index, item) { cyclevalue.push($(this).html()) });
-        var routeValue = routes.split(',');
-        if (cyclevalue != null && cyclevalue.length > 0) {
+                var selectedlilength = $('#ulCycle li.highlighted').length;
+                if (selectedlilength == 0) {
+                    $("#CycleHeader").removeClass("ddlHeader").text("Select Cycle");
+                    waitingDialog.hide();
+                    toastr["error"]("Selected cycle could not be loaded.", "Error Notification");
+                    return;
+                }
+                $("#CycleHeader").addClass("ddlHeader").text(selectedlilength + " Cycle selected");
 
-            var urlRootData = $('#GetAllRouteByCycle').val();
+                if ($('#ulCycle .liCycle:visible').length > 0 && $('#ulCycle .highlighted:visible').length == $('#ulCycle .liCycle:visible').length) {
+                    $('#Cycle_SelectAll').prop('checked', true);
+                } else {
+                    $('#Cycle_SelectAll').prop('checked', false);
+                }
 
-            $.ajax({
-                url: urlRootData,
-                type: 'POST',
-                async: true,
-                data: { ProjectId: ProjectID, "Cycle": cyclevalue, "Route": routeValue, "InstallerId": InstallerID },
-                success: function (data) {
-                    $('#ulroute').empty();
-                    debugger;
-                    $.each(data.Route, function (index, item) { $('#ulroute').append($('<li></li>').val(item).addClass("liRoute active-result").html(item)); });
+                var cyclevalue = [];
+                $('#ulCycle li.highlighted').each(function () { cyclevalue.push($.trim($(this).html())); });
 
-                    if (InstallerID != null) {
-                        $.each(data.selectedRoute, function (index, item) {
+                function loadAddressesForEdit() {
+                    var ddlRootvalues = [];
+                    $('#ulroute li.highlighted').each(function () { ddlRootvalues.push($.trim($(this).html())); });
 
-                            if (item.RouteDisabled == false) {
-                                $("#ulroute").find("li[value='" + item.RouteId + "']").addClass("ui-selected click-selected highlighted")
-                            }
-                            else if (incSkip == "1") {
-                                $("#ulroute").find("li[value='" + item.RouteId + "']").addClass("ui-selected click-selected highlighted disabledli")
-                            }
-                        });
+                    var ddlCyclevalues = [];
+                    $('#ulCycle li.highlighted').each(function () { ddlCyclevalues.push($.trim($(this).html())); });
+
+                    if (!ddlRootvalues.length) {
+                        waitingDialog.hide();
+                        toastr["error"]("Selected route could not be loaded.", "Error Notification");
+                        return;
                     }
 
-                    //selectRoute()
+                    var urlStateData = $('#GetAddressUrl').val();
+                    console.log("EditAllocation: loading addresses", ddlCyclevalues, ddlRootvalues);
+
+                    $.ajax({
+                        url: urlStateData,
+                        async: true,
+                        type: "POST",
+                        dataType: "json",
+                        data: {
+                            Root: ddlRootvalues,
+                            Cycle: ddlCyclevalues,
+                            Address: null,
+                            ProjectID: $('#ddlProject').val(),
+                            installerId: $('#ddlInstaller').val(),
+                            fromDate: $('#datepicker1').val(),
+                            toDate: $('#datepicker2').val(),
+                            includeSkip: incSkip,
+                            unAllocatedSkip: unAlloSkip
+                        },
+                        success: function (jsonResult) {
+                            if (jsonResult.success === undefined) {
+                                $('#ulAddress').empty();
+                                $.each(jsonResult.AllAddress, function (index, item) {
+                                    $('#ulAddress').append($('<li></li>').val(item.ID).addClass("liAddress active-result").html(item.Street));
+                                });
+
+                                $.each(jsonResult.InstallerAddress, function (index, item) {
+                                    if (item.StreetDisabled == true) {
+                                        $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted disabledli");
+                                    }
+                                    else if (item.Appointmentflag == "1") {
+                                        $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted Appointmentdisabledli");
+                                    }
+                                    else {
+                                        $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted ");
+                                    }
+                                });
+
+                                var selectedAddressCount = $('#ulAddress li.highlighted').length;
+                                if (selectedAddressCount == 0) {
+                                    $("#addrHeader").removeClass("ddlHeader").text("Select Address");
+                                    $('#btnShowMap').prop("disabled", true);
+                                    $('#btnSave').prop("disabled", false);
+                                    $('#btnExport').prop("disabled", true);
+                                } else {
+                                    $("#addrHeader").addClass("ddlHeader").text(selectedAddressCount + " Address Selected");
+                                    $('#btnShowMap').prop("disabled", false);
+                                    $('#btnSave').prop("disabled", false);
+                                    $('#btnExport').prop("disabled", true);
+                                }
+
+                                if ($('#ulAddress .liAddress:visible').length > 0 && $('#ulAddress .highlighted:visible').length == $('#ulAddress .liAddress:visible').length) {
+                                    $('#Address_SelectAll').prop('checked', true);
+                                } else {
+                                    $('#Address_SelectAll').prop('checked', false);
+                                }
+
+                                console.log("EditAllocation: done");
+                                waitingDialog.hide();
+                            }
+                            else {
+                                waitingDialog.hide();
+                                toastr["error"](jsonResult.message, "Notification");
+                            }
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            waitingDialog.hide();
+                            toastr["error"](textStatus + "</br>" + errorThrown, "Notification");
+                            console.log('GetAddress error', textStatus, errorThrown, jqXHR);
+                        }
+                    });
+                }
+
+                function applySelectedRoutes(routeList, selectedRoutes) {
+                    $('#ulroute').empty();
+                    $.each(routeList || [], function (index, item) {
+                        $('#ulroute').append($('<li></li>').val(item).addClass("liRoute active-result").html(item));
+                    });
+
+                    $.each(routeValue, function (index, routeId) {
+                        if ($("#ulroute li").filter(function () { return $.trim($(this).text()) === routeId; }).length === 0) {
+                            $('#ulroute').append($('<li></li>').val(routeId).addClass("liRoute active-result").html(routeId));
+                        }
+                    });
+
+                    var routesToSelect = (selectedRoutes && selectedRoutes.length > 0)
+                        ? selectedRoutes
+                        : routeValue.map(function (r) { return { RouteId: r, RouteDisabled: false }; });
+
+                    $.each(routesToSelect, function (index, item) {
+                        var routeId = String(item.RouteId).trim();
+                        var $routeLi = $("#ulroute li").filter(function () {
+                            return $.trim($(this).text()) === routeId || String($(this).val()) === routeId;
+                        });
+                        if (item.RouteDisabled == false) {
+                            $routeLi.addClass("ui-selected click-selected highlighted");
+                        }
+                        else if (incSkip == "1") {
+                            $routeLi.addClass("ui-selected click-selected highlighted disabledli");
+                        }
+                    });
 
                     $('#txtfilterAddress').val("");
                     $('#Address_SelectAll').prop('checked', false);
-                    var selectedlivalue = $('#ulroute li.highlighted').map(function (i, el) { return $(el).val(); });
 
-
-                    var selectedlilength = selectedlivalue.length;
-                    if (selectedlilength == 0) {
-                        $("#routeHeader").removeClass("ddlHeader").text("Select Route")
-                    } else {
-                        $("#routeHeader").addClass("ddlHeader").text(selectedlilength + " Route selected")
-                    }
-                    //#region SelectAll checked/unchecked
-                    if ($('#ulroute .liRoute:visible').length > 0 && $('#ulroute .highlighted:visible').length == $('#ulroute .liRoute:visible').length) {
-                        $('#Route_SelectAll').prop('checked', true);
-                    } else {
-                        $('#Route_SelectAll').prop('checked', false);
-                    }
-
-                    if ($('#ulroute1 .liRoute1:visible').length > 0 && $('#ulroute1 .highlighted:visible').length == $('#ulroute1 .liRoute1:visible').length) {
-                        $('#Route1_SelectAll').prop('checked', true);
-                    } else {
-                        $('#Route1_SelectAll').prop('checked', false);
-                    }
-                    //#endregion
-
-
-                    // getAddressList()
-
-                    var projectId = $('#ddlProject').val();
-
-                    var ddlRootvalues = [];
-                    var value = $('#ulroute li.highlighted')
-                    value.each(function (index, item) { ddlRootvalues.push($(this).html()) });
-
-
-                    var ddlCyclevalues = [];
-                    var cyclevalue = $('#ulCycle li.highlighted')
-                    cyclevalue.each(function (index, item) { ddlCyclevalues.push($(this).html()) });
-
-
-                    var urlStateData = $('#GetAddressUrl').val();
-                    var installerid = $('#ddlInstaller').val();
-                    var fromDate = $('#datepicker1').val();
-                    var toDate = $('#datepicker2').val();
-
-
-                    $('#ulAddress').empty();
-                    //for stop purpose
-                    //waitingDialog.hide();
-                    //return;
-                    debugger;
-                    if (ddlRootvalues != null && ddlRootvalues.length > 0) {
-                        
-                        $.ajax({
-                            url: urlStateData,
-                            async: true,
-                            type: "POST",
-                            dataType: "json",
-                            data: { Root: ddlRootvalues, Cycle: ddlCyclevalues, Address: null, ProjectID: projectId, installerId: installerid, fromDate: fromDate, toDate: toDate, includeSkip: incSkip, unAllocatedSkip: unAlloSkip },
-                            success: function (jsonResult) {
-                                debugger;
-                                if (jsonResult.success === undefined) {
-
-                                    // here
-                                    $('#ulAddress').empty();
-                                    $.each(jsonResult.AllAddress, function (index, item) { $('#ulAddress').append($('<li></li>').val(item.ID).addClass("liAddress active-result").html(item.Street)); });
-
-                                    $.each(jsonResult.InstallerAddress, function (index, item) {
-                                        console.log("ul address value = " + item.ID);
-                                        if (item.StreetDisabled == true) {
-
-                                            $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted disabledli")
-                                            //$("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted")
-                                        }
-                                        else if (item.Appointmentflag == "1") {
-                                            $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted Appointmentdisabledli")
-                                        }
-                                        else {
-
-                                            $("#ulAddress").find("li[value='" + item.ID + "']").addClass("ui-selected click-selected highlighted ")
-                                        }
-                                    });
-
-
-                                    //selectAddress()
-
-                                    var selectedlivalue = $('#ulAddress li.highlighted').map(function (i, el) { return $(el)[0].value; });
-
-                                    var selectedlilength = selectedlivalue.length;
-                                    if (selectedlilength == 0) {
-                                        $("#addrHeader").removeClass("ddlHeader").text("Select Address")
-                                        $('#btnShowMap').prop("disabled", true);
-                                        $('#btnSave').prop("disabled", false);
-                                        $('#btnExport').prop("disabled", true);
-                                    } else {
-                                        $("#addrHeader").addClass("ddlHeader").text(selectedlilength + " Address Selected")
-                                        $('#btnShowMap').prop("disabled", false);
-                                        $('#btnSave').prop("disabled", false);
-                                        $('#btnExport').prop("disabled", true);
-                                    }
-                                    debugger
-                                    //#region SelectAll checked/unchecked
-                                    if ($('#ulAddress .liAddress:visible').length > 0 && $('#ulAddress .highlighted:visible').length == $('#ulAddress .liAddress:visible').length) {
-                                        $('#Address_SelectAll').prop('checked', true);
-                                    } else {
-                                        $('#Address_SelectAll').prop('checked', false);
-                                    }
-
-
-                                    waitingDialog.hide();
-                                }
-                                else {
-                                    waitingDialog.hide();
-                                    var $toast = toastr["error"](jsonResult.message, "Notification");
-                                }
-
-                            },
-                            error: function (jqXHR, textStatus, errorThrown) {
-                                waitingDialog.hide();
-                                var $toast = toastr["error"](textStatus + "</br>" + errorThrown, "Notification");
-                                console.log('jqXHR:');
-                                console.log(jqXHR);
-                                console.log('textStatus:');
-                                console.log(textStatus);
-                                console.log('errorThrown:');
-                                console.log(errorThrown);
-                            }
+                    var selectedRouteCount = $('#ulroute li.highlighted').length;
+                    if (selectedRouteCount == 0) {
+                        // Fallback: force-select routes from the modal row
+                        $.each(routeValue, function (index, routeId) {
+                            $("#ulroute li").filter(function () { return $.trim($(this).text()) === routeId; })
+                                .addClass("ui-selected click-selected highlighted");
                         });
+                        selectedRouteCount = $('#ulroute li.highlighted').length;
                     }
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    waitingDialog.hide();
-                    var $toast = toastr["error"](textStatus + "</br>" + errorThrown, "Error Notification");
-                    console.log('jqXHR:');
-                    console.log(jqXHR);
-                    console.log('textStatus:');
-                    console.log(textStatus);
-                    console.log('errorThrown:');
-                    console.log(errorThrown);
+
+                    if (selectedRouteCount == 0) {
+                        $("#routeHeader").removeClass("ddlHeader").text("Select Route");
+                        waitingDialog.hide();
+                        toastr["error"]("Selected route could not be loaded.", "Error Notification");
+                        return;
+                    }
+
+                    $("#routeHeader").addClass("ddlHeader").text(selectedRouteCount + " Route selected");
+                    loadAddressesForEdit();
                 }
-            });
-        }
 
+                var urlRootData = $('#GetAllRouteByCycle').val();
+                console.log("EditAllocation: loading routes", urlRootData, cyclevalue, routeValue);
 
-        //waitingDialog.hide();
+                if (!urlRootData) {
+                    // Fallback if GetAllRouteByCycle URL missing: use row routes directly
+                    applySelectedRoutes(routeValue, routeValue.map(function (r) { return { RouteId: r, RouteDisabled: false }; }));
+                    return;
+                }
+
+                $.ajax({
+                    url: urlRootData,
+                    type: 'POST',
+                    async: true,
+                    data: { ProjectId: ProjectID, "Cycle": cyclevalue, "Route": routeValue, "InstallerId": InstallerID },
+                    success: function (routeData) {
+                        console.log("EditAllocation: routes loaded", routeData);
+                        applySelectedRoutes(
+                            (routeData && routeData.Route) ? routeData.Route : routeValue,
+                            (routeData && routeData.selectedRoute) ? routeData.selectedRoute : null
+                        );
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log("GetAllRouteByCycle failed, using row routes", textStatus, errorThrown, jqXHR && jqXHR.status);
+                        // If GetAllRouteByCycle 404s, still continue with the route from the modal row
+                        applySelectedRoutes(routeValue, routeValue.map(function (r) { return { RouteId: r, RouteDisabled: false }; }));
+                    }
+                });
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                waitingDialog.hide();
+                toastr["error"](textStatus + "</br>" + errorThrown, "Error Notification");
+                console.log('GetCycle error', textStatus, errorThrown, jqXHR);
+            }
+        });
+
         return;
     }
 
