@@ -1,4 +1,4 @@
-﻿using GarronT.CMS.Model;
+using GarronT.CMS.Model;
 using GarronT.CMS.Model.BO;
 using GarronT.CMS.Model.DAL;
 using KSPL.Indus.MSTS.UI.Filters;
@@ -202,29 +202,6 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         db.SaveChanges();
                         // get existing mapped records.
                         installerAddress = new InstallerDAL().GetDynamicInstallerExistingAddress(ProjectID, Root, Cycle, fromDate, toDate, long.Parse(installerId), includeSkip);
-
-                        if (list != null && list.Count > 0 && Address != null && Address.Count > 0)
-                        {
-                            var tempData = list.Where(o => Address.Contains(o.ID.ToString())).Select(o => new AddressMaster
-                            {
-                                Latitude = o.Latitude,
-                                Longitude = o.Longitude,
-                                ID = o.ID,
-                                Street = o.Street,
-                                Cycle = o.Cycle,
-                                Route = o.Route
-                            }).ToList();
-
-                            foreach (var item in tempData)
-                            {
-                                var checkPresent = installerAddress.Where(o => o.ID == item.ID).Count();
-                                if (checkPresent == 0)
-                                {
-                                    installerAddress.Add(item);
-                                }
-                            }
-                        }
-
                     }
                 }
                 if ((list == null || list.Count == 0) && (installerAddress != null || installerAddress.Count > 0))

@@ -323,6 +323,7 @@ function AddProduct(RecordType) {
     }
 
     var isGenerateBarcode = $('#chkGenerateBarcode').is(":checked")
+    var location = ($("#txtLocation").val() || "").trim();
 
 
     var urlAddInventry = $("#urlAddInventry").val();
@@ -332,7 +333,7 @@ function AddProduct(RecordType) {
         url: urlAddInventry,
         type: "POST",
         traditional: true,
-        data: { warehouseId: warehouseId, projectId:ProjectId, productId: ProductId, quantity: quantity, RecordType: RecordType, serialNos: serialnumbers, isGenerateBarcode: isGenerateBarcode },
+        data: { warehouseId: warehouseId, projectId:ProjectId, productId: ProductId, quantity: quantity, RecordType: RecordType, serialNos: serialnumbers, isGenerateBarcode: isGenerateBarcode, location: location },
         success: function (data) {
             waitingDialog.hide();
             
@@ -347,6 +348,7 @@ function AddProduct(RecordType) {
 
                 BindDataTable(data.productModelList);
                 CheckDatatableData();
+                $("#txtLocation").val("");
                 if (data.duplicateFound) {
                     $.confirm({
                         icon: 'fa fa-warning',
@@ -724,6 +726,7 @@ function resetData() {
     $('#chkGenerateBarcode').attr('checked', false); // uncheck it
     $('#ProductId').val("0").trigger('chosen:updated');
     $("#txtQuantity").val("").prop("readonly", false);
+    $("#txtLocation").val("");
     $("#txtSerialNumber").val("").prop("readonly", false);
     $("#btnAdd").show();
     $("#btnupdate").hide();
@@ -913,6 +916,7 @@ $('#btnCancelSave').click(function () {
     $('#ProductId').empty();
     $('#ProductId').trigger('chosen:updated');
     $("#txtQuantity").val('')
+    $("#txtLocation").val('')
     $('#divSaveCancel').hide();
     $('#dynamic-table').dataTable().fnClearTable();//clear the DataTable
     CheckDatatableData();
@@ -971,6 +975,7 @@ function BindDataTable(varData) {
                    { "mData": "Type" },
                    { "mData": "Size" },
                    { "mData": "SerialNumber" },
+                   { "mData": "Location" },
                    { "mData": "Quantity" },
                     { "mData": "RecordStatus" },
                    { "bSearchable": false, "mData": null },
@@ -1007,7 +1012,7 @@ function BindDataTable(varData) {
                            return '<a id="" onclick="editInvetryRecord(this)" class="btn btn-primary btn-xs" role="button" alt="Edit" title="Edit"><i class="fa fa-pencil"></i></a>' +
                                '<a id="" onclick="deleteInvetryRecord(this)" class="btn btn-danger btn-xs" role="button" alt="Delete" title="Delete"><i class="fa fa-ban"></i></a>'
                        },
-                       "aTargets": [14]
+                       "aTargets": [15]
                    }
 
 

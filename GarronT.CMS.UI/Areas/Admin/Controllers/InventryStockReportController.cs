@@ -278,6 +278,16 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 if (ReportType == 0)
                 {
                     inventryStockSummaryReportExport = new InventoryDAL().GetInventryStockReportSummery(projectId, installerId, ProductId, txtFromDate, txtToDate);
+                    if (inventryStockSummaryReportExport != null)
+                    {
+                        foreach (var row in inventryStockSummaryReportExport)
+                        {
+                            if (!string.IsNullOrEmpty(row.DateAndTime))
+                            {
+                                row.DateAndTime = row.DateAndTime.Replace("<br/>", " ");
+                            }
+                        }
+                    }
                     ExportInventryStockReport = new CommonFunctions().ToDataTable(inventryStockSummaryReportExport);
                 }
                 else
@@ -297,6 +307,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                             TransferredInventry = a.TransferredQty,
                             ReturnedInventry = a.ReturnedQty,
                             InventryInHand = a.InHandQty,
+                            DateAndTime = !string.IsNullOrEmpty(a.DateAndTime) ? a.DateAndTime.Replace("<br/>", " ") : null,
 
                         }).ToList();
                     }

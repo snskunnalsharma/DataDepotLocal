@@ -464,6 +464,7 @@ namespace GarronT.CMS.Model.DAL
 
                     if (data != null && data.Count > 0)
                     {
+                        PopulateCreatedOn(objcompassentities, data);
                         productmasterbo.AddRange(data);
                     }
                 }
@@ -475,8 +476,12 @@ namespace GarronT.CMS.Model.DAL
                 throw ex;
             }
 
-
-            return productmasterbo;
+            return productmasterbo
+                .OrderByDescending(a => a.CreatedOn ?? DateTime.MinValue)
+                .ThenBy(a => a.WarehouseName)
+                .ThenBy(a => a.ProductName)
+                .ThenBy(a => a.serialnumber)
+                .ToList();
         }
 
 
@@ -533,6 +538,7 @@ namespace GarronT.CMS.Model.DAL
 
                     if (data != null && data.Count > 0)
                     {
+                        PopulateCreatedOnForSummary(objcompassentities, projectId, data);
                         productmasterbo.AddRange(data);
                     }
                 }
@@ -545,7 +551,11 @@ namespace GarronT.CMS.Model.DAL
             }
 
 
-            return productmasterbo;
+            return productmasterbo
+                .OrderByDescending(a => a.CreatedOn ?? DateTime.MinValue)
+                .ThenBy(a => a.WarehouseName)
+                .ThenBy(a => a.ProductName)
+                .ToList();
         }
 
         public long GetWarehouseStockInventoryReport(long warehouseId, long projectId, long productId,string LocationFromValue)
@@ -638,6 +648,7 @@ namespace GarronT.CMS.Model.DAL
                          }
                         ).ToList();
 
+                PopulateCreatedOn(objcompassentities, productmasterbo);
 
             }
             catch (Exception ex)
@@ -678,10 +689,22 @@ namespace GarronT.CMS.Model.DAL
                         query = query.Where(f => f.ProductId == productId);
                     }
 
-                    var data = query.Select(o => new WarehouseStockReportExport
+                    var queryList = query.ToList();
+                    var detailRows = queryList.Select(o => new WarehouseStockReport
+                    {
+                        StockDetailId = o.StockDetailId,
+                        WarehouseId = o.WarehouseId,
+                        ProductId = o.ProductId,
+                        serialnumber = o.serialnumber,
+                        Location = o.Location
+                    }).ToList();
+                    PopulateCreatedOn(objcompassentities, detailRows);
+
+                    var data = queryList.Select((o, idx) => new WarehouseStockReportExport
                     {
 
                         WarehouseName = o.WarehouseName,
+                        Location = o.Location,
                         CategoryName = o.CategoryName,
                         ProductName = o.ProductName,
                         ProductDescription = o.ProductDescription,
@@ -693,6 +716,9 @@ namespace GarronT.CMS.Model.DAL
                         MeterSize = o.MeterSize,
                         serialnumber = o.serialnumber,
                         BalanceQty = o.BalanceQty,
+                        DateAndTime = !string.IsNullOrEmpty(detailRows[idx].DateAndTime)
+                            ? detailRows[idx].DateAndTime.Replace("<br/>", " ")
+                            : null,
                     }).ToList();
 
                     if (data != null && data.Count > 0)
@@ -710,6 +736,167 @@ namespace GarronT.CMS.Model.DAL
 
 
             return productmasterbo;
+        }
+
+        private static Dictionary<long, DateTime> GetCreatedOnLookup(CompassEntities entities, IEnumerable<long> stockDetailIds)
+        {
+            var ids = stockDetailIds != null ? stockDetailIds.Where(id => id > 0).Distinct().ToList() : new List<long>();
+            if (ids.Count == 0)
+            {
+                return new Dictionary<long, DateTime>();
+            }
+
+            var lookup = new Dictionary<long, DateTime>();
+            const int chunkSize = 500;
+            for (int i = 0; i < ids.Count; i += chunkSize)
+            {
+                var chunk = ids.Skip(i).Take(chunkSize).ToList();
+                var idCsv = string.Join(",", chunk);
+                var rows = entities.Database.SqlQuery<StockCreatedOnRow>(
+                    "SELECT Id, CreatedOn FROM dbo.StockDetails WHERE Id IN (" + idCsv + ")").ToList();
+                foreach (var row in rows)
+                {
+                    lookup[row.Id] = row.CreatedOn;
+                }
+            }
+            return lookup;
+        }
+
+        private class StockCreatedOnRow
+        {
+            public long Id { get; set; }
+            public DateTime CreatedOn { get; set; }
+        }
+
+        private static string FormatDateAndTimeHtml(DateTime dt)
+        {
+            return dt.ToString("MM/dd/yyyy") + "<br/>" + dt.ToString("HH:mm:ss");
+        }
+
+        private static string FormatDateAndTimeExport(DateTime dt)
+        {
+            return dt.ToString("MM/dd/yyyy") + " " + dt.ToString("HH:mm:ss");
+        }
+
+        private static string NormalizeLocation(string location)
+        {
+            return string.IsNullOrWhiteSpace(location) ? "" : location.Trim();
+        }
+
+        private static void PopulateCreatedOn(CompassEntities entities, List<WarehouseStockReport> rows)
+        {
+            if (rows == null || rows.Count == 0)
+            {
+                return;
+            }
+
+            var createdLookup = GetCreatedOnLookup(entities, rows.Select(r => r.StockDetailId));
+            foreach (var row in rows)
+            {
+                DateTime createdOn;
+                if (createdLookup.TryGetValue(row.StockDetailId, out createdOn))
+                {
+                    row.CreatedOn = createdOn;
+                    row.DateAndTime = FormatDateAndTimeHtml(createdOn);
+                }
+            }
+
+            // Fallback for rows whose StockDetailId is missing/0 — match by warehouse + product + serial/location.
+            var missing = rows.Where(r => string.IsNullOrEmpty(r.DateAndTime)).ToList();
+            if (missing.Count == 0)
+            {
+                return;
+            }
+
+            var warehouseIds = missing.Select(r => r.WarehouseId).Distinct().ToList();
+            var productIds = missing.Select(r => r.ProductId).Where(id => id > 0).Distinct().ToList();
+            if (warehouseIds.Count == 0 || productIds.Count == 0)
+            {
+                return;
+            }
+
+            var stockList = entities.StockDetails
+                .Where(s => warehouseIds.Contains(s.FKWarehouseId) && productIds.Contains(s.FKProductId))
+                .Select(s => new { s.FKWarehouseId, s.FKProductId, s.SerialNumber, s.Location, s.CreatedOn })
+                .ToList();
+
+            var bySerial = stockList
+                .Where(s => !string.IsNullOrEmpty(s.SerialNumber))
+                .GroupBy(s => Tuple.Create(s.FKWarehouseId, s.FKProductId, s.SerialNumber))
+                .ToDictionary(g => g.Key, g => g.Max(x => x.CreatedOn));
+
+            var byLocation = stockList
+                .GroupBy(s => Tuple.Create(s.FKWarehouseId, s.FKProductId, NormalizeLocation(s.Location)))
+                .ToDictionary(g => g.Key, g => g.Max(x => x.CreatedOn));
+
+            var byProduct = stockList
+                .GroupBy(s => Tuple.Create(s.FKWarehouseId, s.FKProductId))
+                .ToDictionary(g => g.Key, g => g.Max(x => x.CreatedOn));
+
+            foreach (var row in missing)
+            {
+                DateTime createdOn;
+                if (!string.IsNullOrEmpty(row.serialnumber)
+                    && bySerial.TryGetValue(Tuple.Create(row.WarehouseId, row.ProductId, row.serialnumber), out createdOn))
+                {
+                    row.CreatedOn = createdOn;
+                    row.DateAndTime = FormatDateAndTimeHtml(createdOn);
+                }
+                else if (byLocation.TryGetValue(Tuple.Create(row.WarehouseId, row.ProductId, NormalizeLocation(row.Location)), out createdOn))
+                {
+                    row.CreatedOn = createdOn;
+                    row.DateAndTime = FormatDateAndTimeHtml(createdOn);
+                }
+                else if (byProduct.TryGetValue(Tuple.Create(row.WarehouseId, row.ProductId), out createdOn))
+                {
+                    row.CreatedOn = createdOn;
+                    row.DateAndTime = FormatDateAndTimeHtml(createdOn);
+                }
+            }
+        }
+
+        private static void PopulateCreatedOnForSummary(CompassEntities entities, long projectId, List<WarehouseStockReport> rows)
+        {
+            if (rows == null || rows.Count == 0)
+            {
+                return;
+            }
+
+            var warehouseIds = rows.Select(r => r.WarehouseId).Distinct().ToList();
+            var productIds = rows.Select(r => r.ProductId).Distinct().ToList();
+            if (warehouseIds.Count == 0 || productIds.Count == 0)
+            {
+                return;
+            }
+
+            // Do not require Active=1 — report can include depleted/inactive stock rows.
+            // Also include null project rows that still belong to the warehouse/product.
+            var stockList = entities.StockDetails
+                .Where(s => warehouseIds.Contains(s.FKWarehouseId)
+                    && productIds.Contains(s.FKProductId)
+                    && (s.FKProjectId == null || s.FKProjectId == projectId))
+                .Select(s => new { s.FKWarehouseId, s.FKProductId, s.Location, s.CreatedOn })
+                .ToList();
+
+            var lookup = stockList
+                .GroupBy(s => Tuple.Create(s.FKWarehouseId, s.FKProductId, NormalizeLocation(s.Location)))
+                .ToDictionary(g => g.Key, g => g.Max(x => x.CreatedOn));
+
+            var lookupByProduct = stockList
+                .GroupBy(s => Tuple.Create(s.FKWarehouseId, s.FKProductId))
+                .ToDictionary(g => g.Key, g => g.Max(x => x.CreatedOn));
+
+            foreach (var row in rows)
+            {
+                var key = Tuple.Create(row.WarehouseId, row.ProductId, NormalizeLocation(row.Location));
+                DateTime createdOn;
+                if (lookup.TryGetValue(key, out createdOn)
+                    || lookupByProduct.TryGetValue(Tuple.Create(row.WarehouseId, row.ProductId), out createdOn))
+                {
+                    row.CreatedOn = createdOn;
+                    row.DateAndTime = FormatDateAndTimeHtml(createdOn);
+                }
+            }
         }
 
         public List<WarehouseStockReportSummeryExport> exportwarehouseSummeryReport(long[] warehouseId, long projectId, long productId)
@@ -732,10 +919,19 @@ namespace GarronT.CMS.Model.DAL
                         query = query.Where(f => f.ProductId == productId);
                     }
 
-                    var data = query.Select(o => new WarehouseStockReportSummeryExport
+                    var queryList = query.ToList();
+                    var summaryRows = queryList.Select(o => new WarehouseStockReport
                     {
+                        WarehouseId = o.WarehouseId,
+                        ProductId = o.ProductId,
+                        Location = o.Location
+                    }).ToList();
+                    PopulateCreatedOnForSummary(objcompassentities, projectId, summaryRows);
 
+                    var data = queryList.Select((o, idx) => new WarehouseStockReportSummeryExport
+                    {
                         WarehouseName = o.WarehouseName,
+                        Location = o.Location,
                         CategoryName = o.CategoryName,
                         ProductName = o.ProductName,
                         ProductDescription = o.ProductDescription,
@@ -746,6 +942,9 @@ namespace GarronT.CMS.Model.DAL
                         MeterType = o.MeterType,
                         MeterSize = o.MeterSize,
                         BalanceQty = o.BalanceQty,
+                        DateAndTime = !string.IsNullOrEmpty(summaryRows[idx].DateAndTime)
+                            ? summaryRows[idx].DateAndTime.Replace("<br/>", " ")
+                            : null,
                     }).ToList();
                     if (data != null && data.Count > 0)
                     {

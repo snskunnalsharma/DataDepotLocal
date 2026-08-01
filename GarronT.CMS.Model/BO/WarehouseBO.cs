@@ -76,11 +76,15 @@ namespace GarronT.CMS.Model.BO
 
         public bool SerialNumberRequired { get; set; }
         public string Location { get; set; }
+        public Nullable<System.DateTime> CreatedOn { get; set; }
+        /// <summary>Pre-formatted for grid/export display (MM/dd/yyyy HH:mm:ss).</summary>
+        public string DateAndTime { get; set; }
     }
     public class WarehouseStockReportExport
     {
 
         public string WarehouseName { get; set; }
+        public string Location { get; set; }
         public string CategoryName { get; set; }
         public string ProductName { get; set; }
         public string ProductDescription { get; set; }
@@ -92,6 +96,7 @@ namespace GarronT.CMS.Model.BO
         public string MeterSize { get; set; }
         public string serialnumber { get; set; }
         public Nullable<int> BalanceQty { get; set; }
+        public string DateAndTime { get; set; }
     }
 
 
@@ -99,6 +104,7 @@ namespace GarronT.CMS.Model.BO
     {
 
         public string WarehouseName { get; set; }
+        public string Location { get; set; }
         public string CategoryName { get; set; }
         public string ProductName { get; set; }
         public string ProductDescription { get; set; }
@@ -109,5 +115,6 @@ namespace GarronT.CMS.Model.BO
         public string MeterType { get; set; }
         public string MeterSize { get; set; }
         public Nullable<int> BalanceQty { get; set; }
+        public string DateAndTime { get; set; }
     }
 }

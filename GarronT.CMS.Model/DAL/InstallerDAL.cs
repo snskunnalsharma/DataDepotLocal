@@ -1,4 +1,4 @@
-﻿using GarronT.CMS.Model.BO;
+using GarronT.CMS.Model.BO;
 using log4net;
 using System;
 using System.Collections.Generic;
@@ -1142,14 +1142,14 @@ namespace GarronT.CMS.Model.DAL
             DateTime dt = new CommonFunctions().ServerDate();
             try
             {
-                string routeValues = string.Join(",", InstallerMap.RouteValues.Select(x => $"'{x}'"));
-                string cycleValues = string.Join(",", InstallerMap.CycleValues.Select(x => $"'{x}'"));
+                string routeValues = InstallerMap.RouteValues != null ? string.Join(",", InstallerMap.RouteValues.Select(x => x.Trim())) : "";
+                string cycleValues = InstallerMap.CycleValues != null ? string.Join(",", InstallerMap.CycleValues.Select(x => x.Trim())) : "";
 
                 CompassEntities dbcontext = new CompassEntities();
                 tblInstallerMapData objtblInstallerMapData = new tblInstallerMapData();
 
                 List<CurrentVisitRecord> objCurrentVisitList = new List<CurrentVisitRecord>();
-                if (InstallerMap.AddressID == null)
+                if (InstallerMap.AddressID == null || InstallerMap.AddressID.Count == 0)
                 {
 
                     DateTime fromDate = DateTime.Parse(InstallerMap.FromDate);
@@ -1232,8 +1232,8 @@ namespace GarronT.CMS.Model.DAL
                 {
                     
 
-                    DateTime fromDate = InstallerMap.OldFromDate == null ? DateTime.Parse(InstallerMap.FromDate) : DateTime.Parse(InstallerMap.OldFromDate);
-                    DateTime toDate = InstallerMap.OldToDate == null ? DateTime.Parse(InstallerMap.ToDate) : DateTime.Parse(InstallerMap.OldToDate);
+                    DateTime fromDate = string.IsNullOrEmpty(InstallerMap.OldFromDate) ? DateTime.Parse(InstallerMap.FromDate) : DateTime.Parse(InstallerMap.OldFromDate);
+                    DateTime toDate = string.IsNullOrEmpty(InstallerMap.OldToDate) ? DateTime.Parse(InstallerMap.ToDate) : DateTime.Parse(InstallerMap.OldToDate);
 
 
                     //gets the old record deactivatelsist
@@ -1311,24 +1311,20 @@ namespace GarronT.CMS.Model.DAL
                             && a.InstallerId == InstallerMap.InstallerID).OrderByDescending(a => a.ID).FirstOrDefault();
 
 
-                        if (installerdata != null && installerdata.Active == 0)
+                        if (installerdata != null)
                         {
                             /// if record present
                             /// Update existing record.
-                            //if (installerdata.Active == 0)
-                            //{
-                                installerdata.MobileResponse = null;
-                                installerdata.BatchNumber = null;
-                                installerdata.SynchCheckSumString = null;
-                                installerdata.SynchWithMobileDate = null;
-                                installerdata.SynchWithMobileFlag = null;
-                                installerdata.FromDate = Convert.ToDateTime(InstallerMap.FromDate);
-                                installerdata.ToDate = Convert.ToDateTime(InstallerMap.ToDate);
-                                installerdata.Active = 1;
-                                installerdata.ModifiedBy = int.Parse(Convert.ToString(logedInUserid));
-                                installerdata.ModifiedOn= new CommonFunctions().ServerDate();
-                            //}
-                            //installerdata.Active = 1;
+                            installerdata.MobileResponse = null;
+                            installerdata.BatchNumber = null;
+                            installerdata.SynchCheckSumString = null;
+                            installerdata.SynchWithMobileDate = null;
+                            installerdata.SynchWithMobileFlag = null;
+                            installerdata.FromDate = Convert.ToDateTime(InstallerMap.FromDate);
+                            installerdata.ToDate = Convert.ToDateTime(InstallerMap.ToDate);
+                            installerdata.Active = 1;
+                            installerdata.ModifiedBy = int.Parse(Convert.ToString(logedInUserid));
+                            installerdata.ModifiedOn = new CommonFunctions().ServerDate();
                             dbcontext.SaveChanges();
                         }
                         else
@@ -1382,7 +1378,29 @@ namespace GarronT.CMS.Model.DAL
                     if (SkipDeleteList != null)
                     { SkipAccountMovedToUnAllocate(SkipDeleteList, InstallerMap.InstallerID); }
                 }*/
-                Message = "Installer mapped to address successfully";
+                int assignedCount = InstallerMap.AddressID != null ? InstallerMap.AddressID.Count : 0;
+                int unassignedCount = DeallocatedItem != null ? DeallocatedItem.Count : 0;
+
+                string assignedWord = assignedCount == 1 ? "address" : "addresses";
+                string unassignedWord = unassignedCount == 1 ? "address" : "addresses";
+
+                if (assignedCount > 0 && unassignedCount > 0)
+                {
+                    Message = $"Installer mapped to {assignedCount} {assignedWord} successfully. {unassignedCount} {unassignedWord} unassigned.";
+                }
+                else if (assignedCount == 0 && unassignedCount > 0)
+                {
+                    Message = $"{unassignedCount} {unassignedWord} unassigned successfully.";
+                }
+                else if (assignedCount > 0)
+                {
+                    Message = $"Installer mapped to {assignedCount} {assignedWord} successfully.";
+                }
+                else
+                {
+                    Message = "Installer mapped to address successfully.";
+                }
+
                 result = true;
             }
             catch (Exception ex)

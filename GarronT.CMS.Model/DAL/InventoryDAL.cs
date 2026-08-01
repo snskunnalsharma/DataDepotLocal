@@ -1415,6 +1415,7 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC";
                                 obj.WarehouseName = item.WarehouseName;
                                 obj.Quantity = 1;
                                 obj.GenerateBarcode = true;
+                                obj.Location = item.Location;
                                 NewSerialNumberList.Add(obj);
                                 #endregion
                             }
@@ -1576,6 +1577,7 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC";
                                 obj.WarehouseName = item.WarehouseName;
                                 obj.Quantity = 1;
                                 obj.GenerateBarcode = true;
+                                obj.Location = item.Location;
                                 NewSerialNumberList.Add(obj);
                                 #endregion
                             }
@@ -1815,6 +1817,7 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC";
                     DR["TotalQty"] = item.Quantity;
                     DR["GenerateBarcode"] = 0;
                     DR["BarCodeFilePath"] = "";
+                    DR["Location"] = item.Location ?? "";
 
                     ObjDataTable.Rows.Add(DR);
                 }
@@ -2169,11 +2172,98 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC";
             {
                 inwardHeaderId = objCompassEntities.InwardHeaders
                     .Where(a => a.CreatedBy == uploadInventryVM.UserId && a.DeviceDateTime == uploadInventryVM.DeviceDateTime)
+                    .OrderByDescending(a => a.Id)
                     .Select(a => a.Id)
                     .FirstOrDefault();
+
+                if (inwardHeaderId == 0)
+                {
+                    inwardHeaderId = objCompassEntities.InwardHeaders
+                        .Where(a => a.CreatedBy == uploadInventryVM.UserId
+                            && a.FKProjectId == uploadInventryVM.ProjectId
+                            && a.FKWarehouseId == uploadInventryVM.WarehouseId
+                            && a.Active == 1)
+                        .OrderByDescending(a => a.Id)
+                        .Select(a => a.Id)
+                        .FirstOrDefault();
+                }
+
+                // PROC_Insert_InwardFromWeb often does not persist Location from the TVP onto StockDetails.
+                // Apply location after insert so Warehouse Stock Report can show it.
+                if (uploadInventryVM.UploadType == 2 && uploadInventryVM.ProductMasterList != null)
+                {
+                    ApplyReceiveLocationsToStock(objCompassEntities, inwardHeaderId, uploadInventryVM.ProductMasterList);
+                }
             }
 
             return result;
+        }
+
+
+        private static void ApplyReceiveLocationsToStock(CompassEntities db, long inwardHeaderId, List<ProductMasterBO> products)
+        {
+            if (inwardHeaderId <= 0 || products == null || products.Count == 0)
+            {
+                return;
+            }
+
+            var withLocation = products.Where(p => !string.IsNullOrWhiteSpace(p.Location)).ToList();
+            if (withLocation.Count == 0)
+            {
+                return;
+            }
+
+            var details = db.InwardDetails
+                .Where(d => d.FKInwardHeaderId == inwardHeaderId && d.Active == 1)
+                .ToList();
+            if (details.Count == 0)
+            {
+                return;
+            }
+
+            bool changed = false;
+            foreach (var product in withLocation)
+            {
+                var loc = product.Location.Trim();
+                List<InwardDetail> matched;
+
+                if (product.SerialNumberRequired && !product.GenerateBarcode && !string.IsNullOrEmpty(product.SerialNumber))
+                {
+                    matched = details
+                        .Where(d => d.FKProductId == product.Id && d.SerialNumber == product.SerialNumber)
+                        .ToList();
+                }
+                else
+                {
+                    matched = details.Where(d => d.FKProductId == product.Id).ToList();
+                }
+
+                foreach (var detail in matched)
+                {
+                    if (!string.Equals(detail.Location, loc, StringComparison.Ordinal))
+                    {
+                        detail.Location = loc;
+                        changed = true;
+                    }
+
+                    var stocks = db.StockDetails
+                        .Where(s => s.FKInwardDetailId == detail.Id && s.Active == 1)
+                        .ToList();
+                    foreach (var stock in stocks)
+                    {
+                        if (!string.Equals(stock.Location, loc, StringComparison.Ordinal))
+                        {
+                            stock.Location = loc;
+                            changed = true;
+                        }
+                    }
+                }
+            }
+
+            if (changed)
+            {
+                db.SaveChanges();
+            }
         }
 
 
@@ -2349,13 +2439,6 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC";
 
 
 
-                if (installerId == 0)
-                {
-
-                    reportData = reportData.OrderBy(a => a.UserName).ThenBy(a => a.SerialNumber).ToList();
-
-                }
-
                 if (objOldDataList != null)
                 {
                     if (reportData == null)
@@ -2364,6 +2447,13 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC";
                     }
                     reportData.AddRange(objOldDataList);
                 }
+
+                PopulateInventryStockDetailDateAndTime(objCompassEntities, reportData);
+                reportData = reportData
+                    .OrderByDescending(a => a.CreatedOn ?? DateTime.MinValue)
+                    .ThenBy(a => a.UserName)
+                    .ThenBy(a => a.SerialNumber)
+                    .ToList();
 
                 //reportData = query.ToList();
             }
@@ -2378,6 +2468,183 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC";
 
         }
 
+        private class OutwardCreatedOnRow
+        {
+            public long Id { get; set; }
+            public DateTime CreatedOn { get; set; }
+        }
+
+        private static string FormatInventryDateAndTimeHtml(DateTime dt)
+        {
+            return dt.ToString("MM/dd/yyyy") + "<br/>" + dt.ToString("HH:mm:ss");
+        }
+
+        private static void PopulateInventryStockDetailDateAndTime(CompassEntities entities, List<PROC_InstallStockDetailReport_Result> rows)
+        {
+            if (rows == null || rows.Count == 0)
+            {
+                return;
+            }
+
+            var ids = rows.Select(r => r.Id).Where(id => id > 0).Distinct().ToList();
+            var lookup = new Dictionary<long, DateTime>();
+            const int chunkSize = 500;
+            for (int i = 0; i < ids.Count; i += chunkSize)
+            {
+                var chunk = ids.Skip(i).Take(chunkSize).ToList();
+                var idCsv = string.Join(",", chunk);
+                var createdRows = entities.Database.SqlQuery<OutwardCreatedOnRow>(
+                    "SELECT Id, CreatedOn FROM dbo.OutwardDetails WHERE Id IN (" + idCsv + ")").ToList();
+                foreach (var createdRow in createdRows)
+                {
+                    lookup[createdRow.Id] = createdRow.CreatedOn;
+                }
+            }
+
+            foreach (var row in rows)
+            {
+                DateTime createdOn;
+                if (lookup.TryGetValue(row.Id, out createdOn))
+                {
+                    row.CreatedOn = createdOn;
+                    row.DateAndTime = FormatInventryDateAndTimeHtml(createdOn);
+                }
+            }
+
+            // Fallback: Id may be StockDetails.Id, or OutwardDetails row may be gone — resolve via stock/serial.
+            var missing = rows.Where(r => string.IsNullOrEmpty(r.DateAndTime)).ToList();
+            if (missing.Count == 0)
+            {
+                return;
+            }
+
+            var missingIds = missing.Select(r => r.Id).Where(id => id > 0).Distinct().ToList();
+            if (missingIds.Count > 0)
+            {
+                var stockById = new Dictionary<long, DateTime>();
+                for (int i = 0; i < missingIds.Count; i += chunkSize)
+                {
+                    var chunk = missingIds.Skip(i).Take(chunkSize).ToList();
+                    var idCsv = string.Join(",", chunk);
+                    var stockRows = entities.Database.SqlQuery<OutwardCreatedOnRow>(
+                        "SELECT Id, CreatedOn FROM dbo.StockDetails WHERE Id IN (" + idCsv + ")").ToList();
+                    foreach (var stockRow in stockRows)
+                    {
+                        stockById[stockRow.Id] = stockRow.CreatedOn;
+                    }
+
+                    // Also earliest outward allocation against this stock detail
+                    var viaStock = entities.Database.SqlQuery<OutwardCreatedOnRow>(
+                        "SELECT FKStockDetailsID AS Id, MAX(CreatedOn) AS CreatedOn FROM dbo.OutwardDetails WHERE FKStockDetailsID IN (" + idCsv + ") GROUP BY FKStockDetailsID").ToList();
+                    foreach (var via in viaStock)
+                    {
+                        if (!stockById.ContainsKey(via.Id) || via.CreatedOn > stockById[via.Id])
+                        {
+                            stockById[via.Id] = via.CreatedOn;
+                        }
+                    }
+                }
+
+                foreach (var row in missing)
+                {
+                    DateTime createdOn;
+                    if (stockById.TryGetValue(row.Id, out createdOn))
+                    {
+                        row.CreatedOn = createdOn;
+                        row.DateAndTime = FormatInventryDateAndTimeHtml(createdOn);
+                    }
+                }
+            }
+
+            missing = rows.Where(r => string.IsNullOrEmpty(r.DateAndTime)).ToList();
+            if (missing.Count == 0)
+            {
+                return;
+            }
+
+            var userIds = missing.Select(r => r.UserId).Distinct().ToList();
+            var productIds = missing.Select(r => r.FKProductId).Where(id => id > 0).Distinct().ToList();
+            if (userIds.Count == 0 || productIds.Count == 0)
+            {
+                return;
+            }
+
+            var serials = missing.Select(r => r.SerialNumber).Where(s => !string.IsNullOrEmpty(s)).Distinct().ToList();
+            var serialMatches = (from od in entities.OutwardDetails
+                                 join sd in entities.StockDetails on od.FKStockDetailsID equals sd.Id
+                                 where userIds.Contains(od.AllocatedTo)
+                                       && productIds.Contains(sd.FKProductId)
+                                 select new { od.AllocatedTo, sd.FKProductId, sd.SerialNumber, od.CreatedOn, StockCreatedOn = sd.CreatedOn })
+                                .ToList();
+
+            Dictionary<Tuple<long, long, string>, DateTime> bySerial = null;
+            if (serials.Count > 0)
+            {
+                bySerial = serialMatches
+                    .Where(x => !string.IsNullOrEmpty(x.SerialNumber) && serials.Contains(x.SerialNumber))
+                    .GroupBy(x => Tuple.Create(x.AllocatedTo, x.FKProductId, x.SerialNumber))
+                    .ToDictionary(g => g.Key, g => g.Max(x => x.CreatedOn));
+            }
+
+            var byProduct = serialMatches
+                .GroupBy(x => Tuple.Create(x.AllocatedTo, x.FKProductId))
+                .ToDictionary(g => g.Key, g => g.Max(x => x.CreatedOn >= x.StockCreatedOn ? x.CreatedOn : x.StockCreatedOn));
+
+            foreach (var row in missing)
+            {
+                DateTime createdOn;
+                if (bySerial != null
+                    && !string.IsNullOrEmpty(row.SerialNumber)
+                    && bySerial.TryGetValue(Tuple.Create(row.UserId, row.FKProductId, row.SerialNumber), out createdOn))
+                {
+                    row.CreatedOn = createdOn;
+                    row.DateAndTime = FormatInventryDateAndTimeHtml(createdOn);
+                }
+                else if (byProduct.TryGetValue(Tuple.Create(row.UserId, row.FKProductId), out createdOn))
+                {
+                    row.CreatedOn = createdOn;
+                    row.DateAndTime = FormatInventryDateAndTimeHtml(createdOn);
+                }
+            }
+        }
+
+        private static void PopulateInventryStockSummaryDateAndTime(CompassEntities entities, List<InstallerStockReportSummaryBO> rows)
+        {
+            if (rows == null || rows.Count == 0)
+            {
+                return;
+            }
+
+            var userIds = rows.Select(r => r.UserId).Distinct().ToList();
+            var productIds = rows.Select(r => r.FKProductId).Where(id => id > 0).Distinct().ToList();
+            if (userIds.Count == 0 || productIds.Count == 0)
+            {
+                return;
+            }
+
+            // Include inactive outwards too — fully used/returned allocations still need a date.
+            var stockList = (from od in entities.OutwardDetails
+                             join sd in entities.StockDetails on od.FKStockDetailsID equals sd.Id
+                             where userIds.Contains(od.AllocatedTo)
+                                   && productIds.Contains(sd.FKProductId)
+                             select new { od.AllocatedTo, sd.FKProductId, od.CreatedOn, StockCreatedOn = sd.CreatedOn })
+                            .ToList();
+
+            var lookup = stockList
+                .GroupBy(s => Tuple.Create(s.AllocatedTo, s.FKProductId))
+                .ToDictionary(g => g.Key, g => g.Max(x => x.CreatedOn >= x.StockCreatedOn ? x.CreatedOn : x.StockCreatedOn));
+
+            foreach (var row in rows)
+            {
+                var key = Tuple.Create(row.UserId, row.FKProductId);
+                DateTime createdOn;
+                if (lookup.TryGetValue(key, out createdOn))
+                {
+                    row.CreatedOn = createdOn;
+                    row.DateAndTime = FormatInventryDateAndTimeHtml(createdOn);
+                }
+            }
+        }
 
 
 
@@ -2610,6 +2877,12 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC";
                     }
                 }
                 // ends hare
+                PopulateInventryStockSummaryDateAndTime(objCompassEntities, reportData);
+                reportData = reportData
+                    .OrderByDescending(a => a.CreatedOn ?? DateTime.MinValue)
+                    .ThenBy(a => a.UserName)
+                    .ThenBy(a => a.ProductName)
+                    .ToList();
             }
             catch (Exception ex)
             {

@@ -21,6 +21,8 @@ namespace GarronT.CMS.Model.BO
         public int ReturnedQty { get; set; }
         public int TransferredQty { get; set; }
         public Nullable<int> InHandInventory { get; set; }
+        public Nullable<System.DateTime> CreatedOn { get; set; }
+        public string DateAndTime { get; set; }
     }
     public class OpeningInventoryStockReportSummaryBO
     {

@@ -214,7 +214,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public ActionResult AddInventry(long warehouseId, long projectId, long productId, int quantity, int RecordType, List<string> serialNos, bool isGenerateBarcode)
+        public ActionResult AddInventry(long warehouseId, long projectId, long productId, int quantity, int RecordType, List<string> serialNos, bool isGenerateBarcode, string location = null)
         {
 
             bool datavalid = false;
@@ -296,6 +296,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                                 newproductModel.SerialNumber = serialno;
                                 newproductModel.Quantity = 1;
                                 newproductModel.ProjectId = projectId;
+                                newproductModel.Location = string.IsNullOrWhiteSpace(location) ? null : location.Trim();
 
 
                                 newproductModel.RecordStatus = checkRecord == true ? "Successful" : "Already present";
@@ -349,6 +350,7 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                         newproductModel.ProjectId = projectId;
                         newproductModel.Quantity = quantity;
                         newproductModel.GenerateBarcode = isGenerateBarcode;
+                        newproductModel.Location = string.IsNullOrWhiteSpace(location) ? null : location.Trim();
                         if (productModel.SerialNumberRequired && RecordType == 3)
                         {
                             newproductModel.GenerateBarcode = true;

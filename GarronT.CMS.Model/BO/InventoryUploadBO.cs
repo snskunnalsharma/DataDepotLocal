@@ -44,7 +44,8 @@ namespace GarronT.CMS.Model.BO
         public int TransferredInventry { get; set; }
         public int ReturnedInventry { get; set; }
         public Nullable<int> InventryInHand { get; set; }
-      
+        public string DateAndTime { get; set; }
+
     }
 
     public partial class InventryStockSummaryReportExport

@@ -157,6 +157,51 @@
     .swatch-green { background: #90EE90; }
     .swatch-yellow { background: #FFFF99; }
     .swatch-red { background: #C0C0C0; }
+
+    /* Warehouse Stock Report detail grid column sizing */
+    #dynamic-table {
+        table-layout: auto;
+        width: 100% !important;
+    }
+    #dynamic-table th,
+    #dynamic-table td {
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+    #dynamic-table th:nth-child(5),
+    #dynamic-table td:nth-child(5),
+    #dynamic-table-summary th:nth-child(5),
+    #dynamic-table-summary td:nth-child(5) {
+        white-space: normal;
+        min-width: 120px;
+        max-width: 220px;
+    }
+    #dynamic-table th:nth-child(14),
+    #dynamic-table td:nth-child(14),
+    #dynamic-table-summary th:nth-child(13),
+    #dynamic-table-summary td:nth-child(13),
+    #dynamic-table .nowrap-col,
+    #dynamic-table-summary .nowrap-col {
+        min-width: 110px;
+        white-space: normal;
+        line-height: 1.35;
+        text-align: left;
+    }
+    #dynamic-table th:nth-child(15),
+    #dynamic-table td:nth-child(15) {
+        min-width: 70px;
+        text-align: center;
+        white-space: nowrap;
+    }
+    #dynamic-table-summary {
+        table-layout: auto;
+        width: 100% !important;
+    }
+    #dynamic-table-summary th,
+    #dynamic-table-summary td {
+        vertical-align: middle;
+        white-space: nowrap;
+    }
 </style>
 <style>
     /*************************************Bootstrap Css***********************************/
@@ -1292,19 +1337,20 @@
                         <table id="dynamic-table" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
                             <thead>
                                 <tr>
-                                    <th width="5%">Warehouse</th>
-                                    <th width="5%">Location</th>
-                                    <th width="10%">Category</th>
-                                    <th width="10%">Product</th>
-                                    <th width="15%">Description</th>
-                                    <th width="10%">Part No.</th>
-                                    <th width="10%">UPC Code</th>
-                                    <th width="10%">Utility Type</th>
-                                    <th width="10%">Make</th>
-                                    <th width="10%">Type</th>
-                                    <th width="5%">Size</th>
-                                    <th width="5%">Serial Number</th>
-                                    <th width="5%">Quantity</th>
+                                    <th width="8%">Warehouse</th>
+                                    <th width="6%">Location</th>
+                                    <th width="8%">Category</th>
+                                    <th width="9%">Product</th>
+                                    <th width="12%">Description</th>
+                                    <th width="7%">Part No.</th>
+                                    <th width="7%">UPC Code</th>
+                                    <th width="6%">Utility Type</th>
+                                    <th width="5%">Make</th>
+                                    <th width="6%">Type</th>
+                                    <th width="4%">Size</th>
+                                    <th width="7%">Serial Number</th>
+                                    <th width="4%">Quantity</th>
+                                    <th width="9%" style="min-width:110px;">Date &amp; Time</th>
                                     <th width="5%">Action</th>
                                 </tr>
                             </thead>
@@ -1317,18 +1363,19 @@
                         <table id="dynamic-table-summary" class="display table table-bordered table-striped dataTable" aria-describedby="dynamic-table_info">
                             <thead>
                                 <tr>
-                                    <th width="5%">Warehouse</th>
-                                    <th width="5%">Location</th>
-                                    <th width="10%">Category</th>
+                                    <th width="8%">Warehouse</th>
+                                    <th width="6%">Location</th>
+                                    <th width="9%">Category</th>
                                     <th width="10%">Product</th>
-                                    <th width="15%">Description</th>
-                                    <th width="10%">Part No.</th>
-                                    <th width="10%">UPC Code</th>
-                                    <th width="10%">Utility Type</th>
-                                    <th width="10%">Make</th>
-                                    <th width="10%">Type</th>
-                                    <th width="5%">Size</th>
+                                    <th width="14%">Description</th>
+                                    <th width="8%">Part No.</th>
+                                    <th width="8%">UPC Code</th>
+                                    <th width="7%">Utility Type</th>
+                                    <th width="6%">Make</th>
+                                    <th width="7%">Type</th>
+                                    <th width="4%">Size</th>
                                     <th width="5%">Quantity</th>
+                                    <th width="9%" style="min-width:110px;">Date &amp; Time</th>
                                 </tr>
                             </thead>
                         </table>
@@ -2290,6 +2337,7 @@
                 },
                 "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
                 "aaData": varData,
+                "aaSorting": [[13, "desc"]],
                 "fnRowCallback": function (nRow, aData) {
                     var $row = $(nRow);
                     $row.css('background-color', '');
@@ -2322,7 +2370,18 @@
                     { "mData": "MeterSize" },
                     { "mData": "serialnumber" },
                     { "mData": "BalanceQty" },
-                    { "bSearchable": false, "mData": null },
+                    {
+                        "mData": "DateAndTime",
+                        "sClass": "nowrap-col",
+                        "sWidth": "110px",
+                        "mRender": function (data, type, full) {
+                            if (type === 'sort' || type === 'type') {
+                                return getWarehouseDateAndTimeSortValue(full);
+                            }
+                            return formatDateAndTimeCell(data, full);
+                        }
+                    },
+                    { "bSearchable": false, "mData": null, "sWidth": "70px" },
 
                 ],
                 "aoColumnDefs": [
@@ -2331,11 +2390,66 @@
                             return '<a  id=' + full.StockDetailId + ' onclick="EditRecord(' + full.StockDetailId + ');" class="btn btn-primary btn-xs" role="button" alt="Edit" title="Edit"><i class="fa fa-pencil"></i></a>' +
                                 '<a  id=' + full.StockDetailId + ' onclick="DeleteRecord(' + full.StockDetailId + ');" class="btn btn-danger btn-xs" role="button" alt="Delete" title="Delete"><i class="fa fa-trash"></i></a>';
                         },
-                        "aTargets": [13]
+                        "aTargets": [14]
                     }
                 ],
 
             }), $('.dataTables_filter input').attr('maxlength', 50);
+    }
+
+    function getWarehouseDateAndTimeSortValue(full) {
+        if (!full) return 0;
+        var raw = full.CreatedOn;
+        if (raw) {
+            if (typeof raw === "string") {
+                var m = /\/Date\((-?\d+)(?:[+-]\d+)?\)\//.exec(raw);
+                if (m) return parseInt(m[1], 10);
+                var d = new Date(raw);
+                if (!isNaN(d.getTime())) return d.getTime();
+            } else {
+                var d2 = new Date(raw);
+                if (!isNaN(d2.getTime())) return d2.getTime();
+            }
+        }
+        if (full.DateAndTime) {
+            var plain = String(full.DateAndTime).replace(/<br\s*\/?>/gi, " ").trim();
+            var d3 = new Date(plain);
+            if (!isNaN(d3.getTime())) return d3.getTime();
+        }
+        return 0;
+    }
+
+    function formatDateAndTimeCell(data, full) {
+        if (data) {
+            // already HTML with <br/> from server, or plain "date time"
+            if (data.indexOf('<br') >= 0) return data;
+            var parts = data.split(' ');
+            if (parts.length >= 2) {
+                return parts[0] + '<br/>' + parts.slice(1).join(' ');
+            }
+            return data;
+        }
+        var raw = full && full.CreatedOn;
+        if (!raw) return "";
+        var d = null;
+        if (typeof raw === "string") {
+            var m = /\/Date\((-?\d+)(?:[+-]\d+)?\)\//.exec(raw);
+            if (m) {
+                d = new Date(parseInt(m[1], 10));
+            } else {
+                d = new Date(raw);
+            }
+        } else {
+            d = new Date(raw);
+        }
+        if (!d || isNaN(d.getTime())) return "";
+        var mm = ("0" + (d.getMonth() + 1)).slice(-2);
+        var dd = ("0" + d.getDate()).slice(-2);
+        var yyyy = d.getFullYear();
+        var hh = ("0" + d.getHours()).slice(-2);
+        var mi = ("0" + d.getMinutes()).slice(-2);
+        var ss = ("0" + d.getSeconds()).slice(-2);
+        return mm + "/" + dd + "/" + yyyy + "<br/>" + hh + ":" + mi + ":" + ss;
     }
 
     function BindDataSummery(varData) {
@@ -2351,6 +2465,7 @@
                 },
                 "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
          "aaData": varData,
+         "aaSorting": [[12, "desc"]],
          // "aaSorting": [[3, "asc"]],sss
          "aoColumns": [
 
@@ -2366,8 +2481,18 @@
                        { "mData": "Make" },
                        { "mData": "MeterType" },
                        { "mData": "MeterSize" },
-                       //{ "mData": "serialnumber" },
                        { "mData": "BalanceQty" },
+                       {
+                           "mData": "DateAndTime",
+                           "sClass": "nowrap-col",
+                           "sWidth": "110px",
+                           "mRender": function (data, type, full) {
+                               if (type === 'sort' || type === 'type') {
+                                   return getWarehouseDateAndTimeSortValue(full);
+                               }
+                               return formatDateAndTimeCell(data, full);
+                           }
+                       },
                        //{ "bSearchable": false, "mData": null },
 
          ],

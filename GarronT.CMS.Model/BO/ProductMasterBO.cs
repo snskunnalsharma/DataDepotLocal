@@ -123,7 +123,7 @@ namespace GarronT.CMS.Model.BO
         public string PalletNumber { get; internal set; }
         public string TrayID { get; internal set; }
         public string Project { get; internal set; }
-        public string Location { get; internal set; }
+        public string Location { get; set; }
     }
     //ObjMeterSizeList
 

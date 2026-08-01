@@ -79,6 +79,15 @@
     }
     /* yellow */
 
+    #dynamic-table .date-time-col,
+    #dynamic-table-Summary .date-time-col {
+        min-width: 110px;
+        white-space: normal;
+        line-height: 1.35;
+        text-align: left;
+        vertical-align: middle;
+    }
+
     /* Mobile-only: make controls a bit more compact */
     @@media (max-width: 480px) {
         #main-content .panel-body .form-control,
@@ -1296,6 +1305,7 @@
                                             <th width="10%">Transferred Inventory</th>
                                             <th width="10%">Returned Inventory</th>
                                             <th width="10%">Inventory InHand</th>
+                                            <th style="min-width:110px;">Date &amp; Time</th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -1315,6 +1325,7 @@
                                             <th width="10%">Transferred Inventory</th>
                                             <th width="10%">Returned Inventory</th>
                                             <th width="10%">Inventory InHand</th>
+                                            <th style="min-width:110px;">Date &amp; Time</th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -1596,8 +1607,8 @@
                     "sLengthMenu": '_MENU_ Records per page'
                 },
                 "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
-                "aaSorting": [],
-                "order": [],
+                "aaSorting": [[9, "desc"]],
+                "order": [[9, "desc"]],
                 "aaData": varData,
                 "aoColumns": [
                     { "mData": "UserName" },
@@ -1609,6 +1620,16 @@
                     { "mData": "TransferredQty" },
                     { "mData": "ReturnedQty" },
                     { "mData": "InHandQty" },
+                    {
+                        "mData": "DateAndTime",
+                        "sClass": "date-time-col",
+                        "mRender": function (data, type, full) {
+                            if (type === 'sort' || type === 'type') {
+                                return getInventryDateAndTimeSortValue(full);
+                            }
+                            return formatInventryDateAndTimeCell(data, full);
+                        }
+                    },
 
 
                 ],
@@ -1636,8 +1657,8 @@
                     "sLengthMenu": '_MENU_ Records per page'
                 },
                 "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
-                "aaSorting": [],
-                "order": [],
+                "aaSorting": [[9, "desc"]],
+                "order": [[9, "desc"]],
                 "aaData": varData,
                 "aoColumns": [
                     { "mData": "UserName" },
@@ -1649,12 +1670,76 @@
                     { "mData": "TransferredQty" },
                     { "mData": "ReturnedQty" },
                     { "mData": "InHandInventory" },
+                    {
+                        "mData": "DateAndTime",
+                        "sClass": "date-time-col",
+                        "mRender": function (data, type, full) {
+                            if (type === 'sort' || type === 'type') {
+                                return getInventryDateAndTimeSortValue(full);
+                            }
+                            return formatInventryDateAndTimeCell(data, full);
+                        }
+                    },
 
 
                 ],
 
             }), $('.dataTables_filter input').attr('maxlength', 50);
 
+    }
+
+    function getInventryDateAndTimeSortValue(full) {
+        if (!full) return 0;
+        var raw = full.CreatedOn;
+        if (raw) {
+            if (typeof raw === "string") {
+                var m = /\/Date\((-?\d+)(?:[+-]\d+)?\)\//.exec(raw);
+                if (m) return parseInt(m[1], 10);
+                var d = new Date(raw);
+                if (!isNaN(d.getTime())) return d.getTime();
+            } else {
+                var d2 = new Date(raw);
+                if (!isNaN(d2.getTime())) return d2.getTime();
+            }
+        }
+        if (full.DateAndTime) {
+            var plain = String(full.DateAndTime).replace(/<br\s*\/?>/gi, " ").trim();
+            var d3 = new Date(plain);
+            if (!isNaN(d3.getTime())) return d3.getTime();
+        }
+        return 0;
+    }
+
+    function formatInventryDateAndTimeCell(data, full) {
+        if (data) {
+            if (data.indexOf('<br') >= 0) return data;
+            var parts = data.split(' ');
+            if (parts.length >= 2) {
+                return parts[0] + '<br/>' + parts.slice(1).join(' ');
+            }
+            return data;
+        }
+        var raw = full && full.CreatedOn;
+        if (!raw) return "";
+        var d = null;
+        if (typeof raw === "string") {
+            var m = /\/Date\((-?\d+)(?:[+-]\d+)?\)\//.exec(raw);
+            if (m) {
+                d = new Date(parseInt(m[1], 10));
+            } else {
+                d = new Date(raw);
+            }
+        } else {
+            d = new Date(raw);
+        }
+        if (!d || isNaN(d.getTime())) return "";
+        var mm = ("0" + (d.getMonth() + 1)).slice(-2);
+        var dd = ("0" + d.getDate()).slice(-2);
+        var yyyy = d.getFullYear();
+        var hh = ("0" + d.getHours()).slice(-2);
+        var mi = ("0" + d.getMinutes()).slice(-2);
+        var ss = ("0" + d.getSeconds()).slice(-2);
+        return mm + "/" + dd + "/" + yyyy + "<br/>" + hh + ":" + mi + ":" + ss;
     }
 
     //$("#CategoryId").change(function () {

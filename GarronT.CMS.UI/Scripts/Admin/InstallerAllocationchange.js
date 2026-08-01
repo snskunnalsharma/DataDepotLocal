@@ -1,4 +1,4 @@
-﻿let map;
+let map;
 var oTable;
 var navListItems;
 var count = 1;
@@ -144,10 +144,7 @@ $(document).ready(function () {
         stop: function (event, ui) {
 
             $('#btnExport').prop("disabled", true);
-            $('#btnShowMap').prop("disabled", true);
-            $('#btnSave').prop("disabled", true);
-
-            //selectAddress()
+            selectAddress();
 
         }
     });

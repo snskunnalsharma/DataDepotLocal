@@ -537,6 +537,7 @@
     <Compile Include="PROC_InstallStockDetailReport_Result.cs">
       <DependentUpon>Compass.tt</DependentUpon>
     </Compile>
+    <Compile Include="PROC_InstallStockDetailReport_Result.Partial.cs" />
     <Compile Include="PROC_InstallStockSummaryReport_Project_Result.cs">
       <DependentUpon>Compass.tt</DependentUpon>
     </Compile>
