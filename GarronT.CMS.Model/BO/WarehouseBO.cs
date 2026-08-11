@@ -115,6 +115,5 @@ namespace GarronT.CMS.Model.BO
         public string MeterType { get; set; }
         public string MeterSize { get; set; }
         public Nullable<int> BalanceQty { get; set; }
-        public string DateAndTime { get; set; }
     }
 }

@@ -464,6 +464,7 @@ namespace GarronT.CMS.Model.DAL
 
                     if (data != null && data.Count > 0)
                     {
+                        EnrichLocationFromStockDetails(objcompassentities, data);
                         PopulateCreatedOn(objcompassentities, data);
                         productmasterbo.AddRange(data);
                     }
@@ -489,72 +490,65 @@ namespace GarronT.CMS.Model.DAL
         {
             List<WarehouseStockReport> productmasterbo = new List<WarehouseStockReport>();
 
-
             try
             {
-                CompassEntities objcompassentities = new CompassEntities();
+                // Build summary from detail stock rows so Location (saved at receive time) is retained
+                // and grouped correctly. Summary SP often returns null/empty Location.
+                var detailRows = getwarehouselistnew(warehouseId, projectId, productId, LocationType);
 
-
-                foreach (var item in warehouseId)
-                {
-                    var query = objcompassentities.PROC_Report_WarehouseStockReportSummary(projectId, item).AsEnumerable();
-
-                    //if (categoryId != 0)
-                    //{
-                    //    query = query.Where(f => f.CategoryId == categoryId);
-                    //}
-                    if (productId != 0)
+                productmasterbo = detailRows
+                    .GroupBy(d => new
                     {
-                        query = query.Where(f => f.ProductId == productId);
-                    }
-                    if (LocationType != "0" && !string.IsNullOrEmpty(LocationType))
+                        d.WarehouseId,
+                        WarehouseName = d.WarehouseName ?? "",
+                        d.ProductId,
+                        ProductName = d.ProductName ?? "",
+                        ProductDescription = d.ProductDescription ?? "",
+                        PartNumber = d.PartNumber ?? "",
+                        UPCCode = d.UPCCode ?? "",
+                        UtilityName = d.UtilityName ?? "",
+                        d.CategoryId,
+                        CategoryName = d.CategoryName ?? "",
+                        Make = d.Make ?? "",
+                        MeterType = d.MeterType ?? "",
+                        MeterSize = d.MeterSize ?? "",
+                        d.SerialNumberRequired,
+                        Location = NormalizeLocation(d.Location)
+                    })
+                    .Select(g => new WarehouseStockReport
                     {
-                        query = query.Where(f => f.Location == LocationType);
-                    }
-
-                    var data = query.Select(o =>
-                             new WarehouseStockReport
-                             {
-
-                                 WarehouseId = o.WarehouseId,
-                                 WarehouseName = o.WarehouseName,
-                                 ProductId = o.ProductId,
-                                 ProductName = o.ProductName,
-                                 ProductDescription = o.ProductDescription,
-                                 PartNumber = o.PartNumber,
-                                 UPCCode = o.UPCCode,
-                                 UtilityName = o.UtilityName,
-                                 CategoryId = o.CategoryId,
-                                 CategoryName = o.CategoryName,
-                                 Make = o.Make,
-                                 MeterType = o.MeterType,
-                                 MeterSize = o.MeterSize,
-                                 BalanceQty = o.BalanceQty,
-                                 SerialNumberRequired = o.SerialNumberRequired,
-                                 TotalQty = o.TotalQty,
-                                 Location=o.Location
-                             }
-                            ).ToList();
-
-                    if (data != null && data.Count > 0)
-                    {
-                        PopulateCreatedOnForSummary(objcompassentities, projectId, data);
-                        productmasterbo.AddRange(data);
-                    }
-                }
-
-
+                        WarehouseId = g.Key.WarehouseId,
+                        WarehouseName = g.Key.WarehouseName,
+                        ProductId = g.Key.ProductId,
+                        ProductName = g.Key.ProductName,
+                        ProductDescription = g.Key.ProductDescription,
+                        PartNumber = g.Key.PartNumber,
+                        UPCCode = g.Key.UPCCode,
+                        UtilityName = g.Key.UtilityName,
+                        CategoryId = g.Key.CategoryId,
+                        CategoryName = g.Key.CategoryName,
+                        Make = g.Key.Make,
+                        MeterType = g.Key.MeterType,
+                        MeterSize = g.Key.MeterSize,
+                        SerialNumberRequired = g.Key.SerialNumberRequired,
+                        Location = g.Key.Location,
+                        BalanceQty = g.Sum(x => x.BalanceQty ?? 0),
+                        TotalQty = g.Sum(x => x.TotalQty ?? 0),
+                        // Summary never shows Date/Time (serial or consumable).
+                        CreatedOn = null,
+                        DateAndTime = ""
+                    })
+                    .ToList();
             }
             catch (Exception ex)
             {
                 throw ex;
             }
 
-
             return productmasterbo
-                .OrderByDescending(a => a.CreatedOn ?? DateTime.MinValue)
-                .ThenBy(a => a.WarehouseName)
+                .OrderBy(a => a.WarehouseName)
                 .ThenBy(a => a.ProductName)
+                .ThenBy(a => a.Location)
                 .ToList();
         }
 
@@ -696,7 +690,8 @@ namespace GarronT.CMS.Model.DAL
                         WarehouseId = o.WarehouseId,
                         ProductId = o.ProductId,
                         serialnumber = o.serialnumber,
-                        Location = o.Location
+                        Location = o.Location,
+                        SerialNumberRequired = o.SerialNumberRequired
                     }).ToList();
                     PopulateCreatedOn(objcompassentities, detailRows);
 
@@ -783,6 +778,72 @@ namespace GarronT.CMS.Model.DAL
             return string.IsNullOrWhiteSpace(location) ? "" : location.Trim();
         }
 
+        /// <summary>
+        /// When report SP returns blank Location, fill from StockDetails.Location saved at receive time.
+        /// </summary>
+        private static void EnrichLocationFromStockDetails(CompassEntities entities, List<WarehouseStockReport> rows)
+        {
+            if (entities == null || rows == null || rows.Count == 0)
+            {
+                return;
+            }
+
+            var missing = rows.Where(r => string.IsNullOrWhiteSpace(r.Location) && r.StockDetailId > 0).ToList();
+            if (missing.Count == 0)
+            {
+                return;
+            }
+
+            var ids = missing.Select(r => r.StockDetailId).Distinct().ToList();
+            var locLookup = new Dictionary<long, string>();
+            const int chunkSize = 500;
+            for (int i = 0; i < ids.Count; i += chunkSize)
+            {
+                var chunk = ids.Skip(i).Take(chunkSize).ToList();
+                var idCsv = string.Join(",", chunk);
+                var stockRows = entities.Database.SqlQuery<StockLocationRow>(
+                    "SELECT Id, Location FROM dbo.StockDetails WHERE Id IN (" + idCsv + ")").ToList();
+                foreach (var s in stockRows)
+                {
+                    if (!string.IsNullOrWhiteSpace(s.Location))
+                    {
+                        locLookup[s.Id] = s.Location.Trim();
+                    }
+                }
+            }
+
+            foreach (var row in missing)
+            {
+                string loc;
+                if (locLookup.TryGetValue(row.StockDetailId, out loc))
+                {
+                    row.Location = loc;
+                }
+            }
+        }
+
+        private class StockLocationRow
+        {
+            public long Id { get; set; }
+            public string Location { get; set; }
+        }
+
+        /// <summary>
+        /// Consumable = product with SerialNumberRequired = false (qty-only tracking).
+        /// Kept for possible callers; summary/detail Date/Time policy no longer uses this flag alone.
+        /// </summary>
+        private static bool IsConsumableWarehouseRow(WarehouseStockReport row)
+        {
+            return row != null && !row.SerialNumberRequired;
+        }
+
+        private static void ClearDateAndTime(WarehouseStockReport row)
+        {
+            if (row == null) return;
+            row.CreatedOn = null;
+            row.DateAndTime = "";
+        }
+
         private static void PopulateCreatedOn(CompassEntities entities, List<WarehouseStockReport> rows)
         {
             if (rows == null || rows.Count == 0)
@@ -790,6 +851,7 @@ namespace GarronT.CMS.Model.DAL
                 return;
             }
 
+            // Detail report: Date/Time for both serial and consumable products.
             var createdLookup = GetCreatedOnLookup(entities, rows.Select(r => r.StockDetailId));
             foreach (var row in rows)
             {
@@ -801,7 +863,7 @@ namespace GarronT.CMS.Model.DAL
                 }
             }
 
-            // Fallback for rows whose StockDetailId is missing/0 — match by warehouse + product + serial/location.
+            // Fallback when StockDetailId is missing/0 — match by warehouse + product + serial/location.
             var missing = rows.Where(r => string.IsNullOrEmpty(r.DateAndTime)).ToList();
             if (missing.Count == 0)
             {
@@ -857,110 +919,44 @@ namespace GarronT.CMS.Model.DAL
 
         private static void PopulateCreatedOnForSummary(CompassEntities entities, long projectId, List<WarehouseStockReport> rows)
         {
+            // Summary report never shows Date/Time (serial or consumable).
             if (rows == null || rows.Count == 0)
             {
                 return;
             }
 
-            var warehouseIds = rows.Select(r => r.WarehouseId).Distinct().ToList();
-            var productIds = rows.Select(r => r.ProductId).Distinct().ToList();
-            if (warehouseIds.Count == 0 || productIds.Count == 0)
-            {
-                return;
-            }
-
-            // Do not require Active=1 — report can include depleted/inactive stock rows.
-            // Also include null project rows that still belong to the warehouse/product.
-            var stockList = entities.StockDetails
-                .Where(s => warehouseIds.Contains(s.FKWarehouseId)
-                    && productIds.Contains(s.FKProductId)
-                    && (s.FKProjectId == null || s.FKProjectId == projectId))
-                .Select(s => new { s.FKWarehouseId, s.FKProductId, s.Location, s.CreatedOn })
-                .ToList();
-
-            var lookup = stockList
-                .GroupBy(s => Tuple.Create(s.FKWarehouseId, s.FKProductId, NormalizeLocation(s.Location)))
-                .ToDictionary(g => g.Key, g => g.Max(x => x.CreatedOn));
-
-            var lookupByProduct = stockList
-                .GroupBy(s => Tuple.Create(s.FKWarehouseId, s.FKProductId))
-                .ToDictionary(g => g.Key, g => g.Max(x => x.CreatedOn));
-
             foreach (var row in rows)
             {
-                var key = Tuple.Create(row.WarehouseId, row.ProductId, NormalizeLocation(row.Location));
-                DateTime createdOn;
-                if (lookup.TryGetValue(key, out createdOn)
-                    || lookupByProduct.TryGetValue(Tuple.Create(row.WarehouseId, row.ProductId), out createdOn))
-                {
-                    row.CreatedOn = createdOn;
-                    row.DateAndTime = FormatDateAndTimeHtml(createdOn);
-                }
+                ClearDateAndTime(row);
             }
         }
 
         public List<WarehouseStockReportSummeryExport> exportwarehouseSummeryReport(long[] warehouseId, long projectId, long productId)
         {
-            List<WarehouseStockReportSummeryExport> productmasterbo = new List<WarehouseStockReportSummeryExport>();
             try
             {
-                CompassEntities objcompassentities = new CompassEntities();
-
-                foreach (var item in warehouseId)
+                // Same aggregation as on-screen summary so Location is included (no Date/Time).
+                var summary = GetWarehouseStockReport_Summary(warehouseId, projectId, productId, "0");
+                return summary.Select(o => new WarehouseStockReportSummeryExport
                 {
-                    var query = objcompassentities.PROC_Report_WarehouseStockReportSummary(projectId, item).AsEnumerable();
-
-                    //if (categoryId != 0)
-                    //{
-                    //    query = query.Where(f => f.CategoryId == categoryId);
-                    //}
-                    if (productId != 0)
-                    {
-                        query = query.Where(f => f.ProductId == productId);
-                    }
-
-                    var queryList = query.ToList();
-                    var summaryRows = queryList.Select(o => new WarehouseStockReport
-                    {
-                        WarehouseId = o.WarehouseId,
-                        ProductId = o.ProductId,
-                        Location = o.Location
-                    }).ToList();
-                    PopulateCreatedOnForSummary(objcompassentities, projectId, summaryRows);
-
-                    var data = queryList.Select((o, idx) => new WarehouseStockReportSummeryExport
-                    {
-                        WarehouseName = o.WarehouseName,
-                        Location = o.Location,
-                        CategoryName = o.CategoryName,
-                        ProductName = o.ProductName,
-                        ProductDescription = o.ProductDescription,
-                        PartNumber = o.PartNumber,
-                        UPCCode = o.UPCCode,
-                        UtilityName = o.UtilityName,
-                        Make = o.Make,
-                        MeterType = o.MeterType,
-                        MeterSize = o.MeterSize,
-                        BalanceQty = o.BalanceQty,
-                        DateAndTime = !string.IsNullOrEmpty(summaryRows[idx].DateAndTime)
-                            ? summaryRows[idx].DateAndTime.Replace("<br/>", " ")
-                            : null,
-                    }).ToList();
-                    if (data != null && data.Count > 0)
-                    {
-                        productmasterbo.AddRange(data);
-                    }
-                }
-
-
+                    WarehouseName = o.WarehouseName,
+                    Location = o.Location,
+                    CategoryName = o.CategoryName,
+                    ProductName = o.ProductName,
+                    ProductDescription = o.ProductDescription,
+                    PartNumber = o.PartNumber,
+                    UPCCode = o.UPCCode,
+                    UtilityName = o.UtilityName,
+                    Make = o.Make,
+                    MeterType = o.MeterType,
+                    MeterSize = o.MeterSize,
+                    BalanceQty = o.BalanceQty,
+                }).ToList();
             }
             catch (Exception ex)
             {
                 throw ex;
             }
-
-
-            return productmasterbo;
         }
 
         public List<UsersModel> GetUserList()

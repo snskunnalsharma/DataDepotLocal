@@ -1845,7 +1845,7 @@ namespace GarronT.CMS.Model.DAL
                                         objTblProjectFieldDataHistory.SkipId = objTblProjectFieldData.SkipId;
                                         objTblProjectFieldDataHistory.SkippedDatetime = objTblProjectFieldData.SkippedDatetime;
                                         objTblProjectFieldDataHistory.SkippedReason = objTblProjectFieldData.SkippedReason;
-                                        // objTblProjectFieldDataHistory.tblUploadedData_Id = objTblProjectFieldData.tblUploadedData_Id;
+                                        objTblProjectFieldDataHistory.tblUploadedData_Id = objTblProjectFieldData.tblUploadedData_Id;
                                         objTblProjectFieldDataHistory.FK_UploadedExcelData_Id = objTblProjectFieldData.FK_UploadedExcelData_Id;
                                         objTblProjectFieldDataHistory.visitdatetime = objTblProjectFieldData.visitdatetime;
 
@@ -1873,7 +1873,9 @@ namespace GarronT.CMS.Model.DAL
                                 objTblProjectFieldData.CreatedBy = int.Parse(objForm.userId.ToString());
                                 objTblProjectFieldData.InstallerId = long.Parse(objForm.userId.ToString());
                                 objTblProjectFieldData.FormId = objForm.formId;
-                                //objTblProjectFieldData.tblUploadedData_Id = objForm.currentAccountData.initialFieldId;
+                                // Required non-null column; other SaveData paths set this to initialFieldId.
+                                // Leaving it unset sends 0 and fails SaveChanges (FK / constraint) immediately.
+                                objTblProjectFieldData.tblUploadedData_Id = objForm.currentAccountData.initialFieldId;
                                 objTblProjectFieldData.FK_UploadedExcelData_Id = objForm.currentAccountData.initialFieldId;
                                 objTblProjectFieldData.IsSkipped = objForm.currentAccountData.isAccountSkipped;
                                 objTblProjectFieldData.IsReAssign = false;

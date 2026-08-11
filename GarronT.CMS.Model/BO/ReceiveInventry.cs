@@ -16,6 +16,7 @@ namespace GarronT.CMS.Model.BO
         public string BarCodeFilePath { get; set; }
         public Nullable<int> IsSerialNumber { get; set; }
         public string SerialNumber { get; set; }
+        public string Location { get; set; }
         public int UploadQty { get; set; }
         public Nullable<long> FKWarehouseId { get; set; }
         public string WarehouseName { get; set; }

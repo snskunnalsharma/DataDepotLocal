@@ -1862,6 +1862,16 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC";
                     .Where(a => a.CreatedBy == uploadInventryVM.UserId && a.DeviceDateTime == uploadInventryVM.DeviceDateTime)
                     .Select(a => a.Id)
                     .FirstOrDefault();
+
+                // Ensure Location entered at receive is written to StockDetails / InwardDetails.
+                ApplyReceiveLocationsAfterInward(objCompassEntities, inwardHeaderId, uploadInventryVM);
+
+                // Merge duplicate consumable stock lines into one row (qty only increases).
+                MergeConsumableStockAfterReceive(
+                    objCompassEntities,
+                    uploadInventryVM.ProjectId,
+                    uploadInventryVM.WarehouseId,
+                    uploadInventryVM.UserId);
             }
 
             return result;
@@ -1988,6 +1998,27 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC";
                     MeterType = a.MeterType
 
                 }).ToList();
+
+                // Location is not returned by PROC_GET_ReceiveInvoiceSavedRecords; load from InwardDetails.
+                if (ReceiveInvoiceSavedRecords.Count > 0)
+                {
+                    var locationByDetailId = objCompassEntities.InwardDetails
+                        .AsNoTracking()
+                        .Where(d => d.FKInwardHeaderId == Id && d.Active == 1)
+                        .Select(d => new { d.Id, d.Location })
+                        .ToList()
+                        .ToDictionary(d => d.Id, d => d.Location);
+
+                    foreach (var record in ReceiveInvoiceSavedRecords)
+                    {
+                        string loc = null;
+                        if (locationByDetailId.TryGetValue(record.ParentId, out loc)
+                            || (record.ChildParentId.HasValue && locationByDetailId.TryGetValue(record.ChildParentId.Value, out loc)))
+                        {
+                            record.Location = loc;
+                        }
+                    }
+                }
 
             }
             catch (Exception)
@@ -2190,15 +2221,100 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC";
 
                 // PROC_Insert_InwardFromWeb often does not persist Location from the TVP onto StockDetails.
                 // Apply location after insert so Warehouse Stock Report can show it.
-                if (uploadInventryVM.UploadType == 2 && uploadInventryVM.ProductMasterList != null)
-                {
-                    ApplyReceiveLocationsToStock(objCompassEntities, inwardHeaderId, uploadInventryVM.ProductMasterList);
-                }
+                ApplyReceiveLocationsAfterInward(objCompassEntities, inwardHeaderId, uploadInventryVM);
+
+                // Merge duplicate consumable stock lines into one row (qty only increases).
+                MergeConsumableStockAfterReceive(
+                    objCompassEntities,
+                    uploadInventryVM.ProjectId,
+                    uploadInventryVM.WarehouseId,
+                    uploadInventryVM.UserId);
             }
 
             return result;
         }
 
+
+        /// <summary>
+        /// Applies location from receive form/upload onto InwardDetails + StockDetails for this inward.
+        /// Manual and Excel both use this path.
+        /// </summary>
+        private static void ApplyReceiveLocationsAfterInward(CompassEntities db, long inwardHeaderId, UploadInventryVM uploadInventryVM)
+        {
+            if (db == null || inwardHeaderId <= 0 || uploadInventryVM == null)
+            {
+                return;
+            }
+
+            List<ProductMasterBO> products = null;
+
+            if (uploadInventryVM.UploadType == 2 && uploadInventryVM.ProductMasterList != null)
+            {
+                products = uploadInventryVM.ProductMasterList;
+            }
+            else if (uploadInventryVM.UploadInventoryList != null && uploadInventryVM.UploadInventoryList.Count > 0)
+            {
+                products = uploadInventryVM.UploadInventoryList
+                    .Where(x => x != null && !string.IsNullOrWhiteSpace(x.Location) && x.ProductId > 0)
+                    .Select(x => new ProductMasterBO
+                    {
+                        Id = x.ProductId,
+                        Location = x.Location,
+                        SerialNumberRequired = x.IsSerialNumber,
+                        SerialNumber = x.SerialNumber,
+                        GenerateBarcode = false
+                    })
+                    .ToList();
+            }
+
+            if (products != null && products.Count > 0)
+            {
+                ApplyReceiveLocationsToStock(db, inwardHeaderId, products);
+            }
+
+            // Also copy Location from InwardDetails → StockDetails when stock row is still blank
+            // (covers SP paths that persist location only on InwardDetails).
+            SyncStockLocationFromInwardDetails(db, inwardHeaderId);
+        }
+
+        private static void SyncStockLocationFromInwardDetails(CompassEntities db, long inwardHeaderId)
+        {
+            if (db == null || inwardHeaderId <= 0)
+            {
+                return;
+            }
+
+            var details = db.InwardDetails
+                .Where(d => d.FKInwardHeaderId == inwardHeaderId && d.Active == 1
+                    && d.Location != null && d.Location != "")
+                .Select(d => new { d.Id, d.Location })
+                .ToList();
+
+            if (details.Count == 0)
+            {
+                return;
+            }
+
+            bool changed = false;
+            foreach (var detail in details)
+            {
+                var loc = detail.Location.Trim();
+                var stocks = db.StockDetails
+                    .Where(s => s.FKInwardDetailId == detail.Id && s.Active == 1
+                        && (s.Location == null || s.Location == ""))
+                    .ToList();
+                foreach (var stock in stocks)
+                {
+                    stock.Location = loc;
+                    changed = true;
+                }
+            }
+
+            if (changed)
+            {
+                db.SaveChanges();
+            }
+        }
 
         private static void ApplyReceiveLocationsToStock(CompassEntities db, long inwardHeaderId, List<ProductMasterBO> products)
         {
@@ -2257,6 +2373,88 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC";
                             changed = true;
                         }
                     }
+                }
+            }
+
+            if (changed)
+            {
+                db.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// After receive/inward, consolidate consumable (non-serial) stock lines for the same
+        /// project + warehouse + product + location into a single row by summing quantities.
+        /// New receives increase qty on the existing row instead of leaving multiple rows.
+        /// </summary>
+        private static void MergeConsumableStockAfterReceive(CompassEntities db, long projectId, long warehouseId, long userId)
+        {
+            if (db == null || projectId <= 0 || warehouseId <= 0)
+            {
+                return;
+            }
+
+            var now = new CommonFunctions().ServerDate();
+
+            var consumableRows = db.StockDetails
+                .Where(s => s.Active == 1
+                    && s.FKProjectId == projectId
+                    && s.FKWarehouseId == warehouseId
+                    && s.IsSerialNumber == 0
+                    && (s.SerialNumber == null || s.SerialNumber == ""))
+                .ToList();
+
+            if (consumableRows.Count <= 1)
+            {
+                return;
+            }
+
+            string NormalizeLoc(string loc)
+            {
+                return string.IsNullOrWhiteSpace(loc) ? "" : loc.Trim();
+            }
+
+            var groups = consumableRows
+                .GroupBy(s => new { s.FKProductId, Loc = NormalizeLoc(s.Location) })
+                .Where(g => g.Count() > 1);
+
+            bool changed = false;
+            foreach (var group in groups)
+            {
+                // Keep the oldest line so existing outward/history links stay on a stable id where possible.
+                var ordered = group.OrderBy(s => s.Id).ToList();
+                var keep = ordered[0];
+                int totalSum = keep.TotalQty;
+                int balanceSum = keep.BalanceQty;
+
+                for (int i = 1; i < ordered.Count; i++)
+                {
+                    var other = ordered[i];
+                    totalSum += other.TotalQty;
+                    balanceSum += other.BalanceQty;
+                    // Prefer a non-empty Location from any merged line
+                    if (string.IsNullOrWhiteSpace(keep.Location) && !string.IsNullOrWhiteSpace(other.Location))
+                    {
+                        keep.Location = other.Location.Trim();
+                    }
+                    other.Active = 0;
+                    other.BalanceQty = 0;
+                    other.TotalQty = 0;
+                    other.AllStockUtilized = true;
+                    other.ModifiedBy = userId;
+                    other.ModifiedOn = now;
+                    changed = true;
+                }
+
+                if (keep.TotalQty != totalSum || keep.BalanceQty != balanceSum)
+                {
+                    keep.TotalQty = totalSum;
+                    keep.BalanceQty = balanceSum;
+                    keep.AllStockUtilized = balanceSum <= 0;
+                    keep.IsAllocated = false;
+                    keep.ModifiedBy = userId;
+                    keep.ModifiedOn = now;
+                    changed = true;
                 }
             }
 
@@ -2876,11 +3074,14 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC";
                         });
                     }
                 }
-                // ends hare
-                PopulateInventryStockSummaryDateAndTime(objCompassEntities, reportData);
+                // Summary never shows Date/Time (detail only).
+                foreach (var row in reportData)
+                {
+                    row.CreatedOn = null;
+                    row.DateAndTime = "";
+                }
                 reportData = reportData
-                    .OrderByDescending(a => a.CreatedOn ?? DateTime.MinValue)
-                    .ThenBy(a => a.UserName)
+                    .OrderBy(a => a.UserName)
                     .ThenBy(a => a.ProductName)
                     .ToList();
             }
@@ -3754,6 +3955,21 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC";
                             }
 
                             int remaining = qty;
+                            // Load existing dest consumable lines once; also track inserts added in this loop.
+                            var destConsumable = db.StockDetails
+                                .Where(o => o.Active == 1 &&
+                                            o.FKProjectId == projectId &&
+                                            o.FKWarehouseId == toWarehouseId &&
+                                            o.FKProductId == item.Id &&
+                                            o.IsSerialNumber == 0 &&
+                                            (o.SerialNumber == null || o.SerialNumber == ""))
+                                .ToList();
+
+                            string NormLoc(string loc)
+                            {
+                                return string.IsNullOrWhiteSpace(loc) ? "" : loc.Trim();
+                            }
+
                             foreach (var row in rows)
                             {
                                 if (remaining <= 0)
@@ -3769,41 +3985,59 @@ ORDER BY operation_date DESC, completion_date DESC, id DESC";
                                 row.ModifiedBy = userId;
                                 row.ModifiedOn = now;
 
-                                var destChunk = new StockDetail
+                                string destLoc = NormLoc(row.Location);
+                                // Prefer existing consumable line at destination for same product+location — increase qty only.
+                                var existingDest = destConsumable.FirstOrDefault(o =>
+                                    o.Active == 1 && NormLoc(o.Location) == destLoc);
+
+                                if (existingDest != null)
                                 {
-                                    FKProjectId = row.FKProjectId,
-                                    FKWarehouseId = toWarehouseId,
-                                    FKInwardDetailId = row.FKInwardDetailId,
-                                    FKProductId = row.FKProductId,
-                                    ProductName = row.ProductName,
-                                    PartNumber = row.PartNumber,
-                                    UPCCode = row.UPCCode,
-                                    IsSerialNumber = 0,
-                                    SerialNumber = row.SerialNumber,
-                                    Make = row.Make,
-                                    Type = row.Type,
-                                    Size = row.Size,
-                                    TotalQty = take,
-                                    BalanceQty = take,
-                                    IsAllocated = false,
-                                    AllStockUtilized = false,
-                                    Source = row.Source,
-                                    IsReturned = row.IsReturned,
-                                    FKParentId = row.FKParentId,
-                                    Active = 1,
-                                    CreatedBy = userId,
-                                    CreatedOn = now,
-                                    ModifiedBy = userId,
-                                    ModifiedOn = now,
-                                    Location = row.Location,
-                                    InventoryType = row.InventoryType,
-                                    PONumber = row.PONumber,
-                                    Manufacturer = row.Manufacturer,
-                                    PalletNumber = row.PalletNumber,
-                                    TrayID = row.TrayID,
-                                    Project = row.Project
-                                };
-                                db.StockDetails.Add(destChunk);
+                                    existingDest.TotalQty += take;
+                                    existingDest.BalanceQty += take;
+                                    existingDest.AllStockUtilized = false;
+                                    existingDest.IsAllocated = false;
+                                    existingDest.ModifiedBy = userId;
+                                    existingDest.ModifiedOn = now;
+                                }
+                                else
+                                {
+                                    var destChunk = new StockDetail
+                                    {
+                                        FKProjectId = row.FKProjectId,
+                                        FKWarehouseId = toWarehouseId,
+                                        FKInwardDetailId = row.FKInwardDetailId,
+                                        FKProductId = row.FKProductId,
+                                        ProductName = row.ProductName,
+                                        PartNumber = row.PartNumber,
+                                        UPCCode = row.UPCCode,
+                                        IsSerialNumber = 0,
+                                        SerialNumber = row.SerialNumber,
+                                        Make = row.Make,
+                                        Type = row.Type,
+                                        Size = row.Size,
+                                        TotalQty = take,
+                                        BalanceQty = take,
+                                        IsAllocated = false,
+                                        AllStockUtilized = false,
+                                        Source = row.Source,
+                                        IsReturned = row.IsReturned,
+                                        FKParentId = row.FKParentId,
+                                        Active = 1,
+                                        CreatedBy = userId,
+                                        CreatedOn = now,
+                                        ModifiedBy = userId,
+                                        ModifiedOn = now,
+                                        Location = row.Location,
+                                        InventoryType = row.InventoryType,
+                                        PONumber = row.PONumber,
+                                        Manufacturer = row.Manufacturer,
+                                        PalletNumber = row.PalletNumber,
+                                        TrayID = row.TrayID,
+                                        Project = row.Project
+                                    };
+                                    db.StockDetails.Add(destChunk);
+                                    destConsumable.Add(destChunk);
+                                }
 
                                 remaining -= take;
                             }

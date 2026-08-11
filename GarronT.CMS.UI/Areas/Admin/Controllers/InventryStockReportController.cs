@@ -278,17 +278,21 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 if (ReportType == 0)
                 {
                     inventryStockSummaryReportExport = new InventoryDAL().GetInventryStockReportSummery(projectId, installerId, ProductId, txtFromDate, txtToDate);
-                    if (inventryStockSummaryReportExport != null)
-                    {
-                        foreach (var row in inventryStockSummaryReportExport)
+                    // Summary export: no Date/Time column (align with on-screen summary).
+                    var summaryExportRows = (inventryStockSummaryReportExport ?? new List<InstallerStockReportSummaryBO>())
+                        .Select(r => new InventryStockSummaryExportNoDate
                         {
-                            if (!string.IsNullOrEmpty(row.DateAndTime))
-                            {
-                                row.DateAndTime = row.DateAndTime.Replace("<br/>", " ");
-                            }
-                        }
-                    }
-                    ExportInventryStockReport = new CommonFunctions().ToDataTable(inventryStockSummaryReportExport);
+                            InstallerName = r.UserName,
+                            CategoryName = r.CategoryName,
+                            ProductName = r.ProductName,
+                            OpeningInventory = r.OpeningBalance,
+                            ScannedInventory = r.TotalRelasedQty,
+                            InstalledInventory = r.InstalledQty,
+                            TransferredInventory = r.TransferredQty,
+                            ReturnedInventory = r.ReturnedQty,
+                            InventoryInHand = r.InHandInventory
+                        }).ToList();
+                    ExportInventryStockReport = new CommonFunctions().ToDataTable(summaryExportRows);
                 }
                 else
                 {
@@ -1022,6 +1026,19 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
+        public class InventryStockSummaryExportNoDate
+        {
+            public string InstallerName { get; set; }
+            public string CategoryName { get; set; }
+            public string ProductName { get; set; }
+            public int? OpeningInventory { get; set; }
+            public int ScannedInventory { get; set; }
+            public int InstalledInventory { get; set; }
+            public int TransferredInventory { get; set; }
+            public int ReturnedInventory { get; set; }
+            public int? InventoryInHand { get; set; }
+        }
+
         public class CompletedInventorySerialItem
         {
            

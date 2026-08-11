@@ -1375,7 +1375,6 @@
                                     <th width="7%">Type</th>
                                     <th width="4%">Size</th>
                                     <th width="5%">Quantity</th>
-                                    <th width="9%" style="min-width:110px;">Date &amp; Time</th>
                                 </tr>
                             </thead>
                         </table>
@@ -2420,6 +2419,7 @@
     }
 
     function formatDateAndTimeCell(data, full) {
+        // Detail report: show Date/Time for serial and consumable.
         if (data) {
             // already HTML with <br/> from server, or plain "date time"
             if (data.indexOf('<br') >= 0) return data;
@@ -2465,11 +2465,9 @@
                 },
                 "sDom": '<"col-lg-12 drp-rec"lf><"col-lg-12 rep-shw-ent"ip>rt<ip><"clear">',
          "aaData": varData,
-         "aaSorting": [[12, "desc"]],
-         // "aaSorting": [[3, "asc"]],sss
+         "aaSorting": [[3, "asc"]],
          "aoColumns": [
 
-                       //{ "mData": "UploadNumber" },
                        { "mData": "WarehouseName" },
                        { "mData": "Location" },
                        { "mData": "CategoryName" },
@@ -2482,29 +2480,8 @@
                        { "mData": "MeterType" },
                        { "mData": "MeterSize" },
                        { "mData": "BalanceQty" },
-                       {
-                           "mData": "DateAndTime",
-                           "sClass": "nowrap-col",
-                           "sWidth": "110px",
-                           "mRender": function (data, type, full) {
-                               if (type === 'sort' || type === 'type') {
-                                   return getWarehouseDateAndTimeSortValue(full);
-                               }
-                               return formatDateAndTimeCell(data, full);
-                           }
-                       },
-                       //{ "bSearchable": false, "mData": null },
 
          ],
-         //"aoColumnDefs": [
-         //                                       {
-         //                                           "mRender": function (data, type, full, row) {
-         //                                               return '<a  id=' + full.StockDetailId + ' onclick="EditRecord(' + full.StockDetailId + ');" class="btn btn-primary btn-xs" role="button" alt="Edit" title="Edit"><i class="fa fa-pencil"></i></a>' +
-         //                                                   '<a  id=' + full.StockDetailId + ' onclick="DeleteRecord(' + full.StockDetailId + ');" class="btn btn-danger btn-xs" role="button" alt="Delete" title="Delete"><i class="fa fa-trash"></i></a>';
-         //                                           },
-         //                                           "aTargets": [12]
-         //                                       }
-         //],
 
      }), $('.dataTables_filter input').attr('maxlength', 50);
 

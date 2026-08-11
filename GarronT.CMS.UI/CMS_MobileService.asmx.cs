@@ -484,7 +484,31 @@ namespace GarronT.CMS.UI
                     log.Info("WEB Service Save ERROR at - " + DateTime.Now.ToString());
                     log.Info("ERROR  ex.Message - " + (ex.Message != null ? ex.Message : ""));
                     log.Info("ERROR  ex.StackTrace - " + (ex.StackTrace != null ? ex.StackTrace : ""));
-                    log.Info("ERROR  ex.InnerException.Message - " + (ex.InnerException.Message != null ? ex.InnerException.Message : ""));
+                    // Walk full chain — EF UpdateException often nests SqlException two+ levels deep
+                    Exception inner = ex.InnerException;
+                    int depth = 1;
+                    while (inner != null && depth <= 10)
+                    {
+                        log.Info("ERROR  InnerException[" + depth + "] - " + (inner.Message ?? "") + " | Type=" + inner.GetType().FullName);
+                        var valEx = inner as System.Data.Entity.Validation.DbEntityValidationException;
+                        if (valEx != null)
+                        {
+                            foreach (var eve in valEx.EntityValidationErrors)
+                            {
+                                foreach (var ve in eve.ValidationErrors)
+                                {
+                                    log.Info("ERROR  Validation - " + eve.Entry.Entity.GetType().Name + "." + ve.PropertyName + ": " + ve.ErrorMessage);
+                                }
+                            }
+                        }
+                        var sqlEx = inner as SqlException;
+                        if (sqlEx != null)
+                        {
+                            log.Info("ERROR  SqlException Number=" + sqlEx.Number + " State=" + sqlEx.State + " Message=" + sqlEx.Message);
+                        }
+                        inner = inner.InnerException;
+                        depth++;
+                    }
 
                     ErrorModelStatus obj2 = new ErrorModelStatus();
                     obj2.status = "Error";
