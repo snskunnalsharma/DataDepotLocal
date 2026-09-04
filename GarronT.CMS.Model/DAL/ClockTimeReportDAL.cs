@@ -1463,18 +1463,6 @@ namespace GarronT.CMS.Model.DAL
                             time
                         );
                     }
-                    else if (BeaumontSizeMatches(oldMeterSize, "1"))
-                    {
-                        AddBeaumont21RowByCode(
-                            result,
-                            serviceConfig,
-                            projectId,
-                            "METER_1",
-                            createdOn,
-                            dayName,
-                            time
-                        );
-                    }
                     else if (BeaumontSizeMatches(oldMeterSize, "1.5")
                              || BeaumontSizeMatches(oldMeterSize, "1 1/2")
                              || BeaumontSizeMatches(oldMeterSize, "1-1/2"))
@@ -1496,6 +1484,18 @@ namespace GarronT.CMS.Model.DAL
                             serviceConfig,
                             projectId,
                             "METER_2",
+                            createdOn,
+                            dayName,
+                            time
+                        );
+                    }
+                    else if (BeaumontSizeMatches(oldMeterSize, "1"))
+                    {
+                        AddBeaumont21RowByCode(
+                            result,
+                            serviceConfig,
+                            projectId,
+                            "METER_1",
                             createdOn,
                             dayName,
                             time
@@ -1684,7 +1684,7 @@ namespace GarronT.CMS.Model.DAL
                 return false;
             }
 
-            return actual == expected || actual.Contains(expected);
+            return actual == expected;
         }
         private string NormalizeBeaumontSize(string value)
         {

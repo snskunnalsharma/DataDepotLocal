@@ -968,37 +968,6 @@
         resetPeriodDropdowns();
         setDefaultDates();
 
-        function clearDatefield(selector) {
-            var $input = $(selector);
-            $input.val("");
-            if (selector === "#txtFromDate") {
-                $("#spanFromDate").text("From Date").css("color", "#999");
-                $(".period-daily-from").removeClass("has-date-value");
-                $("#lblFromDate").text("-");
-                $("#txtFromDate").datepicker("option", "maxDate", null);
-            } else if (selector === "#txtToDate") {
-                $("#spanToDate").text("To Date").css("color", "#999");
-                $(".period-daily-to").removeClass("has-date-value");
-                $("#lblToDate").text("-");
-                $("#txtToDate").datepicker("option", "minDate", null);
-            }
-        }
-
-        function updateDateFieldDisplay(inputSelector, selectedDate, placeholderText, wrapperClass) {
-            var displayText = selectedDate || placeholderText;
-            var hasValue = !!selectedDate;
-
-            if (inputSelector === "#txtFromDate") {
-                $("#spanFromDate").text(displayText).css("color", hasValue ? "#333" : "#999");
-                $(".period-daily-from").toggleClass("has-date-value", hasValue);
-                $("#lblFromDate").text(selectedDate || "-");
-            } else if (inputSelector === "#txtToDate") {
-                $("#spanToDate").text(displayText).css("color", hasValue ? "#333" : "#999");
-                $(".period-daily-to").toggleClass("has-date-value", hasValue);
-                $("#lblToDate").text(selectedDate || "-");
-            }
-        }
-
         // Override jQuery UI datepicker _updateDatepicker to add custom Ok and Close buttons
         var old_updateDatepicker = $.datepicker._updateDatepicker;
         $.datepicker._updateDatepicker = function (inst) {
@@ -1227,6 +1196,41 @@
             }, 200);
         });
     });
+
+    function clearDatefield(selector) {
+        var $input = $(selector);
+        $input.val("");
+        if (selector === "#txtFromDate") {
+            $("#spanFromDate").text("From Date").css("color", "#999");
+            $(".period-daily-from").removeClass("has-date-value");
+            $("#lblFromDate").text("-");
+            if ($("#txtFromDate").hasClass("hasDatepicker")) {
+                $("#txtFromDate").datepicker("option", "maxDate", null);
+            }
+        } else if (selector === "#txtToDate") {
+            $("#spanToDate").text("To Date").css("color", "#999");
+            $(".period-daily-to").removeClass("has-date-value");
+            $("#lblToDate").text("-");
+            if ($("#txtToDate").hasClass("hasDatepicker")) {
+                $("#txtToDate").datepicker("option", "minDate", null);
+            }
+        }
+    }
+
+    function updateDateFieldDisplay(inputSelector, selectedDate, placeholderText, wrapperClass) {
+        var displayText = selectedDate || placeholderText;
+        var hasValue = !!selectedDate;
+
+        if (inputSelector === "#txtFromDate") {
+            $("#spanFromDate").text(displayText).css("color", hasValue ? "#333" : "#999");
+            $(".period-daily-from").toggleClass("has-date-value", hasValue);
+            $("#lblFromDate").text(selectedDate || "-");
+        } else if (inputSelector === "#txtToDate") {
+            $("#spanToDate").text(displayText).css("color", hasValue ? "#333" : "#999");
+            $(".period-daily-to").toggleClass("has-date-value", hasValue);
+            $("#lblToDate").text(selectedDate || "-");
+        }
+    }
 
     function initMonthList() {
         var months = [
@@ -1484,20 +1488,25 @@
             data: {
                 UtilityId: utilityId
             },
+            dataType: "json",
             success: function (response) {
                 console.log("Project response:", response);
 
                 $("#ddlProject").find("option:not([value=''])").remove();
 
-                if (response && response.success === false) {
-                    toastr["error"](response.returnMessage || "Unable to load project list.", "Error");
+                if (typeof response === "string" || !$.isArray(response)) {
+                    if (response && response.success === false) {
+                        toastr["error"](response.returnMessage || "Unable to load project list.", "Error");
+                    } else {
+                        toastr["error"]("Unable to load project list. You may not have access permission — please re-login or contact admin.", "Error");
+                    }
                     $("#ddlProject").prop("disabled", true);
                     appendBudgetSelectPlaceholder($("#ddlProject"), "Select Project");
                     refreshBudgetSelects("#ddlProject");
                     return;
                 }
 
-                if (response && response.length > 0) {
+                if (response.length > 0) {
                     $.each(response, function (index, item) {
                         $("#ddlProject").append(
                             $("<option></option>")
@@ -1518,7 +1527,11 @@
             error: function (xhr) {
                 console.log("Project AJAX error:", xhr.status, xhr.responseText);
                 resetProjectDropdown();
-                toastr["error"]("Unable to load project list.", "Error");
+                if (xhr && xhr.responseText && xhr.responseText.indexOf("Unauthorised") >= 0) {
+                    toastr["error"]("You do not have access permission for Budget Status Report project list. Please contact admin.", "Error");
+                } else {
+                    toastr["error"]("Unable to load project list.", "Error");
+                }
             }
         });
     }

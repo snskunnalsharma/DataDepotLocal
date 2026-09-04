@@ -1102,8 +1102,6 @@
     <Content Include="Content\MSTS\admin\admin\assets\bootstrap-daterangepicker\examples.html" />
     <Content Include="Content\MSTS\admin\admin\assets\bootstrap-daterangepicker\moment.js" />
     <Content Include="Content\MSTS\admin\admin\assets\bootstrap-daterangepicker\moment.min.js" />
-    <Content Include="Content\MSTS\admin\admin\assets\bootstrap-datetimepicker\build\build.css" />
-    <Content Include="Content\MSTS\admin\admin\assets\bootstrap-datetimepicker\build\build_standalone.css" />
     <Content Include="Content\MSTS\admin\admin\assets\bootstrap-datetimepicker\css\datetimepicker-pp.css" />
     <Content Include="Content\MSTS\admin\admin\assets\bootstrap-datetimepicker\css\datetimepicker.css" />
     <Content Include="Content\MSTS\admin\admin\assets\bootstrap-datetimepicker\js\bootstrap-datetimepicker.js" />
@@ -1478,7 +1476,7 @@
     <Content Include="Content\MSTS\admin\admin\assets\dropzone\css\dropzone.css" />
     <Content Include="Content\MSTS\admin\admin\assets\dropzone\dropzone-amd-module.js" />
     <Content Include="Content\MSTS\admin\admin\assets\dropzone\dropzone.js" />
-    <Content Include="Content\MSTS\admin\admin\assets\dropzone\images\spritemap%402x.png" />
+    <Content Include="Content\MSTS\admin\admin\assets\dropzone\images\spritemap@2x.png" />
     <Content Include="Content\MSTS\admin\admin\assets\dropzone\images\spritemap.png" />
     <Content Include="Content\MSTS\admin\admin\assets\fancybox\CHANGELOG.txt" />
     <Content Include="Content\MSTS\admin\admin\assets\fancybox\demo\1_b.jpg" />
@@ -1839,8 +1837,6 @@
     <Content Include="Content\MSTS\admin\admin\assets\summernote\dist\summernote.min.js" />
     <Content Include="Content\MSTS\admin\admin\assets\summernote\less\elements.css" />
     <Content Include="Content\MSTS\admin\admin\assets\summernote\less\summernote.css" />
-    <Content Include="Content\MSTS\admin\admin\assets\toastr-master\build\toastr.min.css" />
-    <Content Include="Content\MSTS\admin\admin\assets\toastr-master\build\toastr.min.js" />
     <Content Include="Content\MSTS\admin\admin\assets\toastr-master\toastr.css" />
     <Content Include="Content\MSTS\admin\admin\assets\toastr-master\toastr.js" />
     <Content Include="Content\MSTS\admin\admin\assets\twitter-bootstrap-wizard-master\bootstrap\css\bootstrap-responsive.css" />
@@ -2642,8 +2638,6 @@
     <Content Include="Content\MSTS\admin\assets\bootstrap-daterangepicker\examples.html" />
     <Content Include="Content\MSTS\admin\assets\bootstrap-daterangepicker\moment.js" />
     <Content Include="Content\MSTS\admin\assets\bootstrap-daterangepicker\moment.min.js" />
-    <Content Include="Content\MSTS\admin\assets\bootstrap-datetimepicker\build\build.css" />
-    <Content Include="Content\MSTS\admin\assets\bootstrap-datetimepicker\build\build_standalone.css" />
     <Content Include="Content\MSTS\admin\assets\bootstrap-datetimepicker\css\datetimepicker-pp.css" />
     <Content Include="Content\MSTS\admin\assets\bootstrap-datetimepicker\css\datetimepicker.css" />
     <Content Include="Content\MSTS\admin\assets\bootstrap-datetimepicker\js\bootstrap-datetimepicker.js" />
@@ -3021,7 +3015,7 @@
     <Content Include="Content\MSTS\admin\assets\dropzone\css\dropzone.css" />
     <Content Include="Content\MSTS\admin\assets\dropzone\dropzone-amd-module.js" />
     <Content Include="Content\MSTS\admin\assets\dropzone\dropzone.js" />
-    <Content Include="Content\MSTS\admin\assets\dropzone\images\spritemap%402x.png" />
+    <Content Include="Content\MSTS\admin\assets\dropzone\images\spritemap@2x.png" />
     <Content Include="Content\MSTS\admin\assets\dropzone\images\spritemap.png" />
     <Content Include="Content\MSTS\admin\assets\fancybox\.gitattributes" />
     <Content Include="Content\MSTS\admin\assets\fancybox\CHANGELOG.txt" />
@@ -3396,8 +3390,6 @@
     <Content Include="Content\MSTS\admin\assets\summernote\less\summernote.css" />
     <Content Include="Content\MSTS\admin\assets\toastr-master\.gitattributes" />
     <Content Include="Content\MSTS\admin\assets\toastr-master\.gitignore" />
-    <Content Include="Content\MSTS\admin\assets\toastr-master\build\toastr.min.css" />
-    <Content Include="Content\MSTS\admin\assets\toastr-master\build\toastr.min.js" />
     <Content Include="Content\MSTS\admin\assets\toastr-master\toastr.css" />
     <Content Include="Content\MSTS\admin\assets\toastr-master\toastr.js" />
     <Content Include="Content\MSTS\admin\assets\twitter-bootstrap-wizard-master\bootstrap\css\bootstrap-responsive.css" />
@@ -3435,7 +3427,7 @@
     <Content Include="Content\MSTS\admin\assets\xchart\xcharts.js" />
     <Content Include="Content\MSTS\admin\assets\xchart\xcharts.min.css" />
     <Content Include="Content\MSTS\admin\assets\xchart\xcharts.min.js" />
-    <Content Include="Content\MSTS\admin\chosenddl\chosen-sprite%402x.png" />
+    <Content Include="Content\MSTS\admin\chosenddl\chosen-sprite@2x.png" />
     <Content Include="Content\MSTS\admin\chosenddl\chosen-sprite.png" />
     <Content Include="Content\MSTS\admin\chosenddl\chosen.css" />
     <Content Include="Content\MSTS\admin\chosenddl\chosen.jquery.js" />
@@ -3699,8 +3691,6 @@
     <Content Include="Content\MSTS\admin\assets\bootstrap-daterangepicker\README.md" />
     <Content Include="Content\MSTS\admin\assets\bootstrap-datetimepicker\.travis.yml" />
     <Content Include="Content\MSTS\admin\assets\bootstrap-datetimepicker\bower.json" />
-    <Content Include="Content\MSTS\admin\assets\bootstrap-datetimepicker\build\build.less" />
-    <Content Include="Content\MSTS\admin\assets\bootstrap-datetimepicker\build\build_standalone.less" />
     <Content Include="Content\MSTS\admin\assets\bootstrap-datetimepicker\less\datetimepicker.less" />
     <Content Include="Content\MSTS\admin\assets\bootstrap-datetimepicker\LICENSE" />
     <Content Include="Content\MSTS\admin\assets\bootstrap-datetimepicker\README.md" />
@@ -3853,7 +3843,6 @@
     <Content Include="Content\MSTS\admin\assets\toastr-master\.jscsrc" />
     <Content Include="Content\MSTS\admin\assets\toastr-master\.jshintrc" />
     <Content Include="Content\MSTS\admin\assets\toastr-master\.travis.yml" />
-    <Content Include="Content\MSTS\admin\assets\toastr-master\build\toastr.js.map" />
     <Content Include="Content\MSTS\admin\assets\toastr-master\package.json" />
     <Content Include="Content\MSTS\admin\assets\toastr-master\toastr.less" />
     <Content Include="Content\MSTS\admin\assets\toastr-master\toastr.scss" />
@@ -3985,8 +3974,6 @@
     <Content Include="Content\MSTS\admin\admin\assets\bootstrap-daterangepicker\README.md" />
     <Content Include="Content\MSTS\admin\admin\assets\bootstrap-datetimepicker\.travis.yml" />
     <Content Include="Content\MSTS\admin\admin\assets\bootstrap-datetimepicker\bower.json" />
-    <Content Include="Content\MSTS\admin\admin\assets\bootstrap-datetimepicker\build\build.less" />
-    <Content Include="Content\MSTS\admin\admin\assets\bootstrap-datetimepicker\build\build_standalone.less" />
     <Content Include="Content\MSTS\admin\admin\assets\bootstrap-datetimepicker\less\datetimepicker.less" />
     <Content Include="Content\MSTS\admin\admin\assets\bootstrap-datetimepicker\LICENSE" />
     <Content Include="Content\MSTS\admin\admin\assets\bootstrap-datetimepicker\README.md" />
@@ -4156,7 +4143,6 @@
     <Content Include="Content\MSTS\admin\admin\assets\toastr-master\.jscsrc" />
     <Content Include="Content\MSTS\admin\admin\assets\toastr-master\.jshintrc" />
     <Content Include="Content\MSTS\admin\admin\assets\toastr-master\.travis.yml" />
-    <Content Include="Content\MSTS\admin\admin\assets\toastr-master\build\toastr.js.map" />
     <Content Include="Content\MSTS\admin\admin\assets\toastr-master\package.json" />
     <Content Include="Content\MSTS\admin\admin\assets\toastr-master\toastr.less" />
     <Content Include="Content\MSTS\admin\admin\assets\toastr-master\toastr.scss" />
@@ -4334,9 +4320,6 @@
     <Content Include="Scripts\oms.min.js" />
     <Content Include="Scripts\pdfmake-master\.gitignore" />
     <Content Include="Scripts\pdfmake-master\.gitmodules" />
-    <Content Include="Scripts\pdfmake-master\build\pdfmake.js" />
-    <Content Include="Scripts\pdfmake-master\build\pdfmake.min.js" />
-    <Content Include="Scripts\pdfmake-master\build\vfs_fonts.js" />
     <Content Include="Scripts\pdfmake-master\dev-playground\public\ace.js" />
     <Content Include="Scripts\pdfmake-master\dev-playground\public\index.html" />
     <Content Include="Scripts\pdfmake-master\dev-playground\public\mode-javascript.js" />
@@ -4439,7 +4422,6 @@
     <Content Include="Areas\Admin\Views\ClockTimeReport\Index.cshtml" />
     <Content Include="Areas\Admin\Views\InventoryTransfer\InventoryTransferReport.cshtml" />
     <Content Include="Areas\Admin\Views\InventoryBulkTransfer\Index.cshtml" />
-    <Content Include="Angular\views\Form\field\SinglePhoto.html" />
     <Content Include="Areas\Admin\Views\InventoryRequestConfiguration\Index.cshtml" />
     <Content Include="Areas\Admin\Views\BudgetStatusReport\Index.cshtml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
@@ -4602,7 +4584,6 @@
     <Content Include="Scripts\pdfmake-master\.npmignore" />
     <Content Include="Scripts\pdfmake-master\.travis.yml" />
     <Content Include="Scripts\pdfmake-master\bower.json" />
-    <Content Include="Scripts\pdfmake-master\build\pdfmake.min.js.map" />
     <Content Include="Scripts\pdfmake-master\composer.json" />
     <Content Include="Scripts\pdfmake-master\CONTRIBUTING.md" />
     <Content Include="Scripts\pdfmake-master\dev-playground\package.json" />

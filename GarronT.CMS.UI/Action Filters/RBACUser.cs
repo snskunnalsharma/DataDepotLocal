@@ -113,14 +113,38 @@ public class RBACUser
 
     public bool HasPermission(string requiredPermission)
     {
-        bool bFound = false;
+        if (string.IsNullOrWhiteSpace(requiredPermission))
+        {
+            return false;
+        }
+
+        string required = requiredPermission.Trim();
+        string requiredNormalized = required.Replace(" ", "");
+
         foreach (UserRole role in this.Roles)
         {
-            bFound = (role.Permissions.Where(p => p.PermissionDescription.ToLower() == requiredPermission.ToLower()).ToList().Count > 0);
-            if (bFound)
-                break;
+            foreach (RolePermission permission in role.Permissions)
+            {
+                if (string.IsNullOrWhiteSpace(permission.PermissionDescription))
+                {
+                    continue;
+                }
+
+                string actual = permission.PermissionDescription.Trim();
+                if (string.Equals(actual, required, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+
+                // "Budget Status Report" should match controller permission "BudgetStatusReport"
+                if (string.Equals(actual.Replace(" ", ""), requiredNormalized, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
         }
-        return bFound;
+
+        return false;
     }
 
     public bool HasRole(string role)

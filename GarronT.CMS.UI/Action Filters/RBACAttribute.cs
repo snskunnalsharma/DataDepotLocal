@@ -41,7 +41,11 @@ public class RBACAttribute : AuthorizeAttribute
             //RBACUser requestingUser = new RBACUser(filterContext.RequestContext.HttpContext.User.Identity.Name);
 
             //Check if the requesting user has the permission to run the controller's action
-            if (!requestingUser.HasPermission(requiredPermission) & !requestingUser.IsSysAdmin)
+            // Also allow helper AJAX actions when the user can open the controller Index (menu access).
+            string indexPermission = String.Format("{0}-Index", filterContext.ActionDescriptor.ControllerDescriptor.ControllerName);
+            if (!requestingUser.HasPermission(requiredPermission)
+                && !requestingUser.HasPermission(indexPermission)
+                && !requestingUser.IsSysAdmin)
             {
                 //User doesn't have the required permission and is not a SysAdmin, return our custom “401 Unauthorized” access error
                 //Since we are setting filterContext.Result to contain an ActionResult page, the controller's action will not be run.

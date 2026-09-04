@@ -1,4 +1,5 @@
-﻿using GarronT.CMS.Model.BO;
+﻿using GarronT.CMS.Model;
+using GarronT.CMS.Model.BO;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -350,6 +351,193 @@ namespace GarronT.CMS.Model.DAL
             }
 
             return result;
+        }
+
+        public bool ReturnStockToWarehouseFromWeb(
+            long userId,
+            long projectId,
+            long warehouseId,
+            long productId,
+            string productName,
+            string serialNumber,
+            int qty,
+            string jsonData,
+            string deviceIp,
+            out string message)
+        {
+            List<WebReturnStockItem> items = new List<WebReturnStockItem>
+            {
+                new WebReturnStockItem
+                {
+                    ProductId = productId,
+                    ProductName = productName,
+                    SerialNumber = serialNumber,
+                    Qty = qty
+                }
+            };
+
+            return ReturnStockToWarehouseFromWeb(
+                userId,
+                projectId,
+                warehouseId,
+                items,
+                jsonData,
+                deviceIp,
+                null,
+                out message);
+        }
+
+        public bool ReturnStockToWarehouseFromWeb(
+            long userId,
+            long projectId,
+            long warehouseId,
+            List<WebReturnStockItem> items,
+            string jsonData,
+            string deviceIp,
+            DateTime? requestDateTime,
+            out string message)
+        {
+            message = "";
+
+            try
+            {
+                if (items == null || items.Count == 0)
+                {
+                    message = "No unused inventory found to return.";
+                    return false;
+                }
+
+                CompassEntities db = new CompassEntities();
+                DateTime requestDate = requestDateTime.HasValue
+                    ? DateTime.Parse(requestDateTime.Value.ToString("MM/dd/yyyy HH:mm:ss"))
+                    : DateTime.Parse(DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss"));
+
+                DataTable stockTable = new DataTable();
+                stockTable.Columns.Add("SourceId", typeof(long));
+                stockTable.Columns.Add("SubSourceId", typeof(long));
+                stockTable.Columns.Add("ProductId", typeof(long));
+                stockTable.Columns.Add("ProductName", typeof(string));
+                stockTable.Columns.Add("IsNewInventory", typeof(int));
+                stockTable.Columns.Add("IsSerialNumber", typeof(bool));
+                stockTable.Columns.Add("SerialNumber", typeof(string));
+                stockTable.Columns.Add("TotalQty", typeof(int));
+
+                foreach (WebReturnStockItem item in items)
+                {
+                    if (item == null || item.Qty <= 0)
+                    {
+                        continue;
+                    }
+
+                    bool isSerialItem = !string.IsNullOrWhiteSpace(item.SerialNumber);
+                    DataRow row = stockTable.NewRow();
+                    row["SourceId"] = 1;
+                    row["SubSourceId"] = warehouseId;
+                    row["IsNewInventory"] = 1;
+
+                    if (isSerialItem)
+                    {
+                        row["IsSerialNumber"] = true;
+                        row["SerialNumber"] = item.SerialNumber.Trim();
+                        row["TotalQty"] = 1;
+                        if (item.ProductId > 0)
+                        {
+                            row["ProductId"] = item.ProductId;
+                        }
+                    }
+                    else
+                    {
+                        if (item.ProductId <= 0)
+                        {
+                            continue;
+                        }
+                        row["ProductId"] = item.ProductId;
+                        row["ProductName"] = item.ProductName ?? "";
+                        row["IsSerialNumber"] = false;
+                        row["TotalQty"] = item.Qty;
+                    }
+
+                    stockTable.Rows.Add(row);
+                }
+
+                if (stockTable.Rows.Count == 0)
+                {
+                    message = "No unused inventory found to return.";
+                    db.Dispose();
+                    return false;
+                }
+
+                try
+                {
+                    using (SqlConnection con = new SqlConnection(db.Database.Connection.ConnectionString))
+                    {
+                        con.Open();
+                        using (SqlCommand cmd = new SqlCommand("PROC_Insert_ReturnFromMobile", con))
+                        {
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            cmd.CommandTimeout = 180;
+                            cmd.Parameters.AddWithValue("@tblStockReturn", stockTable);
+                            cmd.Parameters.AddWithValue("@deviceDateTime", requestDate);
+                            cmd.Parameters.AddWithValue("@UserId", userId);
+                            cmd.Parameters.AddWithValue("@ProjectId", projectId);
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    message = ex.Message;
+                    if (ex.InnerException != null && !string.IsNullOrWhiteSpace(ex.InnerException.Message))
+                    {
+                        message += " | " + ex.InnerException.Message;
+                    }
+                    db.Dispose();
+                    return false;
+                }
+
+                InventoryMobileStockReturn header = db.InventoryMobileStockReturns
+                    .Where(o => o.Active == 1
+                        && o.CreatedBy == userId
+                        && o.DeviceDateTime == requestDate)
+                    .OrderByDescending(o => o.Id)
+                    .FirstOrDefault();
+
+                if (header == null)
+                {
+                    DateTime lookupFrom = requestDate.AddMinutes(-2);
+                    header = db.InventoryMobileStockReturns
+                        .Where(o => o.Active == 1
+                            && o.CreatedBy == userId
+                            && o.CreatedOn >= lookupFrom)
+                        .OrderByDescending(o => o.Id)
+                        .FirstOrDefault();
+                }
+
+                if (header == null)
+                {
+                    message = "Return request was not saved. Please try again.";
+                    db.Dispose();
+                    return false;
+                }
+
+                header.JsonRequestData = jsonData;
+                header.DeviceIP = string.IsNullOrWhiteSpace(deviceIp) ? "WEB" : deviceIp;
+                header.GPSLocation = "WEB";
+                db.SaveChanges();
+                db.Dispose();
+
+                message = "Inventory returned to warehouse successfully.";
+                return true;
+            }
+            catch (Exception ex)
+            {
+                message = ex.Message;
+                if (ex.InnerException != null && !string.IsNullOrWhiteSpace(ex.InnerException.Message))
+                {
+                    message += " | " + ex.InnerException.Message;
+                }
+                return false;
+            }
         }
 
 

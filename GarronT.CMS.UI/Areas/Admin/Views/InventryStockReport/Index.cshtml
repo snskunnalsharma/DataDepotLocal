@@ -10,6 +10,10 @@
 
 @Html.Hidden("urlGetProject", Url.Action("GetProject", "InventryStockReport"))
 @Html.Hidden("urlGetProduct", Url.Action("GetProduct", "InventryStockReport"))
+@Html.Hidden("urlGetWarehouseByProject", Url.Action("GetWarehouseByProject", "InventryStockReport"))
+@Html.Hidden("urlReturnToWarehouse", Url.Action("ReturnToWarehouse", "InventryStockReport"))
+@Html.Hidden("urlGetUnusedInventoryPreview", Url.Action("GetUnusedInventoryPreview", "InventryStockReport"))
+@Html.Hidden("urlReturnUnusedInventory", Url.Action("ReturnUnusedInventory", "InventryStockReport"))
 
 <style>
     .recinv-drp3 {
@@ -78,6 +82,209 @@
         background: #fff3cd !important;
     }
     /* yellow */
+
+    #returnToWarehouseModal .modal-dialog,
+    #returnUnusedInventoryModal .modal-dialog {
+        margin-top: 80px;
+        max-width: 520px;
+    }
+    #returnToWarehouseModal .modal-content,
+    #returnUnusedInventoryModal .modal-content {
+        border: 0;
+        border-radius: 8px;
+        box-shadow: 0 8px 28px rgba(31, 78, 105, 0.22);
+        overflow: hidden;
+        font-family: 'Open Sans', sans-serif;
+    }
+    #returnToWarehouseModal .modal-header,
+    #returnUnusedInventoryModal .modal-header {
+        background: #80B2DF;
+        color: #fff;
+        border: 0;
+        padding: 14px 18px;
+    }
+    #returnToWarehouseModal .modal-title,
+    #returnUnusedInventoryModal .modal-title {
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+    }
+    #returnToWarehouseModal .modal-header .close,
+    #returnUnusedInventoryModal .modal-header .close {
+        color: #fff;
+        opacity: 1;
+        text-shadow: none;
+        font-size: 24px;
+        margin-top: 2px;
+    }
+    #returnToWarehouseModal .modal-body,
+    #returnUnusedInventoryModal .modal-body {
+        padding: 18px 20px 8px;
+        background: #f7fbff;
+    }
+    #returnToWarehouseModal .return-note,
+    #returnUnusedInventoryModal .return-note {
+        background: #fff;
+        border: 1px solid #d5e6f5;
+        border-left: 4px solid #80B2DF;
+        border-radius: 4px;
+        padding: 8px 12px;
+        color: #4e5050;
+        font-size: 12px;
+        margin-bottom: 14px;
+    }
+    #returnToWarehouseModal .return-info-card,
+    #returnUnusedInventoryModal .return-info-card {
+        background: #fff;
+        border: 1px solid #d5e6f5;
+        border-radius: 6px;
+        padding: 10px 12px;
+        margin-bottom: 14px;
+    }
+    #returnToWarehouseModal .return-info-row,
+    #returnUnusedInventoryModal .return-info-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 7px 0;
+        border-bottom: 1px dashed #e4eef6;
+        font-size: 13px;
+    }
+    #returnToWarehouseModal .return-info-row:last-child,
+    #returnUnusedInventoryModal .return-info-row:last-child {
+        border-bottom: 0;
+        padding-bottom: 0;
+    }
+    #returnToWarehouseModal .return-info-row label,
+    #returnUnusedInventoryModal .return-info-row label {
+        margin: 0;
+        color: #5f6368;
+        font-weight: 600;
+        min-width: 130px;
+    }
+    #returnToWarehouseModal .return-info-row span,
+    #returnUnusedInventoryModal .return-info-row span {
+        color: #2c3e50;
+        font-weight: 600;
+        text-align: right;
+        word-break: break-word;
+    }
+    #returnToWarehouseModal .form-group label,
+    #returnUnusedInventoryModal .form-group label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #5f6368;
+        margin-bottom: 5px;
+    }
+    #returnToWarehouseModal .form-control,
+    #returnUnusedInventoryModal .form-control {
+        height: 36px;
+        border: 1px solid #cfdce6;
+        border-radius: 4px;
+        box-shadow: none;
+        font-size: 13px;
+        background: #fff;
+    }
+    #returnToWarehouseModal .form-control:focus,
+    #returnUnusedInventoryModal .form-control:focus {
+        border-color: #80B2DF;
+        box-shadow: 0 0 0 2px rgba(128, 178, 223, 0.25);
+        background: #fff;
+    }
+    #returnToWarehouseModal #returnQtyHelp {
+        display: block;
+        margin-top: 5px;
+        color: #E8693C;
+        font-weight: 600;
+        font-size: 12px;
+    }
+    #returnUnusedInventoryModal .modal-dialog {
+        max-width: 760px;
+        width: 92%;
+    }
+    #bulkUnusedUserList {
+        max-height: 280px;
+        overflow-y: auto;
+        margin-top: 8px;
+        font-size: 12px;
+        color: #4e5050;
+    }
+    .bulk-user-block {
+        border: 1px solid #d5e6f5;
+        border-radius: 6px;
+        margin-bottom: 10px;
+        overflow: hidden;
+        background: #fff;
+    }
+    .bulk-user-title {
+        background: #eaf4fb;
+        color: #1f4e69;
+        font-weight: 700;
+        padding: 7px 10px;
+    }
+    .bulk-section-title {
+        background: #f4f9fc;
+        color: #5f6368;
+        font-weight: 700;
+        padding: 5px 10px;
+        border-top: 1px solid #d5e6f5;
+    }
+    .bulk-item-table {
+        width: 100%;
+        margin: 0;
+    }
+    .bulk-item-table th,
+    .bulk-item-table td {
+        padding: 6px 8px;
+        border-top: 1px solid #eef4f8;
+        vertical-align: middle;
+    }
+    .bulk-item-table th {
+        background: #fafcfe;
+        color: #5f6368;
+        font-weight: 600;
+    }
+    .bulk-qty-input {
+        width: 78px;
+        height: 28px;
+        text-align: center;
+        border: 1px solid #cfdce6;
+        border-radius: 4px;
+    }
+    .bulk-remove-serial {
+        display: inline-block;
+        width: 22px;
+        height: 22px;
+        line-height: 20px;
+        text-align: center;
+        border-radius: 50%;
+        background: #d9534f;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+        padding: 0;
+    }
+    .bulk-remove-serial:hover {
+        background: #c9302c;
+        color: #fff;
+        text-decoration: none;
+    }
+    #returnToWarehouseModal .modal-footer,
+    #returnUnusedInventoryModal .modal-footer {
+        background: #fff;
+        border-top: 1px solid #d5e6f5;
+        padding: 12px 18px 16px;
+        text-align: right;
+    }
+    #returnToWarehouseModal .modal-footer .btn,
+    #returnUnusedInventoryModal .modal-footer .btn {
+        min-width: 110px;
+        font-weight: 600;
+        border-radius: 4px;
+        padding: 6px 14px;
+    }
 
     #dynamic-table .date-time-col,
     #dynamic-table-Summary .date-time-col {
@@ -1245,6 +1452,7 @@
                                 <button id="btnSearch" class="btn btn-success" type="button">Search</button>
                                 <button class="btn btn-danger" id="btnReset" type="button">Reset</button>
                                 <button id="btnExport" class="btn btn-success" type="button">Export</button>
+                                <button id="btnReturnUnusedInventory" class="btn btn-warning" type="button"><i class="fa fa-undo"></i> Return Unused Inventory</button>
 
                             </div>
 
@@ -1306,6 +1514,7 @@
                                             <th width="10%">Returned Inventory</th>
                                             <th width="10%">Inventory InHand</th>
                                             <th style="min-width:110px;">Date &amp; Time</th>
+                                            <th style="min-width:90px;">Action</th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -1345,6 +1554,92 @@
 
     </section>
 </section>
+
+<div class="modal fade modal-dialog-center" id="returnToWarehouseModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title"><i class="fa fa-undo"></i> Return To Warehouse</h4>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="returnUserId" />
+                <input type="hidden" id="returnProductId" />
+                <input type="hidden" id="returnSerialNumber" />
+                <input type="hidden" id="returnMaxQty" />
+                <div class="return-note">
+                    This will move in-hand inventory from the installer back to the selected warehouse.
+                </div>
+                <div class="return-info-card">
+                    <div class="return-info-row">
+                        <label>Installer/Manager</label>
+                        <span id="returnInstallerName">-</span>
+                    </div>
+                    <div class="return-info-row">
+                        <label>Product</label>
+                        <span id="returnProductName">-</span>
+                    </div>
+                    <div class="return-info-row" id="returnSerialGroup">
+                        <label>Serial Number</label>
+                        <span id="returnSerialDisplay">-</span>
+                    </div>
+                </div>
+                <div class="form-group" id="returnQtyGroup">
+                    <label>Quantity</label>
+                    <input type="number" id="returnQty" class="form-control" min="1" />
+                    <small id="returnQtyHelp"></small>
+                </div>
+                <div class="form-group">
+                    <label>Warehouse <span style="color:#E8693C;">*</span></label>
+                    <select id="returnWarehouseId" class="form-control"></select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="btnConfirmReturnToWarehouse"><i class="fa fa-undo"></i> Return To Warehouse</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade modal-dialog-center" id="returnUnusedInventoryModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title"><i class="fa fa-undo"></i> Return Unused Inventory</h4>
+            </div>
+            <div class="modal-body">
+                <div class="return-note">
+                    End of day return: unused in-hand inventory is shown user-wise. Serial items are listed separately. Consumable quantities can be edited before return. Installed inventory will not be returned.
+                </div>
+                <div class="return-info-card">
+                    <div class="return-info-row">
+                        <label>Users</label>
+                        <span id="bulkUnusedUserCount">0</span>
+                    </div>
+                    <div class="return-info-row">
+                        <label>Items</label>
+                        <span id="bulkUnusedItemCount">0</span>
+                    </div>
+                    <div class="return-info-row">
+                        <label>Total Qty</label>
+                        <span id="bulkUnusedTotalQty">0</span>
+                    </div>
+                    <div id="bulkUnusedUserList"></div>
+                </div>
+                <div class="form-group">
+                    <label>Warehouse <span style="color:#E8693C;">*</span></label>
+                    <select id="bulkReturnWarehouseId" class="form-control"></select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="btnConfirmReturnUnusedInventory"><i class="fa fa-undo"></i> Return Unused Inventory</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <link href="~/jquery-confirm-master/css/jquery-confirm.css" rel="stylesheet" />
 <script src="~/jquery-confirm-master/js/jquery-confirm.js"></script>
@@ -1629,8 +1924,18 @@
                             return formatInventryDateAndTimeCell(data, full);
                         }
                     },
-
-
+                    {
+                        "mData": null,
+                        "bSortable": false,
+                        "sClass": "text-center",
+                        "mRender": function (data, type, full) {
+                            var inHand = parseInt(full.InHandQty || 0, 10);
+                            if (isNaN(inHand) || inHand <= 0) {
+                                return "";
+                            }
+                            return '<button type="button" class="btn btn-warning btn-xs btn-return-warehouse" title="Return To Warehouse"><i class="fa fa-undo"></i> Return</button>';
+                        }
+                    }
                 ],
                 "aoColumnDefs": [
                     //{
@@ -1644,6 +1949,348 @@
             }), $('.dataTables_filter input').attr('maxlength', 50);
 
     }
+
+    $(document).on("click", ".btn-return-warehouse", function () {
+        var table = $("#dynamic-table").dataTable();
+        var rowData = table.fnGetData($(this).closest("tr")[0]);
+        openReturnToWarehouseModal(rowData);
+    });
+
+    function openReturnToWarehouseModal(rowData) {
+        if (!rowData) {
+            toastr["error"]("Unable to read inventory row.", "Notification");
+            return;
+        }
+
+        var projectId = $("#ProjectId").val();
+        if (!projectId || projectId === "0") {
+            toastr["error"]("Please select a project.", "Notification");
+            return;
+        }
+
+        var inHand = parseInt(rowData.InHandQty || 0, 10);
+        if (isNaN(inHand) || inHand <= 0) {
+            toastr["error"]("No in-hand inventory available to return.", "Notification");
+            return;
+        }
+
+        var serial = (rowData.SerialNumber || "").toString().trim();
+        var isSerial = serial !== "";
+
+        $("#returnUserId").val(rowData.UserId);
+        $("#returnProductId").val(rowData.FKProductId);
+        $("#returnSerialNumber").val(serial);
+        $("#returnMaxQty").val(inHand);
+        $("#returnInstallerName").text(rowData.UserName || "-");
+        $("#returnProductName").text(rowData.ProductName || "-");
+        $("#returnSerialDisplay").text(serial || "-");
+        $("#returnQty").val(isSerial ? 1 : inHand);
+        $("#returnQty").attr("max", inHand);
+        $("#returnQtyHelp").text("Max in-hand quantity: " + inHand);
+
+        if (isSerial) {
+            $("#returnSerialGroup").show();
+            $("#returnQtyGroup").hide();
+        } else {
+            $("#returnSerialGroup").hide();
+            $("#returnQtyGroup").show();
+        }
+
+        var $warehouse = $("#returnWarehouseId");
+        $warehouse.empty().append($("<option></option>").val("").text("Select Warehouse"));
+
+        waitingDialog.show("Loading warehouses...");
+        $.ajax({
+            type: "GET",
+            url: $("#urlGetWarehouseByProject").val(),
+            data: { projectId: projectId },
+            success: function (warehouses) {
+                waitingDialog.hide();
+                if (warehouses && warehouses.length) {
+                    $.each(warehouses, function (index, item) {
+                        $warehouse.append($("<option></option>").val(item.WarehouseId).text(item.WarehouseName));
+                    });
+                }
+                $("#returnToWarehouseModal").modal("show");
+            },
+            error: function () {
+                waitingDialog.hide();
+                toastr["error"]("Unable to load warehouses.", "Notification");
+            }
+        });
+    }
+
+    $("#btnConfirmReturnToWarehouse").click(function () {
+        var projectId = $("#ProjectId").val();
+        var warehouseId = $("#returnWarehouseId").val();
+        var userId = $("#returnUserId").val();
+        var productId = $("#returnProductId").val();
+        var serialNumber = $("#returnSerialNumber").val();
+        var maxQty = parseInt($("#returnMaxQty").val() || 0, 10);
+        var qty = parseInt($("#returnQty").val() || 0, 10);
+        var isSerial = (serialNumber || "").trim() !== "";
+
+        if (!warehouseId) {
+            toastr["error"]("Please select a warehouse.", "Notification");
+            return;
+        }
+
+        if (isSerial) {
+            qty = 1;
+        } else if (isNaN(qty) || qty <= 0) {
+            toastr["error"]("Please enter a valid quantity.", "Notification");
+            return;
+        } else if (qty > maxQty) {
+            toastr["error"]("Quantity cannot be more than in-hand quantity (" + maxQty + ").", "Notification");
+            return;
+        }
+
+        waitingDialog.show("Returning inventory...");
+        $.ajax({
+            type: "POST",
+            url: $("#urlReturnToWarehouse").val(),
+            data: {
+                projectId: projectId,
+                userId: userId,
+                productId: productId,
+                serialNumber: serialNumber,
+                qty: qty,
+                warehouseId: warehouseId
+            },
+            success: function (result) {
+                waitingDialog.hide();
+                if (result && result.success) {
+                    $("#returnToWarehouseModal").modal("hide");
+                    toastr["success"](result.message || "Inventory returned to warehouse successfully.", "Notification");
+                    LoadDatatable();
+                } else {
+                    toastr["error"]((result && result.message) ? result.message : "Unable to return inventory.", "Notification");
+                }
+            },
+            error: function () {
+                waitingDialog.hide();
+                toastr["error"]("Unable to return inventory to warehouse.", "Notification");
+            }
+        });
+    });
+
+    $("#btnReturnUnusedInventory").click(function () {
+        var projectId = $("#ProjectId").val();
+        var installerId = $("#InstallerId").val() || "0";
+        var productId = $("#ProductId").val() || "0";
+        var txtFromDate = $("#txtFromDate").val();
+        var txtToDate = $("#txtToDate").val();
+
+        if (!projectId || projectId === "0") {
+            toastr["error"]("Please select a project.", "Notification");
+            return;
+        }
+        if (!txtFromDate || !txtToDate) {
+            toastr["error"]("Please select from date and to date.", "Notification");
+            return;
+        }
+
+        waitingDialog.show("Loading unused inventory...");
+        $.ajax({
+            type: "GET",
+            url: $("#urlGetUnusedInventoryPreview").val(),
+            data: {
+                projectId: projectId,
+                installerId: installerId,
+                productId: productId,
+                txtFromDate: txtFromDate,
+                txtToDate: txtToDate
+            },
+            success: function (result) {
+                waitingDialog.hide();
+                if (!result || !result.success) {
+                    toastr["error"]((result && result.message) ? result.message : "Unable to load unused inventory.", "Notification");
+                    return;
+                }
+                if (!result.itemCount || result.itemCount <= 0) {
+                    toastr["error"]("No unused in-hand inventory found to return.", "Notification");
+                    return;
+                }
+
+                $("#bulkUnusedUserCount").text(result.userCount || 0);
+                $("#bulkUnusedItemCount").text(result.itemCount || 0);
+                $("#bulkUnusedTotalQty").text(result.totalQty || 0);
+                $("#bulkUnusedUserList").html(buildUnusedInventoryHtml(result.users || []));
+
+                var $warehouse = $("#bulkReturnWarehouseId");
+                $warehouse.empty().append($("<option></option>").val("").text("Select Warehouse"));
+
+                waitingDialog.show("Loading warehouses...");
+                $.ajax({
+                    type: "GET",
+                    url: $("#urlGetWarehouseByProject").val(),
+                    data: { projectId: projectId },
+                    success: function (warehouses) {
+                        waitingDialog.hide();
+                        if (warehouses && warehouses.length) {
+                            $.each(warehouses, function (index, item) {
+                                $warehouse.append($("<option></option>").val(item.WarehouseId).text(item.WarehouseName));
+                            });
+                        }
+                        $("#returnUnusedInventoryModal").modal("show");
+                    },
+                    error: function () {
+                        waitingDialog.hide();
+                        toastr["error"]("Unable to load warehouses.", "Notification");
+                    }
+                });
+            },
+            error: function () {
+                waitingDialog.hide();
+                toastr["error"]("Unable to load unused inventory.", "Notification");
+            }
+        });
+    });
+
+    function escapeHtml(value) {
+        return $("<div/>").text(value == null ? "" : String(value)).html();
+    }
+
+    function buildUnusedInventoryHtml(users) {
+        var html = "";
+        (users || []).forEach(function (u) {
+            html += '<div class="bulk-user-block">';
+            html += '<div class="bulk-user-title">' + escapeHtml(u.UserName || "User") + ' <span style="font-weight:600;color:#5f6368;">(' + (u.ItemCount || 0) + ' items, qty ' + (u.Qty || 0) + ')</span></div>';
+
+            html += '<div class="bulk-section-title">Serial Wise</div>';
+            if (u.SerialItems && u.SerialItems.length) {
+                html += '<table class="bulk-item-table bulk-serial-table"><thead><tr><th>Product</th><th>Serial Number</th><th style="width:60px;">Qty</th><th style="width:50px;"></th></tr></thead><tbody>';
+                u.SerialItems.forEach(function (item) {
+                    html += '<tr class="bulk-return-item" data-type="serial" data-userid="' + item.UserId + '" data-productid="' + item.ProductId + '" data-productname="' + escapeHtml(item.ProductName || "") + '" data-serial="' + escapeHtml(item.SerialNumber || "") + '" data-maxqty="1">';
+                    html += '<td>' + escapeHtml(item.ProductName || "") + '</td>';
+                    html += '<td>' + escapeHtml(item.SerialNumber || "") + '</td>';
+                    html += '<td>1</td>';
+                    html += '<td><button type="button" class="bulk-remove-serial" title="Do not return this serial">&times;</button></td></tr>';
+                });
+                html += '</tbody></table>';
+            } else {
+                html += '<div style="padding:6px 10px;color:#888;">No serial inventory</div>';
+            }
+
+            html += '<div class="bulk-section-title">Consumable</div>';
+            if (u.ConsumableItems && u.ConsumableItems.length) {
+                html += '<table class="bulk-item-table"><thead><tr><th>Product</th><th style="width:120px;">Return Qty</th><th style="width:90px;">In Hand</th></tr></thead><tbody>';
+                u.ConsumableItems.forEach(function (item) {
+                    html += '<tr class="bulk-return-item" data-type="consumable" data-userid="' + item.UserId + '" data-productid="' + item.ProductId + '" data-productname="' + escapeHtml(item.ProductName || "") + '" data-serial="" data-maxqty="' + (item.MaxQty || 0) + '">';
+                    html += '<td>' + escapeHtml(item.ProductName || "") + '</td>';
+                    html += '<td><input type="number" class="bulk-qty-input" min="0" max="' + (item.MaxQty || 0) + '" value="' + (item.Qty || 0) + '" /></td>';
+                    html += '<td>' + (item.MaxQty || 0) + '</td></tr>';
+                });
+                html += '</tbody></table>';
+            } else {
+                html += '<div style="padding:6px 10px;color:#888;">No consumable inventory</div>';
+            }
+
+            html += '</div>';
+        });
+        return html;
+    }
+
+    $("#bulkUnusedUserList").on("click", ".bulk-remove-serial", function () {
+        var $row = $(this).closest("tr");
+        var $table = $row.closest("table");
+        var $block = $row.closest(".bulk-user-block");
+        $row.remove();
+        if ($table.find("tbody tr").length === 0) {
+            $table.replaceWith('<div style="padding:6px 10px;color:#888;">No serial inventory</div>');
+        }
+        var remaining = $block.find(".bulk-return-item").length;
+        if (remaining === 0) {
+            $block.remove();
+        }
+    });
+
+    function collectBulkReturnItems() {
+        var items = [];
+        var invalid = "";
+        $("#bulkUnusedUserList .bulk-return-item").each(function () {
+            var $row = $(this);
+            var type = $row.attr("data-type");
+            var userId = parseInt($row.attr("data-userid") || "0", 10);
+            var productId = parseInt($row.attr("data-productid") || "0", 10);
+            var productName = $row.attr("data-productname") || "";
+            var serial = ($row.attr("data-serial") || "").trim();
+            var maxQty = parseInt($row.attr("data-maxqty") || "0", 10);
+            var qty = type === "serial" ? 1 : parseInt($row.find(".bulk-qty-input").val() || "0", 10);
+
+            if (type === "consumable") {
+                if (isNaN(qty) || qty < 0) {
+                    invalid = "Please enter a valid consumable quantity.";
+                    return false;
+                }
+                if (qty > maxQty) {
+                    invalid = "Consumable quantity cannot be more than in-hand quantity.";
+                    return false;
+                }
+                if (qty === 0) {
+                    return;
+                }
+            }
+
+            items.push({
+                UserId: userId,
+                ProductId: productId,
+                ProductName: productName,
+                SerialNumber: serial,
+                Qty: qty
+            });
+        });
+        return { items: items, invalid: invalid };
+    }
+
+    $("#btnConfirmReturnUnusedInventory").click(function () {
+        var projectId = $("#ProjectId").val();
+        var warehouseId = $("#bulkReturnWarehouseId").val();
+
+        if (!warehouseId) {
+            toastr["error"]("Please select a warehouse.", "Notification");
+            return;
+        }
+
+        var collected = collectBulkReturnItems();
+        if (collected.invalid) {
+            toastr["error"](collected.invalid, "Notification");
+            return;
+        }
+        if (!collected.items.length) {
+            toastr["error"]("Please select unused inventory to return.", "Notification");
+            return;
+        }
+
+        waitingDialog.show("Returning unused inventory...");
+        $.ajax({
+            type: "POST",
+            url: $("#urlReturnUnusedInventory").val(),
+            data: {
+                projectId: projectId,
+                installerId: $("#InstallerId").val() || "0",
+                productId: $("#ProductId").val() || "0",
+                txtFromDate: $("#txtFromDate").val(),
+                txtToDate: $("#txtToDate").val(),
+                warehouseId: warehouseId,
+                itemsJson: JSON.stringify(collected.items)
+            },
+            success: function (result) {
+                waitingDialog.hide();
+                if (result && result.success) {
+                    $("#returnUnusedInventoryModal").modal("hide");
+                    toastr["success"](result.message || "Unused inventory returned to warehouse successfully.", "Notification");
+                    LoadDatatable();
+                } else {
+                    toastr["error"]((result && result.message) ? result.message : "Unable to return unused inventory.", "Notification");
+                }
+            },
+            error: function () {
+                waitingDialog.hide();
+                toastr["error"]("Unable to return unused inventory to warehouse.", "Notification");
+            }
+        });
+    });
 
     function BindDataToGridSummary(varData) {
         oTable = $('#dynamic-table-Summary').dataTable(

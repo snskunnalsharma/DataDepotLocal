@@ -136,50 +136,61 @@ namespace GarronT.CMS.Model.DAL
             #endregion
 
             var list = new List<InstallationModel>();
+            totaluploadedRecords = 0;
+            totalPending = 0;
 
-            CompassEntities objCompassEntities = new CompassEntities();
-
-            var result = objCompassEntities.STP_ProjectMonthSummary(projectID).ToList();
-
-            totaluploadedRecords = (result != null && result.Count > 0) ? int.Parse(Convert.ToString(result[0].TotalRecords)) : 0;
-
-            var a = result.Sum(o => o.CompletedRecords + o.SkippedRecords);
-            totalPending = a != null ? totaluploadedRecords - int.Parse(Convert.ToString(a)) : 0;
-            int notMappedRecords = (result != null && result.Count > 0) ? int.Parse(Convert.ToString(result[0].NotMappedRecords)) : 0;
-
-            foreach (var item in result)
+            try
             {
-                decimal complete = decimal.Parse(!string.IsNullOrEmpty(Convert.ToString(item.CompletedRecords)) ? Convert.ToString(item.CompletedRecords) : "0");
-                decimal skippped = decimal.Parse(!string.IsNullOrEmpty(Convert.ToString(item.SkippedRecords)) ? Convert.ToString(item.SkippedRecords) : "0");
+                CompassEntities objCompassEntities = new CompassEntities();
+                objCompassEntities.Database.CommandTimeout = 180;
 
-                var ab = result.Where(o => o.MonthId < item.MonthId).Sum(o => o.CompletedRecords + o.SkippedRecords);
-                decimal pendingRecords = decimal.Parse(Convert.ToString(totaluploadedRecords - (ab + complete + skippped)));
+                var result = objCompassEntities.STP_ProjectMonthSummary(projectID).ToList();
 
-                InstallationModel obj1 = new InstallationModel();
-                obj1.Complete = complete;
-                obj1.Month = item.VisitMonth;
-                if (complete != 0 && skippped != 0)
+                totaluploadedRecords = (result != null && result.Count > 0) ? int.Parse(Convert.ToString(result[0].TotalRecords)) : 0;
+
+                var a = result.Sum(o => o.CompletedRecords + o.SkippedRecords);
+                totalPending = a != null ? totaluploadedRecords - int.Parse(Convert.ToString(a)) : 0;
+                int notMappedRecords = (result != null && result.Count > 0) ? int.Parse(Convert.ToString(result[0].NotMappedRecords)) : 0;
+
+                foreach (var item in result)
                 {
-                    obj1.Pending = pendingRecords;
-                }
-                obj1.Skipped = skippped;
-                obj1.Total = totaluploadedRecords;
-                list.Add(obj1);
+                    decimal complete = decimal.Parse(!string.IsNullOrEmpty(Convert.ToString(item.CompletedRecords)) ? Convert.ToString(item.CompletedRecords) : "0");
+                    decimal skippped = decimal.Parse(!string.IsNullOrEmpty(Convert.ToString(item.SkippedRecords)) ? Convert.ToString(item.SkippedRecords) : "0");
 
+                    var ab = result.Where(o => o.MonthId < item.MonthId).Sum(o => o.CompletedRecords + o.SkippedRecords);
+                    decimal pendingRecords = decimal.Parse(Convert.ToString(totaluploadedRecords - (ab + complete + skippped)));
+
+                    InstallationModel obj1 = new InstallationModel();
+                    obj1.Complete = complete;
+                    obj1.Month = item.VisitMonth;
+                    if (complete != 0 && skippped != 0)
+                    {
+                        obj1.Pending = pendingRecords;
+                    }
+                    obj1.Skipped = skippped;
+                    obj1.Total = totaluploadedRecords;
+                    list.Add(obj1);
+
+                }
+
+
+
+                InstallationModel InstallationModelpending = new InstallationModel
+                {
+                    Month = "Not Allocated",
+                    Total = 0,
+                    Complete = 0,
+                    Pending = notMappedRecords,
+                    Skipped = 0
+                };
+
+                list.Insert(0, InstallationModelpending);
+            }
+            catch (Exception)
+            {
+                // Keep dashboard usable if month summary times out / fails
             }
 
-
-
-            InstallationModel InstallationModelpending = new InstallationModel
-            {
-                Month = "Not Allocated",
-                Total = 0,
-                Complete = 0,
-                Pending = notMappedRecords,
-                Skipped = 0
-            };
-
-            list.Insert(0, InstallationModelpending);
             return list;
         }
 
@@ -192,6 +203,7 @@ namespace GarronT.CMS.Model.DAL
             try
             {
                 CompassEntities objCompassEntities = new CompassEntities();
+                objCompassEntities.Database.CommandTimeout = 180;
                 var Result = objCompassEntities.PROC_Dashboard_InstallationsPerInstaller(projectID, 2).ToList();
                 list = Result.Select(o =>
                     new InstallationModel
@@ -204,7 +216,9 @@ namespace GarronT.CMS.Model.DAL
                         Total = Convert.ToDecimal(o.TotalMappedRecords),
                         Installer = o.InstallerName
                     }).ToList();
-                totaluploadedRecords = Convert.ToInt32(Result[0].TotalRecords);
+                totaluploadedRecords = Result != null && Result.Count > 0
+                    ? Convert.ToInt32(Result[0].TotalRecords)
+                    : 0;
 
             }
             catch (Exception ex)
@@ -307,6 +321,7 @@ namespace GarronT.CMS.Model.DAL
             try
             {
                 CompassEntities objCompassEntities = new CompassEntities();
+                objCompassEntities.Database.CommandTimeout = 180;
 
                 var result = objCompassEntities
                     .PROC_Dashboard_CompVsPendingChart(projectID, 2)

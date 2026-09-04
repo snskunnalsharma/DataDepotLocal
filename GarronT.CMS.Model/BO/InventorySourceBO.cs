@@ -233,6 +233,15 @@ namespace GarronT.CMS.Model.BO
         public string ServerReponseStatus { get; set; }
     }
 
+    public class WebReturnStockItem
+    {
+        public long UserId { get; set; }
+        public long ProductId { get; set; }
+        public string ProductName { get; set; }
+        public string SerialNumber { get; set; }
+        public int Qty { get; set; }
+    }
+
 
     public class MissingInventory
     {

@@ -1985,47 +1985,55 @@ function GetSKipRTU_Details(InstallerId, ProjectId, ID, FormId) {
 
 }
 function EditRecords(userId, projectId, accinifiledId, reportFId) {
-    alert("2");
     var createurl = $("#urlRedirectCreate").val();
     console.log('in EditRecords');
+
+    // Form/Project/Upload required. InstallerId may be null in grid even for COMPLETED —
+    // server resolves it from TblProjectFieldData.
+    if (projectId == null || projectId === "" || Number(projectId) <= 0
+        || accinifiledId == null || accinifiledId === "" || Number(accinifiledId) <= 0
+        || reportFId == null || reportFId === "" || reportFId === "null" || reportFId === "undefined" || Number(reportFId) <= 0) {
+        toastr["error"]("Cannot edit: Form or Account is missing for this record.", "Notification !");
+        return;
+    }
+
+    if (userId == null || userId === "" || userId === "null" || userId === "undefined" || Number(userId) <= 0) {
+        userId = 0; // server will resolve from TblProjectFieldData
+    }
   
     $.ajax({
         
         url: createurl,
-        datatype: "text",
+        datatype: "json",
         type: "GET",
         //long userId, int projectId, long uploadId, long reportFormId
         data: { 'userId': userId, 'projectId': projectId, 'uploadId': accinifiledId, 'reportFormId': reportFId },
         success: function (data) {
           
-            if (data.success === undefined) {
-                console.log('in undefined');
+            if (data && data.success === true) {
                 waitingDialog.show('Please Wait...');
 
+                var resolvedUserId = data.userId || userId;
+                var resolvedProjectId = data.projectId || projectId;
+                var resolvedUploadId = data.uploadId || accinifiledId;
+                var resolvedFormId = data.reportFormId || reportFId;
 
-                //long userId, int projectId, long uploadId, long reportFormId
-                createurl = createurl + "?userId=" + userId + "&projectId=" + projectId + "&uploadId=" + accinifiledId + "&reportFormId=" + reportFId;
-
-
+                createurl = createurl + "?userId=" + resolvedUserId + "&projectId=" + resolvedProjectId + "&uploadId=" + resolvedUploadId + "&reportFormId=" + resolvedFormId;
 
                 var win = window.open(createurl, '_blank');
                 if (win) {
-                    //Browser has allowed it to be opened
                     win.focus();
                 } else {
-                    //Browser has blocked it
-                    var $toast = toastr["error"]('Please allow popups for this website', "Notification");
-
+                    toastr["error"]('Please allow popups for this website', "Notification");
                 }
                 waitingDialog.hide();
             }
             else {
-                console.log('in fail');
-                var $toast = toastr["error"](data.returnMessage, "Notification !");
+                var $toast = toastr["error"]((data && data.returnMessage) ? data.returnMessage : "Unable to open edit.", "Notification !");
             }
         },
         error: function (request, status, error) {
-            var $toast = toastr["error"](request.responseText, "Notification !");
+            var $toast = toastr["error"]("Unable to open edit. Please check Installer/Form on this record.", "Notification !");
             console.log(request.responseText)
         }
     });

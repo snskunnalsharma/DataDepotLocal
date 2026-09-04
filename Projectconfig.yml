@@ -1,0 +1,168 @@
+# DataDepot / CMSMeter — project configuration
+# Application does not read this file at runtime.
+# Source of truth for environments is GarronT.CMS.UI/Web.config.
+
+project:
+  name: DataDepot
+  product: CMSMeter
+  description: >
+    Field operations CMS for electric, gas, and water meter installation.
+    Covers projects, appointments, installer allocation, inventory/warehouse,
+    audits, photos, Excel uploads, maps, and reports.
+  version: v1.0015
+  solution: GarronT.CMS.sln
+  runtime: .NET Framework 4.8
+  ui: ASP.NET MVC 5
+  orm: Entity Framework 6.1.3
+  database: SQL Server (CMSMeter / CMSMeterLive)
+  auth: Forms Authentication + ASP.NET Identity + RBAC
+  logging: log4net
+  jobs: Hangfire 1.8.6
+
+components:
+  - name: GarronT.CMS.UI
+    type: web
+    path: GarronT.CMS.UI
+    framework: net48
+    notes: MVC UI, Web API, ASMX mobile service, ReportViewer
+  - name: GarronT.CMS.Model
+    type: library
+    path: GarronT.CMS.Model
+    framework: net48
+    notes: EF6 CompassEntities, DAL, business objects
+  - name: CMSShedulerService
+    type: windows-service
+    path: CMSShedulerService
+    framework: net48
+  - name: CMSAuditThread
+    type: worker
+    path: CMSAuditThread
+    framework: net48
+  - name: TNMPUploadUtility
+    type: utility
+    path: TNMPUploadUtility
+    framework: net48
+
+areas:
+  - name: Global
+    route: Global/{controller}/{action}
+    purpose: Login and shared entry
+  - name: Admin
+    route: Admin/{controller}/{action}/{id}
+    purpose: Projects, inventory, appointments, reports, users
+  - name: Form
+    route: Form/{controller}/{action}
+    purpose: Dynamic form management
+  - name: Installer
+    route: Installer/{controller}/{action}
+    purpose: Installer dashboard
+  - name: SuperAdmin
+    route: SuperAdmin/{controller}/{action}
+    purpose: Super admin dashboard
+
+modules:
+  - Projects
+  - Appointments
+  - Installer allocation
+  - Inventory / warehouse / stock
+  - Meter type / make / size
+  - Customers
+  - Photos / uploads
+  - Project audit
+  - Reports / auditor reports / PDF
+  - Clock time
+  - Excel bulk upload
+  - Google Maps / geocoding
+  - Devices
+  - Roles and permissions
+
+apis:
+  mvc: GarronT.CMS.UI
+  webapi:
+    - api/Login
+    - api/UploadFile
+  asmx: CMS_MobileService.asmx
+  maps: Google Maps JavaScript + Geocoding (googleapiKey in Web.config)
+
+paths:
+  web_url_local: http://localhost:6070/
+  web_url_live: https://www.cmsmeter.com/CMSMA/
+  upload_file_path: ..\..\MobileUploadData\
+  clock_time_report: ~/ClockTimeReport/
+  inventory_upload: ~/InventoryUpload/
+  webapi_upload_custom_image: https://localhost:6069/api/UploadFile/UploadCustomImageFiles
+
+environments:
+  local:
+    web_config: GarronT.CMS.UI/Web.config
+    database: CMSMeterLive
+    data_source: DESKTOP-A5PAJ99
+    notes: Active connection in current Web.config
+  staging:
+    database: CMSMeter
+    data_source: 162.241.141.61
+    notes: Commented in Web.config
+  live:
+    database: CMSMeter
+    data_source: 198.57.200.76
+    notes: Commented in Web.config
+
+# Do not put real passwords or API keys in this file.
+# Keep secrets in Web.config / App.config or a secret store.
+secrets_in_webconfig:
+  - DefaultConnection
+  - CompassEntities
+  - WebMasterMailId
+  - WebMasterMailPassword
+  - googleapiKey
+  - DefaultPassword
+
+connections:
+  default: DefaultConnection
+  ef: CompassEntities
+  provider: System.Data.SqlClient
+
+mail:
+  smtp: smtp.gmail.com
+  port: 587
+  ssl: true
+  from_key: WebMasterMailId
+
+ai:
+  enabled: false
+  provider: AzureOpenAI
+  purpose:
+    - Admin dashboard natural-language Q&A on reports
+    - Meter photo QA / OCR
+    - Excel upload error explanation
+    - Audit summary
+  settings:
+    endpoint: ""          # e.g. https://YOUR-RESOURCE.openai.azure.com/
+    api_key: ""           # store in Web.config, not here
+    chat_deployment: gpt-4o-mini
+    vision_deployment: gpt-4o
+    api_version: "2024-08-01-preview"
+  constraints:
+    - Call AI only from server-side C# (never from browser)
+    - Reuse existing [Authorize] and RBAC
+    - Send filtered SQL results only, not the full database
+    - Do not log API keys
+    - Prefer HttpClient / RestSharp (already in UI project)
+    - Do not add a .NET 8 Azure OpenAI SDK; this app is net48
+
+packages_relevant:
+  - EntityFramework 6.1.3
+  - Newtonsoft.Json 7.0.1
+  - RestSharp 104.4.0
+  - Hangfire 1.8.6
+  - EPPlus 4.0.4
+  - iTextSharp 5.5.9
+  - GoogleMaps.LocationServices
+  - Magick.NET-Q16-AnyCPU
+  - System.Net.Http
+
+conventions:
+  language: C#
+  ui: Razor + jQuery (not a SPA)
+  do_not: rewrite to .NET 8 unless explicitly requested
+  config_file: GarronT.CMS.UI/Web.config

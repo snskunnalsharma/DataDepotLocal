@@ -171,8 +171,6 @@
 
 <script type="text/javascript">
     $(document).ajaxError(function (xhr, props) {
-        
-        debugger;
         if (props.status === 306) {
             var dashboardurl = $("#urlLogIn").val();
             location.href = dashboardurl;

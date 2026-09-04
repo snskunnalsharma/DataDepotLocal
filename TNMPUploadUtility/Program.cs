@@ -22,7 +22,7 @@ namespace TNMPUploadUtility
             /*Console.WriteLine("Test Succeed or not - " + DateTime.Now.ToShortTimeString());
             Console.ReadLine();*/
             //Note==> Emails comment for a testsing time  ==> UploadFile.cs
-            long ProjectID = 10134;
+            long ProjectID = 10122;
             if (args.Length > 0)
             {
                 ProjectID = Convert.ToInt64(args[0]);  // Get project id in Task Schedular Argumnet
@@ -219,6 +219,23 @@ namespace TNMPUploadUtility
 
             // Start code => Upload old files s3 bucket
             #region Upload old files s3 bucket
+            // Updated Sep 2026 - batch pending uploads (skip 1M+ URL checks by default)
+            ErrorLogFile.writeStatus("\n\nThread Started at ProcessCloudUrls (pending batch upload) - " + DateTime.Now.ToShortTimeString());
+            Console.WriteLine("Thread Started at ProcessCloudUrls (pending batch upload) - " + DateTime.Now.ToShortTimeString());
+            try
+            {
+                UploadFilesS3Bucekt s3bucket = new UploadFilesS3Bucekt();
+                s3bucket.ProcessCloudUrls();
+            }
+            catch (Exception ex)
+            {
+                ErrorLogFile.writeStatus("Error for ProcessCloudUrls:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
+                Console.WriteLine("Error for ProcessCloudUrls:- " + ex.Message.ToString() + " - " + DateTime.Now.ToShortTimeString());
+            }
+            ErrorLogFile.writeStatus("Thread Ended at ProcessCloudUrls - " + DateTime.Now.ToShortTimeString());
+            Console.WriteLine("Thread Ended at ProcessCloudUrls - " + DateTime.Now.ToShortTimeString());
+
+            // Commented - original getFilesPath upload (year-range). Pending uploads handled by ProcessCloudUrls.
             /*ErrorLogFile.writeStatus("\n\nThread Started at Upload old files s3 bucket - " + DateTime.Now.ToShortTimeString());
              Console.WriteLine("Thread Started at Upload old files s3 bucket - " + DateTime.Now.ToShortTimeString());
              try
@@ -390,7 +407,7 @@ namespace TNMPUploadUtility
             #endregion
 
             #region Export Report By Email Without Meter Number
-            long projectId = 10134;
+           /* long projectId = 10134;
                 long formTypeId = 2;
                 string[] visitStatus = new string[] { "Completed" };
                 int latlongRequired = 1;
@@ -497,7 +514,7 @@ namespace TNMPUploadUtility
                 else
                 {
                     Console.WriteLine("No data available for the selected date range.");
-                }
+                }*/
 
             #endregion
 

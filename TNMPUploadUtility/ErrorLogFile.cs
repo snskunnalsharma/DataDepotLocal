@@ -1,28 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Security.AccessControl;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TNMPUploadUtility
 {
     class ErrorLogFile
     {
-        //static string appDirectory = Environment.CurrentDirectory + "\\Log";
         static string appDirectory = System.AppDomain.CurrentDomain.BaseDirectory + "Log";
+        // Keep only last N days of log files to save disk space
+        const int LogRetentionDays = 7;
+        static DateTime lastCleanupDate = DateTime.MinValue;
 
         public static void writeStatus(string _status)
         {
-            //check if the directory with access right is available
             if (grantAccess())
             {
+                CleanupOldLogsIfNeeded();
                 writeFile(_status);
             }
-
         }
-
 
         private static bool grantAccess()
         {
@@ -34,7 +30,6 @@ namespace TNMPUploadUtility
                     Directory.CreateDirectory(appDirectory);
                 }
 
-
                 DirectoryInfo dInfo = new DirectoryInfo(appDirectory);
                 DirectorySecurity dSecurity = dInfo.GetAccessControl();
                 dSecurity.AddAccessRule(new FileSystemAccessRule("everyone", FileSystemRights.FullControl,
@@ -42,12 +37,10 @@ namespace TNMPUploadUtility
                                                                  PropagationFlags.NoPropagateInherit, AccessControlType.Allow));
                 dInfo.SetAccessControl(dSecurity);
                 isSucessed = true;
-
             }
             catch { }
             return isSucessed;
         }
-
 
         private static void writeFile(string message)
         {
@@ -60,11 +53,44 @@ namespace TNMPUploadUtility
                     File.Create(path).Dispose();
                 }
 
-                TextWriter tw = new StreamWriter(path, true);
-                tw.WriteLine(message);
-                tw.Close();
-                tw.Dispose();
+                using (TextWriter tw = new StreamWriter(path, true))
+                {
+                    tw.WriteLine(message);
+                }
+            }
+            catch { }
+        }
 
+        // Delete log files older than LogRetentionDays (once per day)
+        private static void CleanupOldLogsIfNeeded()
+        {
+            try
+            {
+                DateTime today = DateTime.Today;
+                if (lastCleanupDate == today)
+                {
+                    return;
+                }
+                lastCleanupDate = today;
+
+                if (!Directory.Exists(appDirectory))
+                {
+                    return;
+                }
+
+                DateTime cutoff = today.AddDays(-LogRetentionDays);
+                foreach (string file in Directory.GetFiles(appDirectory, "*.txt"))
+                {
+                    try
+                    {
+                        FileInfo fi = new FileInfo(file);
+                        if (fi.LastWriteTime.Date < cutoff)
+                        {
+                            fi.Delete();
+                        }
+                    }
+                    catch { }
+                }
             }
             catch { }
         }

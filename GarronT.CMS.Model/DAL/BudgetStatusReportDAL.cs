@@ -168,6 +168,29 @@ namespace GarronT.CMS.Model.DAL
                         }
                     }
                 }
+                else if (projectId.Value == 10122)
+                {
+                    allRows = GetBudgetStatusReportForProject10122(
+                        db, projectId.Value, installerId, parsedFromDate, parsedToDate);
+
+                    if (parsedFromDate > new DateTime(1900, 1, 1))
+                    {
+                        priorRows = GetBudgetStatusReportForProject10122(
+                            db, projectId.Value, installerId, new DateTime(1900, 1, 1), parsedFromDate.AddDays(-1));
+                    }
+                }
+                else if (projectId.Value == 10133)
+                {
+                    // Project 10133: same Lead Line field rules as 10134, applied to "Line Inspection Dig Outside Box"
+                    allRows = GetBudgetStatusReportForProject10133(
+                        db, projectId.Value, installerId, parsedFromDate, parsedToDate);
+
+                    if (parsedFromDate > new DateTime(1900, 1, 1))
+                    {
+                        priorRows = GetBudgetStatusReportForProject10133(
+                            db, projectId.Value, installerId, new DateTime(1900, 1, 1), parsedFromDate.AddDays(-1));
+                    }
+                }
                 else
                 {
                     // Other projects use the default stored procedure
@@ -287,6 +310,218 @@ namespace GarronT.CMS.Model.DAL
 
             return result;
         }
+
+        private const string LineInspectionInsideMeterBoxName = "Line Inspection Inside Meter Box";
+        private const string LineInspectionDigOutsideBoxName = "Line Inspection Dig Outside Box";
+        private const string LeadLineInspectionOutsideBoxWithErtName = "Lead Line Inspection (Outside the Box) with ERT Mitigation";
+
+        private List<BudgetStatusReportBO> GetBudgetStatusReportForProject10122(
+            CompassEntities db,
+            long projectId,
+            long? installerId,
+            DateTime fromDate,
+            DateTime toDate)
+        {
+            List<BudgetStatusReportBO> rows = db.Database.SqlQuery<BudgetStatusReportBO>(
+                "EXEC dbo.PROC_GetBudgetStatusReport @ProjectId, @InstallerId, @FromDate, @ToDate",
+                new SqlParameter("@ProjectId", projectId),
+                new SqlParameter("@InstallerId", installerId.HasValue ? (object)installerId.Value : DBNull.Value),
+                new SqlParameter("@FromDate", fromDate),
+                new SqlParameter("@ToDate", toDate)
+            ).ToList();
+
+            // Project 10122: Inside Meter Box is always fixed at 74; Outside Box stays from proc.
+            int insideCount = 74;
+
+            BudgetStatusReportBO insideRow = rows.FirstOrDefault(o =>
+                string.Equals(o.ServiceDescription, LineInspectionInsideMeterBoxName, StringComparison.OrdinalIgnoreCase));
+
+            if (insideRow != null)
+            {
+                insideRow.TotalCount = insideCount;
+                insideRow.TotalCost = insideRow.UnitCost * insideCount;
+
+                if (insideCount <= 0)
+                {
+                    rows.Remove(insideRow);
+                }
+            }
+            else if (insideCount > 0)
+            {
+                decimal unitCost = db.tblMeterPays
+                    .Where(o => o.FK_Project_Id == projectId
+                             && o.Active == 1
+                             && o.MeterDisplayName == LineInspectionInsideMeterBoxName)
+                    .Select(o => o.CostRate)
+                    .FirstOrDefault() ?? 0;
+
+                rows.Add(new BudgetStatusReportBO
+                {
+                    ServiceDescription = LineInspectionInsideMeterBoxName,
+                    UnitCost = unitCost,
+                    TotalCount = insideCount,
+                    TotalCost = unitCost * insideCount
+                });
+            }
+
+            return rows;
+        }
+
+        /// <summary>
+        /// Project 10133: use PROC for all services, but recalculate
+        /// "Line Inspection Dig Outside Box" with the same Lead Line rules as project 10134
+        /// (Work Completed + LCR=Y + allowed pipe types + Verified=BOTH).
+        /// </summary>
+        private List<BudgetStatusReportBO> GetBudgetStatusReportForProject10133(
+            CompassEntities db,
+            long projectId,
+            long? installerId,
+            DateTime fromDate,
+            DateTime toDate)
+        {
+            List<BudgetStatusReportBO> rows = db.Database.SqlQuery<BudgetStatusReportBO>(
+                "EXEC dbo.PROC_GetBudgetStatusReport @ProjectId, @InstallerId, @FromDate, @ToDate",
+                new SqlParameter("@ProjectId", projectId),
+                new SqlParameter("@InstallerId", installerId.HasValue ? (object)installerId.Value : DBNull.Value),
+                new SqlParameter("@FromDate", fromDate),
+                new SqlParameter("@ToDate", toDate)
+            ).ToList();
+
+            int outsideCount = GetLineInspectionDigOutsideBoxCountUsingLeadLineRules(
+                db, projectId, installerId, fromDate, toDate);
+
+            BudgetStatusReportBO outsideRow = rows.FirstOrDefault(o =>
+                string.Equals(o.ServiceDescription, LineInspectionDigOutsideBoxName, StringComparison.OrdinalIgnoreCase));
+
+            if (outsideRow != null)
+            {
+                outsideRow.TotalCount = outsideCount;
+                outsideRow.TotalCost = outsideRow.UnitCost * outsideCount;
+
+                if (outsideCount <= 0)
+                {
+                    rows.Remove(outsideRow);
+                }
+            }
+            else if (outsideCount > 0)
+            {
+                decimal unitCost = db.tblMeterPays
+                    .Where(o => o.FK_Project_Id == projectId
+                             && o.Active == 1
+                             && o.MeterDisplayName == LineInspectionDigOutsideBoxName)
+                    .Select(o => o.CostRate)
+                    .FirstOrDefault() ?? 0;
+
+                rows.Add(new BudgetStatusReportBO
+                {
+                    ServiceDescription = LineInspectionDigOutsideBoxName,
+                    UnitCost = unitCost,
+                    TotalCount = outsideCount,
+                    TotalCost = unitCost * outsideCount
+                });
+            }
+
+            return rows;
+        }
+
+        /// <summary>
+        /// Counts completed visits that pass the same Lead Line validation used for project 10134.
+        /// </summary>
+        private int GetLineInspectionDigOutsideBoxCountUsingLeadLineRules(
+            CompassEntities db,
+            long projectId,
+            long? installerId,
+            DateTime fromDate,
+            DateTime toDate)
+        {
+            using (SqlConnection con = new SqlConnection(db.Database.Connection.ConnectionString))
+            {
+                con.Open();
+
+                var serviceConfig = GetTimeClockServiceConfig(projectId, con);
+                string leadLineDisplayName = LeadLineInspectionOutsideBoxWithErtName;
+                if (serviceConfig.ContainsKey("LEAD_LINE")
+                    && !string.IsNullOrWhiteSpace(serviceConfig["LEAD_LINE"].ServiceDisplayName))
+                {
+                    leadLineDisplayName = serviceConfig["LEAD_LINE"].ServiceDisplayName;
+                }
+
+                // Exclusive end date — same convention as project 10134 Beaumont path
+                var installedMeters = GetBeaumont21InstalledMetersDetails(
+                    projectId,
+                    installerId,
+                    fromDate,
+                    toDate.Date.AddDays(1),
+                    con);
+
+                return installedMeters.Count(x =>
+                    string.Equals(x.MeterDisplayName, leadLineDisplayName, StringComparison.OrdinalIgnoreCase));
+            }
+        }
+
+        private int GetLineInspectionInsideMeterBoxCount(
+            CompassEntities db,
+            long projectId,
+            long? installerId,
+            DateTime fromDate,
+            DateTime toDate)
+        {
+            const string sql = @"
+        ;WITH CompletedAccounts AS
+        (
+            SELECT DISTINCT pf.Id AS ProjectFieldDataId
+            FROM uploadedexceldata up
+            INNER JOIN TblProjectFieldData pf ON up.Id = pf.fk_uploadedexceldata_id
+            INNER JOIN tblProjectFieldDataMaster dm ON pf.Id = dm.TblProjectFieldData_Id
+            WHERE up.FKProjectId = @ProjectId
+              AND pf.Active = 1
+              AND dm.Active = 1
+              AND CONVERT(DATE, pf.VisitDateTime) BETWEEN @FromDate AND @ToDate
+              AND (@InstallerId IS NULL OR @InstallerId = 0 OR pf.CreatedBy = @InstallerId)
+              AND UPPER(LTRIM(RTRIM(dm.InitialFieldName))) = 'WORK COMPLETED'
+              AND UPPER(LTRIM(RTRIM(ISNULL(dm.FieldValue, '')))) IN ('TRUE','YES','Y','1','DONE')
+        ),
+        VisitFields AS
+        (
+            SELECT
+                ca.ProjectFieldDataId,
+                MAX(CASE WHEN UPPER(LTRIM(RTRIM(dm.InitialFieldName))) LIKE '%LCR INVESTIGATION%'
+                         THEN ISNULL(dm.FieldValue, '') END) AS LcrInvestigation,
+                MAX(CASE WHEN UPPER(LTRIM(RTRIM(dm.InitialFieldName))) = 'CITY SIDE PIPE TYPE'
+                         THEN ISNULL(dm.FieldValue, '') END) AS CitySidePipeType,
+                MAX(CASE WHEN UPPER(LTRIM(RTRIM(dm.InitialFieldName))) = 'CUSTOMER SIDE PIPE TYPE'
+                         THEN ISNULL(dm.FieldValue, '') END) AS CustomerSidePipeType
+            FROM CompletedAccounts ca
+            INNER JOIN tblProjectFieldDataMaster dm
+                ON ca.ProjectFieldDataId = dm.TblProjectFieldData_Id
+            WHERE dm.Active = 1
+            GROUP BY ca.ProjectFieldDataId
+        )
+        SELECT COUNT(1)
+        FROM VisitFields vf
+        WHERE
+            UPPER(LTRIM(RTRIM(ISNULL(vf.LcrInvestigation, '')))) IN ('Y', 'YES')
+            AND NULLIF(LTRIM(RTRIM(vf.CitySidePipeType)), '') IS NOT NULL
+            AND NOT (
+                (UPPER(vf.CitySidePipeType) LIKE '%IF NO%' AND UPPER(vf.CitySidePipeType) LIKE '%NO TEST NEEDED%')
+                OR (UPPER(vf.CitySidePipeType) LIKE '%OUTSIDE%' AND UPPER(vf.CitySidePipeType) LIKE '%BOX%')
+            )
+            AND NULLIF(LTRIM(RTRIM(vf.CustomerSidePipeType)), '') IS NOT NULL
+            AND NOT (
+                (UPPER(vf.CustomerSidePipeType) LIKE '%IF NO%' AND UPPER(vf.CustomerSidePipeType) LIKE '%NO TEST NEEDED%')
+                OR (UPPER(vf.CustomerSidePipeType) LIKE '%OUTSIDE%' AND UPPER(vf.CustomerSidePipeType) LIKE '%BOX%')
+            );
+    ";
+
+            return db.Database.SqlQuery<int>(
+                sql,
+                new SqlParameter("@ProjectId", projectId),
+                new SqlParameter("@InstallerId", installerId.HasValue ? (object)installerId.Value : DBNull.Value),
+                new SqlParameter("@FromDate", fromDate),
+                new SqlParameter("@ToDate", toDate)
+            ).FirstOrDefault();
+        }
+
         private decimal GetApprovedProjectBudget(CompassEntities db, long projectId)
         {
             /*
@@ -906,18 +1141,6 @@ namespace GarronT.CMS.Model.DAL
                             time
                         );
                     }
-                    else if (BeaumontSizeMatches(oldMeterSize, "1"))
-                    {
-                        AddBeaumont21RowByCode(
-                            result,
-                            serviceConfig,
-                            projectId,
-                            "METER_1",
-                            createdOn,
-                            dayName,
-                            time
-                        );
-                    }
                     else if (BeaumontSizeMatches(oldMeterSize, "1.5")
                              || BeaumontSizeMatches(oldMeterSize, "1 1/2")
                              || BeaumontSizeMatches(oldMeterSize, "1-1/2"))
@@ -939,6 +1162,18 @@ namespace GarronT.CMS.Model.DAL
                             serviceConfig,
                             projectId,
                             "METER_2",
+                            createdOn,
+                            dayName,
+                            time
+                        );
+                    }
+                    else if (BeaumontSizeMatches(oldMeterSize, "1"))
+                    {
+                        AddBeaumont21RowByCode(
+                            result,
+                            serviceConfig,
+                            projectId,
+                            "METER_1",
                             createdOn,
                             dayName,
                             time
@@ -1037,7 +1272,7 @@ namespace GarronT.CMS.Model.DAL
                 return false;
             }
 
-            return actual == expected || actual.Contains(expected);
+            return actual == expected;
         }
 
         private string NormalizeBeaumontSize(string value)

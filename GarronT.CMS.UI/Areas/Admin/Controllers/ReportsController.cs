@@ -836,19 +836,64 @@ namespace GarronT.CMS.UI.Areas.Admin.Controllers
             }
         }
 
-        public ActionResult Create(long userId, int projectId, long uploadId, long reportFormId)
+        public ActionResult Create(long? userId, int? projectId, long? uploadId, long? reportFormId)
         {
+            // Report grid/SP sometimes returns null InstallerId even for COMPLETED.
+            // Completion always stores InstallerId on TblProjectFieldData — resolve from there.
+            if ((!userId.HasValue || userId.Value <= 0)
+                && uploadId.HasValue && uploadId.Value > 0
+                && reportFormId.HasValue && reportFormId.Value > 0)
+            {
+                using (var db = new CompassEntities())
+                {
+                    var resolvedInstallerId = db.TblProjectFieldDatas.AsNoTracking()
+                        .Where(o => o.Active == 1
+                            && o.FormId == reportFormId.Value
+                            && (o.FK_UploadedExcelData_Id == uploadId.Value || o.tblUploadedData_Id == uploadId.Value))
+                        .Select(o => (long?)o.InstallerId)
+                        .FirstOrDefault();
+
+                    if (resolvedInstallerId.HasValue && resolvedInstallerId.Value > 0)
+                    {
+                        userId = resolvedInstallerId;
+                    }
+                }
+            }
+
+            if (!userId.HasValue || userId.Value <= 0
+                || !projectId.HasValue || projectId.Value <= 0
+                || !uploadId.HasValue || uploadId.Value <= 0
+                || !reportFormId.HasValue || reportFormId.Value <= 0)
+            {
+                return Json(new
+                {
+                    success = false,
+                    returnMessage = "Cannot open edit: InstallerId or FormId is missing for this record."
+                }, JsonRequestBehavior.AllowGet);
+            }
 
             var objPermissionCheck = UserPermissionCheck.checkUserStatus("Reports", "Edit");
 
             if (objPermissionCheck)
             {
+                // AJAX permission/resolve call from EditRecords — return resolved ids (not HTML View)
+                if (Request.IsAjaxRequest())
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        userId = userId.Value,
+                        projectId = projectId.Value,
+                        uploadId = uploadId.Value,
+                        reportFormId = reportFormId.Value
+                    }, JsonRequestBehavior.AllowGet);
+                }
                 return View();
             }
             else
             {
                 var strMessage = objPermissionCheck == false ? UserPermissionCheck.PerMessage : "";
-                return Json(new { success = objPermissionCheck, returnMessage = strMessage }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false, returnMessage = strMessage }, JsonRequestBehavior.AllowGet);
             }
         }
 

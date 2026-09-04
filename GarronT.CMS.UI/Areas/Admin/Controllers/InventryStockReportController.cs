@@ -1868,6 +1868,387 @@ EXEC dbo.SP_Upsert_INVInstallerReport
             }
         }
 
+        [HttpGet]
+        public ActionResult GetWarehouseByProject(long projectId)
+        {
+            try
+            {
+                if (projectId <= 0)
+                {
+                    return Json(new List<WarehouseBO>(), JsonRequestBehavior.AllowGet);
+                }
+
+                List<WarehouseBO> warehouses = new InventoryDAL().GetWareHouseList(projectId);
+                return Json(warehouses ?? new List<WarehouseBO>(), JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("GetWarehouseByProject failed", ex);
+                return Json(new List<WarehouseBO>(), JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpPost]
+        public ActionResult ReturnToWarehouse(long projectId, long userId, long productId, string serialNumber, int qty, long warehouseId)
+        {
+            try
+            {
+                if (projectId <= 0)
+                {
+                    return Json(new { success = false, message = "Please select a project." });
+                }
+                if (userId <= 0)
+                {
+                    return Json(new { success = false, message = "Installer is missing for this inventory row." });
+                }
+                if (warehouseId <= 0)
+                {
+                    return Json(new { success = false, message = "Please select a warehouse." });
+                }
+                if (qty <= 0)
+                {
+                    return Json(new { success = false, message = "Return quantity must be greater than 0." });
+                }
+
+                List<WarehouseBO> projectWarehouses = new InventoryDAL().GetWareHouseList(projectId);
+                if (projectWarehouses == null || !projectWarehouses.Any(w => w.WarehouseId == warehouseId))
+                {
+                    return Json(new { success = false, message = "Selected warehouse does not belong to this project." });
+                }
+
+                string serial = (serialNumber ?? "").Trim();
+                bool isSerialItem = !string.IsNullOrWhiteSpace(serial);
+
+                if (isSerialItem)
+                {
+                    qty = 1;
+                }
+                else if (productId <= 0)
+                {
+                    return Json(new { success = false, message = "Product is missing for this inventory row." });
+                }
+
+                string productName = "";
+                using (CompassEntities db = new CompassEntities())
+                {
+                    productName = db.ProductMasters
+                        .Where(p => p.Id == productId)
+                        .Select(p => p.ProductName)
+                        .FirstOrDefault() ?? "";
+                }
+
+                var returnStock = new MobileReturnStockBO
+                {
+                    UserId = userId,
+                    ProjectId = projectId,
+                    Id = 1,
+                    ChildId = warehouseId,
+                    DeviceIPAddress = Request.UserHostAddress ?? "WEB",
+                    DeviceGpsLocation = "WEB",
+                    SerialNumberList = isSerialItem
+                        ? new List<MobileReturnStockSerialChildBO>
+                        {
+                            new MobileReturnStockSerialChildBO { SerialNumber = serial, TotalQty = 1 }
+                        }
+                        : null,
+                    ProductQuantityList = isSerialItem
+                        ? null
+                        : new List<MobileReturnStockNonSerialChildBO>
+                        {
+                            new MobileReturnStockNonSerialChildBO
+                            {
+                                ProductId = productId,
+                                ProductName = productName,
+                                TotalQty = qty
+                            }
+                        }
+                };
+
+                string jsonData = JsonConvert.SerializeObject(returnStock);
+                string message;
+                bool result;
+
+                using (WebServiceReturnInventoryDAL returnDal = new WebServiceReturnInventoryDAL())
+                {
+                    result = returnDal.ReturnStockToWarehouseFromWeb(
+                        userId,
+                        projectId,
+                        warehouseId,
+                        productId,
+                        productName,
+                        serial,
+                        qty,
+                        jsonData,
+                        Request.UserHostAddress ?? "WEB",
+                        out message);
+                }
+
+                if (!result)
+                {
+                    Log.Error("ReturnToWarehouse failed: " + message);
+                    return Json(new
+                    {
+                        success = false,
+                        message = string.IsNullOrWhiteSpace(message) ? "Unable to return inventory to warehouse." : message
+                    });
+                }
+
+                return Json(new { success = true, message = string.IsNullOrWhiteSpace(message) ? "Inventory returned to warehouse successfully." : message });
+            }
+            catch (Exception ex)
+            {
+                Log.Error("ReturnToWarehouse failed", ex);
+                string error = ex.Message;
+                if (ex.InnerException != null)
+                {
+                    error += " | " + ex.InnerException.Message;
+                }
+                return Json(new { success = false, message = error });
+            }
+        }
+
+        [HttpGet]
+        public ActionResult GetUnusedInventoryPreview(long projectId, long installerId, long productId, string txtFromDate, string txtToDate)
+        {
+            try
+            {
+                if (projectId <= 0)
+                {
+                    return Json(new { success = false, message = "Please select a project." }, JsonRequestBehavior.AllowGet);
+                }
+
+                var unusedRows = GetUnusedInventoryRows(projectId, installerId, productId, txtFromDate, txtToDate);
+                var users = unusedRows
+                    .GroupBy(x => new { x.UserId, x.UserName })
+                    .Select(g => new
+                    {
+                        UserId = g.Key.UserId,
+                        UserName = g.Key.UserName,
+                        SerialItems = g.Where(x => !string.IsNullOrWhiteSpace(x.SerialNumber))
+                            .Select(x => new
+                            {
+                                UserId = g.Key.UserId,
+                                ProductId = x.FKProductId,
+                                ProductName = x.ProductName,
+                                SerialNumber = (x.SerialNumber ?? "").Trim(),
+                                Qty = 1,
+                                MaxQty = 1
+                            })
+                            .OrderBy(x => x.ProductName)
+                            .ThenBy(x => x.SerialNumber)
+                            .ToList(),
+                        ConsumableItems = g.Where(x => string.IsNullOrWhiteSpace(x.SerialNumber))
+                            .GroupBy(x => new { x.FKProductId, x.ProductName })
+                            .Select(p => new
+                            {
+                                UserId = g.Key.UserId,
+                                ProductId = p.Key.FKProductId,
+                                ProductName = p.Key.ProductName,
+                                SerialNumber = "",
+                                Qty = p.Sum(x => x.InHandQty ?? 0),
+                                MaxQty = p.Sum(x => x.InHandQty ?? 0)
+                            })
+                            .Where(x => x.Qty > 0)
+                            .OrderBy(x => x.ProductName)
+                            .ToList()
+                    })
+                    .Select(u => new
+                    {
+                        u.UserId,
+                        u.UserName,
+                        ItemCount = u.SerialItems.Count + u.ConsumableItems.Count,
+                        Qty = u.SerialItems.Sum(x => x.Qty) + u.ConsumableItems.Sum(x => x.Qty),
+                        SerialItems = u.SerialItems,
+                        ConsumableItems = u.ConsumableItems
+                    })
+                    .OrderBy(x => x.UserName)
+                    .ToList();
+
+                var jsonResult = Json(new
+                {
+                    success = true,
+                    userCount = users.Count,
+                    itemCount = users.Sum(x => x.ItemCount),
+                    totalQty = users.Sum(x => x.Qty),
+                    users = users
+                }, JsonRequestBehavior.AllowGet);
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
+            }
+            catch (Exception ex)
+            {
+                Log.Error("GetUnusedInventoryPreview failed", ex);
+                return Json(new { success = false, message = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpPost]
+        public ActionResult ReturnUnusedInventory(long projectId, long installerId, long productId, string txtFromDate, string txtToDate, long warehouseId, string itemsJson)
+        {
+            try
+            {
+                if (projectId <= 0)
+                {
+                    return Json(new { success = false, message = "Please select a project." });
+                }
+                if (warehouseId <= 0)
+                {
+                    return Json(new { success = false, message = "Please select a warehouse." });
+                }
+                if (string.IsNullOrWhiteSpace(itemsJson))
+                {
+                    return Json(new { success = false, message = "Please select unused inventory to return." });
+                }
+
+                List<WarehouseBO> projectWarehouses = new InventoryDAL().GetWareHouseList(projectId);
+                if (projectWarehouses == null || !projectWarehouses.Any(w => w.WarehouseId == warehouseId))
+                {
+                    return Json(new { success = false, message = "Selected warehouse does not belong to this project." });
+                }
+
+                List<WebReturnStockItem> postedItems = JsonConvert.DeserializeObject<List<WebReturnStockItem>>(itemsJson)
+                    ?? new List<WebReturnStockItem>();
+
+                var unusedRows = GetUnusedInventoryRows(projectId, installerId, productId, txtFromDate, txtToDate);
+                var unusedSerials = new HashSet<string>(unusedRows
+                    .Where(x => !string.IsNullOrWhiteSpace(x.SerialNumber))
+                    .Select(x => (x.UserId + "|" + x.FKProductId + "|" + (x.SerialNumber ?? "").Trim()).ToLower()));
+                var unusedConsumableQty = unusedRows
+                    .Where(x => string.IsNullOrWhiteSpace(x.SerialNumber))
+                    .GroupBy(x => x.UserId + "|" + x.FKProductId)
+                    .ToDictionary(g => g.Key, g => g.Sum(x => x.InHandQty ?? 0));
+
+                postedItems = postedItems
+                    .Where(x => x != null && x.UserId > 0 && x.Qty > 0)
+                    .Select(x =>
+                    {
+                        string serial = (x.SerialNumber ?? "").Trim();
+                        if (!string.IsNullOrWhiteSpace(serial))
+                        {
+                            string serialKey = (x.UserId + "|" + x.ProductId + "|" + serial).ToLower();
+                            x.Qty = unusedSerials.Contains(serialKey) ? 1 : 0;
+                        }
+                        else
+                        {
+                            int maxQty;
+                            unusedConsumableQty.TryGetValue(x.UserId + "|" + x.ProductId, out maxQty);
+                            if (x.Qty > maxQty)
+                            {
+                                x.Qty = maxQty;
+                            }
+                        }
+                        return x;
+                    })
+                    .Where(x => x.Qty > 0)
+                    .ToList();
+
+                if (postedItems.Count == 0)
+                {
+                    return Json(new { success = false, message = "Please select unused inventory to return." });
+                }
+
+                var userGroups = postedItems.GroupBy(x => x.UserId).ToList();
+                int successUsers = 0;
+                int failedUsers = 0;
+                int returnedQty = 0;
+                List<string> errors = new List<string>();
+                DateTime requestBase = DateTime.Now;
+
+                using (WebServiceReturnInventoryDAL returnDal = new WebServiceReturnInventoryDAL())
+                {
+                    int userIndex = 0;
+                    foreach (var userGroup in userGroups)
+                    {
+                        long userId = userGroup.Key;
+                        List<WebReturnStockItem> items = userGroup.Select(x => new WebReturnStockItem
+                        {
+                            ProductId = x.ProductId,
+                            ProductName = x.ProductName,
+                            SerialNumber = (x.SerialNumber ?? "").Trim(),
+                            Qty = !string.IsNullOrWhiteSpace(x.SerialNumber) ? 1 : x.Qty
+                        }).Where(x => x.Qty > 0).ToList();
+
+                        if (items.Count == 0)
+                        {
+                            continue;
+                        }
+
+                        string jsonData = JsonConvert.SerializeObject(new
+                        {
+                            UserId = userId,
+                            ProjectId = projectId,
+                            WarehouseId = warehouseId,
+                            Source = "WEB_BULK_UNUSED",
+                            Items = items
+                        });
+
+                        string message;
+                        DateTime userRequestDate = requestBase.AddSeconds(userIndex);
+                        bool result = returnDal.ReturnStockToWarehouseFromWeb(
+                            userId,
+                            projectId,
+                            warehouseId,
+                            items,
+                            jsonData,
+                            Request.UserHostAddress ?? "WEB",
+                            userRequestDate,
+                            out message);
+
+                        if (result)
+                        {
+                            successUsers++;
+                            returnedQty += items.Sum(x => x.Qty);
+                        }
+                        else
+                        {
+                            failedUsers++;
+                            errors.Add("User " + userId + ": " + (string.IsNullOrWhiteSpace(message) ? "Unable to return unused inventory." : message));
+                        }
+
+                        userIndex++;
+                    }
+                }
+
+                if (successUsers == 0)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = errors.Count > 0 ? string.Join(" ", errors) : "Unable to return unused inventory to warehouse."
+                    });
+                }
+
+                string resultMessage = "Unused inventory returned to warehouse for " + successUsers + " user(s). Total qty: " + returnedQty + ".";
+                if (failedUsers > 0)
+                {
+                    resultMessage += " Failed for " + failedUsers + " user(s).";
+                }
+
+                return Json(new { success = true, message = resultMessage, errors });
+            }
+            catch (Exception ex)
+            {
+                Log.Error("ReturnUnusedInventory failed", ex);
+                string error = ex.Message;
+                if (ex.InnerException != null)
+                {
+                    error += " | " + ex.InnerException.Message;
+                }
+                return Json(new { success = false, message = error });
+            }
+        }
+
+        private List<PROC_InstallStockDetailReport_Result> GetUnusedInventoryRows(long projectId, long installerId, long productId, string txtFromDate, string txtToDate)
+        {
+            List<PROC_InstallStockDetailReport_Result> reportData =
+                new InventoryDAL().GetInventryStockReport(projectId, installerId, productId, txtFromDate, txtToDate)
+                ?? new List<PROC_InstallStockDetailReport_Result>();
+
+            return reportData
+                .Where(x => x != null && x.UserId > 0 && (x.InHandQty ?? 0) > 0)
+                .ToList();
+        }
+
         private string GetCellByHeader(ExcelWorksheet ws, int row, Dictionary<string, int> headerMap, string headerName)
         {
             if (ws == null || headerMap == null || string.IsNullOrWhiteSpace(headerName))
