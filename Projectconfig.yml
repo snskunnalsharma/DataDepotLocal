@@ -1,168 +1,747 @@
-# DataDepot / CMSMeter — project configuration
-# Application does not read this file at runtime.
-# Source of truth for environments is GarronT.CMS.UI/Web.config.
+# =============================================================================
+# DataDepot / GarronT.CMS — full project configuration
+# Generated from the live codebase. Secrets are keys only, never values.
+# =============================================================================
 
 project:
   name: DataDepot
-  product: CMSMeter
-  description: >
-    Field operations CMS for electric, gas, and water meter installation.
-    Covers projects, appointments, installer allocation, inventory/warehouse,
-    audits, photos, Excel uploads, maps, and reports.
+  product: GarronT.CMS
+  aliases: [CMSMeter, DataDepot Online, CMSMeterLive]
   version: v1.0015
   solution: GarronT.CMS.sln
-  runtime: .NET Framework 4.8
-  ui: ASP.NET MVC 5
-  orm: Entity Framework 6.1.3
-  database: SQL Server (CMSMeter / CMSMeterLive)
-  auth: Forms Authentication + ASP.NET Identity + RBAC
-  logging: log4net
-  jobs: Hangfire 1.8.6
+  runtime: net48
+  ide: Visual Studio 2017+ (solution format 12.00 / VS 15)
+  local_web_url: http://localhost:6070/
+  local_login_url: http://localhost:6070/Global/Login
+  live_web_url: https://www.datadepotonline.com/
+  live_login_url: https://www.datadepotonline.com/Global/Login
+  help_manual: GarronT.CMS.UI/CMSHelpManual/quick/toc.html
+  tester_guide: README.md   # QA click-paths, coverage matrix, sign-off — not duplicated here
+  description: >
+    Enterprise construction / field-service CMS for utility meter installation.
+    Covers projects, dynamic forms, installer allocation, mobile field capture,
+    inventory, audits, appointments, reporting, and TNMP SFTP/S3 utilities.
 
-components:
-  - name: GarronT.CMS.UI
-    type: web
-    path: GarronT.CMS.UI
-    framework: net48
-    notes: MVC UI, Web API, ASMX mobile service, ReportViewer
-  - name: GarronT.CMS.Model
-    type: library
-    path: GarronT.CMS.Model
-    framework: net48
-    notes: EF6 CompassEntities, DAL, business objects
-  - name: CMSShedulerService
-    type: windows-service
-    path: CMSShedulerService
-    framework: net48
-  - name: CMSAuditThread
-    type: worker
-    path: CMSAuditThread
-    framework: net48
-  - name: TNMPUploadUtility
-    type: utility
-    path: TNMPUploadUtility
-    framework: net48
+# Who reads which file
+docs:
+  readme: README.md                    # testers — smoke, TC-01..26, ASMX how-to, sign-off
+  this_file: Projectconfig.yml         # modules, tables, APIs, job ON/OFF, secrets as keys only
+  in_app_help: GarronT.CMS.UI/CMSHelpManual/quick/toc.html
+  do_not_put_in_yaml:
+    - step-by-step test cases (stay in README)
+    - secret values (passwords, SFTP, API tokens)
 
-areas:
-  - name: Global
-    route: Global/{controller}/{action}
-    purpose: Login and shared entry
-  - name: Admin
-    route: Admin/{controller}/{action}/{id}
-    purpose: Projects, inventory, appointments, reports, users
-  - name: Form
-    route: Form/{controller}/{action}
-    purpose: Dynamic form management
-  - name: Installer
-    route: Installer/{controller}/{action}
-    purpose: Installer dashboard
-  - name: SuperAdmin
-    route: SuperAdmin/{controller}/{action}
-    purpose: Super admin dashboard
+tech_stack:
+  backend:
+    - .NET Framework 4.8
+    - ASP.NET MVC 5.2.3
+    - ASP.NET Web API 2
+    - OWIN + ASP.NET Identity 2.1 (cookie auth)
+    - Entity Framework 6.1.3 (database-first EDMX Compass.edmx)
+    - log4net 2.0.5
+  libraries:
+    - EPPlus 4.0.4          # Excel
+    - iTextSharp 5.5.9      # PDF
+    - Hangfire 1.8.6        # referenced; not the primary scheduler
+    - Magick.NET 7.9.2      # images
+    - SSH.NET / Renci.SshNet # SFTP (TNMP utility)
+    - RestSharp             # S3 file-upload API
+    - AutoMapper 4.1.1
+    - Report Viewer (Microsoft.ReportingServices)
+    - Google Maps LocationServices / Jmelosegui.Mvc.Googlemap
+  frontend:
+    - Bootstrap 3
+    - jQuery 2.1.4
+    - AngularJS (Form Management + Content/AngularJS)
+    - Chosen, DataTables, Summernote, CKEditor (admin theme Content/MSTS)
+  database:
+    engine: SQL Server
+    context: CompassEntities
+    identity_context: ApplicationDbContext / DefaultConnection
 
-modules:
-  - Projects
-  - Appointments
-  - Installer allocation
-  - Inventory / warehouse / stock
-  - Meter type / make / size
-  - Customers
-  - Photos / uploads
-  - Project audit
-  - Reports / auditor reports / PDF
-  - Clock time
-  - Excel bulk upload
-  - Google Maps / geocoding
-  - Devices
-  - Roles and permissions
+# -----------------------------------------------------------------------------
+solution:
+  projects:
+    - name: GarronT.CMS.Model
+      path: GarronT.CMS.Model/
+      type: class-library
+      role: EF6 EDMX, ~100 DbSets, DAL (~48), BO (~85), stored-proc wrappers
+    - name: GarronT.CMS.UI
+      path: GarronT.CMS.UI/
+      type: aspnet-mvc
+      role: Web UI, Web API, CMS_MobileService.asmx
+      startup: true
+      port: 6070
+    - name: CMSAuditThread
+      path: CMSAuditThread/
+      type: console
+      role: Mobile sync — set UploadedExcelData.SyncEnable = 0 via PROC_MobileSync_GetAfterTop
+      entry: MobileSyncUtil.triggerScheduler
+    - name: CMSShedulerService
+      path: CMSShedulerService/
+      type: windows-service
+      role: Audit AddToAudit + AllocateAuditVisit every 3 hours
+      entry: CMSSchedule.OnStart → startTheScheduler
+    - name: TNMPUploadUtility
+      path: TNMPUploadUtility/
+      type: console
+      role: S3 cloud-URL backfill (ACTIVE); SFTP ingest/export and email CSV (commented)
+      entry: Program.Main
+      args: "[optional ProjectID] default 10122"
+    - name: WindowsFormsApplication1
+      path: WindowsFormsApplication1/
+      type: winforms
+      role: Legacy helper
+    - name: CMS Audit scheduler Project
+      path: CMS Audit scheduler Project/
+      type: vdproj
+      role: Visual Studio installer for the Windows service
 
-apis:
-  mvc: GarronT.CMS.UI
-  webapi:
-    - api/Login
-    - api/UploadFile
-  asmx: CMS_MobileService.asmx
-  maps: Google Maps JavaScript + Geocoding (googleapiKey in Web.config)
-
-paths:
-  web_url_local: http://localhost:6070/
-  web_url_live: https://www.cmsmeter.com/CMSMA/
-  upload_file_path: ..\..\MobileUploadData\
-  clock_time_report: ~/ClockTimeReport/
-  inventory_upload: ~/InventoryUpload/
-  webapi_upload_custom_image: https://localhost:6069/api/UploadFile/UploadCustomImageFiles
-
+# -----------------------------------------------------------------------------
 environments:
   local:
-    web_config: GarronT.CMS.UI/Web.config
-    database: CMSMeterLive
-    data_source: DESKTOP-A5PAJ99
-    notes: Active connection in current Web.config
+    sql_server: DESKTOP-A5PAJ99
+    catalog: CMSMeterLive
+    web_url: http://localhost:6070/
+    web_api_upload: https://localhost:6069/api/UploadFile/UploadCustomImageFiles
   staging:
-    database: CMSMeter
-    data_source: 162.241.141.61
-    notes: Commented in Web.config
+    notes: Connection strings exist commented in Web.config (IPs historically 162.241.141.61)
   live:
-    database: CMSMeter
-    data_source: 198.57.200.76
-    notes: Commented in Web.config
+    host: datadepotonline.com
+    catalog: CMSMeter
+    disk_root: C:\inetpub\vhosts\datadepotonline.com\httpdocs\
+    web_url: https://www.datadepotonline.com/
+    sftp: sftp.datadepotonline.com
+    cloud_upload_api: https://dddailyapi.mytiny.us/api/v1/file-upload
+  legacy_commented_urls:
+    - https://www.cmsmeter.com/CMSMA/
+    - http://ts2.datadepotonline.com/
 
-# Do not put real passwords or API keys in this file.
-# Keep secrets in Web.config / App.config or a secret store.
-secrets_in_webconfig:
-  - DefaultConnection
-  - CompassEntities
-  - WebMasterMailId
-  - WebMasterMailPassword
-  - googleapiKey
-  - DefaultPassword
+# -----------------------------------------------------------------------------
+# Login + project URLs (usernames live in DB: tblUsers / AspNetUsers)
+# -----------------------------------------------------------------------------
+urls_and_login:
+  web_login_route: /Global/Login
+  web_controller: Areas/Global/Controllers/LoginController.cs  # POST Index
+  after_login: Home/Index then Admin dashboard (RBAC)
+  forgot_password: Login/ForgotPassword
+  default_new_user_password_key: DefaultPassword   # Web.config — currently admin@123
 
-connections:
-  default: DefaultConnection
-  ef: CompassEntities
-  provider: System.Data.SqlClient
+  environments:
+    local:
+      site: http://localhost:6070/
+      login: http://localhost:6070/Global/Login
+      api_login: POST http://localhost:6070/api/login
+      mobile_asmx: http://localhost:6070/CMS_MobileService.asmx
+      mobile_login_method: UserLogin(userName, password, currentDate)
+    live:
+      site: https://www.datadepotonline.com/
+      login: https://www.datadepotonline.com/Global/Login
+      api_login: POST https://www.datadepotonline.com/api/login
+      mobile_asmx: https://www.datadepotonline.com/CMS_MobileService.asmx
+    legacy:
+      cmsmeter: https://www.cmsmeter.com/CMSMA/
+      staging_host: http://ts2.datadepotonline.com/
 
-mail:
-  smtp: smtp.gmail.com
-  port: 587
-  ssl: true
-  from_key: WebMasterMailId
+  credentials:
+    note: >
+      Real usernames are in SQL (tblUsers.UserName + AspNetUsers). There is no
+      seeded admin in source. New users created in User Master get Web.config
+      DefaultPassword unless the admin sets another password.
+    default_password_for_new_users: admin@123
+    sample_from_login_controller_comment:
+      username: sanjiv@kairee.in
+      password: Admin@123
+      status: commented out in LoginController.Index — old local test hint only
+    web_login_fields: [UserName, Password, RememberMe]
+    web_validation:
+      empty_user: User Name Required
+      empty_password: Password Required
+      bad_password: Invalid login attempt.
+      inactive: User not active.
+    api_login_body:
+      UserName: string
+      Password: string
+      RememberMe: bool
+    api_login_responses:
+      ok: { success: true, userId, userName }
+      bad: { success: false, message: "Invalid username or password" }
+      inactive: { success: false, message: "User not active or not found" }
+    mobile_login: CMS_MobileService.UserLogin
+    mobile_currentDate: Unix seconds (not a calendar string)
+    asmx_format: JSON ScriptMethod (ASMX HTML test form often cannot exercise these)
+    new_user_password_expiry_days: 15   # UsersController Create1 sets PasswordExpiryDays = 15
+    web_vs_api_username: >
+      Web login: tblUsers row must be Active=1, then SignIn via
+      UserManager.FindById(tblUsers.aspnet_UserId).
+      API login: PasswordSignInAsync(model.UserName) — fails if
+      tblUsers.UserName does not match AspNetUsers.UserName.
+      Code comment in LoginController: those two names do not always match.
 
-ai:
-  enabled: false
-  provider: AzureOpenAI
-  purpose:
-    - Admin dashboard natural-language Q&A on reports
-    - Meter photo QA / OCR
-    - Excel upload error explanation
-    - Audit summary
-  settings:
-    endpoint: ""          # e.g. https://YOUR-RESOURCE.openai.azure.com/
-    api_key: ""           # store in Web.config, not here
-    chat_deployment: gpt-4o-mini
-    vision_deployment: gpt-4o
-    api_version: "2024-08-01-preview"
-  constraints:
-    - Call AI only from server-side C# (never from browser)
-    - Reuse existing [Authorize] and RBAC
-    - Send filtered SQL results only, not the full database
-    - Do not log API keys
-    - Prefer HttpClient / RestSharp (already in UI project)
-    - Do not add a .NET 8 Azure OpenAI SDK; this app is net48
+# -----------------------------------------------------------------------------
+http_pipeline:
+  startup_order:
+    - Global.asax Application_Start
+    - WebApiConfig.Register (attribute routes + Api/{controller}/{action} + api/{controller}/{id})
+    - AreaRegistration.RegisterAllAreas
+    - FilterConfig (HandleError → Error view)
+    - RouteConfig
+    - BundleConfig (optimizations OFF)
+    - log4net XmlConfigurator
+    - OWIN Startup.ConfigureAuth
+  routes:
+    ignore: ["*.axd", "*.asmx"]
+    named:
+      - FormManagement → FormManagementController.Index
+      - FormManagement/Add|Edit/{id}|View/{id}|Clone → same SPA
+    default_area: Global / Login
+    fallback: Home/Index
+  request_behavior:
+    cache: no-store / no-cache on every BeginRequest
+    ajax_401: rewritten to HTTP 306 in EndRequest
+    errors: Application_Error logs and redirects ~/Error/Index
+  filters:
+    global: HandleErrorAttribute
+    common_on_controllers:
+      - Authorize
+      - SessionExpire
+      - RBACAttribute
+      - OutputCache Duration=0
+      - NoCacheAttribute
 
-packages_relevant:
-  - EntityFramework 6.1.3
-  - Newtonsoft.Json 7.0.1
-  - RestSharp 104.4.0
-  - Hangfire 1.8.6
-  - EPPlus 4.0.4
-  - iTextSharp 5.5.9
-  - GoogleMaps.LocationServices
-  - Magick.NET-Q16-AnyCPU
-  - System.Net.Http
+auth:
+  type: OWIN cookie (ApplicationCookie)
+  login_path: /Global/Login
+  login_urls: see urls_and_login
+  stamp_validate_minutes: 30
+  session_expire:
+    class: SessionExpireAttribute
+    session_key: Username   # set on web login
+    ajax_missing: HTTP 401 JSON { status: "401" }  # Global.asax may rewrite to 306
+    full_page_missing: redirect ~/Global/Login
+  identity_tables: [AspNetUsers, AspNetRoles, AspNetPermissions, AspNetRolePermissions, AspNetUserRolePermissions, tblUsers]
+  rbac:
+    class: RBACAttribute
+    check_order:
+      - Controller name permission
+      - else Controller-Action
+      - else Controller-Index (AJAX helpers)
+      - SysAdmin bypass
+    deny_redirect: Admin/Unauthorised/Index
+    deny_message: You do not have access permission.
+  login_web: LoginController → FindById(aspnet_UserId) → PasswordSignInAsync
+  login_api: POST api/login (LoginApiController, AllowAnonymous) → PasswordSignInAsync(UserName)
 
-conventions:
-  language: C#
-  ui: Razor + jQuery (not a SPA)
-  do_not: rewrite to .NET 8 unless explicitly requested
-  config_file: GarronT.CMS.UI/Web.config
+# -----------------------------------------------------------------------------
+web_areas:
+  - name: Admin
+    registration: Areas/Admin/AdminAreaRegistration.cs
+    url: Admin/{controller}/{action}/{id}
+    role: Primary back-office
+  - name: Global
+    registration: Areas/Global/GlobalAreaRegistration.cs
+    role: Login / authentication
+  - name: Form
+    registration: Areas/Form/FormAreaRegistration.cs
+    role: Dynamic form designer views (Angular)
+  - name: Installer
+    registration: NONE (folder + controller exist, no AreaRegistration)
+    controller: InstallerDashboardController.Index
+    note: Minimal dashboard stub
+  - name: SuperAdmin
+    registration: NONE
+    controller: SuperAdminDashboardController.Index
+    note: Minimal dashboard stub
+  root_controllers:
+    - HomeController
+    - AccountController
+    - ManageController
+    - ErrorController
+    - FormManagementController   # SPA shell at /FormManagement
+    - CustomerController         # root duplicate of Admin customer
+    - Api/LoginApiController
+
+# -----------------------------------------------------------------------------
+admin_modules:
+  # Sidebar from _AdminMenuLayout.cshtml plus extra controllers not in menu
+  dashboard:
+    - { menu: Dashboard, controller: DashboardController, dal: DashboardDAL }
+    - { menu: Project Status, controller: ProjectStatusController, dal: ProjectStatusDAL }
+
+  administration:
+    - { menu: City Logo Master, controller: UploadCityLogoController, dal: UploadCityLogoDAL }
+    - { menu: Form Type Master, controller: FormTypeController, dal: FormTypeDAL }
+    - { menu: Meter Make Master, controller: MeterMakeController, dal: MeterMakeDAL }
+    - { menu: Meter Type Master, controller: MeterTypeController, dal: MeterTypeDAL }
+    - { menu: Meter Size Master, controller: MeterSizeController, dal: MeterSizeDAL }
+    - { menu: Picture Master, controller: PictureController, dal: PictureDAL }
+    - { menu: Reason Master, controller: ReasonController, dal: ReasonDAL }
+    - { menu: Service Master, controller: ServicesController, dal: ServiceDAL }
+    - { menu: User Master, controller: UsersController, dal: UserDAL / UserRoleDAL }
+    - { menu: User Role Rights (SysAdmin), controller: PermissionController, dal: PermissionBAL }
+    extra_not_in_sidebar:
+      - { controller: RoleController, note: Role Master menu commented out }
+      - { controller: AdminController, note: User/role listing helpers }
+      - { controller: CountryController, dal: (geo master) }
+      - { controller: StateController, dal: StateDAL }
+      - { controller: CityController, dal: CityDAL }
+      - { controller: DeviceController, note: Device master }
+      - { controller: EmployeeCardController, note: User I-card }
+      - { controller: UnauthorisedController, note: 401 landing }
+
+  inventory:
+    - { menu: Warehouse Master, controller: WarehouseController, dal: WareHouseDAL }
+    - { menu: Category Master, controller: CategoryController, dal: CategoryDAL }
+    - { menu: Product Master, controller: ProductController }
+    - { menu: Inventory Upload, controller: UploadInventoryController }
+    - { menu: Inventory Receive, controller: ReceiveInventryController }
+    - { menu: Inventory View, controller: ViewUploadRecordsController }
+    - { menu: View Stock Request, controller: StockRequestController, dal: StockRequestDAL }
+    extra_not_in_sidebar:
+      - { controller: InventoryController, note: old upload; menu commented }
+      - { controller: InventoryMasterController, dal: InventoryMasterDAL }
+      - { controller: InventoryTransferController }
+      - { controller: InventoryRequestConfigurationController }
+      - { controller: InventoryBulkTransferController }
+      - { controller: WarehouseTransferController }
+
+  operations:
+    - { menu: Alert Master, controller: AlertController, dal: AlertDAL }
+    - { menu: Audit, controller: ProjectAuditController, dal: AuditDAL }
+    - { menu: Customer, controller: CustomerController, dal: ClientDAL }
+    - { menu: Project, controller: ProjectController, dal: ProjectMasterDAL }
+    - { menu: Installer Allocation, controller: InstallerAllocationController, dal: InstallerDAL }
+    - { menu: Appointment, controller: AppointmentAllocationController, dal: AppointmentAllocationDAL }
+    extra:
+      - { controller: AppointmentController, dal: AppointmentDAL }
+      - { controller: FormController, note: Admin form CRUD vs FormManagement SPA }
+
+  form_management:
+    menu: Form Management
+    url: /FormManagement
+    controller: FormManagementController
+    spa: AngularJS under GarronT.CMS.UI/Angular
+
+  reports:
+    - { menu: Time Clock Report, controller: ClockTimeReportController, dal: ClockTimeReportDAL }
+    - { menu: Duplicate Report, controller: DuplicateReportController, dal: DuplicateReportDAL }
+    - { menu: Export Report, controller: ExportReportController, dal: ExportReportDAL }
+    - { menu: Installer Report, controller: ReportsController, dal: ReportDAL }
+    - { menu: Auditor Report, controller: AuditorReportsController, dal: AuditReportDAL }
+    - { menu: Skip History Report, controller: InstallerMapDataHistoryController, dal: InstallerMapHistoryDAL }
+    - { menu: Budget Status Report, controller: BudgetStatusReportController, dal: BudgetStatusReportDAL }
+
+  inventory_reports:
+    - { menu: Warehouse Stock, controller: WarehouseStockReportController, action: StockReport }
+    - { menu: Inventory Stock, controller: InventryStockReportController }
+    - { menu: Movement Report, controller: ProcuctMovementReportController }
+    - { menu: Inventory Transfer, controller: InventoryBulkTransferController }
+    - { menu: Warehouse Transfer, controller: WarehouseTransferController }
+    - { menu: INV Installer Report, controller: INVInstallerReportController }
+
+# -----------------------------------------------------------------------------
+forms:
+  types:
+    - { id: 1, usage: Audit form (FormTypeID == 1 on tblFormMasters) }
+    - { id: 2, usage: Project / field visit form (mobile SaveData, exports) }
+  tables:
+    - tblFormTypes / tblFormTypeMaps          # type + impact on other types
+    - tblFormMasters
+    - tblFormSectionRelations
+    - tblFormSectionFieldRelations
+    - tblStandardFieldMasters
+    - TblProjectStandardFieldRelations
+    - TblProjectCustomeFieldReletions
+    - tblProjectFieldDDLMasters
+    - TblFieldDataTypeMasters
+    - tblUserFormTypeRelations
+  designer: Angular Form Management (add / edit / view / clone)
+  skip_reasons: tblSkipReasonMaster + tblSkipReasonMaster_FormType
+
+# -----------------------------------------------------------------------------
+# Operational pipelines
+# -----------------------------------------------------------------------------
+pipelines:
+
+  field_work:
+    description: Excel/SFTP accounts → allocate installer → mobile visit → files → S3 → audit → reports
+    stages:
+      - id: ingest
+        name: Account ingest
+        writes: UploadedExcelData (+ tblUploadedData)
+        mapping: TblProjectExcelMapping + VW_GETTab6DropdownData
+        paths:
+          - Admin Excel: ProjectController.SaveTab6Data
+          - TNMP SFTP: UploadFile.getandSaveFile  # COMMENTED in Program.Main
+        sftp_files:
+          - { project_id: 10124, pattern: TNMP_CMS_RouteFile_yyyyMMdd.csv }
+          - { project_id: 10087, pattern: TNMP_TNMP_RouteFile_yyyyMMdd.csv }
+        date_rule: yesterday (AddDays(-1))
+        sample_excel: ~/DownLoadFile/Sample Upload File.xlsx
+        project_wizard_tabs:
+          - { step: 1, ui: Create Project, save: SaveTab1 }
+          - { step: 2, ui: Master Fields, save: SaveTab2Data }
+          - { step: 3, ui: Configure Services, save: SaveTab3Data / SaveTab3DataMeterPayRate }
+          - { step: 4, ui: Standard Fields, save: SaveTab4Data }
+          - { step: 5, ui: Custom Fields, save: SaveTab5Data }
+          - { step: 6, ui: Upload Customer Data, save: SaveTab6Data }
+
+      - id: geocode
+        name: Lat/long + VisitId/GroupId
+        runners:
+          - WebAPI CalculateLatLongController.GetLatLongForProject / CalPendingLatLongForProject
+          - CMSAuditThread CalPendingLatLongAllAddress (commented in triggerScheduler)
+        google: geocode XML API + distanceFromCityCenterInKM (40)
+        columns: STREET / ADDRESS LATITUDE / ADDRESS LONGITUDE via FN_GetColumnName
+
+      - id: allocate
+        name: Installer allocation
+        ui: InstallerAllocationController
+        table: tblInstallerMapData
+        history: tblInstallerMapDataHistory
+        fields: [InstallerId, FK_UploadedExcelData_Id, FromDate, ToDate, BatchNumber, Active]
+        related: TblProjectInstallers, Appointments, AppointmentAllocation
+
+      - id: mobile_sync
+        name: Push work to phone / drop old top records
+        download: CMS_MobileService.OfflineUserDataAll + UserProjectData
+        disable_old: CMSAuditThread CompleteTask.setMobileSyncStatus
+        stored_proc: PROC_MobileSync_GetAfterTop
+        effect: UploadedExcelData.SyncEnable = 0
+        last_flag: setLastSynchFlag
+
+      - id: field_save
+        name: Save visit from mobile
+        asmx: CMS_MobileService.SaveData
+        dal: MobileDAL.saveDynamicData
+        writes:
+          - TblProjectFieldData           # JSON answers, skip, GPS, IsMediaPending
+          - tblProjectFieldDataMasters    # per-field values
+          - TblProjectFieldDataAttachment # photos/audio/video/map
+          - tblUploadedData.IsVisisted
+          - history tables on skip/reopen
+        local_path: MobileUploadData\{projectId}\{formId}\{account}\{fieldId}\
+        live_s3: UploadFileS3Bucket on save (best-effort; empty strCloudUrl on fail)
+        media_api: WebAPI UploadFileController (image/audio/video, skip, custom, audit, from-web)
+        media_pending_clear: UpdateMediaFlag
+
+      - id: cloud_backfill
+        name: Batch upload missing cloud URLs
+        status: ACTIVE (only live TNMP Program.Main region as of Sep 2026)
+        class: UploadFilesS3Bucekt.ProcessCloudUrls
+        phase_1:
+          method: UploadPendingCloudUrls
+          table: TblProjectFieldDataAttachments
+          filter: { Active: 1, strFilePath_contains: MobileUploadData, strCloudUrl: empty }
+          order_by: ID
+          batch: CloudUploadBatchSize (default 5000)
+          disk_root: C:\inetpub\vhosts\datadepotonline.com\httpdocs\
+          api: https://dddailyapi.mytiny.us/api/v1/file-upload
+          save: per-row SaveChanges
+        phase_2:
+          method: ValidateAndFixBrokenCloudUrlsBatch
+          on: ValidateExistingCloudUrls=true
+          action: HEAD then GET; re-upload if broken
+        legacy_not_called: getFilesPath (CreatedOn year 2026–2027)
+
+      - id: audit
+        name: Sample visits for auditors
+        service: CMSShedulerService every 10800000 ms (3 hours)
+        steps:
+          - AddToAudit: set AuditDatas.AuditPercent from AuditInstallerPercentages; fail% bumps days via CustomerAuditFailureSettings (goto Outer)
+          - AllocateAuditVisit: percent sample → ProjectAuditAllocation; skip if auditor == installer
+        source_filter: AuditDatas AddedForAudit=0, IsTakenForCalculation!=1, Active=1
+        ui: ProjectAuditController, Customer AuditSettings
+        webapi: AuditAllocationController.AllocateAuditVisit(InstallerId)
+
+      - id: export
+        name: Completed-visit outbound
+        ui: ExportReportController
+        utility_status: COMMENTED in Program.Main
+        jobs:
+          - { name: csv_to_sftp, class: DownloadExportReport, dest_key: sftOutputFilePath }
+          - { name: email_with_meter, project_id: 10134, utility_type: WITH_METER, class: DownloadExportReportSendbyEmail }
+          - { name: email_without_meter, project_id: 10134, utility_type: WITHOUT_METER, class: ExportReportByEmail_2 }
+        history: TblTNMPExportReportUtilityHistory
+        date_window: last ToDateTime + 1 minute → yesterday 23:59
+        visit_status: Completed
+        form_type_id: 2
+
+      - id: skip_unallocate
+        name: Skipped accounts back to unallocated
+        status: COMMENTED
+        class: AccountStatus.SkipAccountMovedToUnAllocate
+        related: TblUnAllocatedSkipHistory
+        old_mobile_path: PendingAllCrossesDateAddress_AssignToUnallocateaddres (commented)
+
+  inventory:
+    description: Warehouse stock → receive → installer request/return → field consume → reports
+    flow:
+      - masters: WarehouseMaster, Category, ProductMaster, UtilityMaster, InventorySourceMaster
+      - project_link: ProjectWarehouseRelation, ProjectServiceProductRelation, WarehouseUserRelation
+      - upload_excel: UploadInventory → InventoryUpload / InventoryMobileUpload
+      - receive: ReceiveInventry (web) / ReceiveWarehouseInventory + ReceiveUserInventory (mobile)
+      - stock: InwardHeader/InwardDetail, OutwardDetail, StockDetail
+      - request: StockRequest UI + InventoryMobileStockRequest(+Detail) + InventoryMobileUserStockRequest(+Detail)
+      - return: InventoryMobileStockReturn(+Detail)
+      - field_consume: tblProjectFieldDataInventoryDetail / tblProjectFieldDataInventoryOutwardDetail
+      - transfer: InventoryBulkTransfer, WarehouseTransfer, OutwardTransferDetail
+      - alerts: LowInventoryAlert, Missing_Inventory
+      - signoff: InventoryUserSignOffDetail, UserSignOffRequest
+      - reconcile: ViewReconcileDetailInventory
+    sample_excel:
+      - ~/DownLoadFile/Sample Inventory Upload File.xlsx
+      - /../DownLoadFile/UploadFile.xlsx
+
+  appointments:
+    ui: AppointmentAllocationController / AppointmentController
+    dal: AppointmentDAL / AppointmentAllocationDAL
+    table: Appointments
+
+  budget:
+    ui: BudgetStatusReportController
+    dal: BudgetStatusReportDAL
+    table: ProjectBudgetMaster
+    note: Running balance is computed (monthly/weekly/daily); not stored per period
+
+# -----------------------------------------------------------------------------
+mobile_asmx:
+  file: GarronT.CMS.UI/CMS_MobileService.asmx
+  format: JSON ScriptMethod
+  active_methods:
+    auth_sync:
+      - getServerDate
+      - checkDate
+      - UserLogin
+      - UserNotificationData
+      - UserProjectData
+      - OfflineUserDataAll
+      - setLastSynchFlag
+    field:
+      - SaveData
+      - UpdateMediaFlag
+      - GetAccountAssignedStatus
+      - GetProjectUserList
+      - get_AccountSummaryReport
+    inventory:
+      - ValidateInventoryData
+      - AddNewProductSaveData
+      - ReceiveWarehouseInventory
+      - ReceiveInventorySourceInfo
+      - ReceiveUserInventory
+      - RequestNewInventorySourceInfo
+      - SubmitNewInventoryRequest
+      - ViewNewInventoryRequestSourceData
+      - ViewNewInventoryRequest
+      - ViewDetailedRequest
+      - UpdateNewRequest
+      - ViewRunningInventory
+      - ViewBalanceDetailInventory
+      - UserSignOffRequest
+      - ReturnInventorySourceData
+      - ReturnInventorySubmitData
+      - ReceiveNotInInventoryToInventory
+      - InventoryAutoSynch
+      - InventoryAutoSynchSetFlag
+      - GetWarehouseProductList
+      - GetProductListForProject
+      - ClearInventory
+      - ViewReconcileDetailInventory
+      - SendMailForMissingInventory
+    clock:
+      - GetClockTimeMasterRecord
+      - Save_Update_UserClockTimeRecord
+  commented_methods:
+    - ForgotPassword
+    - ChangePassword
+    - getCurrentTime
+    - GetUserSkippedStatus
+    - GetInventorySourceInfo
+    - GetWarehouseUtilityList
+    - GetUtilityList
+    - GetProductList
+    - AddNewProductSourceData
+
+web_api:
+  routes:
+    - Api/{controller}/{action}
+    - api/{controller}/{id}
+    - POST api/login
+  controllers:
+    LoginApiController:
+      - POST api/login
+    UploadFileController:
+      - UploadServiceImageFiles / Video / Audio
+      - UploadCustomImageFiles / Audio / Video
+      - UploadSkipImageFiles / Audio / Video
+      - UploadCustomImageFilesFromWeb
+      - UploadServiceImageFilesFromWeb
+      - UploadAuditCustomImageFilesFromWeb
+      - UploadAuditServiceImageFilesFromWeb
+    CalculateLatLongController:
+      - GetLatLongForProject
+      - updateVisitIdGroupId
+      - CalPendingLatLongForProject
+    AuditAllocationController:
+      - AllocateAuditVisit(InstallerId)
+
+# -----------------------------------------------------------------------------
+database:
+  connection_names: [DefaultConnection, CompassEntities]
+  catalogs: { local: CMSMeterLive, live: CMSMeter }
+  edmx: GarronT.CMS.Model/Compass.edmx
+  stored_proc_wrappers_in_context: ~100  # Compass.Context ExecuteFunction methods (STP_*, PROC_*, SP_*)
+  notable_procs:
+    - PROC_MobileSync_GetAfterTop
+    - PROC_GetNoOfDays
+    - PROC_Audit_GETWorkingDayDetails
+    - PROC_Audit_PercentCalculation
+    - PROC_GetAllCrossedDateAddress
+    - PROC_GetSkippedAllBefore72h
+    - STP_GetProjectWiseVisits
+    - FN_GetColumnName (scalar)
+  tables_by_domain:
+    identity:
+      - AspNetUsers, AspNetRoles, AspNetPermissions, AspNetRolePermissions, AspNetUserRolePermissions
+      - AspNetUserClaims, AspNetUserLogins, tblUsers, UserIcards
+    geo_masters:
+      - tblStateMasters, TblCityMasters, tblZipCodeMasters, TblStateCityLogoes
+    meter_masters:
+      - tblMeterMakes, tblMeterTypes, tblMeterSizes, tblMeterPays, tblServices, TblServicePictures, tblPictures
+    project:
+      - tblProjects, tblClients, tblClientContactDetails, TblProjectInstallers
+      - TblProjectExcelMappings, UploadedExcelDatas, tblUploadedDatas
+      - tblInstallerMapDatas, tblInstallerMapDataHistories, tblInstallerSynchHistories
+      - ProjectBudgetMaster, tblVersionMasters, Tbl_InstallationStatusMaster
+    forms_field:
+      - tblFormTypes, tblFormTypeMaps, tblFormMasters, tblFormSectionRelations, tblFormSectionFieldRelations
+      - tblStandardFieldMasters, TblProjectStandardFieldRelations, TblProjectCustomeFieldReletions
+      - tblProjectFieldDDLMasters, TblFieldDataTypeMasters, tblProjectFieldProperties
+      - tblProjectFieldDataMasters, TblProjectFieldDatas, TblProjectFieldDataAttachments
+      - TblProjectFieldDataHistories, tblProjectFieldDataMasterHistories
+      - tblSkipReasonMasters, tblSkipReasonMaster_FormType
+    audit:
+      - AuditMasters, AuditDatas, AuditorMaps, AuditInstallerPercentages, AuditFailPercentages
+      - CustomerAuditSettings, CustomerAuditFailureSettings
+      - ProjectAuditAllocations, ProjectAuditDatas, ProjectAuditDataHistories
+      - ProjectAuditFieldDataMasters, ProjectAuditFieldDataAttachments, ProjectAuditFieldDataMasterHistories
+    inventory:
+      - WarehouseMasters, Categories, ProductMasters, ProductMasterFields, UtilityMasters
+      - InventorySourceMasters, InventoryStatusMasters, InventoryRequestStatusMasters
+      - InwardHeaders, InwardDetails, InwardDetails_RejectedData, OutwardDetails, StockDetails
+      - InventoryUploads, InventoryMobileUploads, InventoryMobileUploadDetails
+      - InventoryMobileStockRequests, InventoryMobileStockRequestDetails
+      - InventoryMobileUserStockRequests, InventoryMobileUserStockRequestDetails
+      - InventoryMobileStockReturns, InventoryMobileStockReturnDetails
+      - tblProjectFieldDataInventoryDetails, tblProjectFieldDataInventoryOutwardDetails
+      - WarehouseTransfers, OutwardTransferDetails, InvenTrasRequestConfigs
+      - ProjectWarehouseRelations, ProjectServiceProductRelations, WarehouseUserRelations
+      - LowInventoryAlerts, Missing_Inventory, InventoryUserSignOffDetails, SerialNumberSummary
+    other:
+      - Appointments, TimeClockMasters, UserTimeClockDetails
+      - TblAlertMasters, TblEmailConfigures, TblEmailConfigureUserDetails
+      - tblVehicleMasters, tblVehicleMakeMasters, tblVehicleModelMasters
+      - TblExportReports, TblTNMPExportReportUtilityHistories, TblUnAllocatedSkipHistories
+  views:
+    - VW_GetFormData, VW_GetPictures, VW_GETTab6DropdownData, VW_AuditorList, VW_InstallerList
+    - VW_GetProductData, VW_GetProductDataProject, VW_ManageStockRequest, VW_Project
+
+dal_layer:
+  path: GarronT.CMS.Model/DAL
+  files:
+    - AlertDAL, AppointmentDAL, AppointmentAllocationDAL, AuditDAL, AuditReportDAL
+    - BudgetStatusReportDAL, CategoryDAL, CityDAL, ClientContactDetailsDAL, ClientDAL
+    - ClockTimeReportDAL, DashboardDAL, DuplicateReportDAL, ExportReportDAL, FormDAL, FormTypeDAL
+    - InstallerDAL, InstallerMapHistoryDAL, InventoryDAL, InventoryMasterDAL, InventoryWebServiceDAL
+    - MeterMakeDAL, MeterSizeDAL, MeterTypeDAL, MobileDAL, MobileOfflineDAL
+    - PermissionBAL, PictureDAL, ProjectMasterDAL, ProjectStatusDAL, ReasonDAL, ReportDAL
+    - ServiceDAL, ServicePictureDAL, StateDAL, StockRequestDAL, UploadCityLogoDAL
+    - UserRoleDAL, VersionDAL, VehicleDAL, WareHouseDAL
+    - WebServiceProductDAL, WebServiceRequestStockDal, WebServiceReturnInventoryDAL
+    - WebServiceRunningInventoryDAL, WebServiceTimeClockDAL, WebServiceUserRoleDAL
+  identity: ApplicationUser.cs (DAL)
+
+# -----------------------------------------------------------------------------
+background_jobs:
+  CMSShedulerService:
+    type: Windows Service
+    loop: while true; if same calendar day then AddToAudit + AllocateAuditVisit; Sleep 3 hours
+    installer: CMS Audit scheduler Project.vdproj
+  CMSAuditThread:
+    type: Console (Task Scheduler)
+    runs: setMobileSyncStatus(25)
+    commented: PendingAllCrossesDateAddress, CalPendingLatLongForProject
+  TNMPUploadUtility:
+    type: Console (Task Scheduler)
+    argument: ProjectID (default 10122)
+    active: [ProcessCloudUrls]
+    commented:
+      - SFTP ingest UploadFile
+      - DownloadExportReport + SFTP upload
+      - SkipAccountMovedToUnAllocate
+      - getFilesPath year-range S3
+      - thumbnail S3
+      - Export WITH_METER email
+      - Export WITHOUT_METER email
+  hangfire: package present; not wired as the primary scheduler
+
+hardcoded_project_ids:
+  - { id: 10075, note: debug special-case in mobile sync (user 14, cycle 16) }
+  - { id: 10087, note: TNMP HQ SFTP ingest + export date window }
+  - { id: 10117, note: commented TNMP CMS export }
+  - { id: 10122, note: TNMP utility default ProjectID arg; historical S3 path filter }
+  - { id: 10124, note: TNMP CMS V125 SFTP ingest/export }
+  - { id: 10134, note: Beaumont email exports WITH_METER / WITHOUT_METER; budget report }
+
+app_settings_keys:
+  web_config:
+    - Version, WebURL, UploadFilePath, InventoryUploadPath, ClockTimeReportUploadPath
+    - InventorySampleFile, NewInventorySampleFile, ProjectSampleFile
+    - googleapiKey, distanceFromCityCenterInKM
+    - WebMasterMailId, WebMasterMailPassword, WebMasterSMTPServer, WebMasterPort, WebMasterEnableSSL
+    - DefaultPassword, webApiUploadCustomeImage
+  tnmp_app_config:
+    - sftpurl, sftpuid, sftppwd, remoteDir, pathRemoteFile, movingfilepathRemoteFile, sftOutputFilePath
+    - CloudUploadBatchSize, ValidateExistingCloudUrls, mergeCycleOfficeColumn
+    - webmastermailid, googleapiKey, distanceFromCityCenterInKM, WebURL
+
+uploads_paths:
+  mobile: MobileUploadData\   # appSetting UploadFilePath = ..\..\MobileUploadData\
+  inventory: ~/InventoryUpload/
+  clock_time: ~/ClockTimeReport/
+  gitignore: [bin/, obj/, MobileUploadData/, InventoryUpload/, ClockTimeReport/, Logs/, .vs/]
+
+build:
+  configuration: [Debug, Release]
+  nuget: packages.config → packages\
+  sqlserver_types: >
+    Copy nativeBinaries from Microsoft.SqlServer.Types package into
+    GarronT.CMS.Model/SqlServerTypes/{x64,x86} and GarronT.CMS.UI/SqlServerTypes/{x64,x86}
+    (msvcr120.dll, SqlServerSpatial140.dll). Missing files break Model compile.
+
+run_local:
+  - Restore NuGet
+  - Confirm SQL Server + CMSMeterLive in Web.config
+  - Copy SqlServerTypes DLLs if missing
+  - Set GarronT.CMS.UI as startup, F5 → http://localhost:6070/
+  - Login: http://localhost:6070/Global/Login
+  - New-user default password (Web.config DefaultPassword): admin@123
+  - Do not commit DB/SFTP/mail secrets or the file-upload API token
+
+run_utilities:
+  tnmp_s3: >
+    Run TNMPUploadUtility.exe on the web server (inetpub path required).
+    Nightly until pending strCloudUrl backlog is 0. Batch 5000 per run.
+  audit_service: Install CMSShedulerService via vdproj / installutil
+  mobile_sync: Schedule CMSAuditThread.exe
+
+qa:
+  guide: README.md
+  coverage: README.md section 2.1 (entire-project matrix) + TC-01..TC-26
+  do_not_fail_as_bugs: see README section 6 and pipelines.*.status COMMENTED
+  sample_files:
+    accounts: ~/DownLoadFile/Sample Upload File.xlsx
+    inventory: ~/DownLoadFile/Sample Inventory Upload File.xlsx
+  http_runtime:
+    maxRequestLength: 2147483647
+    executionTimeout_seconds: 1600

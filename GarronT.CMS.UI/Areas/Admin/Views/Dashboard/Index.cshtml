@@ -2,7 +2,7 @@
     ViewBag.Title = "Dashboard";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
-@Html.Hidden("urlGetCompleteVsPendingChartData", Url.Action("GetCompleteVsPendingChartData", "Dashboard"))
+@Html.Hidden("cc", Url.Action("GetCompleteVsPendingChartData", "Dashboard"))
 @Html.Hidden("urlGetInstallationspermonth", Url.Action("GetInstallationspermonth", "Dashboard"))
 @Html.Hidden("urlGetPerformance", Url.Action("GetPerformance", "Dashboard"))
 @Html.Hidden("urlGetProjectInsatallation", Url.Action("GetProjectInsatallation", "Dashboard"))

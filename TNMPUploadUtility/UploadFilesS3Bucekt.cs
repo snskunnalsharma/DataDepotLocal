@@ -13,30 +13,51 @@ namespace TNMPUploadUtility
 {
     internal class UploadFilesS3Bucekt
     {
-        private const string PathFilter = "MobileUploadData";
+        private const string PathFilter = @"MobileUploadData\10076\";
+        private const string PathFilterAlt = @"MobileUploadData/10076/";
         private const string WebUrl = @"C:\inetpub\vhosts\datadepotonline.com\httpdocs\";
 
-        // Main entry: pending uploads first (batched). Optional HTTP validation of existing URLs.
+        private enum CloudUrlStatus
+        {
+            Ok,
+            AccessDenied,
+            NotFound,
+            Broken
+        }
+
+        // Main entry: pending uploads first, then AccessDenied/broken URL re-upload.
         public void ProcessCloudUrls()
         {
-            int batchSize = GetConfigInt("CloudUploadBatchSize", 5000);
-            bool validateExisting = GetConfigBool("ValidateExistingCloudUrls", false);
+            int dbPageSize = GetConfigInt("CloudUploadDbPageSize", 5000);
+            bool validateExisting = GetConfigBool("ValidateExistingCloudUrls", true);
 
-            ErrorLogFile.writeStatus("ProcessCloudUrls started batchSize=" + batchSize +
-                " validateExisting=" + validateExisting + " - " + DateTime.Now.ToShortTimeString());
-            Console.WriteLine("ProcessCloudUrls batchSize=" + batchSize + " validateExisting=" + validateExisting);
-
-            UploadPendingCloudUrls(batchSize);
-
-            if (validateExisting)
+            string projectFolder = Path.Combine(WebUrl, "MobileUploadData", "10076");
+            if (!Directory.Exists(projectFolder))
             {
-                ValidateAndFixBrokenCloudUrlsBatch(batchSize);
+                ErrorLogFile.writeStatus("Project folder does not exist: " + projectFolder);
+                Console.WriteLine("Project folder does not exist: " + projectFolder);
+                return;
             }
-            else
-            {
-                ErrorLogFile.writeStatus("Skipped existing URL HTTP validation (ValidateExistingCloudUrls=false)");
-                Console.WriteLine("Skipped existing URL HTTP validation.");
-            }
+
+            Dictionary<string, string> filesByRelative;
+            Dictionary<string, List<string>> filesByName;
+            int diskCount = IndexLocalProjectFiles(projectFolder, out filesByRelative, out filesByName);
+
+            ErrorLogFile.writeStatus("ProcessCloudUrls started project=10076 diskFiles=" + diskCount +
+                " uploadCap=NONE validateExisting=" + validateExisting +
+                " - " + DateTime.Now.ToShortTimeString());
+            Console.WriteLine("ProcessCloudUrls project=10076 local files=" + diskCount +
+                " upload cap=NONE validateExisting=" + validateExisting);
+
+            ServicePointManager.Expect100Continue = true;
+            ServicePointManager.DefaultConnectionLimit = 9999;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+
+            UploadPendingCloudUrls(filesByRelative, filesByName, diskCount);
+
+            ErrorLogFile.writeStatus("Starting broken-link check. Browser-failing URLs will be re-uploaded and strCloudUrl replaced.");
+            Console.WriteLine("Checking existing cloud URLs. Broken / Access Denied links will be re-uploaded and the old URL replaced.");
+            ValidateAndFixBrokenCloudUrls(dbPageSize, filesByRelative, filesByName);
         }
         public void getFilesPath()
         {
@@ -124,168 +145,538 @@ namespace TNMPUploadUtility
             }
         }
 
-        // Phase 1 (priority): upload rows with empty strCloudUrl — batched per run
-        private void UploadPendingCloudUrls(int batchSize)
+        // Phase 1: upload from disk first. Every local file with an empty strCloudUrl row is uploaded,
+        // including MAP/CommonMAP when the file actually exists. Missing DB rows are not marked uploaded.
+        private void UploadPendingCloudUrls(
+            Dictionary<string, string> filesByRelative,
+            Dictionary<string, List<string>> filesByName,
+            int diskCount)
         {
             CompassEntities compassEntities = new CompassEntities();
-
-            var pendingQuery = compassEntities.TblProjectFieldDataAttachments
-                .Where(o =>
-                    o.Active == 1 &&
-                    o.strFilePath != null &&
-                    o.strFilePath.Contains(PathFilter) &&
-                    (o.strCloudUrl == null || o.strCloudUrl == "")
-                );
-
-            int totalPending = pendingQuery.Count();
-            var batch = pendingQuery
-                .OrderBy(o => o.ID)
-                .Take(batchSize)
+            var pendingRows = EmptyCloudUrlAttachments(compassEntities)
+                .Select(o => new { o.ID, o.strFilePath })
                 .ToList();
 
-            ErrorLogFile.writeStatus("Pending cloud URLs total=" + totalPending +
-                " processingThisRun=" + batch.Count + " - " + DateTime.Now.ToShortTimeString());
-            Console.WriteLine("Pending total=" + totalPending + " processing this run=" + batch.Count);
-
-            int uploaded = 0;
-            int missing = 0;
-            int failed = 0;
-
-            foreach (var item in batch)
+            var pendingByRelative = new Dictionary<string, List<long>>(StringComparer.OrdinalIgnoreCase);
+            int mapPending = 0;
+            int photoPending = 0;
+            foreach (var row in pendingRows)
             {
-                try
+                string relative = GetRelativePathUnderProject(row.strFilePath);
+                if (string.IsNullOrEmpty(relative))
                 {
-                    string localPath = ResolveLocalFilePath(item.strFilePath, WebUrl).Replace('/', '\\');
-                    if (!File.Exists(localPath))
-                    {
-                        missing++;
-                        continue;
-                    }
-
-                    string newCloudUrl = UploadFileS3Bucket(localPath);
-                    if (!string.IsNullOrEmpty(newCloudUrl))
-                    {
-                        item.strCloudUrl = newCloudUrl;
-                        compassEntities.SaveChanges();
-                        uploaded++;
-                        if (uploaded % 100 == 0)
-                        {
-                            ErrorLogFile.writeStatus("Pending upload progress uploaded=" + uploaded +
-                                " missing=" + missing + " failed=" + failed);
-                            Console.WriteLine("Uploaded " + uploaded + " / " + batch.Count);
-                        }
-                    }
-                    else
-                    {
-                        failed++;
-                        ErrorLogFile.writeStatus("Pending upload failed ID=" + item.ID);
-                    }
+                    continue;
                 }
-                catch (Exception ex)
+
+                List<long> ids;
+                if (!pendingByRelative.TryGetValue(relative, out ids))
                 {
-                    failed++;
-                    ErrorLogFile.writeStatus("Pending upload exception ID=" + item.ID + " " + ex.Message);
+                    ids = new List<long>();
+                    pendingByRelative[relative] = ids;
+                }
+                ids.Add(row.ID);
+
+                if (IsMapPath(row.strFilePath))
+                {
+                    mapPending++;
+                }
+                else
+                {
+                    photoPending++;
                 }
             }
 
-            int remaining = Math.Max(0, totalPending - uploaded);
-            string summary = "Pending upload done. totalPending=" + totalPending +
-                " processed=" + batch.Count + " uploaded=" + uploaded +
-                " missing=" + missing + " failed=" + failed +
-                " approxRemaining=" + remaining + " - " + DateTime.Now.ToShortTimeString();
+            int diskMatchedPending = 0;
+            foreach (string relative in filesByRelative.Keys)
+            {
+                if (pendingByRelative.ContainsKey(relative))
+                {
+                    diskMatchedPending++;
+                }
+            }
+
+            ErrorLogFile.writeStatus("Disk-first upload diskFiles=" + diskCount +
+                " emptyCloudUrl=" + pendingRows.Count + " photos=" + photoPending +
+                " maps=" + mapPending + " diskMatchedPending=" + diskMatchedPending +
+                " uploadCap=NONE - " + DateTime.Now.ToShortTimeString());
+            Console.WriteLine("Local files=" + diskCount + ", empty cloud URL rows=" + pendingRows.Count +
+                " (photos=" + photoPending + ", MAP=" + mapPending + "), matched on disk=" + diskMatchedPending);
+            Console.WriteLine("Uploading every local file that still has an empty strCloudUrl.");
+
+            int sample = 0;
+            foreach (string relative in filesByRelative.Keys)
+            {
+                ErrorLogFile.writeStatus("Disk sample: " + relative);
+                sample++;
+                if (sample >= 8)
+                {
+                    break;
+                }
+            }
+
+            int uploaded = 0;
+            int failed = 0;
+            int filesUploaded = 0;
+            var uploadedIds = new HashSet<long>();
+
+            try
+            {
+                foreach (var diskFile in filesByRelative)
+                {
+                    List<long> ids;
+                    if (!pendingByRelative.TryGetValue(diskFile.Key, out ids) || ids == null || ids.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    string localPath = diskFile.Value;
+                    if (string.IsNullOrEmpty(localPath) || !File.Exists(localPath))
+                    {
+                        continue;
+                    }
+
+                    try
+                    {
+                        string newCloudUrl = UploadFileS3Bucket(localPath);
+                        if (string.IsNullOrEmpty(newCloudUrl))
+                        {
+                            failed++;
+                            ErrorLogFile.writeStatus("Disk upload failed path=" + localPath);
+                            continue;
+                        }
+
+                        var items = compassEntities.TblProjectFieldDataAttachments
+                            .Where(o => ids.Contains(o.ID))
+                            .ToList();
+                        foreach (var item in items)
+                        {
+                            item.strCloudUrl = newCloudUrl;
+                            uploadedIds.Add(item.ID);
+                            uploaded++;
+                        }
+                        compassEntities.SaveChanges();
+                        filesUploaded++;
+
+                        if (filesUploaded % 50 == 0)
+                        {
+                            ErrorLogFile.writeStatus("Disk-first progress files=" + filesUploaded +
+                                " rows=" + uploaded + " failed=" + failed);
+                            Console.WriteLine("Uploaded files=" + filesUploaded + " DB rows=" + uploaded);
+                            compassEntities.Dispose();
+                            compassEntities = new CompassEntities();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        failed++;
+                        ErrorLogFile.writeStatus("Disk upload exception path=" + localPath + " " + ex.Message);
+                    }
+                }
+            }
+            finally
+            {
+                compassEntities.Dispose();
+            }
+
+            compassEntities = new CompassEntities();
+            try
+            {
+                foreach (var row in pendingRows)
+                {
+                    if (uploadedIds.Contains(row.ID))
+                    {
+                        continue;
+                    }
+
+                    string localPath = FindLocalFile(row.strFilePath, filesByRelative, filesByName);
+                    if (string.IsNullOrEmpty(localPath) || !File.Exists(localPath))
+                    {
+                        continue;
+                    }
+
+                    try
+                    {
+                        string newCloudUrl = UploadFileS3Bucket(localPath);
+                        if (string.IsNullOrEmpty(newCloudUrl))
+                        {
+                            failed++;
+                            continue;
+                        }
+
+                        var item = compassEntities.TblProjectFieldDataAttachments.FirstOrDefault(o => o.ID == row.ID);
+                        if (item == null)
+                        {
+                            continue;
+                        }
+                        item.strCloudUrl = newCloudUrl;
+                        compassEntities.SaveChanges();
+                        uploadedIds.Add(row.ID);
+                        uploaded++;
+                        filesUploaded++;
+                    }
+                    catch (Exception ex)
+                    {
+                        failed++;
+                        ErrorLogFile.writeStatus("Fallback upload exception ID=" + row.ID + " " + ex.Message);
+                    }
+                }
+            }
+            finally
+            {
+                compassEntities.Dispose();
+            }
+
+            string missingListPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Log",
+                "MissingLocalFiles_10076_" + DateTime.Now.ToString("yyyy_MM_dd") + ".txt");
+            int missingPhotos = 0;
+            Directory.CreateDirectory(Path.GetDirectoryName(missingListPath));
+            using (StreamWriter missingWriter = new StreamWriter(missingListPath, false))
+            {
+                foreach (var row in pendingRows)
+                {
+                    if (uploadedIds.Contains(row.ID) || IsMapPath(row.strFilePath))
+                    {
+                        continue;
+                    }
+
+                    missingPhotos++;
+                    string resolved = ResolveLocalFilePath(row.strFilePath, WebUrl).Replace('/', '\\');
+                    missingWriter.WriteLine(row.ID + "\t" + resolved);
+                    if (missingPhotos <= 10 || missingPhotos % 500 == 0)
+                    {
+                        ErrorLogFile.writeStatus("Local photo missing ID=" + row.ID + " path=" + resolved);
+                    }
+                }
+            }
+
+            int remainingPhotos;
+            int remainingMaps;
+            using (CompassEntities remainingDb = new CompassEntities())
+            {
+                remainingPhotos = PendingAttachments(remainingDb).Count();
+                remainingMaps = EmptyCloudUrlAttachments(remainingDb).Count() - remainingPhotos;
+            }
+
+            string summary = "Disk-first upload done. diskFiles=" + diskCount +
+                " diskMatchedPending=" + diskMatchedPending +
+                " filesUploaded=" + filesUploaded + " rowsUploaded=" + uploaded +
+                " failed=" + failed + " missingPhotos=" + missingPhotos +
+                " stillEmptyPhotos=" + remainingPhotos + " stillEmptyMAP=" + remainingMaps +
+                " - " + DateTime.Now.ToShortTimeString();
             ErrorLogFile.writeStatus(summary);
             Console.WriteLine(summary);
+            if (missingPhotos > 0)
+            {
+                ErrorLogFile.writeStatus("Missing local photos listed in " + missingListPath);
+                Console.WriteLine(missingPhotos + " photos are not on disk. Missing list: " + missingListPath);
+            }
         }
 
-        // Phase 2 (optional): validate existing cloud URLs and re-upload broken ones — batched per run
-        private void ValidateAndFixBrokenCloudUrlsBatch(int batchSize)
+        private IQueryable<TblProjectFieldDataAttachment> EmptyCloudUrlAttachments(CompassEntities db)
         {
-            CompassEntities compassEntities = new CompassEntities();
-
-            ServicePointManager.Expect100Continue = true;
-            ServicePointManager.DefaultConnectionLimit = 9999;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
-
-            var withUrlQuery = compassEntities.TblProjectFieldDataAttachments
+            return db.TblProjectFieldDataAttachments
                 .Where(o =>
                     o.Active == 1 &&
                     o.strFilePath != null &&
-                    o.strFilePath.Contains(PathFilter) &&
-                    o.strCloudUrl != null &&
-                    o.strCloudUrl != ""
+                    (o.strFilePath.Contains(PathFilter) || o.strFilePath.Contains(PathFilterAlt)) &&
+                    (o.strCloudUrl == null || o.strCloudUrl == "")
                 );
+        }
 
-            int totalWithUrl = withUrlQuery.Count();
-            var batch = withUrlQuery
-                .OrderBy(o => o.ID)
-                .Take(batchSize)
-                .ToList();
+        private IQueryable<TblProjectFieldDataAttachment> PendingAttachments(CompassEntities db)
+        {
+            // MAP/CommonMAP img.png files are generated Google Map snapshots, not field photos.
+            // They are usually not on disk, so skip them. Do not mark them uploaded.
+            return EmptyCloudUrlAttachments(db)
+                .Where(o =>
+                    !o.strFilePath.Contains(@"\MAP\") &&
+                    !o.strFilePath.Contains(@"/MAP/") &&
+                    !o.strFilePath.Contains(@"\CommonMAP\") &&
+                    !o.strFilePath.Contains(@"/CommonMAP/")
+                );
+        }
 
+        private static int IndexLocalProjectFiles(
+            string projectFolder,
+            out Dictionary<string, string> filesByRelative,
+            out Dictionary<string, List<string>> filesByName)
+        {
+            filesByRelative = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            filesByName = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+            int diskCount = 0;
+            string root = Path.GetFullPath(projectFolder).TrimEnd('\\') + "\\";
+
+            foreach (string fullPath in Directory.EnumerateFiles(projectFolder, "*", SearchOption.AllDirectories))
+            {
+                diskCount++;
+                string full = Path.GetFullPath(fullPath);
+                string relative = full.StartsWith(root, StringComparison.OrdinalIgnoreCase)
+                    ? NormalizeRelativePath(full.Substring(root.Length))
+                    : Path.GetFileName(full);
+
+                if (!filesByRelative.ContainsKey(relative))
+                {
+                    filesByRelative[relative] = full;
+                }
+
+                string name = Path.GetFileName(full);
+                List<string> list;
+                if (!filesByName.TryGetValue(name, out list))
+                {
+                    list = new List<string>();
+                    filesByName[name] = list;
+                }
+                list.Add(full);
+            }
+
+            return diskCount;
+        }
+
+        private static string FindLocalFile(
+            string dbFilePath,
+            Dictionary<string, string> filesByRelative,
+            Dictionary<string, List<string>> filesByName)
+        {
+            string relative = GetRelativePathUnderProject(dbFilePath);
+            string found;
+            if (!string.IsNullOrEmpty(relative) && filesByRelative.TryGetValue(relative, out found))
+            {
+                return found;
+            }
+
+            string resolved = ResolveLocalFilePath(dbFilePath, WebUrl).Replace('/', '\\');
+            if (File.Exists(resolved))
+            {
+                return resolved;
+            }
+
+            string longPath = resolved.StartsWith(@"\\?\", StringComparison.Ordinal) ? resolved : @"\\?\" + resolved;
+            if (resolved.Length >= 240 && File.Exists(longPath))
+            {
+                return resolved;
+            }
+
+            string fileName = Path.GetFileName(relative);
+            if (string.IsNullOrEmpty(fileName) ||
+                fileName.Equals("img.png", StringComparison.OrdinalIgnoreCase))
+            {
+                return null;
+            }
+
+            List<string> candidates;
+            if (!filesByName.TryGetValue(fileName, out candidates) || candidates == null || candidates.Count == 0)
+            {
+                return null;
+            }
+
+            if (candidates.Count == 1)
+            {
+                return candidates[0];
+            }
+
+            string dirHint = Path.GetDirectoryName(relative) ?? string.Empty;
+            string[] parts = dirHint.Split(new[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string candidate in candidates)
+            {
+                bool allPartsMatch = true;
+                foreach (string part in parts)
+                {
+                    if (candidate.IndexOf("\\" + part + "\\", StringComparison.OrdinalIgnoreCase) < 0 &&
+                        !candidate.EndsWith("\\" + part, StringComparison.OrdinalIgnoreCase))
+                    {
+                        allPartsMatch = false;
+                        break;
+                    }
+                }
+                if (allPartsMatch)
+                {
+                    return candidate;
+                }
+            }
+
+            return null;
+        }
+
+        private static string GetRelativePathUnderProject(string dbFilePath)
+        {
+            string path = NormalizeRelativePath(dbFilePath);
+            string marker = @"MobileUploadData\10076\";
+            int index = path.IndexOf(marker, StringComparison.OrdinalIgnoreCase);
+            if (index >= 0)
+            {
+                return NormalizeRelativePath(path.Substring(index + marker.Length));
+            }
+            return Path.GetFileName(path);
+        }
+
+        private static string NormalizeRelativePath(string path)
+        {
+            return (path ?? string.Empty)
+                .Replace('/', '\\')
+                .Trim()
+                .TrimStart('\\');
+        }
+
+        private static bool IsMapPath(string path)
+        {
+            string normalized = NormalizeRelativePath(path);
+            return normalized.IndexOf(@"\MAP\", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                   normalized.IndexOf(@"\CommonMAP\", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                   normalized.StartsWith(@"MAP\", StringComparison.OrdinalIgnoreCase) ||
+                   normalized.StartsWith(@"CommonMAP\", StringComparison.OrdinalIgnoreCase);
+        }
+
+        // Phase 2: HTTP-check every existing 10076 cloud URL. AccessDenied/403 and other broken links are re-uploaded.
+        private void ValidateAndFixBrokenCloudUrls(
+            int fetchWindow,
+            Dictionary<string, string> filesByRelative,
+            Dictionary<string, List<string>> filesByName)
+        {
+            CompassEntities compassEntities = new CompassEntities();
+            int totalWithUrl = AttachmentsWithCloudUrl(compassEntities).Count();
             ErrorLogFile.writeStatus("URL validation total=" + totalWithUrl +
-                " checkingThisRun=" + batch.Count + " - " + DateTime.Now.ToShortTimeString());
-            Console.WriteLine("URL validation total=" + totalWithUrl + " checking this run=" + batch.Count);
+                " checkingAllRemaining fetchWindow=" + fetchWindow + " - " + DateTime.Now.ToShortTimeString());
+            Console.WriteLine("Checking " + totalWithUrl + " existing cloud URLs. Broken links will be re-uploaded.");
 
             int checkedCount = 0;
             int okCount = 0;
+            int accessDeniedCount = 0;
+            int notFoundCount = 0;
             int brokenCount = 0;
             int reuploadedCount = 0;
             int missingCount = 0;
             int failedCount = 0;
+            long lastId = 0;
+            string deniedListPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Log",
+                "AccessDenied_10076_" + DateTime.Now.ToString("yyyy_MM_dd") + ".txt");
 
-            foreach (var item in batch)
+            try
             {
-                try
+                Directory.CreateDirectory(Path.GetDirectoryName(deniedListPath));
+                using (StreamWriter deniedWriter = new StreamWriter(deniedListPath, false))
                 {
-                    checkedCount++;
-                    string cloudUrl = (item.strCloudUrl ?? "").Trim();
+                    deniedWriter.WriteLine("ID\tStatus\tOldUrl\tLocalPath\tResult");
 
-                    if (IsCloudUrlReachable(cloudUrl))
+                    while (true)
                     {
-                        okCount++;
-                        if (checkedCount % 500 == 0)
+                        var batch = AttachmentsWithCloudUrl(compassEntities)
+                            .Where(o => o.ID > lastId)
+                            .OrderBy(o => o.ID)
+                            .Take(fetchWindow)
+                            .ToList();
+
+                        if (batch.Count == 0)
                         {
-                            ErrorLogFile.writeStatus("Validation progress checked=" + checkedCount +
-                                " ok=" + okCount + " broken=" + brokenCount + " reuploaded=" + reuploadedCount);
-                            Console.WriteLine("Checked " + checkedCount + " ok=" + okCount + " broken=" + brokenCount);
+                            break;
                         }
-                        continue;
-                    }
 
-                    brokenCount++;
-                    string localPath = ResolveLocalFilePath(item.strFilePath, WebUrl).Replace('/', '\\');
-                    if (!File.Exists(localPath))
-                    {
-                        missingCount++;
-                        ErrorLogFile.writeStatus("Broken URL, local missing ID=" + item.ID);
-                        continue;
-                    }
+                        foreach (var item in batch)
+                        {
+                            lastId = item.ID;
+                            checkedCount++;
+                            try
+                            {
+                                string cloudUrl = (item.strCloudUrl ?? "").Trim();
+                                CloudUrlStatus status = CheckCloudUrl(cloudUrl);
+                                if (status == CloudUrlStatus.Ok)
+                                {
+                                    okCount++;
+                                    if (checkedCount % 100 == 0)
+                                    {
+                                        ErrorLogFile.writeStatus("Validation progress checked=" + checkedCount +
+                                            " ok=" + okCount + " accessDenied=" + accessDeniedCount +
+                                            " reuploaded=" + reuploadedCount + " missing=" + missingCount);
+                                        Console.WriteLine("Checked " + checkedCount + " ok=" + okCount +
+                                            " denied=" + accessDeniedCount + " reuploaded=" + reuploadedCount);
+                                    }
+                                    continue;
+                                }
 
-                    string newCloudUrl = UploadFileS3Bucket(localPath);
-                    if (!string.IsNullOrEmpty(newCloudUrl))
-                    {
-                        item.strCloudUrl = newCloudUrl;
-                        compassEntities.SaveChanges();
-                        reuploadedCount++;
-                    }
-                    else
-                    {
-                        failedCount++;
-                        ErrorLogFile.writeStatus("Broken URL re-upload failed ID=" + item.ID);
+                                if (status == CloudUrlStatus.AccessDenied)
+                                {
+                                    accessDeniedCount++;
+                                }
+                                else if (status == CloudUrlStatus.NotFound)
+                                {
+                                    notFoundCount++;
+                                }
+                                else
+                                {
+                                    brokenCount++;
+                                }
+
+                                string localPath = FindLocalFile(item.strFilePath, filesByRelative, filesByName);
+                                if (string.IsNullOrEmpty(localPath) || !File.Exists(localPath))
+                                {
+                                    missingCount++;
+                                    string resolved = ResolveLocalFilePath(item.strFilePath, WebUrl).Replace('/', '\\');
+                                    deniedWriter.WriteLine(item.ID + "\t" + status + "\t" + cloudUrl + "\t" + resolved + "\tLOCAL_MISSING");
+                                    if (missingCount <= 10 || missingCount % 200 == 0)
+                                    {
+                                        ErrorLogFile.writeStatus(status + " local missing ID=" + item.ID + " url=" + cloudUrl);
+                                    }
+                                    continue;
+                                }
+
+                                string newCloudUrl = UploadFileS3Bucket(localPath);
+                                if (!string.IsNullOrEmpty(newCloudUrl))
+                                {
+                                    item.strCloudUrl = newCloudUrl;
+                                    compassEntities.SaveChanges();
+                                    reuploadedCount++;
+                                    deniedWriter.WriteLine(item.ID + "\t" + status + "\t" + cloudUrl + "\t" + localPath + "\tREUPLOADED\t" + newCloudUrl);
+                                    if (reuploadedCount % 50 == 0)
+                                    {
+                                        ErrorLogFile.writeStatus("Re-uploaded broken URLs=" + reuploadedCount +
+                                            " accessDenied=" + accessDeniedCount);
+                                    }
+                                }
+                                else
+                                {
+                                    failedCount++;
+                                    deniedWriter.WriteLine(item.ID + "\t" + status + "\t" + cloudUrl + "\t" + localPath + "\tUPLOAD_FAILED");
+                                    ErrorLogFile.writeStatus(status + " re-upload failed ID=" + item.ID);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                failedCount++;
+                                ErrorLogFile.writeStatus("Validation item exception ID=" + item.ID + " " + ex.Message);
+                            }
+                        }
+
+                        compassEntities.Dispose();
+                        compassEntities = new CompassEntities();
                     }
                 }
-                catch (Exception ex)
-                {
-                    failedCount++;
-                    ErrorLogFile.writeStatus("Validation item exception ID=" + item.ID + " " + ex.Message);
-                }
+            }
+            finally
+            {
+                compassEntities.Dispose();
             }
 
             string summary = "URL validation done. totalWithUrl=" + totalWithUrl +
-                " checked=" + checkedCount + " ok=" + okCount + " broken=" + brokenCount +
-                " reuploaded=" + reuploadedCount + " missing=" + missingCount +
-                " failed=" + failedCount + " - " + DateTime.Now.ToShortTimeString();
+                " checked=" + checkedCount + " ok=" + okCount +
+                " accessDenied=" + accessDeniedCount + " notFound=" + notFoundCount +
+                " broken=" + brokenCount + " reuploaded=" + reuploadedCount +
+                " missing=" + missingCount + " failed=" + failedCount +
+                " lastId=" + lastId + " - " + DateTime.Now.ToShortTimeString();
             ErrorLogFile.writeStatus(summary);
+            ErrorLogFile.writeStatus("AccessDenied/broken list: " + deniedListPath);
             Console.WriteLine(summary);
+            Console.WriteLine("AccessDenied/broken list: " + deniedListPath);
+        }
+
+        private IQueryable<TblProjectFieldDataAttachment> AttachmentsWithCloudUrl(CompassEntities db)
+        {
+            return db.TblProjectFieldDataAttachments
+                .Where(o =>
+                    o.Active == 1 &&
+                    o.strFilePath != null &&
+                    (o.strFilePath.Contains(PathFilter) || o.strFilePath.Contains(PathFilterAlt)) &&
+                    o.strCloudUrl != null &&
+                    o.strCloudUrl != ""
+                );
         }
 
         // Kept for backward compatibility — delegates to ProcessCloudUrls
@@ -321,74 +712,159 @@ namespace TNMPUploadUtility
             {
                 oldFilePath = oldFilePath.Replace("..\\..\\", webUrl);
             }
+            if (oldFilePath.Contains("../../"))
+            {
+                oldFilePath = oldFilePath.Replace("../../", webUrl);
+            }
             if (oldFilePath.Contains("~"))
             {
                 oldFilePath = oldFilePath.Replace("~\\", webUrl);
+                oldFilePath = oldFilePath.Replace("~/", webUrl);
             }
             oldFilePath = oldFilePath.Replace('\\', '/').Trim();
             return oldFilePath;
         }
 
-        // Added on 24 Aug 2026 - HTTP check whether cloud URL still serves the file
-        private static bool IsCloudUrlReachable(string cloudUrl)
+        private static CloudUrlStatus CheckCloudUrl(string cloudUrl)
         {
-            if (string.IsNullOrWhiteSpace(cloudUrl))
+            if (string.IsNullOrWhiteSpace(cloudUrl) ||
+                !cloudUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase) ||
+                cloudUrl.IndexOf("failed", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                return false;
-            }
-            if (!cloudUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase))
-            {
-                return false;
-            }
-            if (cloudUrl.IndexOf("failed", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                return false;
+                return CloudUrlStatus.Broken;
             }
 
             try
             {
-                if (TryHttpStatus(cloudUrl, "HEAD", out int headStatus))
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(cloudUrl);
+                request.Method = "GET";
+                request.Timeout = 15000;
+                request.ReadWriteTimeout = 15000;
+                request.AllowAutoRedirect = true;
+                request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)";
+                request.Accept = "*/*";
+
+                HttpWebResponse response = null;
+                try
                 {
-                    if (headStatus >= 200 && headStatus < 400)
+                    response = (HttpWebResponse)request.GetResponse();
+                }
+                catch (WebException ex)
+                {
+                    response = ex.Response as HttpWebResponse;
+                    if (response == null)
                     {
-                        return true;
-                    }
-                    // Some hosts reject HEAD; fall through to GET
-                    if (headStatus != 405 && headStatus != 403 && headStatus < 500)
-                    {
-                        return false;
+                        return CloudUrlStatus.Broken;
                     }
                 }
 
-                if (TryHttpStatus(cloudUrl, "GET", out int getStatus))
+                using (response)
                 {
-                    return getStatus >= 200 && getStatus < 400;
+                    int status = (int)response.StatusCode;
+                    string body = ReadBodyPreview(response, 4096);
+                    if (IsAccessDeniedBody(body))
+                    {
+                        return CloudUrlStatus.AccessDenied;
+                    }
+                    return MapHttpStatus(status);
                 }
             }
             catch (Exception ex)
             {
-                ErrorLogFile.writeStatus("IsCloudUrlReachable exception: " + ex.Message + " URL=" + cloudUrl);
+                ErrorLogFile.writeStatus("CheckCloudUrl exception: " + ex.Message + " URL=" + cloudUrl);
             }
 
-            return false;
+            return CloudUrlStatus.Broken;
         }
 
-        // Added on 24 Aug 2026
+        private static string ReadBodyPreview(HttpWebResponse response, int maxChars)
+        {
+            try
+            {
+                Stream stream = response.GetResponseStream();
+                if (stream == null)
+                {
+                    return string.Empty;
+                }
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    char[] buffer = new char[maxChars];
+                    int read = reader.Read(buffer, 0, buffer.Length);
+                    return read > 0 ? new string(buffer, 0, read) : string.Empty;
+                }
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+
+        private static bool IsAccessDeniedBody(string body)
+        {
+            if (string.IsNullOrEmpty(body))
+            {
+                return false;
+            }
+            return body.IndexOf("AccessDenied", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                   body.IndexOf("Access Denied", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                   body.IndexOf("AllAccessDisabled", StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        private static CloudUrlStatus MapHttpStatus(int status)
+        {
+            if (status >= 200 && status < 400)
+            {
+                return CloudUrlStatus.Ok;
+            }
+            if (status == 403)
+            {
+                return CloudUrlStatus.AccessDenied;
+            }
+            if (status == 404)
+            {
+                return CloudUrlStatus.NotFound;
+            }
+            return CloudUrlStatus.Broken;
+        }
+
+        // Added on 24 Aug 2026 - HTTP check whether cloud URL still serves the file
+        private static bool IsCloudUrlReachable(string cloudUrl)
+        {
+            return CheckCloudUrl(cloudUrl) == CloudUrlStatus.Ok;
+        }
+
         private static bool TryHttpStatus(string url, string method, out int statusCode)
+        {
+            return TryHttpStatus(url, method, 15000, false, out statusCode);
+        }
+
+        private static bool TryHttpStatus(string url, string method, int timeoutMs, bool firstByteOnly, out int statusCode)
         {
             statusCode = 0;
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = method;
-            request.Timeout = 15000;
-            request.ReadWriteTimeout = 15000;
+            request.Timeout = timeoutMs;
+            request.ReadWriteTimeout = timeoutMs;
             request.AllowAutoRedirect = true;
             request.UserAgent = "TNMPUploadUtility-CloudUrlCheck/1.0";
+            if (firstByteOnly)
+            {
+                request.AddRange(0, 0);
+            }
 
             try
             {
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                 {
                     statusCode = (int)response.StatusCode;
+                    if (firstByteOnly)
+                    {
+                        Stream stream = response.GetResponseStream();
+                        if (stream != null)
+                        {
+                            stream.ReadByte();
+                        }
+                    }
                     return true;
                 }
             }

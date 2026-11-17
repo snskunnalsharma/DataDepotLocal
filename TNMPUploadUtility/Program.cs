@@ -219,7 +219,7 @@ namespace TNMPUploadUtility
 
             // Start code => Upload old files s3 bucket
             #region Upload old files s3 bucket
-            // Updated Sep 2026 - batch pending uploads (skip 1M+ URL checks by default)
+            // Upload every remaining local 10076 file. No 5000 upload cap.
             ErrorLogFile.writeStatus("\n\nThread Started at ProcessCloudUrls (pending batch upload) - " + DateTime.Now.ToShortTimeString());
             Console.WriteLine("Thread Started at ProcessCloudUrls (pending batch upload) - " + DateTime.Now.ToShortTimeString());
             try
